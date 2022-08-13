@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces;
+﻿namespace OrleanSpaces.Tests;
 
 public class SpaceTemplateTests
 {
@@ -39,9 +39,6 @@ public class SpaceTemplateTests
         Assert.Equal(1, tuple.Length);
         Assert.Equal(typeof(int), tuple[0]);
     }
-
-    [Fact]
-    public void Can_Implicitly_Convert_Sp_SpaceTuple
 
     [Fact]
     public void ArgumentNullException_Should_Be_Thrown_On_Null_Object()

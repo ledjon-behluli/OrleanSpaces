@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces;
+﻿namespace OrleanSpaces.Tests;
 
 public class SpaceTupleTests
 {

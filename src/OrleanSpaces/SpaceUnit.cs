@@ -2,6 +2,7 @@
 
 namespace OrleanSpaces
 {
+    [Serializable]
     public readonly struct SpaceUnit : IEquatable<SpaceUnit>, IComparable<SpaceUnit>, IComparable
     {
         private static readonly SpaceUnit _null = new SpaceUnit();

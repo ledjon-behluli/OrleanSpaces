@@ -40,21 +40,32 @@ namespace OrleanSpaces
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> TryReadAsync(ref SpaceTemplate template, CancellationToken cancellationToken)
-        {
-            IEnumerable<SpaceTuple> matching = space.State.Tuples.Where(x => x.Length == template.Length);
-            if (!matching.Any())
-            {
-                return Task.FromResult(false);
-            }
-        }
-
         public Task<SpaceTuple> TakeAsync(SpaceTemplate template, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
-       
-        public Task<bool> TryTakeAsync(SpaceTemplate template, out SpaceTuple tuple, CancellationToken cancellationToken)
+
+        public Task<SpaceResult> TryReadAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        {
+            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+            if (!tuples.Any())
+            {
+                return Task.FromResult(SpaceResult.Fail());
+            }
+
+            foreach (var tuple in tuples)
+            {
+                if (TupleMatcher.IsMatch(tuple, template))
+                {
+                    return Task.FromResult(SpaceResult.Success(tuple));
+                }
+            }
+
+            return Task.FromResult(SpaceResult.Fail());
+        }
+
+        public Task<SpaceResult> TryTakeAsync(SpaceTemplate template, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
@@ -71,34 +82,6 @@ namespace OrleanSpaces
         public Task Eval()
         {
             throw new System.NotImplementedException();
-        }
-
-        private bool Match(object[] pattern, object[] tuple)
-        {
-            if (tuple.Length != pattern.Length)
-            {
-                return false;
-            }
-            bool result = true;
-            for (int idx = 0; idx < tuple.Length; idx++)
-            {
-                if (pattern[idx] is Type)
-                {
-                    Type tupleType = tuple[idx] is Type ? (Type)tuple[idx] : tuple[idx].GetType();
-                    result &= this.IsOfType(tupleType, (Type)pattern[idx]);
-                }
-                else
-                {
-                    result &= tuple[idx].Equals(pattern[idx]);
-                }
-                if (!result) return false;
-            }
-
-            return result;
-        }
-        private bool IsOfType(Type tupleType, Type patternType)
-        {
-            return tupleType == patternType;
         }
     }
 }
