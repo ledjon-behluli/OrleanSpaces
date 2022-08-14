@@ -28,12 +28,12 @@ namespace OrleanSpaces
             await space.WriteStateAsync();
         }
 
-        public ValueTask<SpaceTuple> Read(SpaceTemplate template)
+        public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
         {
             throw new System.NotImplementedException();
         }
 
-        public ValueTask<SpaceResult> TryRead(SpaceTemplate template)
+        public ValueTask<SpaceResult> TryPeek(SpaceTemplate template)
         {
             IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -41,19 +41,19 @@ namespace OrleanSpaces
             {
                 if (TupleMatcher.IsMatch(tuple, template))
                 {
-                    return new ValueTask<SpaceResult>(SpaceResult.Success(tuple));
+                    return new ValueTask<SpaceResult>(new SpaceResult(tuple));
                 }
             }
 
-            return new ValueTask<SpaceResult>(SpaceResult.Fail());
+            return new ValueTask<SpaceResult>(SpaceResult.Empty);
         }
 
-        public Task<SpaceTuple> Take(SpaceTemplate template)
+        public Task<SpaceTuple> Read(SpaceTemplate template)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<SpaceResult> TryTake(SpaceTemplate template)
+        public async Task<SpaceResult> TryRead(SpaceTemplate template)
         {
             IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -64,11 +64,11 @@ namespace OrleanSpaces
                     space.State.Tuples.Remove(tuple);
                     await space.WriteStateAsync();
 
-                    return SpaceResult.Success(tuple);
+                    return new SpaceResult(tuple);
                 }
             }
 
-            return SpaceResult.Fail();
+            return SpaceResult.Empty;
         }
 
         public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)

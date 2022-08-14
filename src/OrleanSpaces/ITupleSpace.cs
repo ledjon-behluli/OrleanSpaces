@@ -15,25 +15,25 @@ namespace OrleanSpaces
         /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "RDP" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        ValueTask<SpaceTuple> Read(SpaceTemplate template);
+        ValueTask<SpaceTuple> Peek(SpaceTemplate template);
 
         /// <summary>
         /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "RD" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        ValueTask<SpaceResult> TryRead(SpaceTemplate template);
+        ValueTask<SpaceResult> TryPeek(SpaceTemplate template);
 
         /// <summary>
         /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "INP" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        Task<SpaceTuple> Take(SpaceTemplate template);
+        Task<SpaceTuple> Read(SpaceTemplate template);
 
         /// <summary>
         /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "IN" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        Task<SpaceResult> TryTake(SpaceTemplate template);
+        Task<SpaceResult> TryRead(SpaceTemplate template);
 
         IEnumerable<SpaceTuple> Scan(SpaceTemplate template);
 

@@ -3,17 +3,15 @@
 namespace OrleanSpaces
 {
     [Serializable]
-    public struct SpaceResult
+    public readonly struct SpaceResult
     {
-        public bool Result { get; }
+        public bool Result => Tuple != null;
         public SpaceTuple? Tuple { get; }
 
-        internal static SpaceResult Success(SpaceTuple tuple) => new SpaceResult(true, tuple);
-        internal static SpaceResult Fail() => new SpaceResult(false, null);
+        public static SpaceResult Empty = new SpaceResult();
 
-        private SpaceResult(bool success, SpaceTuple? tuple)
+        public SpaceResult(SpaceTuple? tuple)
         {
-            Result = success;
             Tuple = tuple;
         }
     }
