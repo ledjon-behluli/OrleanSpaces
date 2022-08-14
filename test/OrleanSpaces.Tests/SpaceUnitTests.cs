@@ -3,7 +3,7 @@ namespace OrleanSpaces.Tests;
 public class SpaceUnitTests
 {
     [Fact]
-    public void Should_be_equal_to_each_other()
+    public void Should_Be_Equal_To_Each_Other()
     {
         var unit1 = SpaceUnit.Null;
         var unit2 = SpaceUnit.Null;
@@ -14,25 +14,24 @@ public class SpaceUnitTests
     }
 
     [Fact]
-    public void Should_be_equitable()
+    public void Should_Be_Equatable()
     {
         var dictionary = new Dictionary<SpaceUnit, string>
         {
             {new SpaceUnit(), "value"},
         };
-
+        
         Assert.Equal("value", dictionary[default]);
     }
 
     [Fact]
-    public void Should_tostring()
+    public void Should_ToString()
     {
-        var unit = SpaceUnit.Null;
-        Assert.Equal("()", unit.ToString());
+        Assert.Equal("NULL", SpaceUnit.Null.ToString());
     }
 
     [Fact]
-    public void Should_compareto_as_zero()
+    public void Should_CompareTo_As_Zero()
     {
         var unit1 = new SpaceUnit();
         var unit2 = new SpaceUnit();
@@ -40,9 +39,33 @@ public class SpaceUnitTests
         Assert.Equal(0, unit1.CompareTo(unit2));
     }
 
-    public static object[][] ValueData()
+    [Theory]
+    [MemberData(nameof(ValueData))]
+    public void Should_be_equal(object value, bool isEqual)
     {
-        return new[]
+        var unit = SpaceUnit.Null;
+
+        if (isEqual)
+            Assert.True(unit.Equals(value));
+        else
+            Assert.False(unit.Equals(value));
+    }
+
+    [Theory]
+    [MemberData(nameof(CompareToValueData))]
+    public void Should_CompareTo_Value_As_Zero(object value)
+    {
+        var unit = new SpaceUnit();
+        var comparable = (IComparable)unit;
+
+        Assert.Equal(0, comparable.CompareTo(value));
+    }
+
+    public static object[][] CompareToValueData()
+        => ValueData().Select(objects => new[] { objects[0] }).ToArray();
+
+    public static object[][] ValueData() =>
+        new[]
         {
             new object[] {new object(), false},
             new object[] {"", false},
@@ -53,29 +76,4 @@ public class SpaceUnitTests
             new object[] {SpaceUnit.Null, true},
             new object[] {default(SpaceUnit), true},
         };
-    }
-
-    public static object[][] CompareToValueData()
-        => ValueData().Select(objects => new[] { objects[0] }).ToArray();
-
-    [Theory]
-    [MemberData(nameof(ValueData))]
-    public void Should_be_equal(object value, bool isEqual)
-    {
-        var unit1 = SpaceUnit.Null;
-
-        if (isEqual)
-            Assert.True(unit1.Equals(value));
-        else
-            Assert.False(unit1.Equals(value));
-    }
-
-    [Theory]
-    [MemberData(nameof(CompareToValueData))]
-    public void Should_compareto_value_as_zero(object value)
-    {
-        var unit1 = new SpaceUnit();
-
-        Assert.Equal(0, ((IComparable)unit1).CompareTo(value));
-    }
 }

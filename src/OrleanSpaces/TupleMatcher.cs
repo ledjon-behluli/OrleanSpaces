@@ -15,13 +15,17 @@ namespace OrleanSpaces
 
             for (int i = 0; i < tuple.Length; i++)
             {
-                if (template[i] is Type templateType)
+                if (template[i] is SpaceUnit)
                 {
-                    result &= templateType == tuple[i].GetType();
+                    result = true;
+                }
+                else if (template[i] is Type templateType)
+                {
+                    result &= templateType.Equals(tuple[i].GetType());
                 }
                 else
                 {
-                    result &= tuple[i].Equals(template[i]);
+                    result &= template[i].Equals(tuple[i]);
                 }
 
                 if (!result)
