@@ -4,7 +4,6 @@ using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,55 +28,72 @@ namespace OrleanSpaces
             this.space = space ?? throw new ArgumentNullException(nameof(space));
         }
 
-        public async Task PutAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+        public async Task Put(SpaceTuple tuple)
         {
             space.State.Tuples.Add(tuple);
             await space.WriteStateAsync();
         }
 
-        public Task<SpaceTuple> ReadAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        public SpaceTuple Read(SpaceTemplate template)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<SpaceTuple> TakeAsync(SpaceTemplate template, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<SpaceResult> TryReadAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        public SpaceResult TryRead(SpaceTemplate template)
         {
             IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
-
-            if (!tuples.Any())
-            {
-                return Task.FromResult(SpaceResult.Fail());
-            }
 
             foreach (var tuple in tuples)
             {
                 if (TupleMatcher.IsMatch(tuple, template))
                 {
-                    return Task.FromResult(SpaceResult.Success(tuple));
+                    return SpaceResult.Success(tuple);
                 }
             }
 
-            return Task.FromResult(SpaceResult.Fail());
+            return SpaceResult.Fail();
         }
 
-        public Task<SpaceResult> TryTakeAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        public Task<SpaceTuple> Take(SpaceTemplate template)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IEnumerable<SpaceTuple>> Scan(SpaceTemplate template, CancellationToken cancellationToken = default)
+        public async Task<SpaceResult> TryTake(SpaceTemplate template)
         {
-            throw new System.NotImplementedException();
+            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+            foreach (var tuple in tuples)
+            {
+                if (TupleMatcher.IsMatch(tuple, template))
+                {
+                    space.State.Tuples.Remove(tuple);
+                    await space.WriteStateAsync();
+
+                    return SpaceResult.Success(tuple);
+                }
+            }
+
+            return SpaceResult.Fail();
         }
-        public Task<int> Count(SpaceTemplate template, CancellationToken cancellationToken = default)
+
+        public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)
         {
-            throw new System.NotImplementedException();
+            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+            foreach (var tuple in tuples)
+            {
+                if (TupleMatcher.IsMatch(tuple, template))
+                {
+                    yield return tuple;
+                }
+            }
         }
+
+        public int Count() => space.State.Tuples.Count;
+
+        public int Count(SpaceTemplate template) => space.State.Tuples
+            .Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template));
 
         public Task Eval()
         {
