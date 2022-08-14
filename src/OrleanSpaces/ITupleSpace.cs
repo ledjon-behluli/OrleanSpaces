@@ -1,9 +1,4 @@
-﻿using Orleans.Runtime;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrleanSpaces
@@ -20,13 +15,13 @@ namespace OrleanSpaces
         /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "RDP" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        SpaceTuple Read(SpaceTemplate template);
+        ValueTask<SpaceTuple> Read(SpaceTemplate template);
 
         /// <summary>
         /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
         /// <para><i>Analogous to the "RD" primitive in the TupleSpace model.</i></para>
         /// </summary>
-        SpaceResult TryRead(SpaceTemplate template);
+        ValueTask<SpaceResult> TryRead(SpaceTemplate template);
 
         /// <summary>
         /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ITupleSpace"/>.</para>
@@ -42,8 +37,8 @@ namespace OrleanSpaces
 
         IEnumerable<SpaceTuple> Scan(SpaceTemplate template);
 
-        int Count();
-        int Count(SpaceTemplate template);
+        ValueTask<int> Count();
+        ValueTask<int> Count(SpaceTemplate template);
 
         Task Eval();
     }

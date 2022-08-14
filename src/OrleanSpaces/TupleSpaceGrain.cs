@@ -9,12 +9,6 @@ using System.Threading.Tasks;
 
 namespace OrleanSpaces
 {
-    [Serializable]
-    internal struct TupleSpaceState
-    {
-        public List<SpaceTuple> Tuples { get; set; }
-    }
-
     internal sealed class TupleSpaceGrain : Grain, ITupleSpace
     {
         private readonly ILogger<TupleSpaceGrain> logger;
@@ -34,12 +28,12 @@ namespace OrleanSpaces
             await space.WriteStateAsync();
         }
 
-        public SpaceTuple Read(SpaceTemplate template)
+        public ValueTask<SpaceTuple> Read(SpaceTemplate template)
         {
             throw new System.NotImplementedException();
         }
 
-        public SpaceResult TryRead(SpaceTemplate template)
+        public ValueTask<SpaceResult> TryRead(SpaceTemplate template)
         {
             IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -47,11 +41,11 @@ namespace OrleanSpaces
             {
                 if (TupleMatcher.IsMatch(tuple, template))
                 {
-                    return SpaceResult.Success(tuple);
+                    return new ValueTask<SpaceResult>(SpaceResult.Success(tuple));
                 }
             }
 
-            return SpaceResult.Fail();
+            return new ValueTask<SpaceResult>(SpaceResult.Fail());
         }
 
         public Task<SpaceTuple> Take(SpaceTemplate template)
@@ -90,10 +84,10 @@ namespace OrleanSpaces
             }
         }
 
-        public int Count() => space.State.Tuples.Count;
+        public ValueTask<int> Count() => new ValueTask<int>(space.State.Tuples.Count);
 
-        public int Count(SpaceTemplate template) => space.State.Tuples
-            .Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template));
+        public ValueTask<int> Count(SpaceTemplate template) => 
+            new ValueTask<int>(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
 
         public Task Eval()
         {
