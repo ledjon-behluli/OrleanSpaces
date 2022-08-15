@@ -4,11 +4,11 @@ using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrleanSpaces
 {
+
     internal sealed class TupleSpaceGrain : Grain, ITupleSpace
     {
         private readonly ILogger<TupleSpaceGrain> logger;
@@ -45,7 +45,7 @@ namespace OrleanSpaces
                 }
             }
 
-            return new ValueTask<SpaceResult>(SpaceResult.Empty);
+            return new(SpaceResult.Empty);
         }
 
         public Task<SpaceTuple> Read(SpaceTemplate template)
@@ -64,7 +64,7 @@ namespace OrleanSpaces
                     space.State.Tuples.Remove(tuple);
                     await space.WriteStateAsync();
 
-                    return new SpaceResult(tuple);
+                    return new(tuple);
                 }
             }
 
@@ -84,10 +84,10 @@ namespace OrleanSpaces
             }
         }
 
-        public ValueTask<int> Count() => new ValueTask<int>(space.State.Tuples.Count);
+        public ValueTask<int> Count() => new(space.State.Tuples.Count);
 
         public ValueTask<int> Count(SpaceTemplate template) => 
-            new ValueTask<int>(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
+            new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
 
         public Task Eval()
         {
