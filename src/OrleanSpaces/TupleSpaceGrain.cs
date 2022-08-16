@@ -1,97 +1,81 @@
-﻿using Microsoft.Extensions.Logging;
-using Orleans;
+﻿using Orleans;
 using Orleans.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace OrleanSpaces
+namespace OrleanSpaces;
+
+internal sealed class TupleSpaceGrain : Grain, ITupleSpace
 {
+    private readonly IPersistentState<TupleSpaceState> space;
 
-    internal sealed class TupleSpaceGrain : Grain, ITupleSpace
+    public TupleSpaceGrain([PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
     {
-        private readonly ILogger<TupleSpaceGrain> logger;
-        private readonly IPersistentState<TupleSpaceState> space;
+        this.space = space ?? throw new ArgumentNullException(nameof(space));
+    }
 
-        public TupleSpaceGrain(
-            ILogger<TupleSpaceGrain> logger,
-            [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
+    public async Task Write(SpaceTuple tuple)
+    {
+        space.State.Tuples.Add(tuple);
+        await space.WriteStateAsync();
+    }
+
+    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public ValueTask<SpaceResult> TryPeek(SpaceTemplate template)
+    {
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+        foreach (var tuple in tuples)
         {
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.space = space ?? throw new ArgumentNullException(nameof(space));
-        }
-
-        public async Task Put(SpaceTuple tuple)
-        {
-            space.State.Tuples.Add(tuple);
-            await space.WriteStateAsync();
-        }
-
-        public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ValueTask<SpaceResult> TryPeek(SpaceTemplate template)
-        {
-            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
-
-            foreach (var tuple in tuples)
+            if (TupleMatcher.IsMatch(tuple, template))
             {
-                if (TupleMatcher.IsMatch(tuple, template))
-                {
-                    return new ValueTask<SpaceResult>(new SpaceResult(tuple));
-                }
-            }
-
-            return new(SpaceResult.Empty);
-        }
-
-        public Task<SpaceTuple> Read(SpaceTemplate template)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task<SpaceResult> TryRead(SpaceTemplate template)
-        {
-            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
-
-            foreach (var tuple in tuples)
-            {
-                if (TupleMatcher.IsMatch(tuple, template))
-                {
-                    space.State.Tuples.Remove(tuple);
-                    await space.WriteStateAsync();
-
-                    return new(tuple);
-                }
-            }
-
-            return SpaceResult.Empty;
-        }
-
-        public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)
-        {
-            IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
-
-            foreach (var tuple in tuples)
-            {
-                if (TupleMatcher.IsMatch(tuple, template))
-                {
-                    yield return tuple;
-                }
+                return new ValueTask<SpaceResult>(new SpaceResult(tuple));
             }
         }
 
-        public ValueTask<int> Count() => new(space.State.Tuples.Count);
+        return new(SpaceResult.Empty);
+    }
 
-        public ValueTask<int> Count(SpaceTemplate template) => 
-            new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
+    public Task<SpaceTuple> Extract(SpaceTemplate template)
+    {
+        throw new System.NotImplementedException();
+    }
 
-        public Task Eval()
+    public async Task<SpaceResult> TryExtract(SpaceTemplate template)
+    {
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+        foreach (var tuple in tuples)
         {
-            throw new System.NotImplementedException();
+            if (TupleMatcher.IsMatch(tuple, template))
+            {
+                space.State.Tuples.Remove(tuple);
+                await space.WriteStateAsync();
+
+                return new(tuple);
+            }
+        }
+
+        return SpaceResult.Empty;
+    }
+
+    public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)
+    {
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+        foreach (var tuple in tuples)
+        {
+            if (TupleMatcher.IsMatch(tuple, template))
+            {
+                yield return tuple;
+            }
         }
     }
+
+    public ValueTask<int> Count() => new(space.State.Tuples.Count);
+
+    public ValueTask<int> Count(SpaceTemplate template) =>
+        new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
 }

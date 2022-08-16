@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace OrleanSpaces;
 
-namespace OrleanSpaces
+[Serializable]
+internal struct TupleSpaceState
 {
-    [Serializable]
-    internal struct TupleSpaceState
-    {
-        public List<SpaceTuple> Tuples { get; set; }
-    }
+    public List<SpaceTuple> Tuples { get; set; }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OrleanSpaces
+﻿namespace OrleanSpaces
 {
     [Serializable]
     public readonly struct SpaceUnit : IEquatable<SpaceUnit>, IComparable<SpaceUnit>, IComparable

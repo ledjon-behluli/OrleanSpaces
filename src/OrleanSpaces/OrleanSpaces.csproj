@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
 	 <LangVersion>10</LangVersion>
-    <Nullable>enable</Nullable>
+     <Nullable>enable</Nullable>
+	 <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -18,10 +19,6 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Tests</_Parameter1>
 		</AssemblyAttribute>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Orleans_CodeGenInputs Remove="Observables\SpaceNotificationTrigger.cs" />
 	</ItemGroup>
 
 </Project>

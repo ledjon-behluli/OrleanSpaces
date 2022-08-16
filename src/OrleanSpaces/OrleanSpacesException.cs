@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OrleanSpaces;
+﻿namespace OrleanSpaces;
 
 public sealed class OrleanSpacesException : Exception
 {

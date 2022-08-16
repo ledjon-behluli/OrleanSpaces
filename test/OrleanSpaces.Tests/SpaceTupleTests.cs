@@ -15,7 +15,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void SpaceTuple_Should_Be_Created_On_Single_Object()
+    public void SpaceTuple_Should_Be_Created_On_Object()
     {
         SpaceTuple tuple = SpaceTuple.Create("a");
 
@@ -24,7 +24,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void ArgumentNullException_Should_Be_Thrown_On_Null_Object()
+    public void ArgumentNullException_Should_Be_Thrown_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(null));
     }

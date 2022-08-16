@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using Orleans.Hosting;
+using OrleanSpaces.Filters;
 using OrleanSpaces.Observables;
 using System;
 
@@ -13,7 +14,8 @@ public static class ClientExtensions
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(TupleSpaceGrain).Assembly).WithReferences());
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetTupleSpace());
+            services.AddSingleton<IOutgoingGrainCallFilter, TupleFunctionEvaluator>();
+            services.AddTupleSpace();
         });
 
         return builder;
@@ -24,15 +26,16 @@ public static class ClientExtensions
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(TupleSpaceGrain).Assembly).WithReferences());
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<SpaceObserverManager>();
-            services.AddSingleton<SpaceSubscribersRegistry>();
-            services.AddSingleton<IIncomingGrainCallFilter, SpaceNotificationTrigger>();
-            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetTupleSpace());
+            services.AddSingleton<ObserverManager>();
+            services.AddSingleton<SubscriberRegistry>();
+            services.AddSingleton<IIncomingGrainCallFilter, SpaceOscillationNotifier>();
+            services.AddTupleSpace();
         });
 
         return builder;
     }
 
-    private static ITupleSpace GetTupleSpace(this IGrainFactory factory) => (ITupleSpace)factory.GetGrain(typeof(TupleSpaceGrain), Guid.Empty);
+    private static void AddTupleSpace(this IServiceCollection services) =>
+        services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(TupleSpaceGrain), Guid.Empty));
 }
 

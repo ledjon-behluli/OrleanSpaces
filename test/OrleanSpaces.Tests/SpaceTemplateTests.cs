@@ -14,7 +14,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Single_Object()
+    public void SpaceTemplate_Should_Be_Created_On_Object()
     {
         SpaceTemplate tuple = SpaceTemplate.Create("a");
 
@@ -23,7 +23,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Single_SpaceUnit()
+    public void SpaceTemplate_Should_Be_Created_On_SpaceUnit()
     {
         SpaceTemplate tuple = SpaceTemplate.Create(SpaceUnit.Null);
 
@@ -32,7 +32,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Single_Type()
+    public void SpaceTemplate_Should_Be_Created_On_Type()
     {
         SpaceTemplate tuple = SpaceTemplate.Create(typeof(int));
 
@@ -41,7 +41,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void ArgumentNullException_Should_Be_Thrown_On_Null_Object()
+    public void ArgumentNullException_Should_Be_Thrown_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
     }

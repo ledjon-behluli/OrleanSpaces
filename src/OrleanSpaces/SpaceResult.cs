@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OrleanSpaces;
+﻿namespace OrleanSpaces;
 
 [Serializable]
 public readonly struct SpaceResult

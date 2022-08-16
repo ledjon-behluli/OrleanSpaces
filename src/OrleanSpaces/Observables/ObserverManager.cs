@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace OrleanSpaces.Observables;
 
-internal sealed class SpaceObserverManager : IEnumerable<ISpaceObserver>
+internal sealed class ObserverManager : IEnumerable<ISpaceObserver>
 {
     private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers;
 
-    public SpaceObserverManager()
+    public ObserverManager()
     {
         observers = new ConcurrentDictionary<ISpaceObserver, DateTime>();
         GetDateTime = () => DateTime.UtcNow;

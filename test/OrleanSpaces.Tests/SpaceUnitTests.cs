@@ -69,7 +69,7 @@ public class SpaceUnitTests
         {
             new object[] {new object(), false},
             new object[] {"", false},
-            new object[] {"()", false},
+            new object[] {"NULL", false},
             new object[] {null, false},
             new object[] {new Uri("https://www.google.com"), false},
             new object[] {new SpaceUnit(), true},
