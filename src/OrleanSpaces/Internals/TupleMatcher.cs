@@ -1,4 +1,6 @@
-﻿namespace OrleanSpaces;
+﻿using OrleanSpaces.Types;
+
+namespace OrleanSpaces.Internals;
 
 internal static class TupleMatcher
 {
@@ -13,7 +15,7 @@ internal static class TupleMatcher
 
         for (int i = 0; i < tuple.Length; i++)
         {
-            if (template[i] is SpaceUnit)
+            if (template[i] is NullTuple)
             {
                 result = true;
             }

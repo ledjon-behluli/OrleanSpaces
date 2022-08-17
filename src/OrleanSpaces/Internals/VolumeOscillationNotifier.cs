@@ -1,13 +1,13 @@
 ﻿using Orleans;
-using OrleanSpaces.Observables;
+using OrleanSpaces.Types;
 
-namespace OrleanSpaces.Filters;
+namespace OrleanSpaces.Internals;
 
-internal sealed class SpaceOscillationNotifier : IIncomingGrainCallFilter
+internal class VolumeOscillationNotifier : IIncomingGrainCallFilter
 {
     private readonly ObserverManager manager;
 
-    public SpaceOscillationNotifier(ObserverManager manager)
+    public VolumeOscillationNotifier(ObserverManager manager)
     {
         this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
     }
@@ -16,21 +16,21 @@ internal sealed class SpaceOscillationNotifier : IIncomingGrainCallFilter
     {
         await context.Invoke();
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ITupleSpace.Write)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.Write)))
         {
             manager.Broadcast(observer => observer.OnExpansion());
             return;
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ITupleSpace.Extract)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.Extract)))
         {
             manager.Broadcast(observer => observer.OnContraction());
             return;
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ITupleSpace.TryExtract)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.TryExtract)))
         {
-            if (context.Result is SpaceResult spaceResult)
+            if (context.Result is TupleResult spaceResult)
             {
                 if (spaceResult.Result)
                 {

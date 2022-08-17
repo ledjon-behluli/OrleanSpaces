@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Observables;
+namespace OrleanSpaces.Internals;
 
-internal sealed class ObserverManager : IEnumerable<ISpaceObserver>
+internal class ObserverManager : IEnumerable<ISpaceObserver>
 {
     private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers;
 
@@ -16,11 +16,6 @@ internal sealed class ObserverManager : IEnumerable<ISpaceObserver>
     public Func<DateTime> GetDateTime { get; set; }
     public TimeSpan ExpirationDuration { get; set; }
     public int Count => observers.Count;
-
-    public void Clear()
-    {
-        observers.Clear();
-    }
 
     public bool IsSubscribed(ISpaceObserver observer)
     {
@@ -48,6 +43,7 @@ internal sealed class ObserverManager : IEnumerable<ISpaceObserver>
             {
                 defunct ??= new List<ISpaceObserver>();
                 defunct.Add(observer.Key);
+
                 continue;
             }
 
@@ -61,28 +57,6 @@ internal sealed class ObserverManager : IEnumerable<ISpaceObserver>
                 notification(observer.Key);
             }
             catch (Exception)
-            {
-                defunct ??= new List<ISpaceObserver>();
-                defunct.Add(observer.Key);
-            }
-        }
-
-        if (defunct != default(List<ISpaceObserver>))
-        {
-            foreach (var observer in defunct)
-            {
-                observers.Remove(observer, out _);
-            }
-        }
-    }
-
-    public void ClearExpired()
-    {
-        var now = GetDateTime();
-        var defunct = default(List<ISpaceObserver>);
-        foreach (var observer in observers)
-        {
-            if (observer.Value + ExpirationDuration < now)
             {
                 defunct ??= new List<ISpaceObserver>();
                 defunct.Add(observer.Key);

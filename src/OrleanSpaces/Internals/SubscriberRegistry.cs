@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace OrleanSpaces.Observables;
+namespace OrleanSpaces.Internals;
 
-internal sealed class SubscriberRegistry
+internal class SubscriberRegistry
 {
     private readonly ILogger<SubscriberRegistry> logger;
     private readonly ObserverManager manager;
@@ -20,7 +20,7 @@ internal sealed class SubscriberRegistry
         if (!manager.IsSubscribed(observer))
         {
             manager.Subscribe(observer);
-            logger.LogInformation($"Subscribed: {observer.GetType().FullName}");
+            logger.LogInformation($"Subscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
         }
 
         return Task.CompletedTask;
@@ -31,7 +31,7 @@ internal sealed class SubscriberRegistry
         if (manager.IsSubscribed(observer))
         {
             manager.Unsubscribe(observer);
-            logger.LogInformation($"Unsubscribed: {observer.GetType().FullName}");
+            logger.LogInformation($"Unsubscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
         }
 
         return Task.CompletedTask;

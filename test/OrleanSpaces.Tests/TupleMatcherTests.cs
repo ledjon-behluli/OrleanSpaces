@@ -1,4 +1,5 @@
-﻿
+﻿using OrleanSpaces.Types;
+
 namespace OrleanSpaces.Tests;
 
 public class TupleMatcherTests
@@ -53,12 +54,12 @@ public class TupleMatcherTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnValues()
     {
-        SpaceTemplate template1 = SpaceTemplate.Create((1, "a", SpaceUnit.Null));
-        SpaceTemplate template2 = SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f));
-        SpaceTemplate template3 = SpaceTemplate.Create((1, SpaceUnit.Null, SpaceUnit.Null));
-        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, "a", 1.5f));
-        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, 1.5f));
-        SpaceTemplate template6 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template1 = SpaceTemplate.Create((1, "a", NullTuple.Value));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, NullTuple.Value, 1.5f));
+        SpaceTemplate template3 = SpaceTemplate.Create((1, NullTuple.Value, NullTuple.Value));
+        SpaceTemplate template4 = SpaceTemplate.Create((NullTuple.Value, "a", 1.5f));
+        SpaceTemplate template5 = SpaceTemplate.Create((NullTuple.Value, NullTuple.Value, 1.5f));
+        SpaceTemplate template6 = SpaceTemplate.Create((NullTuple.Value, NullTuple.Value, NullTuple.Value));
 
         Assert.True(TupleMatcher.IsMatch(tuple, template1));
         Assert.True(TupleMatcher.IsMatch(tuple, template2));
@@ -106,12 +107,12 @@ public class TupleMatcherTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnTypes()
     {
-        SpaceTemplate template1 = SpaceTemplate.Create((typeof(int), typeof(string), SpaceUnit.Null));
-        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, typeof(float)));
-        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, SpaceUnit.Null));
-        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, typeof(string), typeof(float)));
-        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, typeof(float)));
-        SpaceTemplate template6 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template1 = SpaceTemplate.Create((typeof(int), typeof(string), NullTuple.Value));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), NullTuple.Value, typeof(float)));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), NullTuple.Value, NullTuple.Value));
+        SpaceTemplate template4 = SpaceTemplate.Create((NullTuple.Value, typeof(string), typeof(float)));
+        SpaceTemplate template5 = SpaceTemplate.Create((NullTuple.Value, NullTuple.Value, typeof(float)));
+        SpaceTemplate template6 = SpaceTemplate.Create((NullTuple.Value, NullTuple.Value, NullTuple.Value));
 
         Assert.True(TupleMatcher.IsMatch(tuple, template1));
         Assert.True(TupleMatcher.IsMatch(tuple, template2));
@@ -158,11 +159,11 @@ public class TupleMatcherTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnMixed()
     {
-        SpaceTemplate template1 = SpaceTemplate.Create((1, SpaceUnit.Null, typeof(float)));
-        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), "a", SpaceUnit.Null));
-        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, SpaceUnit.Null));
-        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, typeof(string), 1.5f));
-        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, "a", typeof(float)));
+        SpaceTemplate template1 = SpaceTemplate.Create((1, NullTuple.Value, typeof(float)));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), "a", NullTuple.Value));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), NullTuple.Value, NullTuple.Value));
+        SpaceTemplate template4 = SpaceTemplate.Create((NullTuple.Value, typeof(string), 1.5f));
+        SpaceTemplate template5 = SpaceTemplate.Create((NullTuple.Value, "a", typeof(float)));
 
         Assert.True(TupleMatcher.IsMatch(tuple, template1));
         Assert.True(TupleMatcher.IsMatch(tuple, template2));

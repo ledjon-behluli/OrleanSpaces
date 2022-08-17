@@ -1,4 +1,7 @@
-﻿namespace OrleanSpaces.Tests;
+﻿using OrleanSpaces.Exceptions;
+using OrleanSpaces.Types;
+
+namespace OrleanSpaces.Tests;
 
 public class SpaceTemplateTests
 {
@@ -25,10 +28,10 @@ public class SpaceTemplateTests
     [Fact]
     public void SpaceTemplate_Should_Be_Created_On_SpaceUnit()
     {
-        SpaceTemplate tuple = SpaceTemplate.Create(SpaceUnit.Null);
+        SpaceTemplate tuple = SpaceTemplate.Create(NullTuple.Value);
 
         Assert.Equal(1, tuple.Length);
-        Assert.Equal(SpaceUnit.Null, tuple[0]);
+        Assert.Equal(NullTuple.Value, tuple[0]);
     }
 
     [Fact]
@@ -41,28 +44,28 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void ArgumentNullException_Should_Be_Thrown_On_Null()
+    public void Exception_Should_Be_Thrown_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
     }
 
     [Fact]
-    public void OrleanSpacesException_Should_Be_Thrown_On_Empty_ValueTuple()
+    public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
     {
-        Assert.Throws<OrleanSpacesException>(() => SpaceTemplate.Create(new ValueTuple()));
+        Assert.Throws<TupleFieldLengthException>(() => SpaceTemplate.Create(new ValueTuple()));
     }
 
     [Fact]
     public void Exception_Should_Not_Be_Thrown_If_Tuple_Contains_SpaceUnit()
     {
-        var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", SpaceUnit.Null)));
+        var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", NullTuple.Value)));
         Assert.Null(expection);
     }
 
     [Fact]
     public void Exception_Should_Not_Be_Thrown_If_Tuple_Contains_Types()
     {
-        var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), SpaceUnit.Null)));
+        var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), NullTuple.Value)));
         Assert.Null(expection);
     }
 }

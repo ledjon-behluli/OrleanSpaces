@@ -1,6 +1,6 @@
 ﻿using Orleans;
 
-namespace OrleanSpaces.Observables;
+namespace OrleanSpaces;
 
 public interface ISpaceObserver : IGrainObserver
 {

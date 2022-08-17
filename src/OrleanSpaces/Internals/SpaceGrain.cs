@@ -1,14 +1,20 @@
 ﻿using Orleans;
 using Orleans.Runtime;
+using OrleanSpaces.Types;
 
-namespace OrleanSpaces;
+namespace OrleanSpaces.Internals;
 
-internal sealed class TupleSpaceGrain : Grain, ITupleSpace
+internal class SpaceGrain : Grain, ISpaceGrain,
+    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor
 {
-    private readonly IPersistentState<TupleSpaceState> space;
+    private readonly TupleFunctionSerializer serializer;
+    private readonly IPersistentState<SpaceState> space;
 
-    public TupleSpaceGrain([PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
+    public SpaceGrain(
+        TupleFunctionSerializer serializer,
+        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
     {
+        this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
@@ -18,12 +24,32 @@ internal sealed class TupleSpaceGrain : Grain, ITupleSpace
         await space.WriteStateAsync();
     }
 
-    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
+    public Task Evaluate(TupleFunction @delegate) => Task.CompletedTask;
+
+    public async Task Execute(byte[] serializedFunction)
     {
-        throw new System.NotImplementedException();
+        TupleFunction? function = serializer.Deserialize(serializedFunction);
+        if (function != null)
+        {
+            object result = function.DynamicInvoke(this);
+            if (result is SpaceTuple tuple)
+            {
+                await Write(tuple);
+            }
+        }
     }
 
-    public ValueTask<SpaceResult> TryPeek(SpaceTemplate template)
+    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
+    {
+        throw new NotImplementedException();
+    }
+
+    SpaceTuple ISyncSpaceProvider.Peek(SpaceTemplate template)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask<TupleResult> TryPeek(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -31,19 +57,19 @@ internal sealed class TupleSpaceGrain : Grain, ITupleSpace
         {
             if (TupleMatcher.IsMatch(tuple, template))
             {
-                return new ValueTask<SpaceResult>(new SpaceResult(tuple));
+                return new ValueTask<TupleResult>(new TupleResult(tuple));
             }
         }
 
-        return new(SpaceResult.Empty);
+        return new(TupleResult.Empty);
     }
 
     public Task<SpaceTuple> Extract(SpaceTemplate template)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
-    public async Task<SpaceResult> TryExtract(SpaceTemplate template)
+    public async Task<TupleResult> TryExtract(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -58,7 +84,7 @@ internal sealed class TupleSpaceGrain : Grain, ITupleSpace
             }
         }
 
-        return SpaceResult.Empty;
+        return TupleResult.Empty;
     }
 
     public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)
