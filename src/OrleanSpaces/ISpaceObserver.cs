@@ -1,5 +1,4 @@
 ﻿using Orleans;
-
 namespace OrleanSpaces;
 
 public interface ISpaceObserver : IGrainObserver

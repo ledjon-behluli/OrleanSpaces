@@ -1,76 +1,53 @@
-﻿using Orleans;
+﻿using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Runtime;
 using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
-internal class SpaceGrain : Grain, IGrainWithGuidKey,
-    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor
+internal partial class SpaceGrain : Grain, IGrainWithGuidKey,
+    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor, ISubscriberRegistry
 {
+    private readonly ObserverManager manager;
     private readonly TupleFunctionSerializer serializer;
+    private readonly ILogger<SpaceGrain> logger;
     private readonly IPersistentState<SpaceState> space;
 
     public SpaceGrain(
+        ObserverManager manager,
         TupleFunctionSerializer serializer,
+        ILogger<SpaceGrain> logger,
         [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
     {
+        this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    public async Task Write(SpaceTuple tuple)
+    #region ISpaceProvider
+
+    public async Task WriteAsync(SpaceTuple tuple)
     {
         space.State.Tuples.Add(tuple);
         await space.WriteStateAsync();
     }
 
-    public Task Evaluate(TupleFunction @delegate) => Task.CompletedTask;
+    public Task EvaluateAsync(TupleFunction @delegate) => Task.CompletedTask;
 
-    public async Task Execute(byte[] serializedFunction)
-    {
-        TupleFunction? function = serializer.Deserialize(serializedFunction);
-        if (function != null)
-        {
-            object result = function.DynamicInvoke(this);
-            if (result is SpaceTuple tuple)
-            {
-                await Write(tuple);
-            }
-        }
-    }
-
-    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
+    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
         throw new NotImplementedException();
     }
 
-    TupleResult ISyncSpaceProvider.TryPeek(SpaceTemplate template)
-        => TryPeekInternal(template);
+    public ValueTask<TupleResult> TryPeekAsync(SpaceTemplate template) => new(TryPeekInternal(template));
 
-    public ValueTask<TupleResult> TryPeek(SpaceTemplate template)
-        => new(TryPeekInternal(template));
-
-    private TupleResult TryPeekInternal(SpaceTemplate template)
-    {
-        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
-
-        foreach (var tuple in tuples)
-        {
-            if (TupleMatcher.IsMatch(tuple, template))
-            {
-                return new TupleResult(tuple);
-            }
-        }
-
-        return TupleResult.Empty;
-    }
-
-    public Task<SpaceTuple> Extract(SpaceTemplate template)
+    public Task<SpaceTuple> ExtractAsync(SpaceTemplate template)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TupleResult> TryExtract(SpaceTemplate template)
+    public async Task<TupleResult> TryExtractAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -88,7 +65,79 @@ internal class SpaceGrain : Grain, IGrainWithGuidKey,
         return TupleResult.Empty;
     }
 
-    public IEnumerable<SpaceTuple> Scan(SpaceTemplate template = default)
+    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template = default)
+    {
+        List<SpaceTuple> results = new();
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+        foreach (var tuple in tuples)
+        {
+            if (TupleMatcher.IsMatch(tuple, template))
+            {
+                results.Add(tuple);
+            }
+        }
+
+        return new(results);
+    }
+
+    public ValueTask<int> CountAsync() => new(space.State.Tuples.Count);
+
+    public ValueTask<int> CountAsync(SpaceTemplate template) =>
+        new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
+
+    #endregion
+
+    #region ISyncSpaceProvider
+
+    public TupleResult TryPeek(SpaceTemplate template) => TryPeekInternal(template);
+
+    #endregion
+
+    #region ITupleFunctionExecutor
+
+    public async Task ExecuteAsync(byte[] serializedFunction)
+    {
+        TupleFunction? function = serializer.Deserialize(serializedFunction);
+        if (function != null)
+        {
+            object result = function.DynamicInvoke(this);
+            if (result is SpaceTuple tuple)
+            {
+                await WriteAsync(tuple);
+            }
+        }
+    }
+
+    #endregion
+
+    #region ISubscriberRegistry
+
+    public Task AddAsync(ISpaceObserver observer)
+    {
+        if (!manager.IsSubscribed(observer))
+        {
+            manager.Subscribe(observer);
+            logger.LogInformation($"Subscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveAsync(ISpaceObserver observer)
+    {
+        if (manager.IsSubscribed(observer))
+        {
+            manager.Unsubscribe(observer);
+            logger.LogInformation($"Unsubscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    private TupleResult TryPeekInternal(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -96,13 +145,10 @@ internal class SpaceGrain : Grain, IGrainWithGuidKey,
         {
             if (TupleMatcher.IsMatch(tuple, template))
             {
-                yield return tuple;
+                return new TupleResult(tuple);
             }
         }
+
+        return TupleResult.Empty;
     }
-
-    public ValueTask<int> Count() => new(space.State.Tuples.Count);
-
-    public ValueTask<int> Count(SpaceTemplate template) =>
-        new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
 }

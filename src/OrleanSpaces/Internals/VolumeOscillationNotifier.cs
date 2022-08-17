@@ -16,19 +16,19 @@ internal class VolumeOscillationNotifier : IIncomingGrainCallFilter
     {
         await context.Invoke();
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.Write)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.WriteAsync)))
         {
             manager.Broadcast(observer => observer.OnExpansion());
             return;
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.Extract)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.ExtractAsync)))
         {
             manager.Broadcast(observer => observer.OnContraction());
             return;
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.TryExtract)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.TryExtractAsync)))
         {
             if (context.Result is TupleResult spaceResult)
             {

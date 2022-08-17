@@ -2,5 +2,5 @@
 
 internal interface ITupleFunctionExecutor
 {
-    Task Execute(byte[] serializedFunction);
+    Task ExecuteAsync(byte[] serializedFunction);
 }

@@ -2,12 +2,12 @@
 
 namespace OrleanSpaces.Internals;
 
-internal class TupleFunctionExecuter : IOutgoingGrainCallFilter
+internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
 {
     private readonly ITupleFunctionExecutor executor;
     private readonly TupleFunctionSerializer serializer;
 
-    public TupleFunctionExecuter(
+    public TupleFunctionEvaluator(
         ITupleFunctionExecutor executor,
         TupleFunctionSerializer serializer)
     {
@@ -17,14 +17,14 @@ internal class TupleFunctionExecuter : IOutgoingGrainCallFilter
 
     public async Task Invoke(IOutgoingGrainCallContext context)
     {
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.Evaluate)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.EvaluateAsync)))
         {
             if (context.Arguments.Length > 0 &&
                 context.Arguments[0] != null &&
                 context.Arguments[0] is TupleFunction function)
             {
                 var serializedFunction = serializer.Serialize(function);
-                await executor.Execute(serializedFunction);
+                await executor.ExecuteAsync(serializedFunction);
 
                 return;
             }
