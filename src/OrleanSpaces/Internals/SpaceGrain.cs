@@ -4,7 +4,7 @@ using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
-internal class SpaceGrain : Grain, ISpaceGrain,
+internal class SpaceGrain : Grain, IGrainWithGuidKey,
     ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor
 {
     private readonly TupleFunctionSerializer serializer;
@@ -44,12 +44,13 @@ internal class SpaceGrain : Grain, ISpaceGrain,
         throw new NotImplementedException();
     }
 
-    SpaceTuple ISyncSpaceProvider.Peek(SpaceTemplate template)
-    {
-        throw new NotImplementedException();
-    }
+    TupleResult ISyncSpaceProvider.TryPeek(SpaceTemplate template)
+        => TryPeekInternal(template);
 
     public ValueTask<TupleResult> TryPeek(SpaceTemplate template)
+        => new(TryPeekInternal(template));
+
+    private TupleResult TryPeekInternal(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -57,11 +58,11 @@ internal class SpaceGrain : Grain, ISpaceGrain,
         {
             if (TupleMatcher.IsMatch(tuple, template))
             {
-                return new ValueTask<TupleResult>(new TupleResult(tuple));
+                return new TupleResult(tuple);
             }
         }
 
-        return new(TupleResult.Empty);
+        return TupleResult.Empty;
     }
 
     public Task<SpaceTuple> Extract(SpaceTemplate template)

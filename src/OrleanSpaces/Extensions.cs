@@ -21,11 +21,11 @@ public static class Extensions
 
             services.AddSingleton<IOutgoingGrainCallFilter, TupleFunctionExecuter>();
 
-            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain<ISpaceGrain>(Guid.Empty));
+            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(SpaceGrain), Guid.Empty));
 
-            services.AddSingleton(sp => (ITupleFunctionExecutor)sp.GetRequiredService<ISpaceGrain>());
-            services.AddSingleton(sp => (ISpaceProvider)sp.GetRequiredService<ISpaceGrain>());
-            services.AddSingleton(sp => (ISyncSpaceProvider)sp.GetRequiredService<ISpaceGrain>());
+            services.AddSingleton(sp => (ITupleFunctionExecutor)sp.GetRequiredService<SpaceGrain>());
+            services.AddSingleton(sp => (ISpaceProvider)sp.GetRequiredService<SpaceGrain>());
+            services.AddSingleton(sp => (ISyncSpaceProvider)sp.GetRequiredService<SpaceGrain>());
         });
 
         return builder;
@@ -43,8 +43,6 @@ public static class Extensions
 
             services.AddSingleton<ExpressionSerializer>();
             services.AddSingleton<TupleFunctionSerializer>();
-
-            services.AddSingleton(sp => (SpaceGrain)sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(SpaceGrain), Guid.Empty));
         });
 
         return builder;
