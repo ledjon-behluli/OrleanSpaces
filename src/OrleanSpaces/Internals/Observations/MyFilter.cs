@@ -6,9 +6,9 @@ namespace OrleanSpaces.Internals.Observations;
 // TODO: Maybe add more stuff, like blovking read's here?
 internal class MyFilter : IIncomingGrainCallFilter
 {
-    private readonly ISpaceFluctuationNotifier notifier;
+    private readonly ISpaceFluctuationsNotifier notifier;
 
-    public MyFilter(ISpaceFluctuationNotifier notifier)
+    public MyFilter(ISpaceFluctuationsNotifier notifier)
     {
         this.notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
     }

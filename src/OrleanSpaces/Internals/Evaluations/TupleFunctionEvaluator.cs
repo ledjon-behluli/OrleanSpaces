@@ -4,14 +4,14 @@ namespace OrleanSpaces.Internals.Evaluations;
 
 internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
 {
-    private readonly ITupleFunctionExecutor executor;
+    private readonly IGrainFactory factory;
     private readonly TupleFunctionSerializer serializer;
 
     public TupleFunctionEvaluator(
-        ITupleFunctionExecutor executor,
+        IGrainFactory factory,
         TupleFunctionSerializer serializer)
     {
-        this.executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
     }
 
@@ -21,8 +21,10 @@ internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is TupleFunction function)
             {
-                var serializedFunction = serializer.Serialize(function);
-                await executor.ExecuteAsync(serializedFunction);
+                byte[] serializedFunction = serializer.Serialize(function);
+                ISpaceProvider provider = factory.GetSpaceProvider();
+
+                await provider.EvaluateAsync(serializedFunction);
 
                 return;
             }

@@ -1,8 +1,9 @@
-﻿using OrleanSpaces.Types;
+﻿using Orleans;
+using OrleanSpaces.Types;
 
 namespace OrleanSpaces;
 
-public interface ISpaceProvider
+public interface ISpaceProvider : IGrainWithGuidKey
 {
     /// <summary>
     /// <para>Used to write a <see cref="SpaceTuple"/> in the <see cref="ISpaceProvider"/>.</para>
@@ -10,7 +11,9 @@ public interface ISpaceProvider
     /// </summary>
     Task WriteAsync(SpaceTuple tuple);
 
-    Task EvaluateAsync(TupleFunction function);
+    Task EvaluateAsync(TupleFunction func);
+
+    internal Task EvaluateAsync(byte[] serializedFunc);
 
     /// <summary>
     /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>

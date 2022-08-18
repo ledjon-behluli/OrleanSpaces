@@ -1,8 +1,9 @@
-﻿using OrleanSpaces.Types;
+﻿using Orleans;
+using OrleanSpaces.Types;
 
 namespace OrleanSpaces;
 
-public interface ISyncSpaceProvider
+public interface ISyncSpaceProvider : IGrainWithGuidKey
 {
     SpaceTuple? TryPeek(SpaceTemplate template);
 }
