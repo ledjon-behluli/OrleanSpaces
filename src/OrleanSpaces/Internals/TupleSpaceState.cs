@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Internals;
 
 [Serializable]
-internal struct SpaceState
+internal struct TupleSpaceState
 {
     public List<SpaceTuple> Tuples { get; set; }
 }

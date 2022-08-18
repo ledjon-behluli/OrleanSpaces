@@ -5,19 +5,19 @@ using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
-internal partial class SpaceGrain : Grain, IGrainWithGuidKey,
-    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor, ISubscriberRegistry
+internal partial class TupleSpace : Grain, IGrainWithGuidKey,
+    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor, ISpaceSubscriberRegistry
 {
-    private readonly ObserverManager manager;
+    private readonly SpaceObserverManager manager;
     private readonly TupleFunctionSerializer serializer;
-    private readonly ILogger<SpaceGrain> logger;
-    private readonly IPersistentState<SpaceState> space;
+    private readonly ILogger<TupleSpace> logger;
+    private readonly IPersistentState<TupleSpaceState> space;
 
-    public SpaceGrain(
-        ObserverManager manager,
+    public TupleSpace(
+        SpaceObserverManager manager,
         TupleFunctionSerializer serializer,
-        ILogger<SpaceGrain> logger,
-        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
+        ILogger<TupleSpace> logger,
+        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
     {
         this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));

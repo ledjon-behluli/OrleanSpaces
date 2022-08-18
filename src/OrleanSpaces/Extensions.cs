@@ -19,17 +19,15 @@ public static class ClientExtensions
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(This.Assembly).WithReferences());
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<ExpressionSerializer>();
             services.AddSingleton<TupleFunctionSerializer>();
-
             services.AddSingleton<IOutgoingGrainCallFilter, TupleFunctionEvaluator>();
 
-            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(SpaceGrain), Guid.Empty));
+            services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(TupleSpace), Guid.Empty));
 
-            services.AddSingleton(sp => (ISubscriberRegistry)sp.GetRequiredService<SpaceGrain>());
-            services.AddSingleton(sp => (ITupleFunctionExecutor)sp.GetRequiredService<SpaceGrain>());
-            services.AddSingleton(sp => (ISpaceProvider)sp.GetRequiredService<SpaceGrain>());
-            services.AddSingleton(sp => (ISyncSpaceProvider)sp.GetRequiredService<SpaceGrain>());
+            services.AddSingleton(sp => (ISpaceSubscriberRegistry)sp.GetRequiredService<TupleSpace>());
+            services.AddSingleton(sp => (ITupleFunctionExecutor)sp.GetRequiredService<TupleSpace>());
+            services.AddSingleton(sp => (ISpaceProvider)sp.GetRequiredService<TupleSpace>());
+            services.AddSingleton(sp => (ISyncSpaceProvider)sp.GetRequiredService<TupleSpace>());
         });
 
         return builder;
@@ -38,7 +36,7 @@ public static class ClientExtensions
     public static async Task SubscribeAsync<TObserver>(this IClusterClient client, TObserver observer) 
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISubscriberRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceSubscriberRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
         await registry.AddAsync(observerRef);
@@ -47,7 +45,7 @@ public static class ClientExtensions
     public static async Task UnsubscribeAsync<TObserver>(this IClusterClient client, TObserver observer)
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISubscriberRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceSubscriberRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
         await registry.RemoveAsync(observerRef);
@@ -74,11 +72,8 @@ public static class HostingExtensions
 
     private static void ConfigureSiloComponents(this IServiceCollection services)
     {
-        services.AddSingleton<ObserverManager>();
-
-        services.AddSingleton<IIncomingGrainCallFilter, VolumeOscillationNotifier>();
-
-        services.AddSingleton<ExpressionSerializer>();
+        services.AddSingleton<SpaceObserverManager>();
+        services.AddSingleton<IIncomingGrainCallFilter, SpaceVolumeOscillationNotifier>();;
         services.AddSingleton<TupleFunctionSerializer>();
     }
 }

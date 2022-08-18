@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Internals;
 
-internal interface ISubscriberRegistry
+internal interface ISpaceSubscriberRegistry
 {
     Task AddAsync(ISpaceObserver observer);
     Task RemoveAsync(ISpaceObserver observer);

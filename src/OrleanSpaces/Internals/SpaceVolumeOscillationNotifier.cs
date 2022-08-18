@@ -3,11 +3,11 @@ using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
-internal class VolumeOscillationNotifier : IIncomingGrainCallFilter
+internal class SpaceVolumeOscillationNotifier : IIncomingGrainCallFilter
 {
-    private readonly ObserverManager manager;
+    private readonly SpaceObserverManager manager;
 
-    public VolumeOscillationNotifier(ObserverManager manager)
+    public SpaceVolumeOscillationNotifier(SpaceObserverManager manager)
     {
         this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
     }
@@ -32,7 +32,7 @@ internal class VolumeOscillationNotifier : IIncomingGrainCallFilter
         {
             if (context.Result is TupleResult spaceResult)
             {
-                if (spaceResult.Result)
+                if (spaceResult.Success)
                 {
                     manager.Broadcast(observer => observer.OnContraction());
                 }

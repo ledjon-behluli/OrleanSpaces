@@ -3,11 +3,11 @@ using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Internals;
 
-internal class ObserverManager : IEnumerable<ISpaceObserver>
+internal class SpaceObserverManager : IEnumerable<ISpaceObserver>
 {
     private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers;
 
-    public ObserverManager()
+    public SpaceObserverManager()
     {
         observers = new ConcurrentDictionary<ISpaceObserver, DateTime>();
         GetDateTime = () => DateTime.UtcNow;
