@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Internals.Observations;
 
-internal interface ISpaceFluctuationsNotifier
+internal interface ISpaceFluctuationNotifier
 {
     void Broadcast(Action<ISpaceObserver> action);
 }

@@ -21,6 +21,8 @@ public interface ISpaceProvider : IGrainWithGuidKey
     /// </summary>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
+    internal ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple> callback);
+
     /// <summary>
     /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "RD" primitive in the TupleSpace model.</i></para>
@@ -31,13 +33,13 @@ public interface ISpaceProvider : IGrainWithGuidKey
     /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "INP" primitive in the TupleSpace model.</i></para>
     /// </summary>
-    Task<SpaceTuple> ExtractAsync(SpaceTemplate template);
+    Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "IN" primitive in the TupleSpace model.</i></para>
     /// </summary>
-    Task<SpaceTuple?> TryExtractAsync(SpaceTemplate template);
+    Task<SpaceTuple?> TryPopAsync(SpaceTemplate template);
 
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
 

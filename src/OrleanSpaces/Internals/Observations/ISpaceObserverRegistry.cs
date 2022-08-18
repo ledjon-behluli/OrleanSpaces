@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Internals.Observations;
 
-internal interface ISpaceObserversRegistry
+internal interface ISpaceObserverRegistry
 {
     void Register(ISpaceObserver observer);
     void Deregister(ISpaceObserver observer);

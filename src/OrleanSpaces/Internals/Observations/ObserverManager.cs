@@ -3,12 +3,12 @@ using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Internals.Observations;
 
-internal class SpaceObservationsManager : ISpaceFluctuationsNotifier, ISpaceObserversRegistry
+internal class ObserverManager : ISpaceFluctuationNotifier, ISpaceObserverRegistry
 {
-    private readonly ILogger<SpaceObservationsManager> logger;
+    private readonly ILogger<ObserverManager> logger;
     private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers;
 
-    public SpaceObservationsManager(ILogger<SpaceObservationsManager> logger)
+    public ObserverManager(ILogger<ObserverManager> logger)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         observers = new ConcurrentDictionary<ISpaceObserver, DateTime>();
