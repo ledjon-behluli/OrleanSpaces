@@ -3,7 +3,7 @@ using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using OrleanSpaces.Internals.Observations;
-using OrleanSpaces.Internals.Evaluations;
+using OrleanSpaces.Internals.Functions;
 
 namespace OrleanSpaces;
 

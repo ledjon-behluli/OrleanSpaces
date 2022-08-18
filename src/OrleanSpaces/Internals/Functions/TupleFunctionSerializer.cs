@@ -2,7 +2,7 @@
 using OrleanSpaces.Types;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Internals.Evaluations;
+namespace OrleanSpaces.Internals.Functions;
 
 internal class TupleFunctionSerializer
 {
@@ -16,17 +16,17 @@ internal class TupleFunctionSerializer
         serializer.AddKnownType(typeof(SpaceTemplate));
     }
 
-    public byte[] Serialize(TupleFunction function)
+    public byte[] Serialize(Func<SpaceTuple> func)
     {
-        Expression<TupleFunction> expression = provider => function(provider);
+        Expression<Func<SpaceTuple>> expression = () => func();
         return serializer.SerializeBinary(expression);
     }
 
-    public TupleFunction? Deserialize(byte[] expression)
+    public Func<SpaceTuple>? Deserialize(byte[] expression)
     {
         if (serializer.DeserializeBinary(expression) is LambdaExpression lambda)
         {
-            return lambda.Compile() as TupleFunction;
+            return lambda.Compile() as Func<SpaceTuple>;
         }
 
         return null;

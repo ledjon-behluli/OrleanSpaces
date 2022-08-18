@@ -11,7 +11,7 @@ public interface ISpaceProvider : IGrainWithGuidKey
     /// </summary>
     Task WriteAsync(SpaceTuple tuple);
 
-    Task EvaluateAsync(TupleFunction func);
+    Task EvaluateAsync(Func<SpaceTuple> func);
 
     internal Task EvaluateAsync(byte[] serializedFunc);
 

@@ -1,11 +1,11 @@
 ﻿using Orleans;
 using Orleans.Runtime;
-using OrleanSpaces.Internals.Evaluations;
+using OrleanSpaces.Internals.Functions;
 using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
-internal partial class TupleSpace : Grain, ISpaceProvider, ISyncSpaceProvider
+internal partial class TupleSpace : Grain, ISpaceProvider
 {
     private readonly TupleFunctionSerializer serializer;
     private readonly IPersistentState<TupleSpaceState> space;
@@ -24,22 +24,20 @@ internal partial class TupleSpace : Grain, ISpaceProvider, ISyncSpaceProvider
         await space.WriteStateAsync();
     }
 
-    public Task EvaluateAsync(TupleFunction func) => Task.CompletedTask;
+    public Task EvaluateAsync(Func<SpaceTuple> func) => Task.CompletedTask;
 
     async Task ISpaceProvider.EvaluateAsync(byte[] serializedFunc)
     {
-        TupleFunction? function = serializer.Deserialize(serializedFunc);
+        Func<SpaceTuple>? function = serializer.Deserialize(serializedFunc);
         if (function != null)
         {
-            object result = function.DynamicInvoke(this);
+            object result = function.DynamicInvoke();
             if (result is SpaceTuple tuple)
             {
                 await WriteAsync(tuple);
             }
         }
     }
-
-    public SpaceTuple? TryPeek(SpaceTemplate template) => default;
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {

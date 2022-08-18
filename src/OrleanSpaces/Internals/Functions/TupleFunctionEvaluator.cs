@@ -1,6 +1,7 @@
 ﻿using Orleans;
+using OrleanSpaces.Types;
 
-namespace OrleanSpaces.Internals.Evaluations;
+namespace OrleanSpaces.Internals.Functions;
 
 internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
 {
@@ -19,12 +20,12 @@ internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
     {
         if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.EvaluateAsync)))
         {
-            if (context.Arguments.Length > 0 && context.Arguments[0] is TupleFunction function)
+            if (context.Arguments.Length > 0 && context.Arguments[0] is Func<SpaceTuple> func)
             {
-                byte[] serializedFunction = serializer.Serialize(function);
+                byte[] serializedFunc = serializer.Serialize(func);
                 ISpaceProvider provider = factory.GetSpaceProvider();
 
-                await provider.EvaluateAsync(serializedFunction);
+                await provider.EvaluateAsync(serializedFunc);
 
                 return;
             }
