@@ -2,7 +2,7 @@
 using OrleanSpaces.Types;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Internals;
+namespace OrleanSpaces.Internals.Evaluations;
 
 internal class TupleFunctionSerializer
 {

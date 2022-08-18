@@ -1,27 +1,21 @@
-﻿using Microsoft.Extensions.Logging;
-using Orleans;
+﻿using Orleans;
 using Orleans.Runtime;
+using OrleanSpaces.Internals.Evaluations;
 using OrleanSpaces.Types;
 
 namespace OrleanSpaces.Internals;
 
 internal partial class TupleSpace : Grain, IGrainWithGuidKey,
-    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor, ISpaceSubscriberRegistry
+    ISpaceProvider, ISyncSpaceProvider, ITupleFunctionExecutor
 {
-    private readonly SpaceObserverManager manager;
     private readonly TupleFunctionSerializer serializer;
-    private readonly ILogger<TupleSpace> logger;
     private readonly IPersistentState<TupleSpaceState> space;
 
     public TupleSpace(
-        SpaceObserverManager manager,
         TupleFunctionSerializer serializer,
-        ILogger<TupleSpace> logger,
         [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
     {
-        this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
@@ -40,14 +34,14 @@ internal partial class TupleSpace : Grain, IGrainWithGuidKey,
         throw new NotImplementedException();
     }
 
-    public ValueTask<TupleResult> TryPeekAsync(SpaceTemplate template) => new(TryPeekInternal(template));
+    public ValueTask<SpaceTuple?> TryPeekAsync(SpaceTemplate template) => new(TryPeekInternal(template));
 
     public Task<SpaceTuple> ExtractAsync(SpaceTemplate template)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<TupleResult> TryExtractAsync(SpaceTemplate template)
+    public async Task<SpaceTuple?> TryExtractAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -58,11 +52,11 @@ internal partial class TupleSpace : Grain, IGrainWithGuidKey,
                 space.State.Tuples.Remove(tuple);
                 await space.WriteStateAsync();
 
-                return new(tuple);
+                return tuple;
             }
         }
 
-        return TupleResult.Empty;
+        return null;
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template = default)
@@ -90,7 +84,7 @@ internal partial class TupleSpace : Grain, IGrainWithGuidKey,
 
     #region ISyncSpaceProvider
 
-    public TupleResult TryPeek(SpaceTemplate template) => TryPeekInternal(template);
+    public SpaceTuple? TryPeek(SpaceTemplate template) => TryPeekInternal(template);
 
     #endregion
 
@@ -111,33 +105,7 @@ internal partial class TupleSpace : Grain, IGrainWithGuidKey,
 
     #endregion
 
-    #region ISubscriberRegistry
-
-    public Task AddAsync(ISpaceObserver observer)
-    {
-        if (!manager.IsSubscribed(observer))
-        {
-            manager.Subscribe(observer);
-            logger.LogInformation($"Subscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public Task RemoveAsync(ISpaceObserver observer)
-    {
-        if (manager.IsSubscribed(observer))
-        {
-            manager.Unsubscribe(observer);
-            logger.LogInformation($"Unsubscribed: '{observer.GetType().FullName}'. Total number of subscribers: {manager.Count}");
-        }
-
-        return Task.CompletedTask;
-    }
-
-    #endregion
-
-    private TupleResult TryPeekInternal(SpaceTemplate template)
+    private SpaceTuple? TryPeekInternal(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -145,10 +113,10 @@ internal partial class TupleSpace : Grain, IGrainWithGuidKey,
         {
             if (TupleMatcher.IsMatch(tuple, template))
             {
-                return new TupleResult(tuple);
+                return tuple;
             }
         }
 
-        return TupleResult.Empty;
+        return null;
     }
 }

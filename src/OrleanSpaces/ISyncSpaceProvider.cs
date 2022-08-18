@@ -4,5 +4,5 @@ namespace OrleanSpaces;
 
 public interface ISyncSpaceProvider
 {
-    TupleResult TryPeek(SpaceTemplate template);
+    SpaceTuple? TryPeek(SpaceTemplate template);
 }

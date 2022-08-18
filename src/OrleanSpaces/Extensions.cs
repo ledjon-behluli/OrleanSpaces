@@ -1,9 +1,10 @@
 ﻿using Orleans;
 using Orleans.Hosting;
-using Serialize.Linq.Serializers;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Internals;
 using System.Reflection;
+using OrleanSpaces.Internals.Observations;
+using OrleanSpaces.Internals.Evaluations;
 
 namespace OrleanSpaces;
 
@@ -24,7 +25,7 @@ public static class ClientExtensions
 
             services.AddSingleton(sp => sp.GetRequiredService<IGrainFactory>().GetGrain(typeof(TupleSpace), Guid.Empty));
 
-            services.AddSingleton(sp => (ISpaceSubscriberRegistry)sp.GetRequiredService<TupleSpace>());
+            services.AddSingleton(sp => (ISpaceObserverRegistry)sp.GetRequiredService<TupleSpace>());
             services.AddSingleton(sp => (ITupleFunctionExecutor)sp.GetRequiredService<TupleSpace>());
             services.AddSingleton(sp => (ISpaceProvider)sp.GetRequiredService<TupleSpace>());
             services.AddSingleton(sp => (ISyncSpaceProvider)sp.GetRequiredService<TupleSpace>());
@@ -36,19 +37,19 @@ public static class ClientExtensions
     public static async Task SubscribeAsync<TObserver>(this IClusterClient client, TObserver observer) 
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISpaceSubscriberRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceObserverRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
-        await registry.AddAsync(observerRef);
+        registry.Register(observerRef);
     }
 
     public static async Task UnsubscribeAsync<TObserver>(this IClusterClient client, TObserver observer)
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISpaceSubscriberRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceObserverRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
-        await registry.RemoveAsync(observerRef);
+        registry.Deregister(observerRef);
     }
 }
 
@@ -72,8 +73,8 @@ public static class HostingExtensions
 
     private static void ConfigureSiloComponents(this IServiceCollection services)
     {
-        services.AddSingleton<SpaceObserverManager>();
-        services.AddSingleton<IIncomingGrainCallFilter, SpaceVolumeOscillationNotifier>();;
+        services.AddSingleton<SpaceObservationManager>();
+        services.AddSingleton<IIncomingGrainCallFilter, MyFilter>();;
         services.AddSingleton<TupleFunctionSerializer>();
     }
 }

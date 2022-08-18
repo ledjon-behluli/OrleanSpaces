@@ -22,7 +22,7 @@ public interface ISpaceProvider
     /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "RD" primitive in the TupleSpace model.</i></para>
     /// </summary>
-    ValueTask<TupleResult> TryPeekAsync(SpaceTemplate template);
+    ValueTask<SpaceTuple?> TryPeekAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
@@ -34,7 +34,7 @@ public interface ISpaceProvider
     /// <para>Used to read and remove a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "IN" primitive in the TupleSpace model.</i></para>
     /// </summary>
-    Task<TupleResult> TryExtractAsync(SpaceTemplate template);
+    Task<SpaceTuple?> TryExtractAsync(SpaceTemplate template);
 
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
 

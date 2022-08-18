@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Internals;
+﻿namespace OrleanSpaces.Internals.Evaluations;
 
 internal interface ITupleFunctionExecutor
 {
