@@ -1,8 +1,8 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Internals.Observations;
 using OrleanSpaces.Internals.Functions;
+using OrleanSpaces.Internals.Agents;
 
 namespace OrleanSpaces;
 
@@ -26,7 +26,7 @@ public static class ClientExtensions
     public static async Task SubscribeAsync<TObserver>(this IClusterClient client, TObserver observer) 
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISpaceObserverRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceAgentRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
         registry.Register(observerRef);
@@ -35,7 +35,7 @@ public static class ClientExtensions
     public static async Task UnsubscribeAsync<TObserver>(this IClusterClient client, TObserver observer)
         where TObserver : ISpaceObserver
     {
-        var registry = client.ServiceProvider.GetRequiredService<ISpaceObserverRegistry>();
+        var registry = client.ServiceProvider.GetRequiredService<ISpaceAgentRegistry>();
         var observerRef = await client.CreateObjectReference<TObserver>(observer);
 
         registry.Deregister(observerRef);
@@ -64,8 +64,8 @@ public static class HostingExtensions
     {
         services.AddSingleton<TupleFunctionSerializer>();
 
-        services.AddSingleton<ISpaceFluctuationNotifier, ObserverManager>();
-        services.AddSingleton<ISpaceObserverRegistry, ObserverManager>();
+        services.AddSingleton<ISpaceAgentNotifier, SpaceAgentManager>();
+        services.AddSingleton<ISpaceAgentRegistry, SpaceAgentManager>();
         services.AddSingleton<IIncomingGrainCallFilter, MyFilter>();
     }
 }

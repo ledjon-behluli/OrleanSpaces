@@ -21,8 +21,6 @@ public interface ISpaceProvider : IGrainWithGuidKey
     /// </summary>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
-    internal ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple> callback);
-
     /// <summary>
     /// <para>Used to read a <see cref="SpaceTuple"/> from the <see cref="ISpaceProvider"/>.</para>
     /// <para><i>Analogous to the "RD" primitive in the TupleSpace model.</i></para>

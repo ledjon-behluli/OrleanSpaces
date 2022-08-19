@@ -44,11 +44,6 @@ internal partial class TupleSpace : Grain, ISpaceProvider
         throw new NotImplementedException();
     }
 
-    ValueTask ISpaceProvider.PeekAsync(SpaceTemplate template, Func<SpaceTuple> callback)
-    {
-        return new();
-    }
-
     public ValueTask<SpaceTuple?> TryPeekAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
