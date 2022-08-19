@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Hosts;
+namespace OrleanSpaces.Hosts.Grains;
 
 [Serializable]
 internal struct SpaceState

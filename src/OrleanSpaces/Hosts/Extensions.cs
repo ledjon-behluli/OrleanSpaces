@@ -1,8 +1,10 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Internals.Agents;
 using OrleanSpaces.Core.Utils;
+using OrleanSpaces.Hosts.Filters;
+using OrleanSpaces.Hosts.Observers;
+using OrleanSpaces.Core.Observers;
 
 namespace OrleanSpaces.Hosts;
 
@@ -26,11 +28,11 @@ public static class Extensions
 
     private static void AddSiloComponents(this IServiceCollection services)
     {
-        services.AddSingleton<FunctionSerializer>();
+        services.AddSingleton<FuncSerializer>();
 
-        services.AddSingleton<ISpaceAgentNotifier, SpaceAgentManager>();
-        services.AddSingleton<ISpaceAgentRegistry, SpaceAgentManager>();
-        services.AddSingleton<IIncomingGrainCallFilter, MyFilter>();
+        services.AddSingleton<IObserverNotifier, ObserverManager>();
+        services.AddSingleton<IObserverRegistry, ObserverManager>();
+        services.AddSingleton<IIncomingGrainCallFilter, SpaceWriterFilter>();
     }
 }
 

@@ -4,11 +4,11 @@ using Serialize.Linq.Serializers;
 
 namespace OrleanSpaces.Core.Utils;
 
-internal class FunctionSerializer
+internal class FuncSerializer
 {
     private readonly ExpressionSerializer serializer;
 
-    public FunctionSerializer()
+    public FuncSerializer()
     {
         serializer = new ExpressionSerializer(new BinarySerializer());
 

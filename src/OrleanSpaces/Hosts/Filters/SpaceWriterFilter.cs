@@ -1,17 +1,19 @@
 ﻿using Orleans;
 using OrleanSpaces.Core;
+using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Hosts.Observers;
 
-namespace OrleanSpaces.Internals.Agents;
+namespace OrleanSpaces.Hosts.Filters;
 
-internal class MyFilter : IIncomingGrainCallFilter
+internal class SpaceWriterFilter : IIncomingGrainCallFilter
 {
-    private readonly ISpaceAgent agent;
-    private readonly ISpaceAgentNotifier notifier;
+    private readonly ISpaceObserver agent;
+    private readonly IObserverNotifier notifier;
 
-    public MyFilter(
-        ISpaceAgent agent,
-        ISpaceAgentNotifier notifier)
+    public SpaceWriterFilter(
+        ISpaceObserver agent,
+        IObserverNotifier notifier)
     {
         this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
         this.notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
@@ -21,20 +23,20 @@ internal class MyFilter : IIncomingGrainCallFilter
     {
         await context.Invoke();
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.WriteAsync)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceWriter.WriteAsync)))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is SpaceTuple tuple)
             {
-                notifier.Broadcast(agent => agent.OnTuple(tuple));
+                notifier.Broadcast(agent => agent.Receive(tuple));
                 return;
             }
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.EvaluateAsync)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceWriter.EvaluateAsync)))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is Func<SpaceTuple> func)
             {
-                notifier.Broadcast(agent => agent.OnTuple(func()));
+                notifier.Broadcast(agent => agent.Receive(func()));
                 return;
             }
         }
