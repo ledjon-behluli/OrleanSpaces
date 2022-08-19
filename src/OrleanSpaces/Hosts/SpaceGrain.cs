@@ -1,18 +1,19 @@
 ﻿using Orleans;
 using Orleans.Runtime;
-using OrleanSpaces.Internals.Functions;
-using OrleanSpaces.Types;
+using OrleanSpaces.Core;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Internals;
+namespace OrleanSpaces.Hosts;
 
-internal partial class TupleSpace : Grain, ISpaceProvider
+internal class SpaceGrain : Grain, ISpaceGrain
 {
-    private readonly TupleFunctionSerializer serializer;
-    private readonly IPersistentState<TupleSpaceState> space;
+    private readonly FunctionSerializer serializer;
+    private readonly IPersistentState<SpaceState> space;
 
-    public TupleSpace(
-        TupleFunctionSerializer serializer,
-        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<TupleSpaceState> space)
+    public SpaceGrain(
+        FunctionSerializer serializer,
+        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
     {
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -26,7 +27,7 @@ internal partial class TupleSpace : Grain, ISpaceProvider
 
     public Task EvaluateAsync(Func<SpaceTuple> func) => Task.CompletedTask;
 
-    async Task ISpaceProvider.EvaluateAsync(byte[] serializedFunc)
+    async Task ISpaceGrain.EvaluateAsync(byte[] serializedFunc)
     {
         Func<SpaceTuple>? function = serializer.Deserialize(serializedFunc);
         if (function != null)

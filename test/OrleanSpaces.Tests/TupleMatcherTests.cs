@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Types;
+﻿using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 
 namespace OrleanSpaces.Tests;
 

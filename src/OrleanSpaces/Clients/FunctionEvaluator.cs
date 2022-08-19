@@ -1,17 +1,18 @@
 ﻿using Orleans;
-using OrleanSpaces.Types;
-using System.Diagnostics;
+using OrleanSpaces.Core;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Internals.Functions;
+namespace OrleanSpaces.Clients;
 
-internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
+internal class FunctionEvaluator : IOutgoingGrainCallFilter
 {
     private readonly IGrainFactory factory;
-    private readonly TupleFunctionSerializer serializer;
+    private readonly FunctionSerializer serializer;
 
-    public TupleFunctionEvaluator(
+    public FunctionEvaluator(
         IGrainFactory factory,
-        TupleFunctionSerializer serializer)
+        FunctionSerializer serializer)
     {
         this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
         this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -19,25 +20,25 @@ internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
 
     public async Task Invoke(IOutgoingGrainCallContext context)
     {
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.EvaluateAsync)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.EvaluateAsync)))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is Func<SpaceTuple> func)
             {
                 byte[] serializedFunc = serializer.Serialize(func);
-                ISpaceProvider provider = factory.GetSpaceProvider();
+                ISpaceGrain provider = factory.GetSpaceProvider();
                 await provider.EvaluateAsync(serializedFunc);
 
                 return;
             }
         }
 
-        if (await TryRunNonBlockingVariants(nameof(ISpaceProvider.PeekAsync),
+        if (await TryRunNonBlockingVariants(nameof(ISpaceGrain.PeekAsync),
             context, async (sp, st) => await sp.TryPeekAsync(st)))
         {
             return;
         }
 
-        if (await TryRunNonBlockingVariants(nameof(ISpaceProvider.PopAsync),
+        if (await TryRunNonBlockingVariants(nameof(ISpaceGrain.PopAsync),
             context, async (sp, st) => await sp.TryPopAsync(st)))
         {
             return;
@@ -49,13 +50,13 @@ internal class TupleFunctionEvaluator : IOutgoingGrainCallFilter
     private async ValueTask<bool> TryRunNonBlockingVariants(
         string targetMethodName,
         IOutgoingGrainCallContext context,
-        Func<ISpaceProvider, SpaceTemplate, ValueTask<SpaceTuple?>> func)
+        Func<ISpaceGrain, SpaceTemplate, ValueTask<SpaceTuple?>> func)
     {
         if (string.Equals(context.InterfaceMethod.Name, targetMethodName))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is SpaceTemplate template)
             {
-                ISpaceProvider provider = factory.GetSpaceProvider();
+                ISpaceGrain provider = factory.GetSpaceProvider();
                 SpaceTuple? tuple = await func(provider, template);
 
                 if (tuple is SpaceTuple)

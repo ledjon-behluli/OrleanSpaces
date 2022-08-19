@@ -1,5 +1,6 @@
-﻿using OrleanSpaces.Types;
-namespace OrleanSpaces.Exceptions;
+﻿using OrleanSpaces.Core.Primitives;
+
+namespace OrleanSpaces.Core.Exceptions;
 
 public sealed class TupleFieldException : Exception
 {

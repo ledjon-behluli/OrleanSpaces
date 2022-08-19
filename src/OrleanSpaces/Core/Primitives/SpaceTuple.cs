@@ -1,29 +1,34 @@
-﻿using System.Runtime.CompilerServices;
-using OrleanSpaces.Exceptions;
+﻿using OrleanSpaces.Core.Exceptions;
+using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Types;
+namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
-public struct SpaceTemplate : ITuple
+public struct SpaceTuple : ITuple
 {
     private readonly object[] _fields;
 
     public int Length => _fields.Length;
     public object this[int index] => _fields[index];
 
-    private SpaceTemplate(params object[] fields)
+    private SpaceTuple(params object[] fields)
     {
         if (fields.Length == 0)
         {
-            throw new TupleFieldLengthException(nameof(SpaceTemplate));
+            throw new TupleFieldLengthException(nameof(SpaceTuple));
+        }
+
+        if (fields.Any(x => x is NullTuple || x is Type))
+        {
+            throw new TupleFieldException();
         }
 
         _fields = fields;
     }
 
-    public static SpaceTemplate Create(object field) => new(field);
+    public static SpaceTuple Create(object field) => new(field);
 
-    public static SpaceTemplate Create(ITuple tuple)
+    public static SpaceTuple Create(ITuple tuple)
     {
         if (tuple is null)
         {

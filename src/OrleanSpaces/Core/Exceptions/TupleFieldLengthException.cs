@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Exceptions;
+﻿namespace OrleanSpaces.Core.Exceptions;
 
 public sealed class TupleFieldLengthException : Exception
 {

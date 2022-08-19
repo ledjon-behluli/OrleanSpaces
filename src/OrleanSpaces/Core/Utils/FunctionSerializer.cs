@@ -1,14 +1,14 @@
 ﻿using System.Linq.Expressions;
-using OrleanSpaces.Types;
+using OrleanSpaces.Core.Primitives;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Internals.Functions;
+namespace OrleanSpaces.Core.Utils;
 
-internal class TupleFunctionSerializer
+internal class FunctionSerializer
 {
     private readonly ExpressionSerializer serializer;
 
-    public TupleFunctionSerializer()
+    public FunctionSerializer()
     {
         serializer = new ExpressionSerializer(new BinarySerializer());
 

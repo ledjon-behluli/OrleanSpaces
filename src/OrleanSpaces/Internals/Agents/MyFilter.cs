@@ -1,5 +1,6 @@
 ﻿using Orleans;
-using OrleanSpaces.Types;
+using OrleanSpaces.Core;
+using OrleanSpaces.Core.Primitives;
 
 namespace OrleanSpaces.Internals.Agents;
 
@@ -20,7 +21,7 @@ internal class MyFilter : IIncomingGrainCallFilter
     {
         await context.Invoke();
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.WriteAsync)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.WriteAsync)))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is SpaceTuple tuple)
             {
@@ -29,7 +30,7 @@ internal class MyFilter : IIncomingGrainCallFilter
             }
         }
 
-        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceProvider.EvaluateAsync)))
+        if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.EvaluateAsync)))
         {
             if (context.Arguments.Length > 0 && context.Arguments[0] is Func<SpaceTuple> func)
             {
