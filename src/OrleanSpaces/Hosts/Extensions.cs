@@ -2,7 +2,6 @@
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Core.Utils;
-using OrleanSpaces.Hosts.Filters;
 using OrleanSpaces.Hosts.Observers;
 using OrleanSpaces.Core.Observers;
 
@@ -32,7 +31,7 @@ public static class Extensions
 
         services.AddSingleton<IObserverNotifier, ObserverManager>();
         services.AddSingleton<IObserverRegistry, ObserverManager>();
-        services.AddSingleton<IIncomingGrainCallFilter, SpaceWriterFilter>();
+        services.AddSingleton<IIncomingGrainCallFilter, WriteInterceptor>();
     }
 }
 

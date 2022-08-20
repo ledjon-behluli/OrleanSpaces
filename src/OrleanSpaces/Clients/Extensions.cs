@@ -3,7 +3,6 @@ using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Core.Utils;
 using OrleanSpaces.Core.Observers;
-using OrleanSpaces.Clients.Filters;
 
 namespace OrleanSpaces.Clients;
 
@@ -15,8 +14,9 @@ public static class Extensions
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<FuncSerializer>();
-            services.AddSingleton<IOutgoingGrainCallFilter, SpaceWriterFilter>();
-            services.AddSingleton<IOutgoingGrainCallFilter, SpaceBlockingReaderFilter>();
+            services.AddSingleton<PromisesChannel>();
+            services.AddSingleton<IOutgoingGrainCallFilter, SpaceAgent>();
+            services.AddSingleton<IOutgoingGrainCallFilter, WriteInterceptor>();
         });
 
         return builder;
@@ -24,7 +24,7 @@ public static class Extensions
 
     public static async Task AddAgentAsync<TObserver>(this IClusterClient client)
     {
-        SpaceBlockingReaderFilter agent = new(client.ServiceProvider.GetRequiredService<IGrainFactory>());
+        SpaceAgent agent = new(client.ServiceProvider.GetRequiredService<IGrainFactory>());
         await client.SubscribeAsync(agent);
     }
 

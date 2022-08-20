@@ -1,13 +1,10 @@
 ﻿using Orleans;
 using OrleanSpaces.Core;
 using OrleanSpaces.Core.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OrleanSpaces.Clients;
 
-public abstract class BlockingReaderClient
+public class BlockingReaderClient
 {
     protected IGrainFactory Factory { get; }
 
@@ -23,5 +20,14 @@ public abstract class BlockingReaderClient
 		{
 
 		});
+	}
+}
+
+public class Tests
+{
+	[Fact]
+	public void A()
+	{
+
 	}
 }

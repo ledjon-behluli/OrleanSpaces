@@ -40,7 +40,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         }
     }
 
-    ValueTask ISpaceBlockingReader.PeekAsync(SpaceTemplate template, Action<SpaceTuple> callback)
+    ValueTask ISpaceBlockingReader.PeekAsync(SpaceTemplate template, TuplePromise promise)
     {
         throw new NotImplementedException();
     }
@@ -60,7 +60,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return default;
     }
 
-    Task ISpaceBlockingReader.PopAsync(SpaceTemplate template, Action<SpaceTuple> callback)
+    Task ISpaceBlockingReader.PopAsync(SpaceTemplate template, TuplePromise promise)
     {
         throw new NotImplementedException();
     }

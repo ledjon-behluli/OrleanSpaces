@@ -4,14 +4,14 @@ using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Hosts.Observers;
 
-namespace OrleanSpaces.Hosts.Filters;
+namespace OrleanSpaces.Hosts;
 
-internal class SpaceWriterFilter : IIncomingGrainCallFilter
+internal class WriteInterceptor : IIncomingGrainCallFilter
 {
     private readonly ISpaceObserver agent;
     private readonly IObserverNotifier notifier;
 
-    public SpaceWriterFilter(
+    public WriteInterceptor(
         ISpaceObserver agent,
         IObserverNotifier notifier)
     {

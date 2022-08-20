@@ -3,14 +3,14 @@ using OrleanSpaces.Core;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Clients.Filters;
+namespace OrleanSpaces.Clients;
 
-internal class SpaceWriterFilter : IOutgoingGrainCallFilter
+internal class WriteInterceptor : IOutgoingGrainCallFilter
 {
     private readonly IGrainFactory factory;
     private readonly FuncSerializer serializer;
 
-    public SpaceWriterFilter(
+    public WriteInterceptor(
         IGrainFactory factory,
         FuncSerializer serializer)
     {

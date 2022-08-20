@@ -4,34 +4,39 @@ using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 using System.Collections.Concurrent;
-using System.Threading.Channels;
 
-namespace OrleanSpaces.Clients.Filters;
+namespace OrleanSpaces.Clients;
 
-internal class SpaceBlockingReaderFilter : ISpaceObserver, IOutgoingGrainCallFilter
+internal interface IPromisesBuffer
 {
-    private readonly Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>();
-    private readonly ConcurrentDictionary<SpaceTemplate, NullTuple> templates = new();
+    void Buffer(TuplePromise promise);
+}
+
+internal class SpaceAgent : ISpaceObserver, IOutgoingGrainCallFilter
+{
+    private readonly PromisesChannel channel;
+    private readonly ConcurrentDictionary<SpaceTemplate, List<TuplePromise>> templatesDict = new();
 
     private readonly IGrainFactory factory;
 
-    public SpaceBlockingReaderFilter(IGrainFactory factory)
+    public SpaceAgent(IGrainFactory factory, PromisesChannel channel)
     {
         this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
     }
 
     public void Receive(SpaceTuple tuple)
     {
-        foreach (var pair in templates.Where(x => x.Key.Length == tuple.Length))
+        foreach (var pair in templatesDict.Where(x => x.Key.Length == tuple.Length))
         {
             if (TupleMatcher.IsMatch(tuple, pair.Key))
             {
-                if (channel.Writer.TryWrite(tuple))
+                foreach (var promise in templatesDict[pair.Key])
                 {
-                    templates.TryRemove(pair.Key, out _);
+                    channel.Writer.TryWrite(promise);
                 }
 
-                break;
+                templatesDict.TryRemove(pair.Key, out _);
             }
         }
     }
@@ -60,20 +65,24 @@ internal class SpaceBlockingReaderFilter : ISpaceObserver, IOutgoingGrainCallFil
     {
         if (string.Equals(context.InterfaceMethod.Name, targetMethodName))
         {
-            if (context.Arguments.Length == 2 && 
+            if (context.Arguments.Length == 2 &&
                 context.Arguments[0] is SpaceTemplate template &&
-                context.Arguments[1] is Action<SpaceTuple> callback)
+                context.Arguments[1] is TuplePromise promise)
             {
                 ValueTask<SpaceTuple?> task = func(factory.GetSpaceReader(), template);
 
                 if (await task is SpaceTuple tuple)
                 {
-                    callback(tuple);
-                    context.Result = new ValueTask();
+                    promise(tuple);
                 }
                 else
                 {
-                    templates.TryAdd(template, NullTuple.Value);
+                    if (!templatesDict.ContainsKey(template))
+                    {
+                        templatesDict.TryAdd(template, new());
+                    }
+
+                    templatesDict[template].Add(promise);
                 }
 
                 return true;
