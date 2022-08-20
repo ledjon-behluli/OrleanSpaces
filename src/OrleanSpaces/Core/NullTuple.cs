@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Core.Primitives;
+﻿namespace OrleanSpaces.Core;
 
 [Serializable]
 public readonly struct NullTuple : IEquatable<NullTuple>, IComparable<NullTuple>, IComparable

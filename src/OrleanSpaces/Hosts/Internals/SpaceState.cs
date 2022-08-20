@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Core.Primitives;
+﻿using OrleanSpaces.Core;
 
 namespace OrleanSpaces.Hosts.Internals;
 

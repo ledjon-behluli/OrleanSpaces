@@ -1,9 +1,9 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Core.Utils;
-using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Clients.Internals;
+using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Core;
 
 namespace OrleanSpaces.Clients;
 

@@ -1,5 +1,4 @@
-﻿using OrleanSpaces.Core.Exceptions;
-using OrleanSpaces.Core.Primitives;
+﻿using OrleanSpaces.Core;
 
 namespace OrleanSpaces.Tests;
 
@@ -52,7 +51,7 @@ public class SpaceTemplateTests
     [Fact]
     public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
     {
-        Assert.Throws<TupleFieldLengthException>(() => SpaceTemplate.Create(new ValueTuple()));
+        Assert.Throws<ArgumentException>(() => SpaceTemplate.Create(new ValueTuple()));
     }
 
     [Fact]

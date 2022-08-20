@@ -1,9 +1,8 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using OrleanSpaces.Core.Primitives;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Core.Utils;
+namespace OrleanSpaces.Core.Internals;
 
 internal class LambdaSerializer
 {

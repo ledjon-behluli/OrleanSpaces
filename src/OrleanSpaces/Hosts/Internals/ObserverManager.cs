@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using OrleanSpaces.Core.Observers;
+using OrleanSpaces.Core;
+using OrleanSpaces.Core.Internals;
 using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Hosts.Internals;

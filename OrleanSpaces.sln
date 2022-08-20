@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{E7BCCE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces", "src\OrleanSpaces\OrleanSpaces.csproj", "{9CB8F7F8-68D5-40CF-8F98-54B78BD5E3F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Tests", "test\OrleanSpaces.Tests\OrleanSpaces.Tests.csproj", "{66DB980E-AF81-45EB-9C78-9FDAF1726578}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Tests", "test\OrleanSpaces.Tests\OrleanSpaces.Tests.csproj", "{66DB980E-AF81-45EB-9C78-9FDAF1726578}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{AE9B119A-6706-46BF-B538-E12004BF1748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{66DB980E-AF81-45EB-9C78-9FDAF1726578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66DB980E-AF81-45EB-9C78-9FDAF1726578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66DB980E-AF81-45EB-9C78-9FDAF1726578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE9B119A-6706-46BF-B538-E12004BF1748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE9B119A-6706-46BF-B538-E12004BF1748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE9B119A-6706-46BF-B538-E12004BF1748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE9B119A-6706-46BF-B538-E12004BF1748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +42,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9CB8F7F8-68D5-40CF-8F98-54B78BD5E3F8} = {394CDEE8-75B5-4F58-80C8-3BDF65EF0C73}
 		{66DB980E-AF81-45EB-9C78-9FDAF1726578} = {EEC5754E-3931-495A-80C2-4F8AF04CD746}
+		{AE9B119A-6706-46BF-B538-E12004BF1748} = {394CDEE8-75B5-4F58-80C8-3BDF65EF0C73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {51F3D785-6674-42F7-A966-ECE43A673279}

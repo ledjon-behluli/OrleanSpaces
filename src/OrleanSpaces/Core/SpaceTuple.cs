@@ -1,7 +1,6 @@
-﻿using OrleanSpaces.Core.Exceptions;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Core.Primitives;
+namespace OrleanSpaces.Core;
 
 [Serializable]
 public struct SpaceTuple : ITuple
@@ -15,12 +14,12 @@ public struct SpaceTuple : ITuple
     {
         if (fields.Length == 0)
         {
-            throw new TupleFieldLengthException(nameof(SpaceTuple));
+            throw new ArgumentException($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
         }
 
         if (fields.Any(x => x is NullTuple || x is Type))
         {
-            throw new TupleFieldException();
+            throw new ArgumentException($"Type declarations and '{nameof(NullTuple)}' are not valid '{nameof(SpaceTuple)}' fields.");
         }
 
         _fields = fields;

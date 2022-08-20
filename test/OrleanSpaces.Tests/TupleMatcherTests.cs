@@ -1,5 +1,5 @@
-﻿using OrleanSpaces.Core.Primitives;
-using OrleanSpaces.Core.Utils;
+﻿using OrleanSpaces.Core;
+using OrleanSpaces.Core.Internals;
 
 namespace OrleanSpaces.Tests;
 

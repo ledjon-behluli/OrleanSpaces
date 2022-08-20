@@ -1,6 +1,4 @@
-﻿using OrleanSpaces.Core.Primitives;
-
-namespace OrleanSpaces.Core.Utils;
+﻿namespace OrleanSpaces.Core.Internals;
 
 internal static class TupleMatcher
 {

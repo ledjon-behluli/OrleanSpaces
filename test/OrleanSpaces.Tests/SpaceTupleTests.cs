@@ -1,5 +1,4 @@
-﻿using OrleanSpaces.Core.Exceptions;
-using OrleanSpaces.Core.Primitives;
+﻿using OrleanSpaces.Core;
 
 namespace OrleanSpaces.Tests;
 
@@ -35,30 +34,30 @@ public class SpaceTupleTests
     [Fact]
     public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
     {
-        Assert.Throws<TupleFieldLengthException>(() => SpaceTuple.Create(new ValueTuple()));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(new ValueTuple()));
     }
 
     [Fact]
     public void Exception_Should_Be_Thrown_On_SpaceUnit()
     {
-        Assert.Throws<TupleFieldException>(() => SpaceTuple.Create(NullTuple.Value));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(NullTuple.Value));
     }
 
     [Fact]
     public void Exception_Should_Be_Thrown_On_Type()
     {
-        Assert.Throws<TupleFieldException>(() => SpaceTuple.Create(typeof(int)));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(typeof(int)));
     }
 
     [Fact]
     public void Exception_Should_Be_Thrown_If_Tuple_Contains_SpaceUnit()
     {
-        Assert.Throws<TupleFieldException>(() => SpaceTuple.Create((1, "a", NullTuple.Value)));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", NullTuple.Value)));
     }
 
     [Fact]
     public void Exception_Should_Be_Thrown_If_Tuple_Contains_Types()
     {
-        Assert.Throws<TupleFieldException>(() => SpaceTuple.Create((1, typeof(int), "a")));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, typeof(int), "a")));
     }
 }

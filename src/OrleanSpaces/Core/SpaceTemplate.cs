@@ -1,7 +1,6 @@
-﻿using OrleanSpaces.Core.Exceptions;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Core.Primitives;
+namespace OrleanSpaces.Core;
 
 [Serializable]
 public struct SpaceTemplate : ITuple
@@ -15,7 +14,7 @@ public struct SpaceTemplate : ITuple
     {
         if (fields.Length == 0)
         {
-            throw new TupleFieldLengthException(nameof(SpaceTemplate));
+            throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed.");
         }
 
         _fields = fields;

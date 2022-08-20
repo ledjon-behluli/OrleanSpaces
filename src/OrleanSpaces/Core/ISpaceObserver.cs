@@ -1,7 +1,6 @@
 ﻿using Orleans;
-using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Core.Observers;
+namespace OrleanSpaces.Core;
 
 public interface ISpaceObserver : IGrainObserver
 {

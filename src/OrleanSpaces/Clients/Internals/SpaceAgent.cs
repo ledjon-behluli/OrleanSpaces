@@ -1,6 +1,5 @@
-﻿using OrleanSpaces.Core.Observers;
-using OrleanSpaces.Core.Primitives;
-using OrleanSpaces.Core.Utils;
+﻿using OrleanSpaces.Core;
+using OrleanSpaces.Core.Internals;
 using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Clients.Internals;
