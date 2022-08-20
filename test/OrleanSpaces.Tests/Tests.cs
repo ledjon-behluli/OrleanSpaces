@@ -16,10 +16,8 @@ public class BlockingReaderClient
 	public async Task Test()
 	{
 		var reader = Factory.GetSpaceBlockingReader();
-		await reader.PeekAsync(SpaceTemplate.Create(1), tuple =>
-		{
 
-		});
+		await reader.PeekAsync(SpaceTemplate.Create(1), x => Task.CompletedTask);
 	}
 }
 

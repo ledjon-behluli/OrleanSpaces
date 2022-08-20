@@ -31,7 +31,7 @@ public static class Extensions
 
         services.AddSingleton<IObserverNotifier, ObserverManager>();
         services.AddSingleton<IObserverRegistry, ObserverManager>();
-        services.AddSingleton<IIncomingGrainCallFilter, WriteInterceptor>();
+        services.AddSingleton<IIncomingGrainCallFilter, Interceptor>();
     }
 }
 

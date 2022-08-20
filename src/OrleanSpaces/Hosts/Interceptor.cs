@@ -6,12 +6,12 @@ using OrleanSpaces.Hosts.Observers;
 
 namespace OrleanSpaces.Hosts;
 
-internal class WriteInterceptor : IIncomingGrainCallFilter
+internal class Interceptor : IIncomingGrainCallFilter
 {
     private readonly ISpaceObserver agent;
     private readonly IObserverNotifier notifier;
 
-    public WriteInterceptor(
+    public Interceptor(
         ISpaceObserver agent,
         IObserverNotifier notifier)
     {
