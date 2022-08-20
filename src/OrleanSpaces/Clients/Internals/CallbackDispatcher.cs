@@ -1,19 +1,14 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Threading.Channels;
 
-namespace OrleanSpaces.Clients.Callbacks;
+namespace OrleanSpaces.Clients.Internals;
 
 internal class CallbackDispatcher : BackgroundService
 {
-    private readonly ChannelReader<CallbackBag> channelReader;
     private readonly ILogger<CallbackDispatcher> logger;
 
-    public CallbackDispatcher(
-        CallbackChannel channel,
-        ILogger<CallbackDispatcher> logger)
+    public CallbackDispatcher(ILogger<CallbackDispatcher> logger)
     {
-        channelReader = (channel ?? throw new ArgumentNullException(nameof(channel))).Reader;
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -21,7 +16,7 @@ internal class CallbackDispatcher : BackgroundService
     {
         logger.LogInformation("Callback dispatcher started.");
 
-        await foreach (CallbackBag bag in channelReader.ReadAllAsync(cancellationToken))
+        await foreach (CallbackBag bag in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {

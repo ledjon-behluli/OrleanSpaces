@@ -2,7 +2,7 @@
 using OrleanSpaces.Core.Observers;
 using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Hosts.Observers;
+namespace OrleanSpaces.Hosts.Internals;
 
 internal class ObserverManager : IObserverRegistry, IObserverNotifier
 {

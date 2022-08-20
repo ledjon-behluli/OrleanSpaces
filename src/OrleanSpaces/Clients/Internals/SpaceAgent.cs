@@ -1,21 +1,13 @@
-﻿using OrleanSpaces.Clients.Callbacks;
-using OrleanSpaces.Core.Observers;
+﻿using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 using System.Collections.Concurrent;
-using System.Threading.Channels;
 
-namespace OrleanSpaces.Clients;
+namespace OrleanSpaces.Clients.Internals;
 
-internal class SpaceAgent : ISpaceObserver, ICallbackBuffer
+internal class SpaceAgent : ISpaceObserver, ICallbackRegistry
 {
-    private readonly ChannelWriter<CallbackBag> channelWriter;
     private readonly ConcurrentDictionary<SpaceTemplate, List<Func<SpaceTuple, Task>>> templateCallbacks = new();
-
-    public SpaceAgent(CallbackChannel channel)
-    {
-        this.channelWriter = (channel ?? throw new ArgumentNullException(nameof(channel))).Writer;
-    }
 
     public void Receive(SpaceTuple tuple)
     {
@@ -25,7 +17,7 @@ internal class SpaceAgent : ISpaceObserver, ICallbackBuffer
             {
                 foreach (var callback in templateCallbacks[pair.Key])
                 {
-                    channelWriter.TryWrite(new(tuple, callback));
+                    CallbackChannel.Writer.TryWrite(new(tuple, callback));
                 }
 
                 templateCallbacks.TryRemove(pair.Key, out _);
@@ -33,7 +25,7 @@ internal class SpaceAgent : ISpaceObserver, ICallbackBuffer
         }
     }
 
-    public void Buffer(SpaceTemplate template, Func<SpaceTuple, Task> callback)
+    public void Register(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (!templateCallbacks.ContainsKey(template))
         {

@@ -22,4 +22,9 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Core\Internals\" />
+	  <Folder Include="NewFolder\" />
+	</ItemGroup>
+
 </Project>

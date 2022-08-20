@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Core.Observers;
 
-namespace OrleanSpaces.Hosts.Observers;
+namespace OrleanSpaces.Hosts.Internals;
 
 internal interface IObserverNotifier
 {

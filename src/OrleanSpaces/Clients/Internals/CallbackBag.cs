@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Clients.Callbacks;
+namespace OrleanSpaces.Clients.Internals;
 
 internal class CallbackBag
 {

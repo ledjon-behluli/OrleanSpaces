@@ -4,18 +4,14 @@ using OrleanSpaces.Core;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Hosts.Grains;
+namespace OrleanSpaces.Hosts.Internals;
 
 internal class SpaceGrain : Grain, ISpaceGrain
 {
-    private readonly FuncSerializer serializer;
     private readonly IPersistentState<SpaceState> space;
 
-    public SpaceGrain(
-        FuncSerializer serializer,
-        [PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
+    public SpaceGrain([PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
     {
-        this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
@@ -25,27 +21,9 @@ internal class SpaceGrain : Grain, ISpaceGrain
         await space.WriteStateAsync();
     }
 
-    public Task EvaluateAsync(Func<SpaceTuple> func) => Task.CompletedTask;
+    public Task EvaluateAsync(byte[] serializedFunc) => Task.CompletedTask;
 
-    async Task ISpaceWriter.EvaluateAsync(byte[] serializedFunc)
-    {
-        Func<SpaceTuple>? function = serializer.Deserialize(serializedFunc);
-        if (function != null)
-        {
-            object result = function.DynamicInvoke();
-            if (result is SpaceTuple tuple)
-            {
-                await WriteAsync(tuple);
-            }
-        }
-    }
-
-    ValueTask ISpaceBlockingReader.PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-    {
-        throw new NotImplementedException();
-    }
-
-    ValueTask<SpaceTuple?> ISpaceReader.PeekAsync(SpaceTemplate template)
+    public ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -60,12 +38,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return default;
     }
 
-    Task ISpaceBlockingReader.PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-    {
-        throw new NotImplementedException();
-    }
-
-    async Task<SpaceTuple?> ISpaceReader.PopAsync(SpaceTemplate template)
+    public async Task<SpaceTuple?> PopAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 

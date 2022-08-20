@@ -2,8 +2,8 @@
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Core.Utils;
-using OrleanSpaces.Hosts.Observers;
 using OrleanSpaces.Core.Observers;
+using OrleanSpaces.Hosts.Internals;
 
 namespace OrleanSpaces.Hosts;
 
@@ -12,7 +12,7 @@ public static class Extensions
     public static ISiloBuilder ConfigureTupleSpace(this ISiloBuilder builder)
     {
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
-        builder.ConfigureServices(services => services.AddSiloComponents());
+        builder.ConfigureServices(services => services.AddComponents());
 
         return builder;
     }
@@ -20,15 +20,14 @@ public static class Extensions
     public static ISiloHostBuilder ConfigureTupleSpace(this ISiloHostBuilder builder)
     {
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
-        builder.ConfigureServices(services => services.AddSiloComponents());
+        builder.ConfigureServices(services => services.AddComponents());
 
         return builder;
     }
 
-    private static void AddSiloComponents(this IServiceCollection services)
+    private static void AddComponents(this IServiceCollection services)
     {
-        services.AddSingleton<FuncSerializer>();
-
+        services.AddSingleton<LambdaSerializer>();
         services.AddSingleton<IObserverNotifier, ObserverManager>();
         services.AddSingleton<IObserverRegistry, ObserverManager>();
         services.AddSingleton<IIncomingGrainCallFilter, Interceptor>();
