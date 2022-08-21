@@ -30,8 +30,3 @@ internal interface ISpaceGrain : IGrainWithGuidKey
     ValueTask<int> CountAsync();
     ValueTask<int> CountAsync(SpaceTemplate template);
 }
-
-internal static class Extensions
-{
-    public static ISpaceGrain GetSpaceGrain(this IGrainFactory factory) => factory.GetGrain<ISpaceGrain>(Guid.Empty);
-}

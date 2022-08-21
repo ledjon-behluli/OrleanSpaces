@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Core.Primitives;
 using System.Diagnostics;
 
-namespace OrleanSpaces.Tests;
+namespace OrleanSpaces.Tests.Core;
 
 public class SpaceTemplateTests
 {
@@ -41,6 +41,17 @@ public class SpaceTemplateTests
 
         Assert.Equal(1, template.Length);
         Assert.Equal(typeof(int), template[0]);
+    }
+
+    [Fact]
+    public void SpaceTemplate_Should_Be_Created_Implicitly_From_SpaceTuple()
+    {
+        var expection = Record.Exception(() =>
+        {
+            SpaceTemplate template = SpaceTuple.Create((1, "a"));
+        });
+
+        Assert.Null(expection);
     }
 
     [Fact]
@@ -121,7 +132,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Faster_For_Different_Length()
+    public void Should_Be_Faster_For_Different_Lengths()
     {
         long firstRun = Run(SpaceTemplate.Create((1, "a")), SpaceTemplate.Create((1, "b")));
         long secondRun = Run(SpaceTemplate.Create((1, "a")), SpaceTemplate.Create(1));

@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Core.Primitives;
 using System.Diagnostics;
 
-namespace OrleanSpaces.Tests;
+namespace OrleanSpaces.Tests.Core;
 
 public class SpaceTupleTests
 {
@@ -114,7 +114,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Faster_For_Different_Length()
+    public void Should_Be_Faster_For_Different_Lengths()
     {
         long firstRun = Run(SpaceTuple.Create((1, "a")), SpaceTuple.Create((1, "b")));
         long secondRun = Run(SpaceTuple.Create((1, "a")), SpaceTuple.Create(1));

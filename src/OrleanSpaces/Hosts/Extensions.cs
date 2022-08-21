@@ -7,6 +7,11 @@ using OrleanSpaces.Hosts.Observers;
 
 namespace OrleanSpaces.Hosts;
 
+public static class Constants
+{
+
+}
+
 public static class Extensions
 {
     public static ISiloBuilder ConfigureTupleSpace(this ISiloBuilder builder)

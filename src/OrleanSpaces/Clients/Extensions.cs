@@ -9,7 +9,7 @@ namespace OrleanSpaces.Clients;
 
 public static class Extensions
 {
-    public static IClientBuilder ConfigureTupleSpace(this IClientBuilder builder)
+    public static IClientBuilder UseTupleSpace(this IClientBuilder builder)
     {
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
         builder.ConfigureServices(services =>

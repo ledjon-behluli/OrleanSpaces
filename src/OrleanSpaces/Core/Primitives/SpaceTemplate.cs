@@ -41,6 +41,9 @@ public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
     public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
 
+
+    public static implicit operator SpaceTemplate(SpaceTuple tuple) => Create(tuple);
+
     public override bool Equals(object obj) =>
         obj is SpaceTemplate overrides && Equals(overrides);
 

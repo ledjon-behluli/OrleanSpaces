@@ -1,0 +1,12 @@
+{
+  "Version": 3,
+  "ListAllProjects": false,
+  "MultiProjectConfigurations": {
+    "HelloWorld": {
+      "Projects": {
+        "HelloWorld.Host": {},
+        "HelloWorld.Client": {}
+      }
+    }
+  }
+}

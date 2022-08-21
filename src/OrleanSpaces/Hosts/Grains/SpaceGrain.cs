@@ -10,7 +10,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<SpaceState> space;
 
-    public SpaceGrain([PersistentState("tupleSpace", "tupleSpaceStore")] IPersistentState<SpaceState> space)
+    public SpaceGrain([PersistentState("tupleSpace")] IPersistentState<SpaceState> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }

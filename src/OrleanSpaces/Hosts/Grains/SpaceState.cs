@@ -6,4 +6,9 @@ namespace OrleanSpaces.Hosts.Grains;
 internal struct SpaceState
 {
     public List<SpaceTuple> Tuples { get; set; }
+
+	public SpaceState()
+	{
+		Tuples = new();
+	}
 }
