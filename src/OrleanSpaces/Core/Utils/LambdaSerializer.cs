@@ -1,14 +1,15 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using OrleanSpaces.Core.Primitives;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Core.Internals;
+namespace OrleanSpaces.Core.Utils;
 
-internal class LambdaSerializer
+internal static class LambdaSerializer
 {
-    private readonly ExpressionSerializer serializer;
+    private readonly static ExpressionSerializer serializer;
 
-    public LambdaSerializer()
+    static LambdaSerializer()
     {
         serializer = new ExpressionSerializer(new BinarySerializer());
 
@@ -16,7 +17,7 @@ internal class LambdaSerializer
         serializer.AddKnownType(typeof(SpaceTemplate));
     }
 
-    public byte[] Serialize(Func<SpaceTuple> func)
+    public static byte[] Serialize(Func<SpaceTuple> func)
     {
         if (func == null)
         {
@@ -38,7 +39,7 @@ internal class LambdaSerializer
         }
     }
 
-    public Func<SpaceTuple> Deserialize(byte[] serializedFunc)
+    public static Func<SpaceTuple> Deserialize(byte[] serializedFunc)
     {
         if (serializedFunc == null || serializedFunc.Length == 0)
         {

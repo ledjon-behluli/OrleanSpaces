@@ -1,9 +1,10 @@
 ﻿using Orleans;
 using Orleans.Runtime;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Hosts.Internals;
+namespace OrleanSpaces.Hosts.Grains;
 
 internal class SpaceGrain : Grain, ISpaceGrain
 {

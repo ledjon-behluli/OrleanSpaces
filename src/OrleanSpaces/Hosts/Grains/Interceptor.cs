@@ -1,21 +1,20 @@
 ﻿using Orleans;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
+using OrleanSpaces.Hosts.Observers;
 
-namespace OrleanSpaces.Hosts.Internals;
+namespace OrleanSpaces.Hosts.Grains;
 
 internal class Interceptor : IIncomingGrainCallFilter
 {
-    private readonly LambdaSerializer serializer;
     private readonly IGrainFactory factory;
     private readonly IObserverNotifier notifier;
 
     public Interceptor(
-        LambdaSerializer serializer,
         IGrainFactory factory,
         IObserverNotifier notifier)
     {
-        this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
         this.notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
     }
@@ -32,7 +31,7 @@ internal class Interceptor : IIncomingGrainCallFilter
 
         if (string.Equals(context.InterfaceMethod.Name, nameof(ISpaceGrain.EvaluateAsync)))
         {
-            Func<SpaceTuple> function = serializer.Deserialize((byte[])context.Arguments[0]);
+            Func<SpaceTuple> function = LambdaSerializer.Deserialize((byte[])context.Arguments[0]);
             object result = function.DynamicInvoke();
 
             if (result is SpaceTuple tuple)

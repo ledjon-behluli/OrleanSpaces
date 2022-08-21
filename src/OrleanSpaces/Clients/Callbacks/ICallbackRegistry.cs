@@ -1,6 +1,6 @@
-﻿using OrleanSpaces.Core;
+﻿using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Clients.Internals;
+namespace OrleanSpaces.Clients.Callbacks;
 
 internal interface ICallbackRegistry
 {

@@ -1,8 +1,10 @@
-﻿using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+﻿using OrleanSpaces.Clients.Callbacks;
+using OrleanSpaces.Core.Observers;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Clients.Internals;
+namespace OrleanSpaces.Clients.Bridges;
 
 internal class SpaceAgent : ISpaceObserver, ICallbackRegistry
 {

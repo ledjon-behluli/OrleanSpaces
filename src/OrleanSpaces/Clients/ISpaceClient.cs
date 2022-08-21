@@ -1,5 +1,5 @@
-﻿using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+﻿using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core.Primitives;
 
 namespace OrleanSpaces.Clients;
 

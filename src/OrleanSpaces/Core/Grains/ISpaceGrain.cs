@@ -1,6 +1,7 @@
 ﻿using Orleans;
+using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Core.Internals;
+namespace OrleanSpaces.Core.Grains;
 
 internal interface ISpaceGrain : IGrainWithGuidKey
 {

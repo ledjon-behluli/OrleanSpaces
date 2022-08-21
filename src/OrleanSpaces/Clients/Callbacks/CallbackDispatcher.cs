@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace OrleanSpaces.Clients.Internals;
+namespace OrleanSpaces.Clients.Callbacks;
 
 internal class CallbackDispatcher : BackgroundService
 {

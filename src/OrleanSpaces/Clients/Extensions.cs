@@ -1,9 +1,9 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Clients.Internals;
-using OrleanSpaces.Core.Internals;
-using OrleanSpaces.Core;
+using OrleanSpaces.Core.Observers;
+using OrleanSpaces.Clients.Callbacks;
+using OrleanSpaces.Clients.Bridges;
 
 namespace OrleanSpaces.Clients;
 
@@ -14,7 +14,6 @@ public static class Extensions
         builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<LambdaSerializer>();
             services.AddSingleton<SpaceAgent>();
             services.AddSingleton<ICallbackRegistry>(sp => sp.GetRequiredService<SpaceAgent>());
             services.AddSingleton<ISpaceClient, SpaceClient>();

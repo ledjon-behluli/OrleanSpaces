@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Core;
+namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
 public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>

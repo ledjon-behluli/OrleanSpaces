@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Core.Observers;
 using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Hosts.Internals;
+namespace OrleanSpaces.Hosts.Observers;
 
 internal class ObserverManager : IObserverRegistry, IObserverNotifier
 {

@@ -1,8 +1,9 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Hosts.Internals;
-using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Core.Observers;
+using OrleanSpaces.Hosts.Grains;
+using OrleanSpaces.Hosts.Observers;
 
 namespace OrleanSpaces.Hosts;
 
@@ -26,7 +27,6 @@ public static class Extensions
 
     private static void AddComponents(this IServiceCollection services)
     {
-        services.AddSingleton<LambdaSerializer>();
         services.AddSingleton<IObserverNotifier, ObserverManager>();
         services.AddSingleton<IObserverRegistry, ObserverManager>();
         services.AddSingleton<IIncomingGrainCallFilter, Interceptor>();

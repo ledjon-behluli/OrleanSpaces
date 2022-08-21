@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Core;
+namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
 public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
@@ -20,7 +20,7 @@ public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         _fields = fields;
     }
 
-    public static SpaceTemplate Create(object field) => new(field);    
+    public static SpaceTemplate Create(object field) => new(field);
     public static SpaceTemplate Create(ITuple tuple)
     {
         if (tuple is null)

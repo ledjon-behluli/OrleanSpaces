@@ -1,23 +1,22 @@
 ﻿using Orleans;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Internals;
+using OrleanSpaces.Clients.Callbacks;
+using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Core.Utils;
 
-namespace OrleanSpaces.Clients.Internals;
+namespace OrleanSpaces.Clients.Bridges;
 
 internal class SpaceClient : ISpaceClient
 {
-    private readonly LambdaSerializer serializer;
     private readonly ICallbackRegistry registry;
     private readonly IGrainFactory factory;
 
     private ISpaceGrain Grain => factory.GetSpaceGrain();
 
     public SpaceClient(
-        LambdaSerializer serializer,
         ICallbackRegistry registry,
         IGrainFactory factory)
     {
-        this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
@@ -26,7 +25,7 @@ internal class SpaceClient : ISpaceClient
         => await Grain.WriteAsync(tuple);
 
     public async Task EvaluateAsync(Func<SpaceTuple> func)
-        => await Grain.EvaluateAsync(serializer.Serialize(func));
+        => await Grain.EvaluateAsync(LambdaSerializer.Serialize(func));
 
     public async ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template)
         => await Grain.PeekAsync(template);
