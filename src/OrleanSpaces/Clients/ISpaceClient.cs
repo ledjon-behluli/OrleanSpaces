@@ -3,7 +3,7 @@ using OrleanSpaces.Core.Internals;
 
 namespace OrleanSpaces.Clients;
 
-public interface ITupleSpaceClient
+public interface ISpaceClient
 {
     /// <summary>
     /// <para>Used to write a <see cref="SpaceTuple"/> in the <see cref="ISpaceGrain"/>.</para>

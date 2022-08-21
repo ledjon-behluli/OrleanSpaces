@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Core;
 
 [Serializable]
-public struct SpaceTemplate : ITuple
+public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] _fields;
 
@@ -20,8 +20,7 @@ public struct SpaceTemplate : ITuple
         _fields = fields;
     }
 
-    public static SpaceTemplate Create(object field) => new(field);
-
+    public static SpaceTemplate Create(object field) => new(field);    
     public static SpaceTemplate Create(ITuple tuple)
     {
         if (tuple is null)
@@ -38,4 +37,32 @@ public struct SpaceTemplate : ITuple
 
         return new(fields);
     }
+
+    public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
+    public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
+
+    public override bool Equals(object obj) =>
+        obj is SpaceTemplate overrides && Equals(overrides);
+
+    public bool Equals(SpaceTemplate other)
+    {
+        if (Length != other.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            if (!this[i].Equals(other[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode() => HashCode.Combine(_fields, Length);
+
+    public override string ToString() => $"<{string.Join(", ", _fields)}>";
 }

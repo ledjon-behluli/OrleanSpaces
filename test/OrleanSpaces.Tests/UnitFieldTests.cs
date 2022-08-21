@@ -2,13 +2,13 @@ using OrleanSpaces.Core;
 
 namespace OrleanSpaces.Tests;
 
-public class NullTupleTests
+public class UnitFieldTests
 {
     [Fact]
     public void Should_Be_Equal_To_Each_Other()
     {
-        var unit1 = NullTuple.Value;
-        var unit2 = NullTuple.Value;
+        var unit1 = UnitField.Null;
+        var unit2 = UnitField.Null;
 
         Assert.Equal(unit1, unit2);
         Assert.True(unit1 == unit2);
@@ -18,9 +18,9 @@ public class NullTupleTests
     [Fact]
     public void Should_Be_Equatable()
     {
-        var dictionary = new Dictionary<NullTuple, string>
+        Dictionary<UnitField, string> dictionary = new()
         {
-            {new NullTuple(), "value"},
+            { new UnitField(), "value" },
         };
 
         Assert.Equal("value", dictionary[default]);
@@ -29,23 +29,23 @@ public class NullTupleTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("NULL", NullTuple.Value.ToString());
+        Assert.Equal("{NULL}", UnitField.Null.ToString());
     }
 
     [Fact]
     public void Should_CompareTo_As_Zero()
     {
-        var unit1 = new NullTuple();
-        var unit2 = new NullTuple();
+        var unit1 = new UnitField();
+        var unit2 = new UnitField();
 
         Assert.Equal(0, unit1.CompareTo(unit2));
     }
 
     [Theory]
     [MemberData(nameof(ValueData))]
-    public void Should_be_equal(object value, bool isEqual)
+    public void Should_Be_Equal(object value, bool isEqual)
     {
-        var unit = NullTuple.Value;
+        var unit = UnitField.Null;
 
         if (isEqual)
             Assert.True(unit.Equals(value));
@@ -57,7 +57,7 @@ public class NullTupleTests
     [MemberData(nameof(CompareToValueData))]
     public void Should_CompareTo_Value_As_Zero(object value)
     {
-        var unit = new NullTuple();
+        var unit = new UnitField();
         var comparable = (IComparable)unit;
 
         Assert.Equal(0, comparable.CompareTo(value));
@@ -74,8 +74,8 @@ public class NullTupleTests
             new object[] {"NULL", false},
             new object[] {null, false},
             new object[] {new Uri("https://www.google.com"), false},
-            new object[] {new NullTuple(), true},
-            new object[] {NullTuple.Value, true},
-            new object[] {default(NullTuple), true},
+            new object[] {new UnitField(), true},
+            new object[] {UnitField.Null, true},
+            new object[] {default(UnitField), true},
         };
 }

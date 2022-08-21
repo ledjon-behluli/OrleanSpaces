@@ -13,7 +13,7 @@ internal static class TupleMatcher
 
         for (int i = 0; i < tuple.Length; i++)
         {
-            if (template[i] is NullTuple)
+            if (template[i] is UnitField)
             {
                 result = true;
             }

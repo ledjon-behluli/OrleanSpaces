@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Core;
 
 [Serializable]
-public struct SpaceTuple : ITuple
+public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] _fields;
 
@@ -17,16 +17,15 @@ public struct SpaceTuple : ITuple
             throw new ArgumentException($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
         }
 
-        if (fields.Any(x => x is NullTuple || x is Type))
+        if (fields.Any(x => x is UnitField || x is Type))
         {
-            throw new ArgumentException($"Type declarations and '{nameof(NullTuple)}' are not valid '{nameof(SpaceTuple)}' fields.");
+            throw new ArgumentException($"Type declarations and '{nameof(UnitField)}' are not valid '{nameof(SpaceTuple)}' fields.");
         }
 
         _fields = fields;
     }
 
     public static SpaceTuple Create(object field) => new(field);
-
     public static SpaceTuple Create(ITuple tuple)
     {
         if (tuple is null)
@@ -43,4 +42,32 @@ public struct SpaceTuple : ITuple
 
         return new(fields);
     }
+
+    public static bool operator ==(SpaceTuple first, SpaceTuple second) => first.Equals(second);
+    public static bool operator !=(SpaceTuple first, SpaceTuple second) => !(first == second);
+
+    public override bool Equals(object obj) =>
+        obj is SpaceTuple overrides && Equals(overrides);
+
+    public bool Equals(SpaceTuple other)
+    {
+        if (Length != other.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            if (!this[i].Equals(other[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode() => HashCode.Combine(_fields, Length);
+
+    public override string ToString() => $"<{string.Join(", ", _fields)}>";
 }

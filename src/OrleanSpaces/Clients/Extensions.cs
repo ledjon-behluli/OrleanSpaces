@@ -17,7 +17,7 @@ public static class Extensions
             services.AddSingleton<LambdaSerializer>();
             services.AddSingleton<SpaceAgent>();
             services.AddSingleton<ICallbackRegistry>(sp => sp.GetRequiredService<SpaceAgent>());
-            services.AddSingleton<ITupleSpaceClient, TupleSpaceClient>();
+            services.AddSingleton<ISpaceClient, SpaceClient>();
             services.AddHostedService<CallbackDispatcher>();
         });
 

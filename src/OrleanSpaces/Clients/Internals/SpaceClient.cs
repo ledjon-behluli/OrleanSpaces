@@ -4,7 +4,7 @@ using OrleanSpaces.Core.Internals;
 
 namespace OrleanSpaces.Clients.Internals;
 
-internal class TupleSpaceClient : ITupleSpaceClient
+internal class SpaceClient : ISpaceClient
 {
     private readonly LambdaSerializer serializer;
     private readonly ICallbackRegistry registry;
@@ -12,7 +12,7 @@ internal class TupleSpaceClient : ITupleSpaceClient
 
     private ISpaceGrain Grain => factory.GetSpaceGrain();
 
-    public TupleSpaceClient(
+    public SpaceClient(
         LambdaSerializer serializer,
         ICallbackRegistry registry,
         IGrainFactory factory)
