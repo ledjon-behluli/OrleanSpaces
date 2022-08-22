@@ -2,10 +2,15 @@
   "Version": 3,
   "ListAllProjects": false,
   "MultiProjectConfigurations": {
+    "TupleSyntax": {
+      "Projects": {
+        "TupleSyntax": {}
+      }
+    },
     "HelloWorld": {
       "Projects": {
-        "HelloWorld.Host": {},
-        "HelloWorld.Client": {}
+        "SpaceHost": {},
+        "HelloWorld": {}
       }
     }
   }

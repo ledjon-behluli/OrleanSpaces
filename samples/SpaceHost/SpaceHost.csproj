@@ -9,12 +9,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Orleans.Core" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="3.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
+		<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
 	</ItemGroup>
 
 </Project>

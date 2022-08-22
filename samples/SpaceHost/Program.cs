@@ -11,7 +11,7 @@ var host = new SiloHostBuilder()
 
 await host.StartAsync();
 
-Console.WriteLine("\n\n Press any key to terminate...\n\n");
+Console.WriteLine("\n\nPress any key to terminate...\n\n");
 Console.ReadLine();
 
 await host.StopAsync();
