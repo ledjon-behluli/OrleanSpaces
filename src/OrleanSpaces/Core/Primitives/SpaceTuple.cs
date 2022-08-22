@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
-public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
+public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] _fields;
 
@@ -14,7 +14,7 @@ public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     {
         if (fields.Length == 0)
         {
-            throw new ArgumentException($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
+            throw ZeroFieldsEx;
         }
 
         if (fields.Any(x => x is UnitField || x is Type))
@@ -24,6 +24,9 @@ public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
         _fields = fields;
     }
+
+    private static ArgumentException ZeroFieldsEx => 
+        new($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
 
     public static SpaceTuple Create(object field) => new(field);
     public static SpaceTuple Create(ITuple tuple)

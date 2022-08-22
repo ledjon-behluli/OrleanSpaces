@@ -2,7 +2,6 @@
 using Orleans;
 using OrleanSpaces.Clients;
 using OrleanSpaces.Core.Primitives;
-using System.Threading.Tasks;
 
 var client = new ClientBuilder()
     .UseLocalhostClustering()
@@ -11,7 +10,7 @@ var client = new ClientBuilder()
 
 await client.Connect();
 
-Console.WriteLine("Connected to tuple space.\n\n");
+Console.WriteLine("Connected to the tuple space.\n\n");
 
 var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
