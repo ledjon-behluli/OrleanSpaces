@@ -29,7 +29,7 @@ var task1 = Task.Run(async () =>
         Console.WriteLine($"THREAD 1: Searching for matching tuple with template: {template}");
         SpaceTuple? helloWorldTuple = await spaceClient.PeekAsync(template);
 
-        if (helloWorldTuple.HasValue)
+        if (helloWorldTuple != null)
         {
             Console.WriteLine($"THREAD 1: Found this tuple: {helloWorldTuple}");
             break;
@@ -47,11 +47,11 @@ var task2 = Task.Run(async () =>
     while (true)
     {
         SpaceTuple? helloTuple = await spaceClient.PeekAsync(template);
-        if (helloTuple.HasValue)
+        if (helloTuple != null)
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
 
-            SpaceTuple helloWorldTuple = SpaceTuple.Create((helloTuple.Value[0], helloTuple.Value[1], "Whats up its thread 2"));
+            SpaceTuple helloWorldTuple = SpaceTuple.Create((helloTuple[0], helloTuple[1], "Whats up its thread 2"));
             await spaceClient.WriteAsync(helloWorldTuple);
 
             Console.WriteLine($"THREAD 2: Placed '{helloWorldTuple}' into the tuple space.");

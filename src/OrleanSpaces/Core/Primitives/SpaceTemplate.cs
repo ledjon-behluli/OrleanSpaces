@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
-public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
+public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] _fields;
 
@@ -14,7 +14,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     {
         if (fields.Length == 0)
         {
-            throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed.");
+            throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed."); ;
         }
 
         _fields = fields;
@@ -38,8 +38,14 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
-    public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
-    public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
+    public static bool operator ==(SpaceTemplate? first, SpaceTemplate? second)
+    {
+        if (first is null || second is null)
+            return false;
+
+        return first.Equals(second);
+    }
+    public static bool operator !=(SpaceTemplate? first, SpaceTemplate? second) => !(first == second);
 
 
     public static implicit operator SpaceTemplate(SpaceTuple tuple) => Create(tuple);

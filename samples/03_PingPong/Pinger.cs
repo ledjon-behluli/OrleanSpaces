@@ -17,7 +17,7 @@ public class Pinger : ISpaceObserver
 	public Pinger(ISpaceClient client)
 	{
 		this.client = client;
-		this.ppTuple = new SpaceTuple();
+		//this.ppTuple = new SpaceTuple();
 	}
 
 	public async Task PingAsync() =>

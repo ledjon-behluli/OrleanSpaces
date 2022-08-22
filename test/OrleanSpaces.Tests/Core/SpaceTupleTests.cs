@@ -74,6 +74,36 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Should_Not_Be_Equal_If_First_Is_Null()
+    {
+        SpaceTuple tuple1 = null;
+        SpaceTuple tuple2 = SpaceTuple.Create(1);
+
+        Assert.True(tuple1 != tuple2);
+        Assert.False(tuple1 == tuple2);
+    }
+
+    [Fact]
+    public void Should_Not_Be_Equal_If_Second_Is_Null()
+    {
+        SpaceTuple tuple1 = SpaceTuple.Create(1);
+        SpaceTuple tuple2 = null;
+
+        Assert.True(tuple1 != tuple2);
+        Assert.False(tuple1 == tuple2);
+    }
+
+    [Fact]
+    public void Should_Not_Be_Equal_If_Both_Are_Null()
+    {
+        SpaceTuple tuple1 = null;
+        SpaceTuple tuple2 = null;
+
+        Assert.True(tuple1 != tuple2);
+        Assert.False(tuple1 == tuple2);
+    }
+
+    [Fact]
     public void Should_Be_Equal_On_Object()
     {
         SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));

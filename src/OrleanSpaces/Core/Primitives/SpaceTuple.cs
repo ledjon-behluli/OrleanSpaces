@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Core.Primitives;
 
 [Serializable]
-public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
+public sealed class SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] _fields;
 
@@ -14,7 +14,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     {
         if (fields.Length == 0)
         {
-            throw ZeroFieldsEx;
+            throw new ArgumentException($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
         }
 
         if (fields.Any(x => x is UnitField || x is Type))
@@ -24,9 +24,6 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
         _fields = fields;
     }
-
-    private static ArgumentException ZeroFieldsEx => 
-        new($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
 
     public static SpaceTuple Create(object field) => new(field);
     public static SpaceTuple Create(ITuple tuple)
@@ -46,8 +43,14 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
         return new(fields);
     }
 
-    public static bool operator ==(SpaceTuple first, SpaceTuple second) => first.Equals(second);
-    public static bool operator !=(SpaceTuple first, SpaceTuple second) => !(first == second);
+    public static bool operator ==(SpaceTuple? first, SpaceTuple? second)
+    {
+        if (first is null || second is null)
+            return false;
+
+        return first.Equals(second);
+    }
+    public static bool operator !=(SpaceTuple? first, SpaceTuple? second) => !(first == second);
 
     public override bool Equals(object obj) =>
         obj is SpaceTuple overrides && Equals(overrides);

@@ -92,6 +92,36 @@ public class SpaceTemplateTests
     }
 
     [Fact]
+    public void Should_Not_Be_Equal_On_Null()
+    {
+        SpaceTemplate template1 = null;
+        SpaceTemplate template2 = SpaceTemplate.Create(1);
+
+        Assert.True(template1 != template2);
+        Assert.False(template1 == template2);
+    }
+
+    [Fact]
+    public void Should_Not_Be_Equal_If_Second_Is_Null()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create(1);
+        SpaceTemplate template2 = null;
+
+        Assert.True(template1 != template2);
+        Assert.False(template1 == template2);
+    }
+
+    [Fact]
+    public void Should_Not_Be_Equal_If_Both_Are_Null()
+    {
+        SpaceTemplate template1 = null;
+        SpaceTemplate template2 = null;
+
+        Assert.True(template1 != template2);
+        Assert.False(template1 == template2);
+    }
+
+    [Fact]
     public void Should_Be_Equal_On_Object()
     {
         SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));
