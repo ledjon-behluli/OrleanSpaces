@@ -1,27 +1,74 @@
-﻿using Orleans;
+﻿using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Runtime;
-using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core;
+using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 
 namespace OrleanSpaces.Hosts.Grains;
 
+[Serializable]
+internal class SpaceState
+{
+    public List<SpaceTuple> Tuples { get; set; } = new();
+}
+
 internal class SpaceGrain : Grain, ISpaceGrain
 {
+    private readonly ObserverManager manager;
+    private readonly ILogger<SpaceGrain> logger;
     private readonly IPersistentState<SpaceState> space;
 
-    public SpaceGrain([PersistentState("tupleSpace")] IPersistentState<SpaceState> space)
+    public SpaceGrain(
+        ILogger<SpaceGrain> logger,
+        [PersistentState("tupleSpace")] IPersistentState<SpaceState> space)
     {
+        this.manager = new ObserverManager();
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
+
+    #region IObserverRegistry
+
+    void IObserverRegistry.Register(ISpaceObserver observer)
+    {
+        if (manager.TryAdd(observer))
+        {
+            logger.LogInformation("Observer Registration - Current number of observers: {ObserversCount}", manager.Count);
+        }
+    }
+
+    void IObserverRegistry.Deregister(ISpaceObserver observer)
+    {
+        if (manager.TryRemove(observer))
+        {
+            logger.LogInformation("Observer Deregistration - Current number of observers: {ObserversCount}", manager.Count);
+        }
+    }
+
+    #endregion
+
+    #region ISpaceGrain
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
         space.State.Tuples.Add(tuple);
         await space.WriteStateAsync();
+
+        manager.Broadcast(agent => agent.Receive(tuple));
     }
 
-    public Task EvaluateAsync(byte[] serializedFunc) => Task.CompletedTask;
+    public async Task EvaluateAsync(byte[] serializedFunc)
+    {
+        Func<SpaceTuple> function = LambdaSerializer.Deserialize(serializedFunc);
+        object result = function.DynamicInvoke();
+
+        if (result is SpaceTuple tuple)
+        {
+            await WriteAsync(tuple);
+        }
+    }
 
     public ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template)
     {
@@ -56,7 +103,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return default;
     }
 
-    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template = default)
+    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
         List<SpaceTuple> results = new();
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
@@ -76,4 +123,6 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
     public ValueTask<int> CountAsync(SpaceTemplate template) =>
         new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
+
+    #endregion
 }

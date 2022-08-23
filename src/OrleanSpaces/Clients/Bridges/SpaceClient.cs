@@ -1,6 +1,6 @@
 ﻿using Orleans;
 using OrleanSpaces.Clients.Callbacks;
-using OrleanSpaces.Core.Grains;
+using OrleanSpaces.Core;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
 

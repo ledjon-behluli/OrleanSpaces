@@ -1,9 +1,10 @@
 ﻿using Orleans;
+using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 
-namespace OrleanSpaces.Core.Grains;
+namespace OrleanSpaces.Core;
 
-internal interface ISpaceGrain : IGrainWithGuidKey
+internal interface ISpaceGrain : IGrainWithGuidKey, IObserverRegistry
 {
     /// <summary>
     /// <para>Used to write a <see cref="SpaceTuple"/> in the <see cref="ISpaceGrain"/>.</para>
