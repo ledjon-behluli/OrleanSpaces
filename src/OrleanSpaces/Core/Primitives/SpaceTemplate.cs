@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Core.Utils;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Core.Primitives;
 
@@ -38,6 +39,14 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
+    public bool IsSatisfied(SpaceTuple tuple)
+    {
+        if (tuple is null)
+            return false;
+
+        return TupleMatcher.IsMatch(tuple, this);
+    }
+
     public static bool operator ==(SpaceTemplate? first, SpaceTemplate? second)
     {
         if (first is null || second is null)
@@ -46,9 +55,6 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return first.Equals(second);
     }
     public static bool operator !=(SpaceTemplate? first, SpaceTemplate? second) => !(first == second);
-
-
-    public static implicit operator SpaceTemplate(SpaceTuple tuple) => Create(tuple);
 
     public override bool Equals(object obj) =>
         obj is SpaceTemplate overrides && Equals(overrides);

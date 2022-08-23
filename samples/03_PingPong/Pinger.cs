@@ -2,29 +2,33 @@
 using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 
-namespace PingPong;
-
-public class Constants
-{
-	public const string ChannelKey = "pp-channel";
-}
-
 public class Pinger : ISpaceObserver
 {
-	private readonly ISpaceClient client;
-	private readonly SpaceTuple ppTuple;
+	private readonly ISpaceClient _client;
+	private readonly SpaceTemplate _template;
 
 	public Pinger(ISpaceClient client)
 	{
-		this.client = client;
-		//this.ppTuple = new SpaceTuple();
+		_client = client;
+		_template = SpaceTemplate.Create(("Pong", UnitField.Null));
 	}
 
-	public async Task PingAsync() =>
-		await client.WriteAsync(SpaceTuple.Create((Constants.ChannelKey, "Ping")));
+    public async Task PingAsync()
+    {
+        SpaceTuple tuple = SpaceTuple.Create(("Ping", DateTime.Now));
+        await _client.WriteAsync(tuple);
+        Console.WriteLine($"PING-er: Sent out '{tuple}'");
+    }
 
 	public void Receive(SpaceTuple tuple)
 	{
-		//if (tuple )
+		if (_template.IsSatisfied(tuple))
+        {
+            Console.WriteLine($"PING-er: Yep this is it '{tuple}'");
+        }
+        else
+        {
+            Console.WriteLine($"PING-er: Not what I need '{tuple}'");
+        }
 	}
 }

@@ -12,6 +12,12 @@
         "SpaceHost": {},
         "HelloWorld": {}
       }
+    },
+    "PingPong": {
+      "Projects": {
+        "SpaceHost": {},
+        "PingPong": {}
+      }
     }
   }
 }

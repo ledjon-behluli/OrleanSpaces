@@ -23,6 +23,16 @@ public static class Extensions
         return builder;
     }
 
+    public static async Task SubscribeAsync<TObserver>(
+        this IClusterClient client, Func<IServiceProvider, TObserver> observerFactory)
+        where TObserver : ISpaceObserver
+    {
+        var registry = client.ServiceProvider.GetRequiredService<IObserverRegistry>();   //TODO: Null here ...
+        var observerRef = await client.CreateObjectReference<TObserver>(observerFactory.Invoke(client.ServiceProvider));
+
+        registry.Register(observerRef);
+    }
+
     public static async Task AddAgentAsync<TObserver>(this IClusterClient client)
     {
         var agent = client.ServiceProvider.GetRequiredService<SpaceAgent>();
