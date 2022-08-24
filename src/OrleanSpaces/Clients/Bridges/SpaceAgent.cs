@@ -6,25 +6,9 @@ using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Clients.Bridges;
 
-internal class SpaceAgent : ISpaceObserver, ICallbackRegistry
+internal class SpaceAgent : ICallbackRegistry, ISpaceObserver
 {
     private readonly ConcurrentDictionary<SpaceTemplate, List<Func<SpaceTuple, Task>>> templateCallbacks = new();
-
-    public void Receive(SpaceTuple tuple)
-    {
-        foreach (var pair in templateCallbacks.Where(x => x.Key.Length == tuple.Length))
-        {
-            if (TupleMatcher.IsMatch(tuple, pair.Key))
-            {
-                foreach (var callback in templateCallbacks[pair.Key])
-                {
-                    CallbackChannel.Writer.TryWrite(new(tuple, callback));
-                }
-
-                templateCallbacks.TryRemove(pair.Key, out _);
-            }
-        }
-    }
 
     public void Register(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -34,5 +18,21 @@ internal class SpaceAgent : ISpaceObserver, ICallbackRegistry
         }
 
         templateCallbacks[template].Add(callback);
+    }
+
+    public async Task Receive(SpaceTuple tuple)
+    {
+        foreach (var pair in templateCallbacks.Where(x => x.Key.Length == tuple.Length))
+        {
+            if (TupleMatcher.IsMatch(tuple, pair.Key))
+            {
+                foreach (var callback in templateCallbacks[pair.Key])
+                {
+                    await CallbackChannel.Writer.WriteAsync(new(tuple, callback));
+                }
+
+                templateCallbacks.TryRemove(pair.Key, out _);
+            }
+        }
     }
 }

@@ -29,8 +29,6 @@ internal class SpaceGrain : Grain, ISpaceGrain
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    #region IObserverRegistry
-
     void IObserverRegistry.Register(ISpaceObserver observer)
     {
         if (manager.TryAdd(observer))
@@ -47,16 +45,13 @@ internal class SpaceGrain : Grain, ISpaceGrain
         }
     }
 
-    #endregion
-
-    #region ISpaceGrain
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
         space.State.Tuples.Add(tuple);
-        await space.WriteStateAsync();
 
-        manager.Broadcast(agent => agent.Receive(tuple));
+        await space.WriteStateAsync();
+        await manager.BroadcastAsync(async observer => await observer.Receive(tuple));
     }
 
     public async Task EvaluateAsync(byte[] serializedFunc)
@@ -123,6 +118,4 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
     public ValueTask<int> CountAsync(SpaceTemplate template) =>
         new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
-
-    #endregion
 }

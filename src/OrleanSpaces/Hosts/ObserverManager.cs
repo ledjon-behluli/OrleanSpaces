@@ -15,7 +15,7 @@ internal class ObserverManager
     public bool TryRemove(ISpaceObserver observer) =>
         observers.TryRemove(observer, out _);
 
-    public void Broadcast(Action<ISpaceObserver> action)
+    public async Task BroadcastAsync(Func<ISpaceObserver, Task> notification)
     {
         List<ISpaceObserver> defected = new();
 
@@ -23,7 +23,7 @@ internal class ObserverManager
         {
             try
             {
-                action(observer.Key);
+                await notification(observer.Key);
             }
             catch (Exception)
             {

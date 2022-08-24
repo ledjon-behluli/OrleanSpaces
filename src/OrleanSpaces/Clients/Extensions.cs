@@ -25,7 +25,7 @@ public static class Extensions
     }
 
     public static async Task SubscribeAsync(this IClusterClient client, ISpaceObserver observer)
-        => await client.SubscribeAsync(sp => observer);
+        => await client.SubscribeAsync(_ => observer);
 
     public static async Task SubscribeAsync(this IClusterClient client, Func<IServiceProvider, ISpaceObserver> observerFactory)
     {
