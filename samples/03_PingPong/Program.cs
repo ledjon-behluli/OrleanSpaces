@@ -17,25 +17,13 @@ var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 var pinger = new Pinger(spaceClient);
 var ponger = new Ponger(spaceClient);
 
+var pingerRef = await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
+var pongerRef = await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
 
-await client.SubscribeAsync(pinger);
-await Task.Delay(5000);
-await client.UnsubscribeAsync(pinger);
-await Task.Delay(5000);
-
-
-
-
-
-
-await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
-await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
-
-await Task.Delay(5000);
 await Kickstart();
 
-await client.UnsubscribeAsync(pinger);
-await client.UnsubscribeAsync(ponger);
+await client.UnsubscribeAsync(pingerRef);
+await client.UnsubscribeAsync(pongerRef);
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
 Console.ReadKey();
@@ -48,7 +36,7 @@ async Task Kickstart()
 
     while (true)
     {
-        if (pinger.Iterations >= 3 && ponger.Iterations >= 3)
+        if (pinger.IsDone && ponger.IsDone)
         {
             Console.WriteLine("\nTotal tuples in space:\n\n");
 

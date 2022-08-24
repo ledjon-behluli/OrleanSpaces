@@ -7,13 +7,14 @@ public class Ponger : ISpaceObserver
     private readonly ISpaceClient _client;
     private readonly SpaceTemplate _template = SpaceTemplate.Create(("Ping", UnitField.Null));
 
-    public int Iterations { get; private set; }
+    private int count;
+    public bool IsDone => count == 3;
 
     public Ponger(ISpaceClient client) => _client = client;
 
     public async Task ReceiveAsync(SpaceTuple tuple)
     {
-        if (_template.IsSatisfied(tuple))
+        if (!IsDone && _template.IsSatisfied(tuple))
         {
             Console.WriteLine($"PONG-er: Received = {tuple}");
 
@@ -23,7 +24,7 @@ public class Ponger : ISpaceObserver
 
             Console.WriteLine($"PONG-er: Wrote back = {_tuple}");
 
-            Iterations++;
+            count++;
         }
     }
 }
