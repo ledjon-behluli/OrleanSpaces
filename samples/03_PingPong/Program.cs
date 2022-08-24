@@ -11,43 +11,45 @@ var client = new ClientBuilder()
 await client.Connect();
 
 Console.WriteLine("Connected to the tuple space.\n");
+Console.WriteLine("Type -u to unsubscribe.");
+Console.WriteLine("Type -r to see results.");
 
 var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
-var pinger = new Pinger(spaceClient);
 var ponger = new Ponger(spaceClient);
-
-var pingerRef = await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
 var pongerRef = await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
+var pongerRef1 = await client.SubscribeAsync(ponger);
 
-await Kickstart();
 
-await client.UnsubscribeAsync(pingerRef);
+while (true)
+{
+    Console.WriteLine("Type a message...");
+    var message = Console.ReadLine();
+
+    if (string.IsNullOrWhiteSpace(message))
+        continue;
+
+    if (message == "-u")
+    {
+        await client.UnsubscribeAsync(pongerRef);
+        continue;
+    }
+
+    if (message == "-r")
+        break;
+
+    await spaceClient.WriteAsync(SpaceTuple.Create((message, DateTime.Now)));
+}
+
+Console.WriteLine("----------------------\n");
+Console.WriteLine("Total tuples in space:\n");
+foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
+{
+    Console.WriteLine(tuple);
+}
+
 await client.UnsubscribeAsync(pongerRef);
-
-Console.WriteLine("\n\nPress any key to terminate...\n\n");
-Console.ReadKey();
-
 await client.Close();
 
-async Task Kickstart()
-{
-    await spaceClient.WriteAsync(SpaceTuple.Create(("Ping", "Kickstart")));
-
-    while (true)
-    {
-        if (pinger.IsDone && ponger.IsDone)
-        {
-            Console.WriteLine("\nTotal tuples in space:\n\n");
-
-            foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
-            {
-                Console.WriteLine($"{tuple}\n");
-            }
-
-            break;
-        }
-
-        //await Task.Delay(100);
-    }
-}
+Console.WriteLine("\nPress any key to terminate...");
+Console.ReadKey();

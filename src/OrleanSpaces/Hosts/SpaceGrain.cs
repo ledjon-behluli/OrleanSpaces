@@ -5,6 +5,7 @@ using OrleanSpaces.Core;
 using OrleanSpaces.Core.Observers;
 using OrleanSpaces.Core.Primitives;
 using OrleanSpaces.Core.Utils;
+using System.Threading.Tasks;
 
 namespace OrleanSpaces.Hosts.Grains;
 
@@ -29,22 +30,28 @@ internal class SpaceGrain : Grain, ISpaceGrain
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    void IObserverRegistry.Register(ISpaceObserver observer)
+    ValueTask IObserverRefRegistry.RegisterAsync(ISpaceObserver observer)
     {
         if (manager.TryAdd(observer))
         {
             logger.LogInformation("Observer Registration - Current number of observers: {ObserversCount}", manager.Count);
         }
+
+        return new();
     }
 
-    void IObserverRegistry.Deregister(ISpaceObserver observer)
+    ValueTask IObserverRefRegistry.DeregisterAsync(ISpaceObserver observer)
     {
         if (manager.TryRemove(observer))
         {
             logger.LogInformation("Observer Deregistration - Current number of observers: {ObserversCount}", manager.Count);
         }
+
+        return new();
     }
 
+    ValueTask<bool> IObserverRefRegistry.IsRegisteredAsync(ISpaceObserver observer)
+        => new(manager.Observers.Any(x => x == observer));
 
     public async Task WriteAsync(SpaceTuple tuple)
     {

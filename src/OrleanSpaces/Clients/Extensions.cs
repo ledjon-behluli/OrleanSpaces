@@ -6,6 +6,7 @@ using OrleanSpaces.Clients.Callbacks;
 using OrleanSpaces.Clients.Bridges;
 using OrleanSpaces.Core;
 using OrleanSpaces.Clients.Observers;
+using System;
 
 namespace OrleanSpaces.Clients;
 
@@ -30,11 +31,18 @@ public static class Extensions
 
     public static async Task<ISpaceObserverRef> SubscribeAsync(this IClusterClient client, Func<IServiceProvider, ISpaceObserver> observerFactory)
     {
-        if (observerFactory == null)
-            throw new ArgumentNullException(nameof(observerFactory));
+        ISpaceObserver? observer = observerFactory?.Invoke(client.ServiceProvider);
 
-        var @ref = await client.CreateObjectReference<ISpaceObserver>(observerFactory.Invoke(client.ServiceProvider));
-        client.GetObserverRegistry().Register(@ref);
+        if (observer == null)
+            throw new ArgumentException("Implementation of ISpaceObserver can not be null.");
+
+        IObserverRefRegistry registry = client.GetObserverRegistry();
+
+        if (await registry.IsRegisteredAsync(observer))
+            throw new  n
+
+        var @ref = await client.CreateObjectReference<ISpaceObserver>(observer);
+        await registry.RegisterAsync(@ref);
 
         return new SpaceObserverRef(@ref);
     }
@@ -44,7 +52,9 @@ public static class Extensions
         if (@ref == null)
             throw new ArgumentNullException(nameof(@ref));
 
-        client.GetObserverRegistry().Deregister(@ref.Observer);
-        await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
+        IObserverRefRegistry registry = client.GetObserverRegistry();
+
+        if (await registry.IsRegisteredAsync(@ref.Observer))
+            await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
     }
 }

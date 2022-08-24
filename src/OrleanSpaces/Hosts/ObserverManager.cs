@@ -8,6 +8,7 @@ internal class ObserverManager
     private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers = new();
 
     public int Count => observers.Count;
+    public IEnumerable<ISpaceObserver> Observers => observers.Keys;
 
     public bool TryAdd(ISpaceObserver observer) =>
         observers.TryAdd(observer, DateTime.UtcNow);
