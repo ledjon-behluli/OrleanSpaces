@@ -6,7 +6,6 @@ using OrleanSpaces.Clients.Callbacks;
 using OrleanSpaces.Clients.Bridges;
 using OrleanSpaces.Core;
 using OrleanSpaces.Clients.Observers;
-using System;
 
 namespace OrleanSpaces.Clients;
 
@@ -36,15 +35,10 @@ public static class Extensions
         if (observer == null)
             throw new ArgumentException("Implementation of ISpaceObserver can not be null.");
 
-        IObserverRefRegistry registry = client.GetObserverRegistry();
+        var _observer = await client.CreateObjectReference<ISpaceObserver>(observer);
+        await client.GetObserverRegistry().RegisterAsync(_observer);
 
-        if (await registry.IsRegisteredAsync(observer))
-            throw new Exception($"Observer '{observer.GetType().FullName}' is already subscribed.");
-
-        var @ref = await client.CreateObjectReference<ISpaceObserver>(observer);
-        await registry.RegisterAsync(@ref);
-
-        return new SpaceObserverRef(@ref);
+        return new SpaceObserverRef(_observer);
     }
 
     public static async Task UnsubscribeAsync(this IClusterClient client, ISpaceObserverRef @ref)
@@ -52,19 +46,12 @@ public static class Extensions
         if (@ref == null)
             throw new ArgumentNullException(nameof(@ref));
 
-        IObserverRefRegistry registry = client.GetObserverRegistry();
+        ISpaceObserverRegistry registry = client.GetObserverRegistry();
 
-        if (!await registry.IsRegisteredAsync(@ref.Observer))
-            throw new Exception($"Observer '{@ref.Observer.GetType().FullName}' is already unsubscribed.");
-
-        await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
-    }
-
-    public static async ValueTask<bool> IsSubscribedAsync(this IClusterClient client, ISpaceObserverRef @ref)
-    {
-        if (@ref == null)
-            throw new ArgumentNullException(nameof(@ref));
-
-        return await client.GetObserverRegistry().IsRegisteredAsync(@ref.Observer);
+        if (await registry.IsRegisteredAsync(@ref.Observer))
+        {
+            await registry.DeregisterAsync(@ref.Observer);
+            await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
+        }
     }
 }

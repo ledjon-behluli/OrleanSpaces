@@ -5,7 +5,7 @@ namespace OrleanSpaces.Core;
 
 internal static class Extensions
 {
-    public static IObserverRefRegistry GetObserverRegistry(this IGrainFactory factory)
+    public static ISpaceObserverRegistry GetObserverRegistry(this IGrainFactory factory)
         => factory.GetSpaceGrain();
 
     public static ISpaceGrain GetSpaceGrain(this IGrainFactory factory) 

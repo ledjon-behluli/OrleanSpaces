@@ -19,7 +19,6 @@ var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 var ponger = new Ponger(spaceClient);
 var pongerRef = await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
 
-
 while (true)
 {
     Console.WriteLine("Type a message...");
@@ -48,9 +47,7 @@ foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitFiel
     Console.WriteLine(tuple);
 }
 
-if (!await client.IsSubscribedAsync(pongerRef))
-    await client.UnsubscribeAsync(pongerRef);
-
+await client.UnsubscribeAsync(pongerRef);
 await client.Close();
 
 Console.WriteLine("\nPress any key to terminate...");

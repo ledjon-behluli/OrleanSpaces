@@ -30,7 +30,10 @@ internal class SpaceGrain : Grain, ISpaceGrain
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    ValueTask IObserverRefRegistry.RegisterAsync(ISpaceObserver observer)
+    ValueTask<bool> ISpaceObserverRegistry.IsRegisteredAsync(ISpaceObserver observer)
+        => new(manager.Observers.Any(x => x.Equals(observer)));
+
+    ValueTask ISpaceObserverRegistry.RegisterAsync(ISpaceObserver observer)
     {
         if (manager.TryAdd(observer))
         {
@@ -40,7 +43,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return new();
     }
 
-    ValueTask IObserverRefRegistry.DeregisterAsync(ISpaceObserver observer)
+    ValueTask ISpaceObserverRegistry.DeregisterAsync(ISpaceObserver observer)
     {
         if (manager.TryRemove(observer))
         {
@@ -49,9 +52,6 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
         return new();
     }
-
-    ValueTask<bool> IObserverRefRegistry.IsRegisteredAsync(ISpaceObserver observer)
-        => new(manager.Observers.Any(x => x == observer));
 
     public async Task WriteAsync(SpaceTuple tuple)
     {

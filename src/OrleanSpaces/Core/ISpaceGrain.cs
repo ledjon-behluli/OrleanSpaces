@@ -4,7 +4,7 @@ using OrleanSpaces.Core.Primitives;
 
 namespace OrleanSpaces.Core;
 
-internal interface ISpaceGrain : IGrainWithGuidKey, IObserverRefRegistry
+internal interface ISpaceGrain : IGrainWithGuidKey, ISpaceObserverRegistry
 {
     /// <summary>
     /// <para>Used to write a <see cref="SpaceTuple"/> in the <see cref="ISpaceGrain"/>.</para>
