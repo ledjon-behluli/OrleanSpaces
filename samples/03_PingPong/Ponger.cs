@@ -5,30 +5,27 @@ using OrleanSpaces.Core.Primitives;
 public class Ponger : ISpaceObserver
 {
     private readonly ISpaceClient _client;
-    private readonly SpaceTemplate _template;
+    private readonly SpaceTemplate _template = SpaceTemplate.Create((Constants.EXCHANGE_KEY, "Ping"));
 
-    public Ponger(ISpaceClient client)
-    {
-        _client = client;
-        _template = SpaceTemplate.Create(("Ping", UnitField.Null));
-    }
+    public int Iterations { get; private set; }
 
-    public async Task PongAsync()
-    {
-        SpaceTuple tuple = SpaceTuple.Create(("Pong", DateTime.Now));
-        await _client.WriteAsync(tuple);
-        Console.WriteLine($"PONG-er: Sent out '{tuple}'");
-    }
+    public Ponger(ISpaceClient client) => _client = client;
 
-    public void Receive(SpaceTuple tuple)
+    public async Task ReceiveAsync(SpaceTuple tuple)
     {
         if (_template.IsSatisfied(tuple))
         {
-            Console.WriteLine($"PONG-er: Yep this is it '{tuple}'");
+            Console.WriteLine($"PONG-er: Received = {tuple}");
+
+            await Task.Delay(500);
+            var _tuple = SpaceTuple.Create((Constants.EXCHANGE_KEY, "Pong"));
+            await _client.WriteAsync(_tuple);
+
+            Console.WriteLine($"PONG-er: Wrote back = {_tuple}\n");
+
+            Iterations++;
         }
-        else
-        {
-            Console.WriteLine($"PONG-er: Not what I need '{tuple}'");
-        }
+
+        Console.WriteLine("PONG-er: Not what i am looking");
     }
 }

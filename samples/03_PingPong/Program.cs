@@ -6,35 +6,53 @@ using OrleanSpaces.Core.Primitives;
 var client = new ClientBuilder()
     .UseLocalhostClustering()
     .UseTupleSpace()
-    .ConfigureServices(services =>
-    {
-        services.AddTransient<Pinger>();
-        services.AddTransient<Ponger>();
-    })
+    //.ConfigureServices(services =>
+    //{
+    //    services.AddSingleton<Pinger>();
+    //    services.AddSingleton<Ponger>();
+    //})
     .Build();
 
 await client.Connect();
 
-Console.WriteLine("Connected to the tuple space.\n\n");
+Console.WriteLine("Connected to the tuple space.\n");
 
-var pinger = client.ServiceProvider.GetRequiredService<Pinger>();
-var ponger = client.ServiceProvider.GetRequiredService<Ponger>();
+var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
-await client.SubscribeAsync(pinger);  // OR -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
-await client.SubscribeAsync(ponger);  // OR -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
+//await Task.Run(async () =>
+//{
+//    await client.SubscribeAsync(sp => sp.GetRequiredService<Pinger>());
+//    await client.SubscribeAsync(sp => sp.GetRequiredService<Ponger>());
 
-await pinger.PingAsync();
-await ponger.PongAsync();
+//    await spaceClient.WriteAsync(SpaceTuple.Create(("Ping", "Start")));
+//});
 
-ConsoleKeyInfo input;
+var pinger = new Pinger(spaceClient);
+var ponger = new Ponger(spaceClient);
 
-do
+await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
+await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
+
+await spaceClient.WriteAsync(SpaceTuple.Create((Constants.EXCHANGE_KEY, "Ping")));
+
+while (true)
 {
-    input = Console.ReadKey();
-} 
-while (input.Key != ConsoleKey.Escape);
+    if (pinger.Iterations == 10 && ponger.Iterations == 10)
+    {
+        var tuples = await spaceClient.ScanAsync(SpaceTemplate.CreateWithDefaults(2));
+
+        Console.WriteLine("\nTotal tuples in space:\n");
+
+        foreach (var tuple in tuples)
+        {
+            Console.WriteLine(tuple);
+        }
+
+        break;
+    }
+}
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
-Console.ReadLine();
+Console.ReadKey();
 
 await client.Close();

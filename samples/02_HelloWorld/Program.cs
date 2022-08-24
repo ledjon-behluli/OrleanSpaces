@@ -27,8 +27,8 @@ var task1 = Task.Run(async () =>
     while (true)
     {
         Console.WriteLine($"THREAD 1: Searching for matching tuple with template: {template}");
-        SpaceTuple? helloWorldTuple = await spaceClient.PeekAsync(template);
 
+        var helloWorldTuple = await spaceClient.PeekAsync(template);
         if (helloWorldTuple != null)
         {
             Console.WriteLine($"THREAD 1: Found this tuple: {helloWorldTuple}");
@@ -46,7 +46,7 @@ var task2 = Task.Run(async () =>
 
     while (true)
     {
-        SpaceTuple? helloTuple = await spaceClient.PeekAsync(template);
+        var helloTuple = await spaceClient.PeekAsync(template);
         if (helloTuple != null)
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
@@ -66,6 +66,6 @@ var task2 = Task.Run(async () =>
 Task.WaitAll(task1, task2);
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
-Console.ReadLine();
+Console.ReadKey();
 
 await client.Close();

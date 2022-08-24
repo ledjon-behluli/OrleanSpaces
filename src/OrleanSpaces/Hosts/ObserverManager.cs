@@ -9,13 +9,13 @@ internal class ObserverManager
 
     public int Count => observers.Count;
 
-    public bool TryAdd(ISpaceObserver observer) => 
+    public bool TryAdd(ISpaceObserver observer) =>
         observers.TryAdd(observer, DateTime.UtcNow);
 
     public bool TryRemove(ISpaceObserver observer) =>
         observers.TryRemove(observer, out _);
 
-    public async Task BroadcastAsync(Func<ISpaceObserver, Task> notification)
+    public void Broadcast(Action<ISpaceObserver> notification)
     {
         List<ISpaceObserver> defected = new();
 
@@ -23,7 +23,7 @@ internal class ObserverManager
         {
             try
             {
-                await notification(observer.Key);
+                notification(observer.Key);
             }
             catch (Exception)
             {

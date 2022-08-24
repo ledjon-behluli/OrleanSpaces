@@ -49,9 +49,9 @@ internal class SpaceGrain : Grain, ISpaceGrain
     public async Task WriteAsync(SpaceTuple tuple)
     {
         space.State.Tuples.Add(tuple);
-
         await space.WriteStateAsync();
-        await manager.BroadcastAsync(async observer => await observer.Receive(tuple));
+
+        manager.Broadcast(observer => observer.ReceiveAsync(tuple).Ignore());
     }
 
     public async Task EvaluateAsync(byte[] serializedFunc)

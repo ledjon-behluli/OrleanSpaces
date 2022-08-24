@@ -6,7 +6,7 @@ SpaceTupleEquality();
 SpaceTemplateEquality();
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
-Console.ReadLine();
+Console.ReadKey();
 
 static void SpaceTupleSyntax()
 {

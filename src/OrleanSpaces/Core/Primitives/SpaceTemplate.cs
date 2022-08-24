@@ -39,6 +39,18 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
+    public static SpaceTemplate CreateWithDefaults(uint numberOfFields)
+    {
+        var unitFields = new UnitField[numberOfFields];
+
+        for (int i = 0; i < numberOfFields; i++)
+        {
+            unitFields[i] = UnitField.Null;
+        }
+
+        return new(unitFields);
+    }
+
     public bool IsSatisfied(SpaceTuple tuple)
     {
         if (tuple is null)

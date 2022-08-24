@@ -20,7 +20,7 @@ internal class SpaceAgent : ICallbackRegistry, ISpaceObserver
         templateCallbacks[template].Add(callback);
     }
 
-    public async Task Receive(SpaceTuple tuple)
+    public async Task ReceiveAsync(SpaceTuple tuple)
     {
         foreach (var pair in templateCallbacks.Where(x => x.Key.Length == tuple.Length))
         {

@@ -7,5 +7,5 @@ namespace OrleanSpaces.Core.Observers;
 public interface ISpaceObserver : IGrainObserver
 {
     [OneWay]
-    Task Receive(SpaceTuple tuple);
+    Task ReceiveAsync(SpaceTuple tuple);
 }
