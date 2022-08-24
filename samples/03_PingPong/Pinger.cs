@@ -10,7 +10,7 @@ public static class Constants
 public class Pinger : ISpaceObserver
 {
 	private readonly ISpaceClient _client;
-    private readonly SpaceTemplate _template = SpaceTemplate.Create((Constants.EXCHANGE_KEY, "Pong"));
+    private readonly SpaceTemplate _template = SpaceTemplate.Create(("Pong", UnitField.Null));
 
     public int Iterations { get; private set; }
 
@@ -23,7 +23,7 @@ public class Pinger : ISpaceObserver
             Console.WriteLine($"PING-er: Received = {tuple}");
 
             await Task.Delay(500);
-            var _tuple = SpaceTuple.Create((Constants.EXCHANGE_KEY, "Ping"));
+            var _tuple = SpaceTuple.Create(("Ping", DateTime.Now));
             await _client.WriteAsync(_tuple);
 
             Console.WriteLine($"PING-er: Wrote back = {_tuple}\n");

@@ -6,11 +6,6 @@ using OrleanSpaces.Core.Primitives;
 var client = new ClientBuilder()
     .UseLocalhostClustering()
     .UseTupleSpace()
-    //.ConfigureServices(services =>
-    //{
-    //    services.AddSingleton<Pinger>();
-    //    services.AddSingleton<Ponger>();
-    //})
     .Build();
 
 await client.Connect();
@@ -19,40 +14,40 @@ Console.WriteLine("Connected to the tuple space.\n");
 
 var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
-//await Task.Run(async () =>
-//{
-//    await client.SubscribeAsync(sp => sp.GetRequiredService<Pinger>());
-//    await client.SubscribeAsync(sp => sp.GetRequiredService<Ponger>());
-
-//    await spaceClient.WriteAsync(SpaceTuple.Create(("Ping", "Start")));
-//});
-
 var pinger = new Pinger(spaceClient);
 var ponger = new Ponger(spaceClient);
 
 await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
 await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
 
-await spaceClient.WriteAsync(SpaceTuple.Create((Constants.EXCHANGE_KEY, "Ping")));
+await Kickstart();
 
-while (true)
-{
-    if (pinger.Iterations == 10 && ponger.Iterations == 10)
-    {
-        var tuples = await spaceClient.ScanAsync(SpaceTemplate.CreateWithDefaults(2));
-
-        Console.WriteLine("\nTotal tuples in space:\n");
-
-        foreach (var tuple in tuples)
-        {
-            Console.WriteLine(tuple);
-        }
-
-        break;
-    }
-}
+await client.UnsubscribeAsync(pinger);
+await client.UnsubscribeAsync(ponger);
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
 Console.ReadKey();
 
 await client.Close();
+
+async Task Kickstart()
+{
+    await spaceClient.WriteAsync(SpaceTuple.Create(("Ping", "Kickstart")));
+
+    while (true)
+    {
+        if (pinger.Iterations >= 10 && ponger.Iterations >= 10)
+        {
+            Console.WriteLine("\nTotal tuples in space:\n\n");
+
+            foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.CreateWithDefaults(2)))
+            {
+                Console.WriteLine($"{tuple}\n");
+            }
+
+            break;
+        }
+
+        //await Task.Delay(100);
+    }
+}
