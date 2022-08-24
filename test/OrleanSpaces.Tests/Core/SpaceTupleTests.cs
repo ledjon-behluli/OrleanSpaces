@@ -33,6 +33,12 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Exception_Should_Be_Thrown_On_Null_Object()
+    {
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((object)null));
+    }
+
+    [Fact]
     public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create(new ValueTuple()));

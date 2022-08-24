@@ -20,17 +20,15 @@ public class Pinger : ISpaceObserver
 	{
 		if (_template.IsSatisfied(tuple))
 		{
-            Console.WriteLine($"PING-er: Received = {tuple}");
+            Console.WriteLine("PING-er: Received = {tuple}");
 
-            await Task.Delay(500);
+            //await Task.Delay(500);
             var _tuple = SpaceTuple.Create(("Ping", DateTime.Now));
             await _client.WriteAsync(_tuple);
 
-            Console.WriteLine($"PING-er: Wrote back = {_tuple}\n");
+            Console.WriteLine($"PING-er: Wrote back = {_tuple}");
             
             Iterations++;
 		}
-
-        Console.WriteLine("PONG-er: Not what i am looking");
     }
 }

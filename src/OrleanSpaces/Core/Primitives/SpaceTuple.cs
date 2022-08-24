@@ -25,7 +25,16 @@ public sealed class SpaceTuple : ITuple, IEquatable<SpaceTuple>
         _fields = fields;
     }
 
-    public static SpaceTuple Create(object field) => new(field);
+    public static SpaceTuple Create(object field)
+    {
+        if (field is null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
+        return new(field);
+    }
+
     public static SpaceTuple Create(ITuple tuple)
     {
         if (tuple is null)

@@ -17,15 +17,13 @@ public class Ponger : ISpaceObserver
         {
             Console.WriteLine($"PONG-er: Received = {tuple}");
 
-            await Task.Delay(500);
+            //await Task.Delay(500);
             var _tuple = SpaceTuple.Create(("Pong", DateTime.Now));
             await _client.WriteAsync(_tuple);
 
-            Console.WriteLine($"PONG-er: Wrote back = {_tuple}\n");
+            Console.WriteLine($"PONG-er: Wrote back = {_tuple}");
 
             Iterations++;
         }
-
-        Console.WriteLine("PONG-er: Not what i am looking");
     }
 }

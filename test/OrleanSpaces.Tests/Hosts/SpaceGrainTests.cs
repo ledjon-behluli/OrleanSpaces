@@ -13,12 +13,12 @@ public class SpaceGrainTests
         cluster = fixture.Cluster;
     }
 
-    [Fact]
-    public async Task SaysHelloCorrectly()
-    {
-        ISpaceGrain grain = cluster.GrainFactory.GetSpaceGrain();
-        int tupleCount = await grain.CountAsync();
+    //[Fact]
+    //public async Task SaysHelloCorrectly()
+    //{
+    //    ISpaceGrain grain = cluster.GrainFactory.GetSpaceGrain();
+    //    int tupleCount = await grain.CountAsync();
 
-        Assert.Equal(0, tupleCount);
-    }
+    //    Assert.Equal(0, tupleCount);
+    //}
 }

@@ -1,4 +1,5 @@
 ﻿using OrleanSpaces.Core.Utils;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Core.Primitives;
@@ -15,13 +16,22 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     {
         if (fields.Length == 0)
         {
-            throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed."); ;
+            throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed.");
         }
 
         _fields = fields;
     }
 
-    public static SpaceTemplate Create(object field) => new(field);
+    public static SpaceTemplate Create(object field)
+    {
+        if (field is null)
+        {
+            throw new ArgumentNullException(nameof(field));
+        }
+
+        return new(field);
+    }
+
     public static SpaceTemplate Create(ITuple tuple)
     {
         if (tuple is null)
@@ -37,18 +47,6 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         }
 
         return new(fields);
-    }
-
-    public static SpaceTemplate CreateWithDefaults(uint numberOfFields)
-    {
-        var unitFields = new UnitField[numberOfFields];
-
-        for (int i = 0; i < numberOfFields; i++)
-        {
-            unitFields[i] = UnitField.Null;
-        }
-
-        return new(unitFields);
     }
 
     public bool IsSatisfied(SpaceTuple tuple)

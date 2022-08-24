@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Core.Primitives;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Core;
 
@@ -67,6 +68,12 @@ public class SpaceTemplateTests
     public void Exception_Should_Be_Thrown_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
+    }
+
+    [Fact]
+    public void Exception_Should_Be_Thrown_On_Null_Object()
+    {
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((object)null));
     }
 
     [Fact]

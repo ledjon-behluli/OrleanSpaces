@@ -17,9 +17,21 @@ var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 var pinger = new Pinger(spaceClient);
 var ponger = new Ponger(spaceClient);
 
+
+await client.SubscribeAsync(pinger);
+await Task.Delay(5000);
+await client.UnsubscribeAsync(pinger);
+await Task.Delay(5000);
+
+
+
+
+
+
 await client.SubscribeAsync(pinger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Pinger>())
 await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
 
+await Task.Delay(5000);
 await Kickstart();
 
 await client.UnsubscribeAsync(pinger);
@@ -36,11 +48,11 @@ async Task Kickstart()
 
     while (true)
     {
-        if (pinger.Iterations >= 10 && ponger.Iterations >= 10)
+        if (pinger.Iterations >= 3 && ponger.Iterations >= 3)
         {
             Console.WriteLine("\nTotal tuples in space:\n\n");
 
-            foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.CreateWithDefaults(2)))
+            foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
             {
                 Console.WriteLine($"{tuple}\n");
             }
