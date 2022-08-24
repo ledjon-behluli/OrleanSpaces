@@ -39,7 +39,7 @@ public static class Extensions
         IObserverRefRegistry registry = client.GetObserverRegistry();
 
         if (await registry.IsRegisteredAsync(observer))
-            throw new  n
+            throw new Exception($"Observer '{observer.GetType().FullName}' is already subscribed.");
 
         var @ref = await client.CreateObjectReference<ISpaceObserver>(observer);
         await registry.RegisterAsync(@ref);
@@ -54,7 +54,17 @@ public static class Extensions
 
         IObserverRefRegistry registry = client.GetObserverRegistry();
 
-        if (await registry.IsRegisteredAsync(@ref.Observer))
-            await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
+        if (!await registry.IsRegisteredAsync(@ref.Observer))
+            throw new Exception($"Observer '{@ref.Observer.GetType().FullName}' is already unsubscribed.");
+
+        await client.DeleteObjectReference<ISpaceObserver>(@ref.Observer);
+    }
+
+    public static async ValueTask<bool> IsSubscribedAsync(this IClusterClient client, ISpaceObserverRef @ref)
+    {
+        if (@ref == null)
+            throw new ArgumentNullException(nameof(@ref));
+
+        return await client.GetObserverRegistry().IsRegisteredAsync(@ref.Observer);
     }
 }

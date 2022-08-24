@@ -18,7 +18,6 @@ var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
 var ponger = new Ponger(spaceClient);
 var pongerRef = await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
-var pongerRef1 = await client.SubscribeAsync(ponger);
 
 
 while (true)
@@ -43,12 +42,15 @@ while (true)
 
 Console.WriteLine("----------------------\n");
 Console.WriteLine("Total tuples in space:\n");
+
 foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
 {
     Console.WriteLine(tuple);
 }
 
-await client.UnsubscribeAsync(pongerRef);
+if (!await client.IsSubscribedAsync(pongerRef))
+    await client.UnsubscribeAsync(pongerRef);
+
 await client.Close();
 
 Console.WriteLine("\nPress any key to terminate...");
