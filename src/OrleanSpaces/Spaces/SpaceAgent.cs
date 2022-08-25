@@ -4,7 +4,7 @@ using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Grains;
+namespace OrleanSpaces.Spaces;
 
 internal class SpaceAgent : IAsyncObserver<SpaceTuple>
 {

@@ -4,7 +4,7 @@ using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Grains;
+namespace OrleanSpaces.Spaces;
 
 [Serializable]
 internal class SpaceState

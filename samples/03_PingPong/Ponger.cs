@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Clients;
+﻿using OrleanSpaces;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 

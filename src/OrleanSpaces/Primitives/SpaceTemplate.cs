@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Utils;
-using System;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;

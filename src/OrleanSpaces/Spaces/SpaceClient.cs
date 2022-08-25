@@ -1,18 +1,17 @@
 ﻿using Orleans;
 using OrleanSpaces.Callbacks;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Clients;
+namespace OrleanSpaces.Spaces;
 
 internal class SpaceClient : ISpaceClient
 {
     private readonly IGrainFactory factory;
     private readonly ICallbackRegistry callbackRegistry;
     private readonly IObserverRegistry observerRegistry;
-    
+
     private ISpaceGrain Grain => factory.GetSpaceGrain();
 
     public SpaceClient(

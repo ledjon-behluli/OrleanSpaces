@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Observers;
 
-public readonly ref struct ObserverRef
+public readonly struct ObserverRef
 {
     public readonly Guid Id;
     public readonly ISpaceObserver Observer;

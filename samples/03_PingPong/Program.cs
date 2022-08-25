@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Orleans;
-using OrleanSpaces.Clients;
+﻿using Orleans;
+using OrleanSpaces;
 using OrleanSpaces.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 
 var client = new ClientBuilder()
     .UseLocalhostClustering()
@@ -17,7 +17,7 @@ Console.WriteLine("Type -r to see results.");
 var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 
 var ponger = new Ponger(spaceClient);
-var pongerRef = await client.SubscribeAsync(ponger);  // If IoC is used -> SubscribeAsync(sp => sp.GetRequiredService<Ponger>())
+var pongerRef = spaceClient.Subscribe(ponger);
 
 while (true)
 {
@@ -29,7 +29,7 @@ while (true)
 
     if (message == "-u")
     {
-        await client.UnsubscribeAsync(pongerRef);
+        spaceClient.Unsubscribe(pongerRef);
         continue;
     }
 
@@ -47,7 +47,7 @@ foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitFiel
     Console.WriteLine(tuple);
 }
 
-await client.UnsubscribeAsync(pongerRef);
+spaceClient.Unsubscribe(pongerRef);
 await client.Close();
 
 Console.WriteLine("\nPress any key to terminate...");

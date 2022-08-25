@@ -1,6 +1,5 @@
 ﻿using Orleans.Hosting;
 using Microsoft.Extensions.Logging;
-using OrleanSpaces.Hosts;
 using OrleanSpaces;
 
 var host = new SiloHostBuilder()

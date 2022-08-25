@@ -1,11 +1,10 @@
 ﻿using Orleans;
 using Orleans.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Clients;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
+using OrleanSpaces.Spaces;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
@@ -17,7 +16,7 @@ internal static class This
 internal static class GrainFactoryExtensions
 {
     public static ISpaceGrain GetSpaceGrain(this IGrainFactory factory)
-        => factory.GetGrain<ISpaceGrain>(Guid.Empty);
+        => factory.GetGrain<SpaceGrain>(Guid.Empty);
 }
 
 public static class SiloBuilderExtensions
