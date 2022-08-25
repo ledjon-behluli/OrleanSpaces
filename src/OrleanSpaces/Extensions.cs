@@ -50,6 +50,7 @@ public static class ClientBuilderExtensions
             services.AddSingleton<ISpaceClient, SpaceClient>();
 
             services.AddSingleton<SpaceAgent>();
+            services.AddHostedService<AgentActivator>();
         });
 
         return builder;
