@@ -1,6 +1,7 @@
 ﻿using Orleans;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Grains;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
@@ -8,18 +9,27 @@ namespace OrleanSpaces.Clients;
 
 internal class SpaceClient : ISpaceClient
 {
-    private readonly ICallbackRegistry registry;
     private readonly IGrainFactory factory;
-
-    private ITupleSpace Grain => factory.GetSpaceGrain();
+    private readonly ICallbackRegistry callbackRegistry;
+    private readonly IObserverRegistry observerRegistry;
+    
+    private ISpaceGrain Grain => factory.GetSpaceGrain();
 
     public SpaceClient(
-        ICallbackRegistry registry,
-        IGrainFactory factory)
+        IGrainFactory factory,
+        ICallbackRegistry callbackRegistry,
+        IObserverRegistry observerRegistry)
     {
-        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
+        this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
+
+    public ObserverRef Subscribe(ISpaceObserver observer)
+        => new(observerRegistry.Register(observer), observer);
+
+    public void Unsubscribe(ObserverRef @ref)
+        => observerRegistry.Deregister(@ref.Observer);
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await Grain.WriteAsync(tuple);
@@ -40,7 +50,7 @@ internal class SpaceClient : ISpaceClient
         }
         else
         {
-            registry.Register(template, callback);
+            callbackRegistry.Register(template, callback);
         }
     }
 
@@ -57,7 +67,7 @@ internal class SpaceClient : ISpaceClient
         }
         else
         {
-            registry.Register(template, callback);
+            callbackRegistry.Register(template, callback);
         }
     }
 

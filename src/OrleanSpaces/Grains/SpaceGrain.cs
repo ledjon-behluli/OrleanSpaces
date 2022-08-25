@@ -12,7 +12,7 @@ internal class SpaceState
     public List<SpaceTuple> Tuples { get; set; } = new();
 }
 
-internal class SpaceGrain : Grain, ITupleSpace
+internal class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<SpaceState> space;
 
@@ -27,11 +27,13 @@ internal class SpaceGrain : Grain, ITupleSpace
 
     public override Task OnActivateAsync()
     {
-        stream = GetStreamProvider(Constants.StreamProviderName)
-                .GetStream<SpaceTuple>(this.GetPrimaryKey(), Constants.StreamNamespace);
+        var provider = GetStreamProvider(Constants.StreamProviderName);
+        stream = provider.GetStream<SpaceTuple>(this.GetPrimaryKey(), Constants.StreamNamespace);
 
         return base.OnActivateAsync();
     }
+
+    public ValueTask<Guid> ConnectAsync() => new(stream.Guid);
 
     public async Task WriteAsync(SpaceTuple tuple)
     {

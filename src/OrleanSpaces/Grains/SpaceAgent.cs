@@ -1,66 +1,42 @@
-﻿using Microsoft.Extensions.Logging;
-using Orleans;
+﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Callbacks;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
-using OrleanSpaces.Utils;
-using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Grains;
 
-
-[ImplicitStreamSubscription(Constants.StreamNamespace)]
-internal class SpaceAgent : Grain, ICallbackRegistry, IAsyncObserver<SpaceTuple>
+internal class SpaceAgent : IAsyncObserver<SpaceTuple>
 {
-    private readonly ILogger<SpaceAgent> logger;
-    private readonly ConcurrentDictionary<SpaceTemplate, List<Func<SpaceTuple, Task>>> templateCallbacks;
+    private readonly IClusterClient client;
 
-    public SpaceAgent(ILogger<SpaceAgent> logger)
+    public SpaceAgent(IClusterClient client)
     {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        templateCallbacks = new();
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public override async Task OnActivateAsync()
+    public async Task ActivateAsync()
     {
-        await GetStreamProvider(Constants.StreamProviderName)
-             .GetStream<SpaceTuple>(this.GetPrimaryKey(), Constants.StreamNamespace)
-             .SubscribeAsync(this);
+        var streamId = await client.GetSpaceGrain().ConnectAsync();
+        var provider = client.GetStreamProvider(Constants.StreamProviderName);
+        var stream = provider.GetStream<SpaceTuple>(streamId, Constants.StreamNamespace);
 
-        await base.OnActivateAsync();
-    }
-
-    public void Register(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-    {
-        if (!templateCallbacks.ContainsKey(template))
-        {
-            templateCallbacks.TryAdd(template, new());
-        }
-
-        templateCallbacks[template].Add(callback);
+        await stream.SubscribeAsync(this);
     }
 
     public async Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
     {
-        foreach (var pair in templateCallbacks.Where(x => x.Key.Length == tuple.Length))
-        {
-            if (TupleMatcher.IsMatch(tuple, pair.Key))
-            {
-                foreach (var callback in templateCallbacks[pair.Key])
-                {
-                    await CallbackChannel.Writer.WriteAsync(new(tuple, callback));
-                }
-
-                templateCallbacks.TryRemove(pair.Key, out _);
-            }
-        }
+        await CallbackChannel.Writer.WriteAsync(tuple);
+        await ObserverChannel.Writer.WriteAsync(tuple);
     }
 
-    public Task OnCompletedAsync() => Task.CompletedTask;
-
-    public Task OnErrorAsync(Exception e)
+    public Task OnCompletedAsync()
     {
-        logger.LogError(e, e.Message);
+        CallbackChannel.Writer.Complete();
+        ObserverChannel.Writer.Complete();
+
         return Task.CompletedTask;
     }
+
+    public Task OnErrorAsync(Exception e) => Task.CompletedTask;
 }

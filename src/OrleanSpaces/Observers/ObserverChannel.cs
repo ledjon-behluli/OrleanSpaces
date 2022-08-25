@@ -1,9 +1,9 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Threading.Channels;
 
-namespace OrleanSpaces.Callbacks;
+namespace OrleanSpaces.Observers;
 
-internal static class CallbackChannel
+internal static class ObserverChannel
 {
     private readonly static Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>();
 

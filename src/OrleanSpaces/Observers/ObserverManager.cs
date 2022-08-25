@@ -1,43 +1,53 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OrleanSpaces.Primitives;
+using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverManager
+internal class ObserverManager : BackgroundService, IObserverRegistry
 {
-    private readonly ConcurrentDictionary<ISpaceObserver, DateTime> observers = new();
+    private readonly ILogger<ObserverManager> logger;
+    private readonly ConcurrentDictionary<ISpaceObserver, Guid> observers = new();
 
-    public int Count => observers.Count;
-    public IEnumerable<ISpaceObserver> Observers => observers.Keys;
-
-    public bool TryAdd(ISpaceObserver observer) =>
-        observers.TryAdd(observer, DateTime.UtcNow);
-
-    public bool TryRemove(ISpaceObserver observer) =>
-        observers.TryRemove(observer, out _);
-
-    public void Broadcast(Action<ISpaceObserver> notification)
+    public ObserverManager(ILogger<ObserverManager> logger)
     {
-        List<ISpaceObserver> defected = new();
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        foreach (var observer in observers)
+    public Guid Register(ISpaceObserver observer)
+    {
+        if (!observers.TryGetValue(observer, out Guid id))
+        {
+            observers.TryAdd(observer, id);
+        }
+
+        return id;
+    }
+
+    public void Deregister(ISpaceObserver observer)
+        => observers.TryRemove(observer, out _);
+
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Observer manager started.");
+
+        await foreach (SpaceTuple tuple in ObserverChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
-                notification(observer.Key);
+                var tasks = observers
+                    .Select(pair => new Task(() => pair.Key.OnTupleAsync(tuple)))
+                    .ToList();
+
+                await Task.WhenAll(tasks);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                defected ??= new List<ISpaceObserver>();
-                defected.Add(observer.Key);
+                logger.LogError(e, e.Message);
             }
         }
 
-        if (defected.Count > 0)
-        {
-            foreach (var observer in defected)
-            {
-                TryRemove(observer);
-            }
-        }
+        logger.LogInformation("Observer manager stopped.");
     }
 }

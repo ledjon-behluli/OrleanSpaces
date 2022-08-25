@@ -9,7 +9,7 @@ public class Ponger : ISpaceObserver
 
     public Ponger(ISpaceClient client) => _client = client;
 
-    public async Task ReceiveAsync(SpaceTuple tuple)
+    public async Task OnTupleAsync(SpaceTuple tuple)
     {
         if (_template.IsSatisfied(tuple))
         {

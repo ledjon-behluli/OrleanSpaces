@@ -1,11 +1,8 @@
-﻿using Orleans;
-using Orleans.Concurrency;
-using OrleanSpaces.Primitives;
+﻿using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Observers;
 
-public interface ISpaceObserver : IGrainObserver
+public interface ISpaceObserver
 {
-    [OneWay]
-    Task ReceiveAsync(SpaceTuple tuple);
+    Task OnTupleAsync(SpaceTuple tuple);
 }
