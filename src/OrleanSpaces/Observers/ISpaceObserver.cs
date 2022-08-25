@@ -1,8 +1,8 @@
 ﻿using Orleans;
 using Orleans.Concurrency;
-using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Core.Observers;
+namespace OrleanSpaces.Observers;
 
 public interface ISpaceObserver : IGrainObserver
 {

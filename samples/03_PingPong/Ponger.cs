@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Clients;
-using OrleanSpaces.Core.Observers;
-using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Observers;
+using OrleanSpaces.Primitives;
 
 public class Ponger : ISpaceObserver
 {

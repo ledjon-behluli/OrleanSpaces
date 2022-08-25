@@ -1,19 +1,42 @@
 ﻿using Orleans;
 using Orleans.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Core.Observers;
-using OrleanSpaces.Clients.Callbacks;
-using OrleanSpaces.Clients.Bridges;
-using OrleanSpaces.Core;
-using OrleanSpaces.Clients.Observers;
+using OrleanSpaces.Clients;
+using OrleanSpaces.Grains;
+using OrleanSpaces.Callbacks;
+using OrleanSpaces.Observers;
 
-namespace OrleanSpaces.Clients;
+namespace OrleanSpaces;
 
-public static class Extensions
+internal static class GrainFactoryExtensions
+{
+    public static ISpaceObserverRegistry GetObserverRegistry(this IGrainFactory factory)
+        => factory.GetSpaceGrain();
+
+    public static ITupleSpace GetSpaceGrain(this IGrainFactory factory)
+        => factory.GetGrain<ITupleSpace>(Guid.Empty);
+}
+
+public static class SiloBuilderExtensions
+{
+    public static ISiloBuilder ConfigureTupleSpace(this ISiloBuilder builder)
+    {
+        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(SiloBuilderExtensions).Assembly).WithReferences());
+        return builder;
+    }
+
+    public static ISiloHostBuilder ConfigureTupleSpace(this ISiloHostBuilder builder)
+    {
+        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(SiloBuilderExtensions).Assembly).WithReferences());
+        return builder;
+    }
+}
+
+public static class ClientBuilderExtensions
 {
     public static IClientBuilder UseTupleSpace(this IClientBuilder builder)
     {
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
+        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(ClientBuilderExtensions).Assembly).WithReferences());
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<SpaceAgent>();
@@ -24,7 +47,10 @@ public static class Extensions
 
         return builder;
     }
+}
 
+public static class ClusterClientExtensions
+{
     public static async Task<ISpaceObserverRef> SubscribeAsync(this IClusterClient client, ISpaceObserver observer)
         => await client.SubscribeAsync(_ => observer);
 
@@ -42,7 +68,7 @@ public static class Extensions
     }
 
     public static async Task UnsubscribeAsync(this IClusterClient client, ISpaceObserverRef @ref)
-    { 
+    {
         if (@ref == null)
             throw new ArgumentNullException(nameof(@ref));
 

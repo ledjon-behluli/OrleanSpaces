@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using OrleanSpaces.Clients;
-using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Primitives;
 
 var client = new ClientBuilder()
     .UseLocalhostClustering()

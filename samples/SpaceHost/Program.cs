@@ -1,12 +1,13 @@
 ﻿using Orleans.Hosting;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Hosts;
+using OrleanSpaces;
 
 var host = new SiloHostBuilder()
     .UseLocalhostClustering()
     .ConfigureTupleSpace()
     .ConfigureLogging(builder => builder.AddConsole())
-    .AddMemoryGrainStorageAsDefault()
+    .AddMemoryGrainStorage(Constants.StorageProviderName)
     .Build();
 
 await host.StartAsync();

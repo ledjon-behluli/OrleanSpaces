@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Core.Observers;
+﻿namespace OrleanSpaces.Observers;
 
 internal interface ISpaceObserverRegistry
 {

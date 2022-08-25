@@ -1,8 +1,8 @@
-﻿using OrleanSpaces.Core.Utils;
+﻿using OrleanSpaces.Utils;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Core.Primitives;
+namespace OrleanSpaces.Primitives;
 
 [Serializable]
 public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>

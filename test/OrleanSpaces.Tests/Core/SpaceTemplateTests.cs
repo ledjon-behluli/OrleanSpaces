@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Core.Primitives;
+﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 

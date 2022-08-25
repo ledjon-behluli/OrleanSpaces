@@ -1,6 +1,4 @@
-﻿using OrleanSpaces.Core.Observers;
-
-namespace OrleanSpaces.Clients.Observers;
+﻿namespace OrleanSpaces.Observers;
 
 internal class SpaceObserverRef : ISpaceObserverRef
 {

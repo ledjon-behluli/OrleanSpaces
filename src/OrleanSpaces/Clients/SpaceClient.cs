@@ -1,17 +1,17 @@
 ﻿using Orleans;
-using OrleanSpaces.Clients.Callbacks;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Primitives;
-using OrleanSpaces.Core.Utils;
+using OrleanSpaces.Callbacks;
+using OrleanSpaces.Grains;
+using OrleanSpaces.Primitives;
+using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Clients.Bridges;
+namespace OrleanSpaces.Clients;
 
 internal class SpaceClient : ISpaceClient
 {
     private readonly ICallbackRegistry registry;
     private readonly IGrainFactory factory;
 
-    private ISpaceGrain Grain => factory.GetSpaceGrain();
+    private ITupleSpace Grain => factory.GetSpaceGrain();
 
     public SpaceClient(
         ICallbackRegistry registry,
@@ -36,7 +36,7 @@ internal class SpaceClient : ISpaceClient
 
         if (tuple != null)
         {
-            await callback((SpaceTuple)tuple);
+            await callback(tuple);
         }
         else
         {
@@ -53,7 +53,7 @@ internal class SpaceClient : ISpaceClient
 
         if (tuple != null)
         {
-            await callback((SpaceTuple)tuple);
+            await callback(tuple);
         }
         else
         {

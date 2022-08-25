@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
-using OrleanSpaces.Core.Primitives;
+using OrleanSpaces.Primitives;
 using Serialize.Linq.Serializers;
 
-namespace OrleanSpaces.Core.Utils;
+namespace OrleanSpaces.Utils;
 
 internal static class LambdaSerializer
 {

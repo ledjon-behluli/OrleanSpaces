@@ -1,6 +1,6 @@
 ﻿using System.Threading.Channels;
 
-namespace OrleanSpaces.Clients.Callbacks;
+namespace OrleanSpaces.Callbacks;
 
 internal static class CallbackChannel
 {

@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Core.Primitives;
+﻿namespace OrleanSpaces.Primitives;
 
 [Serializable]
 public readonly struct UnitField : IEquatable<UnitField>, IComparable<UnitField>, IComparable

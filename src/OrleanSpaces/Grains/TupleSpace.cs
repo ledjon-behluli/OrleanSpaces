@@ -1,13 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Orleans;
+﻿using Orleans;
 using Orleans.Runtime;
-using OrleanSpaces.Core;
-using OrleanSpaces.Core.Observers;
-using OrleanSpaces.Core.Primitives;
-using OrleanSpaces.Core.Utils;
-using System.Threading.Tasks;
+using Orleans.Streams;
+using OrleanSpaces.Primitives;
+using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Hosts.Grains;
+namespace OrleanSpaces.Grains;
 
 [Serializable]
 internal class SpaceState
@@ -15,50 +12,33 @@ internal class SpaceState
     public List<SpaceTuple> Tuples { get; set; } = new();
 }
 
-internal class SpaceGrain : Grain, ISpaceGrain
+internal class SpaceGrain : Grain, ITupleSpace
 {
-    private readonly ObserverManager manager;
-    private readonly ILogger<SpaceGrain> logger;
     private readonly IPersistentState<SpaceState> space;
 
-    public SpaceGrain(
-        ILogger<SpaceGrain> logger,
-        [PersistentState("tupleSpace")] IPersistentState<SpaceState> space)
+    private IAsyncStream<SpaceTuple> stream;
+
+#nullable disable
+    public SpaceGrain([PersistentState("tupleSpace", Constants.StorageProviderName)] IPersistentState<SpaceState> space)
+#nullable enable
     {
-        this.manager = new ObserverManager();
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    ValueTask<bool> ISpaceObserverRegistry.IsRegisteredAsync(ISpaceObserver observer)
-        => new(manager.Observers.Any(x => x.Equals(observer)));
-
-    ValueTask ISpaceObserverRegistry.RegisterAsync(ISpaceObserver observer)
+    public override Task OnActivateAsync()
     {
-        if (manager.TryAdd(observer))
-        {
-            logger.LogInformation("Observer Registration - Current number of observers: {ObserversCount}", manager.Count);
-        }
+        stream = GetStreamProvider(Constants.StreamProviderName)
+                .GetStream<SpaceTuple>(this.GetPrimaryKey(), Constants.StreamNamespace);
 
-        return new();
-    }
-
-    ValueTask ISpaceObserverRegistry.DeregisterAsync(ISpaceObserver observer)
-    {
-        if (manager.TryRemove(observer))
-        {
-            logger.LogInformation("Observer Deregistration - Current number of observers: {ObserversCount}", manager.Count);
-        }
-
-        return new();
+        return base.OnActivateAsync();
     }
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
         space.State.Tuples.Add(tuple);
-        await space.WriteStateAsync();
 
-        manager.Broadcast(observer => observer.ReceiveAsync(tuple).Ignore());
+        await space.WriteStateAsync();
+        await stream.OnNextAsync(tuple);
     }
 
     public async Task EvaluateAsync(byte[] serializedFunc)

@@ -1,7 +1,6 @@
-﻿using OrleanSpaces.Core.Observers;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Hosts;
+namespace OrleanSpaces.Observers;
 
 internal class ObserverManager
 {
