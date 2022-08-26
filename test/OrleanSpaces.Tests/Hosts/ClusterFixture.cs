@@ -29,7 +29,7 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(ISiloBuilder siloBuilder)
         {
-            siloBuilder.AddTupleSpace();
+            siloBuilder.UseTupleSpace();
             siloBuilder.AddMemoryGrainStorageAsDefault();
         }
     }

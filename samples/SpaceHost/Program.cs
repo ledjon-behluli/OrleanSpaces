@@ -6,10 +6,10 @@ using Orleans;
 
 var host = new SiloHostBuilder()
     .UseLocalhostClustering()
-    .AddTupleSpace()
-    .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
-    .AddMemoryGrainStorage(StreamNames.PubSubStore)
-    .AddMemoryGrainStorage(StorageNames.TupleSpaceStore)
+    .UseTupleSpace()
+        .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+        .AddMemoryGrainStorage(StreamNames.PubSubStore)
+        .AddMemoryGrainStorage(StorageNames.TupleSpaceStore)
     .ConfigureLogging(builder => builder.AddConsole())
     .Build();
 

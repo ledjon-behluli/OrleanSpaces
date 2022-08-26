@@ -9,20 +9,14 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         var client = new ClientBuilder()
             .UseLocalhostClustering()
-            //.UseTupleSpace()
-            .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+            .UseTupleSpace()
+                .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
             .Build();
 
-        
         services.AddSingleton(client);
         services.AddHostedService<Worker>();
-        services.UseTupleSpace();
+        services.AddTupleSpace();
     })
     .Build();
 
 await host.RunAsync();
-
-
-
-
-

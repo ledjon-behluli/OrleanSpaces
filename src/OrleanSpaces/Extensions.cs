@@ -7,36 +7,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
-public static class SiloExtensions
+public static class Extensions
 {
-    public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
+    public static ISiloBuilder UseTupleSpace(this ISiloBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(SiloExtensions).Assembly).WithReferences());
+            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
  
-    public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
+    public static ISiloHostBuilder UseTupleSpace(this ISiloHostBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(SiloExtensions).Assembly).WithReferences());
-}
+            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
-public static class ClientExtensions
-{
+    // TODO: Might not need it at all!!!
     public static IClientBuilder UseTupleSpace(this IClientBuilder builder) =>
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(ClientExtensions).Assembly).WithReferences());
-            //.ConfigureServices(services =>
-            //{
-            //    services.AddSingleton<ICallbackRegistry, CallbackManager>();
-            //    services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
-
-            //    services.AddSingleton<IObserverRegistry, ObserverManager>();
-            //    services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
-
-            //    services.AddSingleton<SpaceAgent>();
-            //    services.AddHostedService<AgentActivator>();
-
-            //    services.AddSingleton<ISpaceClient, SpaceClient>();
-            //});
-
-    public static IServiceCollection UseTupleSpace(this IServiceCollection services)
+        builder.ConfigureApplicationParts(parts => 
+            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
+   
+    public static IServiceCollection AddTupleSpace(this IServiceCollection services)
     {
         services.AddSingleton<ICallbackRegistry, CallbackManager>();
         services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());

@@ -16,7 +16,7 @@ internal class AgentActivator : BackgroundService
         ILogger<AgentActivator> logger)
     {
         this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
-        this.client = client ?? throw new ArgumentNullException(nameof(agent));
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -26,18 +26,20 @@ internal class AgentActivator : BackgroundService
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (client.IsInitialized)
+            if (!client.IsInitialized)
             {
-                try
-                {
-                    await agent.InitializeAsync(client);
-                    break;
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "Failed to initialize space agent.");
-                    throw;
-                }
+                await client.Connect();
+            }
+
+            try
+            {
+                await agent.InitializeAsync(client);
+                break;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Failed to initialize space agent.");
+                throw;
             }
 
             await Task.Delay(100);
