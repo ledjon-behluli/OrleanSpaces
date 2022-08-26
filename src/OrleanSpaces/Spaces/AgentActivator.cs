@@ -1,35 +1,48 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace OrleanSpaces.Spaces;
 
 internal class AgentActivator : BackgroundService
 {
-    private readonly ILogger<AgentActivator> logger;
     private readonly SpaceAgent agent;
+    private readonly IClusterClient client;
+    private readonly ILogger<AgentActivator> logger;
 
     public AgentActivator(
         SpaceAgent agent,
+        IClusterClient client,
         ILogger<AgentActivator> logger)
     {
         this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
+        this.client = client ?? throw new ArgumentNullException(nameof(agent));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        try
-        {
-            logger.LogDebug("Initializing Space gent.");
+        logger.LogDebug("Agent activator started.");
 
-            await agent.InitializeAsync();
-
-            logger.LogDebug("Space agent initialized successfully.");
-        }
-        catch (Exception e)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            logger.LogError(e, "Failed to initialize space agent.");
-            throw;
+            if (client.IsInitialized)
+            {
+                try
+                {
+                    await agent.InitializeAsync(client);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, "Failed to initialize space agent.");
+                    throw;
+                }
+            }
+
+            await Task.Delay(100);
         }
+
+        logger.LogDebug("Agent activator stopped.");
     }
 }
