@@ -28,7 +28,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Callback manager started.");
+        logger.LogDebug("Callback manager started.");
 
         await foreach (var tuple in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -42,7 +42,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
             }
         }
 
-        logger.LogInformation("Callback manager stopped.");
+        logger.LogDebug("Callback manager stopped.");
     }
 
     private async Task RunCallbacksAsync(SpaceTuple tuple)

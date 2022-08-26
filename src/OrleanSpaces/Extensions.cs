@@ -3,56 +3,36 @@ using Orleans.Hosting;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Spaces;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
-internal static class This
+public static class SiloExtensions
 {
-    public static Assembly Assembly => typeof(This).Assembly;
+    public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
+        builder.ConfigureApplicationParts(parts =>
+            parts.AddApplicationPart(typeof(SiloExtensions).Assembly).WithReferences());
+ 
+    public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
+        builder.ConfigureApplicationParts(parts =>
+            parts.AddApplicationPart(typeof(SiloExtensions).Assembly).WithReferences());
 }
 
-internal static class GrainFactoryExtensions
+public static class ClientExtensions
 {
-    public static ISpaceGrain GetSpaceGrain(this IGrainFactory factory)
-        => factory.GetGrain<SpaceGrain>(Guid.Empty);
-}
+    public static IClientBuilder UseTupleSpace(this IClientBuilder builder) =>
+        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(ClientExtensions).Assembly).WithReferences())
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton<ICallbackRegistry, CallbackManager>();
+                services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
 
-public static class SiloBuilderExtensions
-{
-    public static ISiloBuilder ConfigureTupleSpace(this ISiloBuilder builder)
-    {
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(This.Assembly).WithReferences());
-        return builder;
-    }
+                services.AddSingleton<IObserverRegistry, ObserverManager>();
+                services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
 
-    public static ISiloHostBuilder ConfigureTupleSpace(this ISiloHostBuilder builder)
-    {
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(This.Assembly).WithReferences());
-        return builder;
-    }
-}
+                services.AddSingleton<SpaceAgent>();
+                services.AddHostedService<AgentActivator>();
 
-public static class ClientBuilderExtensions
-{
-    public static IClientBuilder UseTupleSpace(this IClientBuilder builder)
-    {
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(This.Assembly).WithReferences());
-        builder.ConfigureServices(services =>
-        {
-            services.AddHostedService<CallbackManager>();
-            services.AddSingleton<ICallbackRegistry>(sp => sp.GetRequiredService<CallbackManager>());
-
-            services.AddHostedService<ObserverManager>();
-            services.AddSingleton<IObserverRegistry>(sp => sp.GetRequiredService<ObserverManager>());
-
-            services.AddSingleton<ISpaceClient, SpaceClient>();
-
-            services.AddSingleton<SpaceAgent>();
-            services.AddHostedService<AgentActivator>();
-        });
-
-        return builder;
-    }
+                services.AddSingleton<ISpaceClient, SpaceClient>();
+            });
 }

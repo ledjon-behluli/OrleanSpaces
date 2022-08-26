@@ -15,11 +15,11 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>
         this.client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task ActivateAsync()
+    public async Task InitializeAsync()
     {
-        var streamId = await client.GetSpaceGrain().ConnectAsync();
-        var provider = client.GetStreamProvider(Constants.StreamProviderName);
-        var stream = provider.GetStream<SpaceTuple>(streamId, Constants.StreamNamespace);
+        var streamId = await client.GetGrain<ISpaceGrain>(Guid.Empty).ConnectAsync();
+        var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
+        var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
 
         await stream.SubscribeAsync(this);
     }

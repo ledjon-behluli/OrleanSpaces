@@ -20,12 +20,15 @@ internal class AgentActivator : BackgroundService
     {
         try
         {
-            await agent.ActivateAsync();
-            logger.LogInformation("Space agent activated successfully.");
+            logger.LogDebug("Initializing Space gent.");
+
+            await agent.InitializeAsync();
+
+            logger.LogDebug("Space agent initialized successfully.");
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to activate space agent.");
+            logger.LogError(e, "Failed to initialize space agent.");
             throw;
         }
     }

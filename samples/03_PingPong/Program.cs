@@ -2,10 +2,12 @@
 using OrleanSpaces;
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.DependencyInjection;
+using Orleans.Hosting;
 
 var client = new ClientBuilder()
     .UseLocalhostClustering()
     .UseTupleSpace()
+    .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
     .Build();
 
 await client.Connect();
@@ -13,6 +15,7 @@ await client.Connect();
 Console.WriteLine("Connected to the tuple space.\n");
 Console.WriteLine("Type -u to unsubscribe.");
 Console.WriteLine("Type -r to see results.");
+Console.WriteLine("----------------------\n");
 
 var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
 

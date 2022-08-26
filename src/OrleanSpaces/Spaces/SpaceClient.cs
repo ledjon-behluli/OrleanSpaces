@@ -12,7 +12,7 @@ internal class SpaceClient : ISpaceClient
     private readonly ICallbackRegistry callbackRegistry;
     private readonly IObserverRegistry observerRegistry;
 
-    private ISpaceGrain Grain => factory.GetSpaceGrain();
+    private ISpaceGrain Grain => factory.GetGrain<ISpaceGrain>(Guid.Empty);
 
     public SpaceClient(
         IGrainFactory factory,

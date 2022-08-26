@@ -30,7 +30,7 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Observer manager started.");
+        logger.LogDebug("Observer manager started.");
 
         await foreach (SpaceTuple tuple in ObserverChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -48,6 +48,6 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
             }
         }
 
-        logger.LogInformation("Observer manager stopped.");
+        logger.LogDebug("Observer manager stopped.");
     }
 }

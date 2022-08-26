@@ -4,9 +4,11 @@ using OrleanSpaces;
 
 var host = new SiloHostBuilder()
     .UseLocalhostClustering()
-    .ConfigureTupleSpace()
+    .AddTupleSpace()
+    .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+    .AddMemoryGrainStorage(StreamNames.PubSubStore)
+    .AddMemoryGrainStorage(StorageNames.TupleSpaceStore)
     .ConfigureLogging(builder => builder.AddConsole())
-    .AddMemoryGrainStorage(Constants.StorageProviderName)
     .Build();
 
 await host.StartAsync();

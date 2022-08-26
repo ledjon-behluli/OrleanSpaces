@@ -19,7 +19,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
     private IAsyncStream<SpaceTuple> stream;
 
 #nullable disable
-    public SpaceGrain([PersistentState("tupleSpace", Constants.StorageProviderName)] IPersistentState<SpaceState> space)
+    public SpaceGrain([PersistentState("TupleSpace", StorageNames.TupleSpaceStore)] IPersistentState<SpaceState> space)
 #nullable enable
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -27,8 +27,8 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
     public override Task OnActivateAsync()
     {
-        var provider = GetStreamProvider(Constants.StreamProviderName);
-        stream = provider.GetStream<SpaceTuple>(this.GetPrimaryKey(), Constants.StreamNamespace);
+        var provider = GetStreamProvider(StreamNames.PubSubProvider);
+        stream = provider.GetStream<SpaceTuple>(this.GetPrimaryKey(), StreamNamespaces.TupleWrite);
 
         return base.OnActivateAsync();
     }
