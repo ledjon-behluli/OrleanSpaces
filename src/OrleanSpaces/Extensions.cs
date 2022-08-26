@@ -21,18 +21,34 @@ public static class SiloExtensions
 public static class ClientExtensions
 {
     public static IClientBuilder UseTupleSpace(this IClientBuilder builder) =>
-        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(ClientExtensions).Assembly).WithReferences())
-            .ConfigureServices(services =>
-            {
-                services.AddSingleton<ICallbackRegistry, CallbackManager>();
-                services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
+        builder.ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(ClientExtensions).Assembly).WithReferences());
+            //.ConfigureServices(services =>
+            //{
+            //    services.AddSingleton<ICallbackRegistry, CallbackManager>();
+            //    services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
 
-                services.AddSingleton<IObserverRegistry, ObserverManager>();
-                services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
+            //    services.AddSingleton<IObserverRegistry, ObserverManager>();
+            //    services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
 
-                services.AddSingleton<SpaceAgent>();
-                services.AddHostedService<AgentActivator>();
+            //    services.AddSingleton<SpaceAgent>();
+            //    services.AddHostedService<AgentActivator>();
 
-                services.AddSingleton<ISpaceClient, SpaceClient>();
-            });
+            //    services.AddSingleton<ISpaceClient, SpaceClient>();
+            //});
+
+    public static IServiceCollection UseTupleSpace(this IServiceCollection services)
+    {
+        services.AddSingleton<ICallbackRegistry, CallbackManager>();
+        services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
+
+        services.AddSingleton<IObserverRegistry, ObserverManager>();
+        services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
+
+        services.AddSingleton<SpaceAgent>();
+        services.AddHostedService<AgentActivator>();
+
+        services.AddSingleton<ISpaceClient, SpaceClient>();
+
+        return services;
+    }
 }
