@@ -9,21 +9,20 @@ namespace OrleanSpaces;
 
 public static class Extensions
 {
-    public static ISiloBuilder UseTupleSpace(this ISiloBuilder builder) =>
+    public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
  
-    public static ISiloHostBuilder UseTupleSpace(this ISiloHostBuilder builder) =>
+    public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
-    // TODO: Might not need it at all!!!
-    public static IClientBuilder UseTupleSpace(this IClientBuilder builder) =>
-        builder.ConfigureApplicationParts(parts => 
-            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
-   
-    public static IServiceCollection AddTupleSpace(this IServiceCollection services)
+    public static IServiceCollection AddTupleSpace(
+        this IServiceCollection services, 
+        Func<IClusterClient>? clusterClientFactory = null)
     {
+        services.AddSingleton(clusterClientFactory?.Invoke() ?? BuildInMemoryClient());
+        
         services.AddSingleton<ICallbackRegistry, CallbackManager>();
         services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
 
@@ -31,10 +30,18 @@ public static class Extensions
         services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
 
         services.AddSingleton<SpaceAgent>();
-        services.AddHostedService<AgentActivator>();
+
+        services.AddSingleton<IGrainFactoryProvider, AgentActivator>();
+        services.AddHostedService(sp => (AgentActivator)sp.GetRequiredService<IGrainFactoryProvider>());
 
         services.AddSingleton<ISpaceClient, SpaceClient>();
 
         return services;
+
+        static IClusterClient BuildInMemoryClient() =>
+            new ClientBuilder()
+                .UseLocalhostClustering()
+                .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+                .Build();
     }
 }

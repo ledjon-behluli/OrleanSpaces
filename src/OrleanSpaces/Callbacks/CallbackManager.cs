@@ -47,7 +47,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
 
     private async Task RunCallbacksAsync(SpaceTuple tuple)
     {
-        List<Task> tasks = new();
+        List<Func<SpaceTuple, Task>> matchingCallbacks = new();
 
         foreach (var pair in callbacks.Where(x => x.Key.Length == tuple.Length))
         {
@@ -55,13 +55,13 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
             {
                 foreach (var callback in callbacks[pair.Key])
                 {
-                    tasks.Add(new Task(() => callback(tuple)));
+                    matchingCallbacks.Add(callback);
                 }
 
                 callbacks.TryRemove(pair.Key, out _);
             }
         }
 
-        await Task.WhenAll(tasks);
+        await ParallelExecutor.WhenAll(matchingCallbacks, callback => callback(tuple));
     }
 }

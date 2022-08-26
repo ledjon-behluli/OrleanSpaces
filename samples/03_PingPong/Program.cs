@@ -4,19 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Orleans.Hosting;
 using Microsoft.Extensions.Hosting;
 
-IHost host = Host.CreateDefaultBuilder(args)
+await Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        var client = new ClientBuilder()
-            .UseLocalhostClustering()
-            .UseTupleSpace()
-                .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
-            .Build();
-
-        services.AddSingleton(client);
-        services.AddHostedService<Worker>();
         services.AddTupleSpace();
+        services.AddHostedService<ConsoleClient>();
     })
-    .Build();
-
-await host.RunAsync();
+    .Build()
+    .RunAsync();

@@ -1,31 +1,28 @@
-﻿using Orleans;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using OrleanSpaces.Primitives;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-public class Worker : BackgroundService
+public class ConsoleClient : BackgroundService
 {
-    private readonly IClusterClient client;
+    private readonly ISpaceClient client;
+    private readonly IHostApplicationLifetime lifetime;
 
-    public Worker(IClusterClient client)
+    public ConsoleClient(
+        ISpaceClient client,
+        IHostApplicationLifetime lifetime)
     {
         this.client = client;
+        this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await client.Connect();
-
-        Console.WriteLine("Connected to the tuple space.\n");
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");
 
-        var spaceClient = client.ServiceProvider.GetRequiredService<ISpaceClient>();
-
-        var ponger = new Ponger(spaceClient);
-        var pongerRef = spaceClient.Subscribe(ponger);
+        var ponger = new Ponger(client);
+        var pongerRef = client.Subscribe(ponger);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -37,28 +34,29 @@ public class Worker : BackgroundService
 
             if (message == "-u")
             {
-                spaceClient.Unsubscribe(pongerRef);
+                client.Unsubscribe(pongerRef);
                 continue;
             }
 
             if (message == "-r")
                 break;
 
-            await spaceClient.WriteAsync(SpaceTuple.Create((message, DateTime.Now)));
+            await client.WriteAsync(SpaceTuple.Create((message, DateTime.Now)));
         }
 
         Console.WriteLine("----------------------\n");
         Console.WriteLine("Total tuples in space:\n");
 
-        foreach (var tuple in await spaceClient.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
+        foreach (var tuple in await client.ScanAsync(SpaceTemplate.Create((UnitField.Null, UnitField.Null))))
         {
             Console.WriteLine(tuple);
         }
 
-        spaceClient.Unsubscribe(pongerRef);
-        await client.Close();
+        client.Unsubscribe(pongerRef);
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();
+
+        lifetime.StopApplication();
     }
 }

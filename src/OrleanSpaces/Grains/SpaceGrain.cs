@@ -4,13 +4,7 @@ using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Spaces;
-
-[Serializable]
-internal class SpaceState
-{
-    public List<SpaceTuple> Tuples { get; set; } = new();
-}
+namespace OrleanSpaces.Grains;
 
 internal class SpaceGrain : Grain, ISpaceGrain
 {

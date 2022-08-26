@@ -4,6 +4,7 @@ using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Logging;
+using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Spaces;
 

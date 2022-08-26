@@ -4,11 +4,18 @@ using Orleans;
 
 namespace OrleanSpaces.Spaces;
 
-internal class AgentActivator : BackgroundService
+internal interface IGrainFactoryProvider
+{
+    IGrainFactory GrainFactory { get; }
+}
+
+internal class AgentActivator : BackgroundService, IGrainFactoryProvider
 {
     private readonly SpaceAgent agent;
     private readonly IClusterClient client;
     private readonly ILogger<AgentActivator> logger;
+
+    public IGrainFactory GrainFactory => client;
 
     public AgentActivator(
         SpaceAgent agent,
@@ -24,15 +31,27 @@ internal class AgentActivator : BackgroundService
     {
         logger.LogDebug("Agent activator started.");
 
+        cancellationToken.Register(async () => 
+        { 
+            try 
+            {
+                if (client.IsInitialized)
+                {
+                    await client.Close();
+                }
+            } 
+            catch { }
+        });
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (!client.IsInitialized)
-            {
-                await client.Connect();
-            }
-
             try
             {
+                if (!client.IsInitialized)
+                {
+                    await client.Connect();
+                }
+
                 await agent.InitializeAsync(client);
                 break;
             }
@@ -41,8 +60,6 @@ internal class AgentActivator : BackgroundService
                 logger.LogError(e, "Failed to initialize space agent.");
                 throw;
             }
-
-            await Task.Delay(100);
         }
 
         logger.LogDebug("Agent activator stopped.");

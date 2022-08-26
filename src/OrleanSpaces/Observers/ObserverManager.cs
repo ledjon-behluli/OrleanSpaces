@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Primitives;
+using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Observers;
@@ -36,11 +37,7 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
         {
             try
             {
-                var tasks = observers
-                    .Select(pair => new Task(() => pair.Key.OnTupleAsync(tuple)))
-                    .ToList();
-
-                await Task.WhenAll(tasks);
+                await ParallelExecutor.WhenAll(observers, observer => observer.Key.OnTupleAsync(tuple));
             }
             catch (Exception e)
             {
