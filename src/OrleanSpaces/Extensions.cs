@@ -3,7 +3,7 @@ using Orleans.Hosting;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Clients;
+using OrleanSpaces.Routers;
 
 namespace OrleanSpaces;
 
@@ -29,12 +29,8 @@ public static class Extensions
         services.AddSingleton<IObserverRegistry, ObserverManager>();
         services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
 
-        services.AddSingleton<SpaceObserverBridge>();
-
-        services.AddSingleton<IGrainFactoryProvider, Bootstrapper>();
-        services.AddHostedService(sp => (Bootstrapper)sp.GetRequiredService<IGrainFactoryProvider>());
-
-        services.AddSingleton<ISpaceClient, SpaceClient>();
+        services.AddSingleton<SpaceAgent>();
+        services.AddSingleton<ISpaceClient>(sp => sp.GetRequiredService<SpaceAgent>());
 
         return services;
 

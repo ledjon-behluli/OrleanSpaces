@@ -17,6 +17,8 @@ public class ConsoleClient : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        await client.WriteAsync(SpaceTuple.Create(("test", DateTime.Now)));
+
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");
