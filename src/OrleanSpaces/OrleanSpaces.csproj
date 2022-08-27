@@ -20,10 +20,4 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="Agent.*.cs">
-	    <DependentUpon>Agent.cs</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
 </Project>

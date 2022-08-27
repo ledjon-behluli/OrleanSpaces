@@ -7,9 +7,7 @@ using Microsoft.Extensions.Hosting;
 await Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        services.AddHostedService<ConsoleClient>();
+        services.AddHostedService<Worker>();
         services.AddTupleSpace();
-        
     })
-    .Build()
-    .RunAsync();
+    .RunConsoleAsync();
