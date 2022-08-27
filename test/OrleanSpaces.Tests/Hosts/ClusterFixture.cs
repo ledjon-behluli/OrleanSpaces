@@ -1,6 +1,5 @@
 ﻿using Orleans.Hosting;
 using Orleans.TestingHost;
-using OrleanSpaces.Hosts;
 
 namespace OrleanSpaces.Tests.Hosts;
 
