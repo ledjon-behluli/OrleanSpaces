@@ -19,6 +19,7 @@ public class Worker : BackgroundService
     {
         ISpaceChannel channel = await proxy.OpenAsync(cancellationToken);
 
+        Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");

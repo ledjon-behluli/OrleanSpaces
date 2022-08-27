@@ -44,6 +44,7 @@ public static class Extensions
         services.AddSingleton<IObserverRegistry, ObserverManager>();
         services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
 
+        services.AddSingleton<SpaceAgent>();
         services.AddSingleton<ISpaceChannelProxy, ChannelProxy>();
 
         return services;
