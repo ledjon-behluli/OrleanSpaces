@@ -1,45 +1,42 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using OrleanSpaces.Routers;
 
-namespace OrleanSpaces.Spaces;
+namespace OrleanSpaces;
 
-internal interface IGrainFactoryProvider
+internal class Bootstrapper : BackgroundService, IGrainFactoryProvider
 {
-    IGrainFactory GrainFactory { get; }
-}
-
-internal class AgentActivator : BackgroundService, IGrainFactoryProvider
-{
-    private readonly SpaceAgent agent;
+    private readonly ObserverRouter router;
     private readonly IClusterClient client;
-    private readonly ILogger<AgentActivator> logger;
+    private readonly ILogger<Bootstrapper> logger;
 
     public IGrainFactory GrainFactory => client;
 
-    public AgentActivator(
-        SpaceAgent agent,
+    public Bootstrapper(
+        ObserverRouter agent,
         IClusterClient client,
-        ILogger<AgentActivator> logger)
+        ILogger<Bootstrapper> logger)
     {
-        this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
+        this.router = agent ?? throw new ArgumentNullException(nameof(agent));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Agent activator started.");
+        logger.LogDebug("{Service} started.", nameof(Bootstrapper));
 
-        cancellationToken.Register(async () => 
-        { 
-            try 
+        cancellationToken.Register(async () =>
+        {
+            try
             {
                 if (client.IsInitialized)
                 {
+                    logger.LogDebug("Trying to stop {Service} gracefully.", nameof(IClusterClient));
                     await client.Close();
                 }
-            } 
+            }
             catch { }
         });
 
@@ -52,16 +49,16 @@ internal class AgentActivator : BackgroundService, IGrainFactoryProvider
                     await client.Connect();
                 }
 
-                await agent.InitializeAsync(client);
+                await router.InitializeAsync(client);
                 break;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to initialize space agent.");
+                logger.LogError(e, e.Message);
                 throw;
             }
         }
 
-        logger.LogDebug("Agent activator stopped.");
+        logger.LogDebug("{Service} stopped.", nameof(Bootstrapper));
     }
 }

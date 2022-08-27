@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Primitives;
+using OrleanSpaces.Routers;
 using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
 
@@ -31,7 +32,7 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Observer manager started.");
+        logger.LogDebug("{Service} started.", nameof(ObserverManager));
 
         await foreach (SpaceTuple tuple in ObserverChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -45,6 +46,6 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
             }
         }
 
-        logger.LogDebug("Observer manager stopped.");
+        logger.LogDebug("{Service} stopped.", nameof(ObserverManager));
     }
 }

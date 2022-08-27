@@ -1,25 +1,25 @@
 ﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Callbacks;
-using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Grains;
+using OrleanSpaces.Observers;
 
-namespace OrleanSpaces.Spaces;
+namespace OrleanSpaces.Routers;
 
-internal class SpaceAgent : IAsyncObserver<SpaceTuple>
+internal class ObserverRouter : IAsyncObserver<SpaceTuple>
 {
-    private readonly ILogger<SpaceAgent> logger;
+    private readonly ILogger<ObserverRouter> logger;
 
-    public SpaceAgent(ILogger<SpaceAgent> logger)
+    public ObserverRouter(ILogger<ObserverRouter> logger)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task InitializeAsync(IClusterClient client)
     {
-        logger.LogDebug("Space agent initialization started.");
+        logger.LogDebug("{Service} initialization started.", nameof(ObserverRouter));
 
         var streamId = await client.GetGrain<ISpaceGrain>(Guid.Empty).ConnectAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
@@ -27,21 +27,17 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>
 
         await stream.SubscribeAsync(this);
 
-        logger.LogDebug("Space agent initialized successfully.");
+        logger.LogDebug("{Service} initialized successfully.", nameof(ObserverRouter));
     }
 
     public async Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
     {
-        logger.LogDebug("Space agent received new tuple {SpaceTuple}. Forwarding tuple to the internal channels...", tuple);
-
         await CallbackChannel.Writer.WriteAsync(tuple);
         await ObserverChannel.Writer.WriteAsync(tuple);
     }
 
     public Task OnCompletedAsync()
     {
-        logger.LogDebug("Stream completed - Closing internal channels.");
-
         CallbackChannel.Writer.Complete();
         ObserverChannel.Writer.Complete();
 

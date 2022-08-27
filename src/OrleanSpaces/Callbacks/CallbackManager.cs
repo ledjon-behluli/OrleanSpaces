@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
@@ -28,7 +29,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Callback manager started.");
+        logger.LogDebug("{Service} started.", nameof(CallbackManager));
 
         await foreach (var tuple in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -42,7 +43,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
             }
         }
 
-        logger.LogDebug("Callback manager stopped.");
+        logger.LogDebug("{Service} stopped.", nameof(CallbackManager));
     }
 
     private async Task RunCallbacksAsync(SpaceTuple tuple)

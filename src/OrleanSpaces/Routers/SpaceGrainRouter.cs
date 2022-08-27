@@ -5,9 +5,9 @@ using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Spaces;
+namespace OrleanSpaces.Routers;
 
-internal class SpaceClient : ISpaceClient
+internal class SpaceGrainRouter : ISpaceClient
 {
     private readonly IGrainFactory factory;
     private readonly ICallbackRegistry callbackRegistry;
@@ -15,12 +15,12 @@ internal class SpaceClient : ISpaceClient
 
     private ISpaceGrain Grain => factory.GetGrain<ISpaceGrain>(Guid.Empty);
 
-    public SpaceClient(
+    public SpaceGrainRouter(
         IGrainFactoryProvider provider,
         ICallbackRegistry callbackRegistry,
         IObserverRegistry observerRegistry)
     {
-        this.factory = (provider ?? throw new ArgumentNullException(nameof(provider))).GrainFactory;
+        factory = (provider ?? throw new ArgumentNullException(nameof(provider))).GrainFactory;
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
