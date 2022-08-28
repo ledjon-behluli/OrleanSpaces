@@ -10,12 +10,12 @@ var client = new ClientBuilder()
     .AddTupleSpace()
     .Build();
 
-await client.Connect();
+await client.Connect();   // Comment: If not called explicitly, it is handle by the library.
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceChannelProxy proxy = client.ServiceProvider.GetRequiredService<ISpaceChannelProxy>();
-ISpaceChannel channel = await proxy.OpenAsync();
+var proxy = client.ServiceProvider.GetRequiredService<ISpaceChannelProxy>();
+var channel = await proxy.OpenAsync();
 
 const string EXCHANGE_KEY = "exchange-key";
 
@@ -72,3 +72,19 @@ Console.WriteLine("\n\nPress any key to terminate...\n\n");
 Console.ReadKey();
 
 await client.Close();
+
+
+// TODO: Find me for testng proxy mutli-threading
+
+//ISpaceChannelProxy proxy = client.ServiceProvider.GetRequiredService<ISpaceChannelProxy>();
+
+//var tasks = new Task[100];
+//for (int i = 0; i < 100; i++)
+//{
+//    tasks[i] = Task.Run(async () =>
+//    {
+//        await proxy.OpenAsync();
+//    });
+//}
+
+//await Task.WhenAll(tasks);

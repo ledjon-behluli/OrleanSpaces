@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Tests.Core;
+namespace OrleanSpaces.Tests;
 
 public class SpaceTemplateTests
 {
@@ -58,7 +58,7 @@ public class SpaceTemplateTests
     public void SpaceTemplate_Shoud_Not_Be_Statisfied_By_SpaceTuple()
     {
         Assert.False(SpaceTemplate.Create(1).IsSatisfied(null));
-        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create((1))));
+        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create(1)));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f))));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
         Assert.False(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));

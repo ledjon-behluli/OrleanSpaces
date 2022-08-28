@@ -2,5 +2,9 @@
 
 public interface ISpaceChannelProxy
 {
-    ValueTask<ISpaceChannel> OpenAsync(CancellationToken cancellationToken = default);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>Method is thread-safe.</remarks>
+    Task<ISpaceChannel> OpenAsync();
 }

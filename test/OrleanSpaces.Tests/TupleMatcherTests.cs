@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 
-namespace OrleanSpaces.Tests.Core;
+namespace OrleanSpaces.Tests;
 
 public class TupleMatcherTests
 {

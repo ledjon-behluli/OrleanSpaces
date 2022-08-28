@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
 
-namespace OrleanSpaces.Tests.Core;
+namespace OrleanSpaces.Tests;
 
 public class SpaceTupleTests
 {

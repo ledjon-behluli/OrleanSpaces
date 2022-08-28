@@ -1,29 +1,36 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace OrleanSpaces.Proxies;
+﻿namespace OrleanSpaces.Proxies;
 
 internal class ChannelProxy : ISpaceChannelProxy
 {
     private readonly SpaceAgent agent;
-    private readonly ILogger<ChannelProxy> logger;
 
-    public ChannelProxy(
-        SpaceAgent agent,
-        ILogger<ChannelProxy> logger)
+    private bool initialized;
+    private static readonly SemaphoreSlim semaphore = new(1, 1);
+
+    public ChannelProxy(SpaceAgent agent)
     {
         this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async ValueTask<ISpaceChannel> OpenAsync(CancellationToken cancellationToken)
+    public async Task<ISpaceChannel> OpenAsync()
     {
-        if (!agent.IsInitialized)
+        await semaphore.WaitAsync();
+        try
         {
-            logger.LogDebug("Initializing space agent.");
-
-            await agent.InitAsync();
-
-            logger.LogDebug("Space agent initialized.");
+            if (!initialized)
+            {
+                Console.WriteLine("Inside");
+                await agent.InitAsync();
+                initialized = true;
+            }
+            else
+            {
+                Console.WriteLine("Outside");
+            }
+        }
+        finally
+        {
+            semaphore.Release();
         }
 
         return agent;
