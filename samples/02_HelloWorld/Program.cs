@@ -66,7 +66,7 @@ var task2 = Task.Run(async () =>
     }
 });
 
-Task.WaitAll(task1, task2);
+await Task.WhenAll(task1, task2);
 
 Console.WriteLine("\n\nPress any key to terminate...\n\n");
 Console.ReadKey();

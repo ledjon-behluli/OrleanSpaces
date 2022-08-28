@@ -18,6 +18,12 @@
         "SpaceHost": {},
         "PingPong": {}
       }
+    },
+    "ConcurrentWorker": {
+      "Projects": {
+        "SpaceHost": {},
+        "ConcurrentWorker": {}
+      }
     }
   }
 }

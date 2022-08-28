@@ -19,13 +19,8 @@ internal class ChannelProxy : ISpaceChannelProxy
         {
             if (!initialized)
             {
-                Console.WriteLine("Inside");
                 await agent.InitAsync();
                 initialized = true;
-            }
-            else
-            {
-                Console.WriteLine("Outside");
             }
         }
         finally
