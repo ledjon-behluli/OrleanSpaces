@@ -13,16 +13,22 @@
         "HelloWorld": {}
       }
     },
-    "PingPong": {
+    "Concurrent": {
       "Projects": {
         "SpaceHost": {},
-        "PingPong": {}
+        "Concurrent": {}
       }
     },
-    "ConcurrentWorker": {
+    "Blocking": {
       "Projects": {
         "SpaceHost": {},
-        "ConcurrentWorker": {}
+        "Blocking": {}
+      }
+    },
+    "Observer": {
+      "Projects": {
+        "SpaceHost": {},
+        "Observer": {}
       }
     }
   }
