@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+using OrleanSpaces.Proxies;
 using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
 
@@ -9,22 +9,26 @@ namespace OrleanSpaces.Callbacks;
 
 internal class CallbackManager : BackgroundService, ICallbackRegistry
 {
+    private readonly SpaceAgent agent;
     private readonly ILogger<CallbackManager> logger;
-    private readonly ConcurrentDictionary<SpaceTemplate, List<Func<SpaceTuple, Task>>> callbacks = new();
+    private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
 
-    public CallbackManager(ILogger<CallbackManager> logger)
+    public CallbackManager(
+        SpaceAgent agent,
+        ILogger<CallbackManager> logger)
     {
+        this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public void Register(SpaceTemplate template, Func<SpaceTuple, Task> callback)
+    public void Register(SpaceTemplate template, CallbackEntry entry)
     {
-        if (!callbacks.ContainsKey(template))
+        if (!entries.ContainsKey(template))
         {
-            callbacks.TryAdd(template, new());
+            entries.TryAdd(template, new());
         }
 
-        callbacks[template].Add(callback);
+        entries[template].Add(entry);
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -35,7 +39,7 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
         {
             try
             {
-                await RunCallbacksAsync(tuple);
+                await RunEntriesAsync(tuple);
             }
             catch (Exception e)
             {
@@ -46,23 +50,30 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
         logger.LogDebug("Callback manager stopped.");
     }
 
-    private async Task RunCallbacksAsync(SpaceTuple tuple)
+    private async Task RunEntriesAsync(SpaceTuple tuple)
     {
-        List<Func<SpaceTuple, Task>> matchingCallbacks = new();
+        List<CallbackEntry> matchingEntries = new();
 
-        foreach (var pair in callbacks.Where(x => x.Key.Length == tuple.Length))
+        foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
             if (TupleMatcher.IsMatch(tuple, pair.Key))
             {
-                foreach (var callback in callbacks[pair.Key])
+                foreach (var callback in entries[pair.Key])
                 {
-                    matchingCallbacks.Add(callback);
+                    matchingEntries.Add(callback);
                 }
 
-                callbacks.TryRemove(pair.Key, out _);
+                entries.TryRemove(pair.Key, out _);
             }
         }
 
-        await ParallelExecutor.WhenAll(matchingCallbacks, callback => callback(tuple));
+        await ParallelExecutor.WhenAll(matchingEntries, async entry =>
+        {
+            await entry.Callback(tuple);
+            if (entry.Destructive)
+            {
+                await agent.PopAsync(SpaceTemplate.Create(tuple));
+            }
+        });
     }
 }

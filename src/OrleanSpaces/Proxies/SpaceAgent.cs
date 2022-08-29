@@ -128,7 +128,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         }
         else
         {
-            callbackRegistry.Register(template, callback);
+            callbackRegistry.Register(template, new(callback, false));
         }
     }
 
@@ -145,7 +145,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         }
         else
         {
-            callbackRegistry.Register(template, callback);
+            callbackRegistry.Register(template, new(callback, true));
         }
     }
 
