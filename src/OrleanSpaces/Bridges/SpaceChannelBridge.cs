@@ -7,7 +7,7 @@ internal class SpaceChannelBridge : ISpaceChannelProvider
 {
     private readonly SpaceGrainBridge bridge;
 
-    private bool initialized;
+    private bool isConnected;
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
     public SpaceChannelBridge(SpaceGrainBridge bridge)
@@ -20,10 +20,10 @@ internal class SpaceChannelBridge : ISpaceChannelProvider
         await semaphore.WaitAsync();
         try
         {
-            if (!initialized)
+            if (!isConnected)
             {
-                await bridge.InitAsync();
-                initialized = true;
+                await bridge.ConnectAsync();
+                isConnected = true;
             }
         }
         finally

@@ -35,16 +35,16 @@ internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
 
-    #region Init
+    #region Connect
 
-    public async Task InitAsync()
+    public async Task ConnectAsync()
     {
-        logger.LogDebug("Initializing space agent.");
+        logger.LogDebug("Establishing space grain connection.");
 
         await ConnectToCluster();
         await SubscribeToStream();
 
-        logger.LogDebug("Space agent initialized.");
+        logger.LogDebug("Space grain connection established.");
     }
 
     private async Task ConnectToCluster()
