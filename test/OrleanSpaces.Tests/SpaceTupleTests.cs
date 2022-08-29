@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -80,11 +81,23 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Should_Be_Equal_If_Both_Are_Null()
+    {
+        SpaceTuple tuple1 = null;
+        SpaceTuple tuple2 = null;
+
+        Assert.Equal(tuple1, tuple2);
+        Assert.False(tuple1 != tuple2);
+        Assert.True(tuple1 == tuple2);
+    }
+
+    [Fact]
     public void Should_Not_Be_Equal_If_First_Is_Null()
     {
         SpaceTuple tuple1 = null;
         SpaceTuple tuple2 = SpaceTuple.Create(1);
 
+        Assert.NotEqual(tuple1, tuple2);
         Assert.True(tuple1 != tuple2);
         Assert.False(tuple1 == tuple2);
     }
@@ -95,16 +108,7 @@ public class SpaceTupleTests
         SpaceTuple tuple1 = SpaceTuple.Create(1);
         SpaceTuple tuple2 = null;
 
-        Assert.True(tuple1 != tuple2);
-        Assert.False(tuple1 == tuple2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_Both_Are_Null()
-    {
-        SpaceTuple tuple1 = null;
-        SpaceTuple tuple2 = null;
-
+        Assert.NotEqual(tuple1, tuple2);
         Assert.True(tuple1 != tuple2);
         Assert.False(tuple1 == tuple2);
     }

@@ -17,15 +17,14 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await proxy.OpenAsync(cancellationToken);
+        ISpaceChannel channel = await proxy.OpenAsync();
 
         Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");
 
-        var ponger = new Ponger(channel);
-        var pongerRef = channel.Subscribe(ponger);
+        var obsvRef = channel.Subscribe(new Ponger(channel));
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -37,7 +36,7 @@ public class Worker : BackgroundService
 
             if (message == "-u")
             {
-                channel.Unsubscribe(pongerRef);
+                channel.Unsubscribe(obsvRef);
                 continue;
             }
 
@@ -55,7 +54,7 @@ public class Worker : BackgroundService
             Console.WriteLine(tuple);
         }
 
-        channel.Unsubscribe(pongerRef);
+        channel.Unsubscribe(obsvRef);
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

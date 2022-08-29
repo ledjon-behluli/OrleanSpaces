@@ -18,12 +18,12 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
 
     public Guid Register(ISpaceObserver observer)
     {
-        if (!observers.TryGetValue(observer, out Guid id))
+        if (!observers.TryGetValue(observer, out _))
         {
-            observers.TryAdd(observer, id);
+            observers.TryAdd(observer, Guid.NewGuid());
         }
 
-        return id;
+        return observers[observer];
     }
 
     public void Deregister(ISpaceObserver observer)

@@ -50,7 +50,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         {
             logger.LogDebug("Establishing cluster connection.");
 
-            await client.Connect();
+            await client.Connect();  // TODO: Implement some retry mechanism
 
             logger.LogDebug("Cluster connection established.");
         }

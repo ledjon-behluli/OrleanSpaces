@@ -1,4 +1,5 @@
 ﻿using OrleanSpaces.Primitives;
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -108,11 +109,23 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Not_Be_Equal_On_Null()
+    public void Should_Be_Equal_If_Both_Are_Null()
+    {
+        SpaceTemplate template1 = null;
+        SpaceTemplate template2 = null;
+
+        Assert.Equal(template1, template2);
+        Assert.False(template1 != template2);
+        Assert.True(template1 == template2);
+    }
+
+    [Fact]
+    public void Should_Not_Be_Equal_If_First_Is_Null()
     {
         SpaceTemplate template1 = null;
         SpaceTemplate template2 = SpaceTemplate.Create(1);
 
+        Assert.NotEqual(template1, template2);
         Assert.True(template1 != template2);
         Assert.False(template1 == template2);
     }
@@ -123,16 +136,7 @@ public class SpaceTemplateTests
         SpaceTemplate template1 = SpaceTemplate.Create(1);
         SpaceTemplate template2 = null;
 
-        Assert.True(template1 != template2);
-        Assert.False(template1 == template2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_Both_Are_Null()
-    {
-        SpaceTemplate template1 = null;
-        SpaceTemplate template2 = null;
-
+        Assert.NotEqual(template1, template2);
         Assert.True(template1 != template2);
         Assert.False(template1 == template2);
     }
@@ -205,5 +209,6 @@ public class SpaceTemplateTests
         Assert.Equal("<1, a, 1.5>", SpaceTemplate.Create((1, "a", 1.5f)).ToString());
         Assert.Equal("<1, a, 1.5, b>", SpaceTemplate.Create((1, "a", 1.5f, 'b')).ToString());
         Assert.Equal("<1, a, 1.5, b, {NULL}>", SpaceTemplate.Create((1, "a", 1.5f, 'b', UnitField.Null)).ToString());
+        Assert.Equal("<1, a, 1.5, b, {NULL}, System.Int32>", SpaceTemplate.Create((1, "a", 1.5f, 'b', UnitField.Null, typeof(int))).ToString());
     }
 }

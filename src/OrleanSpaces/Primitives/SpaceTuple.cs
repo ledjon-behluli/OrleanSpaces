@@ -54,11 +54,20 @@ public sealed class SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public static bool operator ==(SpaceTuple? first, SpaceTuple? second)
     {
-        if (first is null || second is null)
+        if (first is null && second is null)
+            return true;
+
+        if (first is null && second is not null)
             return false;
 
+        if (first is not null && second is null)
+            return false;
+
+#nullable disable
         return first.Equals(second);
+#nullable enable
     }
+
     public static bool operator !=(SpaceTuple? first, SpaceTuple? second) => !(first == second);
 
     public override bool Equals(object obj) =>

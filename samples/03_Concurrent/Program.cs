@@ -43,7 +43,7 @@ await Task.WhenAll(CreateTasks(10, async index =>
 }));
 
 
-Console.WriteLine("\n\nPress any key to terminate...\n\n");
+Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
 await client.Close();
