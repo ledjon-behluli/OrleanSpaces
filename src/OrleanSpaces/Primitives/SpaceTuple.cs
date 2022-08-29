@@ -21,7 +21,7 @@ public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
             throw new ArgumentException($"Type declarations and '{nameof(UnitField)}' are not valid '{nameof(SpaceTuple)}' fields.");
         }
 
-        _fields = fields;
+        _fields = fields ?? new object[0];
     }
 
     public static SpaceTuple Create(object field)

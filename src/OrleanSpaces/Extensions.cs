@@ -12,7 +12,7 @@ public static class Extensions
     public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
- 
+     
     public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
@@ -20,9 +20,7 @@ public static class Extensions
     public static IClientBuilder AddTupleSpace(this IClientBuilder builder) =>
         builder.ConfigureServices(services => services.AddClientServices());
 
-    public static IServiceCollection AddTupleSpace(
-        this IServiceCollection services,
-        Func<IClusterClient>? clusterClientFactory = null)
+    public static IServiceCollection AddTupleSpace(this IServiceCollection services, Func<IClusterClient>? clusterClientFactory = null)
     {
         services.AddSingleton(clusterClientFactory?.Invoke() ?? BuildDefaultClient());
         services.AddClientServices();

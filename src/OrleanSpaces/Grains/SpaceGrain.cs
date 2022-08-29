@@ -65,7 +65,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return new();
+        return new(new SpaceTuple());
     }
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)

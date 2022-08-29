@@ -19,28 +19,33 @@ public class Worker : BackgroundService
     {
         ISpaceChannel channel = await proxy.OpenAsync();
 
-        const string EXCHANGE_KEY = "Sensor 1";
+        const string EXCHANGE_KEY = "sensor-data";
+        bool callbackExecuted = false;
 
         SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, typeof(double)));
-        Console.WriteLine($"READER: Peeking for a tuple that matches template {template} in a 'blocking' fashion...");
+        Console.WriteLine($"WORKER: Peeking for a tuple that matches template {template} in a 'blocking' fashion...");
 
         await channel.PeekAsync(template, async tuple =>
         {
-            Console.WriteLine($"READER: Got back response for my template {template} in form of this tuple '{tuple}'. Doing some 'heavy' work...");
+            Console.WriteLine($"CALLBACK: Got back response for template {template} in form of this tuple '{tuple}'. Doing some heavy work...");
 
             await Task.Delay(1000);
 
-            Console.WriteLine("Done.");
+            Console.WriteLine("CALLBACK: Done with my work.");
+            callbackExecuted = true;
         });
 
-
-        Console.WriteLine($"\nSYSTEM: Simulating some delay until a tuple that matches template {template} is written...");
-        await Task.Delay(5000, cancellationToken);
+        Console.WriteLine($"WORKER: Simulating some delay until a tuple that matches template {template} is written...");
+        await Task.Delay(5000);
 
         SpaceTuple tuple = SpaceTuple.Create((EXCHANGE_KEY, 1.2334));
-        Console.WriteLine($"\nWRITER: Writing sensor data in form of the tuple {tuple}");
+        Console.WriteLine($"WORKER: Writing sensor data in form of the tuple {tuple}");
         await channel.WriteAsync(tuple);
 
+        while (!callbackExecuted)
+        {
+            await Task.Delay(50);
+        }
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

@@ -80,7 +80,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         await CallbackChannel.Writer.WriteAsync(tuple);
         await ObserverChannel.Writer.WriteAsync(tuple);
 
-        logger.LogDebug("Forwarded tuple {SpaceTuple} channels for processing.", tuple);
+        logger.LogDebug("Forwarded tuple {SpaceTuple} to channels for processing.", tuple);
     }
 
     public Task OnCompletedAsync()
