@@ -1,9 +1,11 @@
 ﻿using Orleans;
 using Orleans.Hosting;
-using OrleanSpaces.Callbacks;
+using OrleanSpaces.Bridges;
 using OrleanSpaces.Observers;
+using OrleanSpaces.Callbacks;
+using OrleanSpaces.Callbacks.Continuations;
 using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Proxies;
+
 
 namespace OrleanSpaces;
 
@@ -36,14 +38,16 @@ public static class Extensions
 
     private static IServiceCollection AddClientServices(this IServiceCollection services)
     {
-        services.AddSingleton<ICallbackRegistry, CallbackManager>();
-        services.AddHostedService(sp => (CallbackManager)sp.GetRequiredService<ICallbackRegistry>());
+        services.AddSingleton<CallbackRegistry>();
+        services.AddSingleton<ObserverRegistry>();
 
-        services.AddSingleton<IObserverRegistry, ObserverManager>();
-        services.AddHostedService(sp => (ObserverManager)sp.GetRequiredService<IObserverRegistry>());
+        services.AddSingleton<SpaceGrainBridge>();
 
-        services.AddSingleton<SpaceAgent>();
-        services.AddSingleton<ISpaceChannelProxy, ChannelProxy>();
+        services.AddHostedService<CallbackManager>();
+        services.AddHostedService<ContinuationManager>();
+        services.AddHostedService<ObserverManager>();
+
+        services.AddSingleton<ISpaceChannelProvider, SpaceChannelBridge>();
 
         return services;
     }

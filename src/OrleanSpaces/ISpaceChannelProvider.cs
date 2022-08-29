@@ -1,10 +1,10 @@
 ﻿namespace OrleanSpaces;
 
-public interface ISpaceChannelProxy
+public interface ISpaceChannelProvider
 {
     /// <summary>
     /// 
     /// </summary>
     /// <remarks>Method is thread-safe.</remarks>
-    Task<ISpaceChannel> OpenAsync();
+    Task<ISpaceChannel> GetAsync();
 }

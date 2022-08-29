@@ -4,20 +4,20 @@ using Microsoft.Extensions.Hosting;
 
 public class PeekWorker : BackgroundService
 {
-    private readonly ISpaceChannelProxy proxy;
+    private readonly ISpaceChannelProvider factory;
     private readonly IHostApplicationLifetime lifetime;
 
     public PeekWorker(
-        ISpaceChannelProxy proxy,
+        ISpaceChannelProvider factory,
         IHostApplicationLifetime lifetime)
     {
-        this.proxy = proxy;
+        this.factory = factory;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await proxy.OpenAsync();
+        ISpaceChannel channel = await factory.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;

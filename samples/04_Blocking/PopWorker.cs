@@ -4,20 +4,20 @@ using Microsoft.Extensions.Hosting;
 
 public class PopWorker : BackgroundService
 {
-    private readonly ISpaceChannelProxy proxy;
+    private readonly ISpaceChannelProvider provider;
     private readonly IHostApplicationLifetime lifetime;
 
     public PopWorker(
-        ISpaceChannelProxy proxy,
+        ISpaceChannelProvider provider,
         IHostApplicationLifetime lifetime)
     {
-        this.proxy = proxy;
+        this.provider = provider;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await proxy.OpenAsync();
+        ISpaceChannel channel = await provider.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;

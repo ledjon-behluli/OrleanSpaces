@@ -1,34 +1,22 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrleanSpaces.Callbacks.Continuations;
 using OrleanSpaces.Primitives;
-using OrleanSpaces.Proxies;
 using OrleanSpaces.Utils;
-using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackManager : BackgroundService, ICallbackRegistry
+internal class CallbackManager : BackgroundService
 {
-    private readonly SpaceAgent agent;
+    private readonly CallbackRegistry registry;
     private readonly ILogger<CallbackManager> logger;
-    private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
-
+    
     public CallbackManager(
-        SpaceAgent agent,
+        CallbackRegistry registry,
         ILogger<CallbackManager> logger)
     {
-        this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
+        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    public void Register(SpaceTemplate template, CallbackEntry entry)
-    {
-        if (!entries.ContainsKey(template))
-        {
-            entries.TryAdd(template, new());
-        }
-
-        entries[template].Add(entry);
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -39,7 +27,18 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
         {
             try
             {
-                await RunEntriesAsync(tuple);
+                var entries = registry.Take(tuple);
+                await ParallelExecutor.WhenAll(entries, async entry =>
+                {
+                    if (entry.IsDestructive)
+                    {
+                        await ContinuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
+                    }
+
+                    await entry.Callback(tuple);
+                });
+
+
             }
             catch (Exception e)
             {
@@ -48,32 +47,5 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
         }
 
         logger.LogDebug("Callback manager stopped.");
-    }
-
-    private async Task RunEntriesAsync(SpaceTuple tuple)
-    {
-        List<CallbackEntry> matchingEntries = new();
-
-        foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
-        {
-            if (TupleMatcher.IsMatch(tuple, pair.Key))
-            {
-                foreach (var callback in entries[pair.Key])
-                {
-                    matchingEntries.Add(callback);
-                }
-
-                entries.TryRemove(pair.Key, out _);
-            }
-        }
-
-        await ParallelExecutor.WhenAll(matchingEntries, async entry =>
-        {
-            await entry.Callback(tuple);
-            if (entry.Destructive)
-            {
-                await agent.PopAsync(SpaceTemplate.Create(tuple));
-            }
-        });
     }
 }

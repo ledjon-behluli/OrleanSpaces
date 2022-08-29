@@ -2,32 +2,20 @@
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
-using System.Collections.Concurrent;
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverManager : BackgroundService, IObserverRegistry
+internal class ObserverManager : BackgroundService
 {
+    private readonly ObserverRegistry registry;
     private readonly ILogger<ObserverManager> logger;
-    private readonly ConcurrentDictionary<ISpaceObserver, Guid> observers = new();
-
-    public ObserverManager(ILogger<ObserverManager> logger)
+    public ObserverManager(
+        ObserverRegistry registry,
+        ILogger<ObserverManager> logger)
     {
+        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
-    public Guid Register(ISpaceObserver observer)
-    {
-        if (!observers.TryGetValue(observer, out _))
-        {
-            observers.TryAdd(observer, Guid.NewGuid());
-        }
-
-        return observers[observer];
-    }
-
-    public void Deregister(ISpaceObserver observer)
-        => observers.TryRemove(observer, out _);
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -37,7 +25,7 @@ internal class ObserverManager : BackgroundService, IObserverRegistry
         {
             try
             {
-                await ParallelExecutor.WhenAll(observers, observer => observer.Key.OnTupleAsync(tuple));
+                await ParallelExecutor.WhenAll(registry.Observers, x => x.OnTupleAsync(tuple));
             }
             catch (Exception e)
             {

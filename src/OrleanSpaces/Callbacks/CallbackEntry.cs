@@ -5,11 +5,11 @@ namespace OrleanSpaces.Callbacks;
 internal class CallbackEntry
 {
     public Func<SpaceTuple, Task> Callback { get; }
-    public bool Destructive { get; }
+    public bool IsDestructive { get; }
 
-    public CallbackEntry(Func<SpaceTuple, Task> callback, bool destructive)
+    public CallbackEntry(Func<SpaceTuple, Task> callback, bool isDestructive)
     {
         Callback = callback;
-        Destructive = destructive;
+        IsDestructive = isDestructive;
     }
 }

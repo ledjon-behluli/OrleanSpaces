@@ -7,24 +7,27 @@ using Orleans.Streams;
 using OrleanSpaces.Utils;
 using OrleanSpaces.Grains;
 
-namespace OrleanSpaces.Proxies;
+namespace OrleanSpaces.Bridges;
 
-internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
+/// <summary>
+/// Represents a two-way bridge between <see cref="ISpaceChannel"/> and <see cref="ISpaceGrain"/>.
+/// </summary>
+internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
 {
-    private readonly ILogger<SpaceAgent> logger;
+    private readonly ILogger<SpaceGrainBridge> logger;
     private readonly IClusterClient client;
-    private readonly ICallbackRegistry callbackRegistry;
-    private readonly IObserverRegistry observerRegistry;
+    private readonly CallbackRegistry callbackRegistry;
+    private readonly ObserverRegistry observerRegistry;
 
 #nullable disable
     private ISpaceGrain grain;
 #nullable enable
 
-    public SpaceAgent(
-        ILogger<SpaceAgent> logger,
+    public SpaceGrainBridge(
+        ILogger<SpaceGrainBridge> logger,
         IClusterClient client,
-        ICallbackRegistry callbackRegistry,
-        IObserverRegistry observerRegistry)
+        CallbackRegistry callbackRegistry,
+        ObserverRegistry observerRegistry)
     {
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
@@ -104,10 +107,10 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
     #region ISpaceClient
 
     public ObserverRef Subscribe(ISpaceObserver observer)
-        => new(observerRegistry.Register(observer), observer);
+        => new(observerRegistry.Add(observer), observer);
 
     public void Unsubscribe(ObserverRef @ref)
-        => observerRegistry.Deregister(@ref.Observer);
+        => observerRegistry.Remove(@ref.Observer);
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);
@@ -128,7 +131,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         }
         else
         {
-            callbackRegistry.Register(template, new(callback, false));
+            callbackRegistry.Add(template, new(callback, false));
         }
     }
 
@@ -145,7 +148,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         }
         else
         {
-            callbackRegistry.Register(template, new(callback, true));
+            callbackRegistry.Add(template, new(callback, true));
         }
     }
 
