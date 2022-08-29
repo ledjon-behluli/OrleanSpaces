@@ -153,7 +153,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
          => await grain.ScanAsync(template);
 
     public async ValueTask<int> CountAsync()
-         => await grain.CountAsync();
+         => await grain.CountAsync(null);
 
     public async ValueTask<int> CountAsync(SpaceTemplate template)
          => await grain.CountAsync(template);

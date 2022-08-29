@@ -11,6 +11,5 @@ internal interface ISpaceGrain : IGrainWithGuidKey
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
-    ValueTask<int> CountAsync();
-    ValueTask<int> CountAsync(SpaceTemplate template);
+    ValueTask<int> CountAsync(SpaceTemplate? template);
 }

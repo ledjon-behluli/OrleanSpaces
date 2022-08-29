@@ -11,7 +11,8 @@ await Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddTupleSpace();
-        services.AddHostedService<Worker>();
+        //services.AddHostedService<PeekWorker>();
+        services.AddHostedService<PopWorker>();  // Try me out! But make sure to comment the line above.
     })
     .ConfigureLogging((context, builder) =>
     {

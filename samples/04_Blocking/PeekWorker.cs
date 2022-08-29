@@ -2,12 +2,12 @@
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Hosting;
 
-public class Worker : BackgroundService
+public class PeekWorker : BackgroundService
 {
     private readonly ISpaceChannelProxy proxy;
     private readonly IHostApplicationLifetime lifetime;
 
-    public Worker(
+    public PeekWorker(
         ISpaceChannelProxy proxy,
         IHostApplicationLifetime lifetime)
     {
@@ -23,7 +23,7 @@ public class Worker : BackgroundService
         bool callbackExecuted = false;
 
         SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, typeof(double)));
-        Console.WriteLine($"WORKER: Peeking for a tuple that matches template {template} in a 'blocking' fashion...");
+        Console.WriteLine($"WORKER: Peek-ing a tuple that matches template {template} in a 'blocking' fashion...");
 
         await channel.PeekAsync(template, async tuple =>
         {
@@ -46,6 +46,8 @@ public class Worker : BackgroundService
         {
             await Task.Delay(50);
         }
+
+        Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await channel.PeekAsync(template)).IsEmpty}");
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

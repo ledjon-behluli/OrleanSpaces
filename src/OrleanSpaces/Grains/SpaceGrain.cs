@@ -102,8 +102,14 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return new(results);
     }
 
-    public ValueTask<int> CountAsync() => new(space.State.Tuples.Count);
+    public ValueTask<int> CountAsync(SpaceTemplate? template)
+    {
+        if (template == null)
+        {
+            return new(space.State.Tuples.Count);
+        }
 
-    public ValueTask<int> CountAsync(SpaceTemplate template) =>
-        new(space.State.Tuples.Count(sp => sp.Length == template.Length && TupleMatcher.IsMatch(sp, template)));
+        return new(space.State.Tuples.Count(sp =>
+            sp.Length == ((SpaceTemplate)template).Length && TupleMatcher.IsMatch(sp, (SpaceTemplate)template)));
+    }
 }
