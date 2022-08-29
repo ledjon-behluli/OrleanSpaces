@@ -1,7 +1,5 @@
 ﻿using OrleanSpaces.Primitives;
-using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -58,7 +56,6 @@ public class SpaceTemplateTests
     [Fact]
     public void SpaceTemplate_Shoud_Not_Be_Statisfied_By_SpaceTuple()
     {
-        Assert.False(SpaceTemplate.Create(1).IsSatisfied(null));
         Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create(1)));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f))));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
@@ -78,20 +75,26 @@ public class SpaceTemplateTests
     }
 
     [Fact]
+    public void Exception_Should_Be_Thrown_On_Default_Constructor()
+    {
+        Assert.Throws<ArgumentException>(() => new SpaceTemplate());
+    }
+
+    [Fact]
     public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
     {
         Assert.Throws<ArgumentException>(() => SpaceTemplate.Create(new ValueTuple()));
     }
 
     [Fact]
-    public void Exception_Should_Not_Be_Thrown_If_Tuple_Contains_UnitField()
+    public void Exception_Should_Not_Be_Thrown_If_Template_Contains_UnitField()
     {
         var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", UnitField.Null)));
         Assert.Null(expection);
     }
 
     [Fact]
-    public void Exception_Should_Not_Be_Thrown_If_Tuple_Contains_Types()
+    public void Exception_Should_Not_Be_Thrown_If_Template_Contains_Types()
     {
         var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), UnitField.Null)));
         Assert.Null(expection);
@@ -106,39 +109,6 @@ public class SpaceTemplateTests
         Assert.Equal(template1, template2);
         Assert.True(template1 == template2);
         Assert.False(template1 != template2);
-    }
-
-    [Fact]
-    public void Should_Be_Equal_If_Both_Are_Null()
-    {
-        SpaceTemplate template1 = null;
-        SpaceTemplate template2 = null;
-
-        Assert.Equal(template1, template2);
-        Assert.False(template1 != template2);
-        Assert.True(template1 == template2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_First_Is_Null()
-    {
-        SpaceTemplate template1 = null;
-        SpaceTemplate template2 = SpaceTemplate.Create(1);
-
-        Assert.NotEqual(template1, template2);
-        Assert.True(template1 != template2);
-        Assert.False(template1 == template2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_Second_Is_Null()
-    {
-        SpaceTemplate template1 = SpaceTemplate.Create(1);
-        SpaceTemplate template2 = null;
-
-        Assert.NotEqual(template1, template2);
-        Assert.True(template1 != template2);
-        Assert.False(template1 == template2);
     }
 
     [Fact]

@@ -31,6 +31,11 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
+        if (tuple.IsEmpty)
+        {
+            throw new ArgumentException("Empty tuples are not allowed to be placed in the space.");
+        }
+
         space.State.Tuples.Add(tuple);
 
         await space.WriteStateAsync();
@@ -48,7 +53,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         }
     }
 
-    public ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template)
+    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -60,10 +65,10 @@ internal class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return default;
+        return new();
     }
 
-    public async Task<SpaceTuple?> PopAsync(SpaceTemplate template)
+    public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
     {
         IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
 
@@ -78,7 +83,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return default;
+        return new();
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)

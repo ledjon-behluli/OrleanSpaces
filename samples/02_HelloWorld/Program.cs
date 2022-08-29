@@ -10,7 +10,7 @@ var client = new ClientBuilder()
     .AddTupleSpace()
     .Build();
 
-await client.Connect();   // Comment: If not called explicitly, it is handle by the library.
+await client.Connect();   // If not called explicitly, it is handle by the library.
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
@@ -32,7 +32,7 @@ var task1 = Task.Run(async () =>
         Console.WriteLine($"THREAD 1: Searching for matching tuple with template: {template}");
 
         var helloWorldTuple = await channel.PeekAsync(template);
-        if (helloWorldTuple != null)
+        if (!helloWorldTuple.IsEmpty)
         {
             Console.WriteLine($"THREAD 1: Found this tuple: {helloWorldTuple}");
             break;
@@ -50,7 +50,7 @@ var task2 = Task.Run(async () =>
     while (true)
     {
         var helloTuple = await channel.PeekAsync(template);
-        if (helloTuple != null)
+        if (!helloTuple.IsEmpty)
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
 

@@ -21,12 +21,12 @@ internal static class LambdaSerializer
     {
         if (func == null)
         {
-            throw new ArgumentNullException("func");
+            throw new ArgumentNullException(nameof(func));
         }
 
         if (!IsLamda(func.Method))
         {
-            throw new ArgumentException("The provided func delegate must be a lamda expression");
+            throw new ArgumentException("The provided delegate must be a lamda expression");
         }
 
         Expression<Func<SpaceTuple>> expression = () => func();

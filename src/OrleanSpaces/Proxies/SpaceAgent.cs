@@ -115,14 +115,14 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
     public async Task EvaluateAsync(Func<SpaceTuple> func)
         => await grain.EvaluateAsync(LambdaSerializer.Serialize(func));
 
-    public async ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template)
+    public async ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
         => await grain.PeekAsync(template);
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        SpaceTuple? tuple = await grain.PeekAsync(template);
+        SpaceTuple tuple = await grain.PeekAsync(template);
 
-        if (tuple != null)
+        if (!tuple.IsEmpty)
         {
             await callback(tuple);
         }
@@ -132,14 +132,14 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         }
     }
 
-    public async Task<SpaceTuple?> PopAsync(SpaceTemplate template)
+    public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
          => await grain.PopAsync(template);
 
     public async Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        SpaceTuple? tuple = await grain.PopAsync(template);
+        SpaceTuple tuple = await grain.PopAsync(template);
 
-        if (tuple != null)
+        if (!tuple.IsEmpty)
         {
             await callback(tuple);
         }

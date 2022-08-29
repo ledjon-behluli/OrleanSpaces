@@ -3,20 +3,19 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public sealed class SpaceTuple : ITuple, IEquatable<SpaceTuple>
+public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] _fields;
 
     public int Length => _fields.Length;
     public object this[int index] => _fields[index];
 
+    public bool IsEmpty => _fields.Length == 0;
+
+    public SpaceTuple() : this(new object[0]) { }
+
     private SpaceTuple(params object[] fields)
     {
-        if (fields.Length == 0)
-        {
-            throw new ArgumentException($"Construction of '{nameof(SpaceTuple)}' without any fields is not allowed.");
-        }
-
         if (fields.Any(x => x is UnitField || x is Type))
         {
             throw new ArgumentException($"Type declarations and '{nameof(UnitField)}' are not valid '{nameof(SpaceTuple)}' fields.");
@@ -52,23 +51,8 @@ public sealed class SpaceTuple : ITuple, IEquatable<SpaceTuple>
         return new(fields);
     }
 
-    public static bool operator ==(SpaceTuple? first, SpaceTuple? second)
-    {
-        if (first is null && second is null)
-            return true;
-
-        if (first is null && second is not null)
-            return false;
-
-        if (first is not null && second is null)
-            return false;
-
-#nullable disable
-        return first.Equals(second);
-#nullable enable
-    }
-
-    public static bool operator !=(SpaceTuple? first, SpaceTuple? second) => !(first == second);
+    public static bool operator ==(SpaceTuple first, SpaceTuple second) => first.Equals(second);
+    public static bool operator !=(SpaceTuple first, SpaceTuple second) => !(first == second);
 
     public override bool Equals(object obj) =>
         obj is SpaceTuple overrides && Equals(overrides);

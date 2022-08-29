@@ -4,12 +4,14 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
+public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] _fields;
 
     public int Length => _fields.Length;
     public object this[int index] => _fields[index];
+
+    public SpaceTemplate() : this(new object[0]) { }
 
     private SpaceTemplate(params object[] fields)
     {
@@ -48,31 +50,10 @@ public sealed class SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
-    public bool IsSatisfied(SpaceTuple tuple)
-    {
-        if (tuple is null)
-            return false;
+    public bool IsSatisfied(SpaceTuple tuple) => TupleMatcher.IsMatch(tuple, this);
 
-        return TupleMatcher.IsMatch(tuple, this);
-    }
-
-    public static bool operator ==(SpaceTemplate? first, SpaceTemplate? second)
-    {
-        if (first is null && second is null)
-            return true;
-
-        if (first is null && second is not null)
-            return false;
-
-        if (first is not null && second is null)
-            return false;
-
-#nullable disable
-        return first.Equals(second);
-#nullable enable
-    }
-
-    public static bool operator !=(SpaceTemplate? first, SpaceTemplate? second) => !(first == second);
+    public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
+    public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
 
     public override bool Equals(object obj) =>
         obj is SpaceTemplate overrides && Equals(overrides);

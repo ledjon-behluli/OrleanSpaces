@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -28,6 +27,15 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void SpaceTuple_With_Zero_Length_Should_Be_Created_On_Default_Constructor()
+    {
+        SpaceTuple tuple = new();
+
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Exception_Should_Be_Thrown_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(null));
@@ -37,12 +45,6 @@ public class SpaceTupleTests
     public void Exception_Should_Be_Thrown_On_Null_Object()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((object)null));
-    }
-
-    [Fact]
-    public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
-    {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(new ValueTuple()));
     }
 
     [Fact]
@@ -70,6 +72,22 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void IndexException_Should_Be_Thrown_When_Accessing_Indexer_Of_Empty_Tuple()
+    {
+        SpaceTuple tuple = new();
+
+        Assert.True(tuple.IsEmpty);
+        Assert.Throws<IndexOutOfRangeException>(() => tuple[0]);
+    }
+
+    [Fact]
+    public void Exception_Should_Not_Be_Thrown_On_Default_Constructor()
+    {
+        var expection = Record.Exception(() => new SpaceTuple());
+        Assert.Null(expection);
+    }
+
+    [Fact]
     public void Should_Be_Equal()
     {
         SpaceTuple tuple1 = SpaceTuple.Create((1, "a", 1.5f));
@@ -78,39 +96,6 @@ public class SpaceTupleTests
         Assert.Equal(tuple1, tuple2);
         Assert.True(tuple1 == tuple2);
         Assert.False(tuple1 != tuple2);
-    }
-
-    [Fact]
-    public void Should_Be_Equal_If_Both_Are_Null()
-    {
-        SpaceTuple tuple1 = null;
-        SpaceTuple tuple2 = null;
-
-        Assert.Equal(tuple1, tuple2);
-        Assert.False(tuple1 != tuple2);
-        Assert.True(tuple1 == tuple2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_First_Is_Null()
-    {
-        SpaceTuple tuple1 = null;
-        SpaceTuple tuple2 = SpaceTuple.Create(1);
-
-        Assert.NotEqual(tuple1, tuple2);
-        Assert.True(tuple1 != tuple2);
-        Assert.False(tuple1 == tuple2);
-    }
-
-    [Fact]
-    public void Should_Not_Be_Equal_If_Second_Is_Null()
-    {
-        SpaceTuple tuple1 = SpaceTuple.Create(1);
-        SpaceTuple tuple2 = null;
-
-        Assert.NotEqual(tuple1, tuple2);
-        Assert.True(tuple1 != tuple2);
-        Assert.False(tuple1 == tuple2);
     }
 
     [Fact]

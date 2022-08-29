@@ -20,7 +20,7 @@ public interface ISpaceChannel
     /// <para>Used to read a tuple from the tuple space.</para>
     /// <para><i>Analogous to the "RD" primitive in the tuple space model.</i></para>
     /// </summary>
-    ValueTask<SpaceTuple?> PeekAsync(SpaceTemplate template);
+    ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read a tuple from the tuple space.</para>
@@ -32,7 +32,7 @@ public interface ISpaceChannel
     /// <para>Used to read and remove a tuple from the tuple space.</para>
     /// <para><i>Analogous to the "IN" primitive in the tuple space model.</i></para>
     /// </summary>
-    Task<SpaceTuple?> PopAsync(SpaceTemplate template);
+    Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read and remove a tuple from the tuple space.</para>
