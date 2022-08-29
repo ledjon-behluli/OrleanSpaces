@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,11 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
+	</ItemGroup>
+	
 </Project>

@@ -1,6 +1,6 @@
-﻿using OrleanSpaces.Primitives;
+﻿using OrleanSpaces;
+using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Hosting;
-using OrleanSpaces;
 
 public class Worker : BackgroundService
 {

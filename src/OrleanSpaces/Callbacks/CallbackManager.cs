@@ -35,7 +35,6 @@ internal class CallbackManager : BackgroundService, ICallbackRegistry
         {
             try
             {
-                //TODO: Check why this is no pulling...I think its because Blocking is not done as worker services
                 await RunCallbacksAsync(tuple);
             }
             catch (Exception e)
