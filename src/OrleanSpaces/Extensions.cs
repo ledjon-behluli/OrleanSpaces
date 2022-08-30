@@ -3,9 +3,9 @@ using Orleans.Hosting;
 using OrleanSpaces.Bridges;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Callbacks;
-using OrleanSpaces.Callbacks.Continuations;
 using Microsoft.Extensions.DependencyInjection;
-
+using OrleanSpaces.Continuations;
+using OrleanSpaces.Evaluations;
 
 namespace OrleanSpaces;
 
@@ -42,12 +42,12 @@ public static class Extensions
         services.AddSingleton<ObserverRegistry>();
 
         services.AddSingleton<SpaceGrainBridge>();
+        services.AddSingleton<ISpaceChannelProvider, SpaceChannelBridge>();
 
         services.AddHostedService<CallbackProcessor>();
+        services.AddHostedService<EvaluationProcessor>();
         services.AddHostedService<ContinuationProcessor>();
         services.AddHostedService<ObserverProcessor>();
-
-        services.AddSingleton<ISpaceChannelProvider, SpaceChannelBridge>();
 
         return services;
     }

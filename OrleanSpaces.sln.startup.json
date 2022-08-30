@@ -19,10 +19,22 @@
         "Concurrent": {}
       }
     },
-    "Blocking": {
+    "Peeker": {
       "Projects": {
         "SpaceHost": {},
-        "Blocking": {}
+        "Peeker": {}
+      }
+    },
+    "Poper": {
+      "Projects": {
+        "SpaceHost": {},
+        "Poper": {}
+      }
+    },
+    "Evaluator": {
+      "Projects": {
+        "SpaceHost": {},
+        "Evaluator": {}
       }
     },
     "Observer": {

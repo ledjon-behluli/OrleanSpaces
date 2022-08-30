@@ -101,6 +101,12 @@ public class SpaceTemplateTests
     }
 
     [Fact]
+    public void Should_Be_ISpaceElement()
+    {
+        Assert.True(typeof(ISpaceElement).IsAssignableFrom(typeof(SpaceTemplate)));
+    }
+
+    [Fact]
     public void Should_Be_Equal()
     {
         SpaceTemplate template1 = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));

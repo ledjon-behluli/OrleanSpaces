@@ -4,9 +4,8 @@ using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Observers;
 using Orleans.Streams;
-using OrleanSpaces.Utils;
 using OrleanSpaces.Grains;
-using Orleans.Runtime;
+using OrleanSpaces.Evaluations;
 
 namespace OrleanSpaces.Bridges;
 
@@ -66,7 +65,7 @@ internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
 
         grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
-        var streamId = await grain.ConnectAsync();
+        var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
         var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
 
@@ -116,8 +115,8 @@ internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);
 
-    public async Task EvaluateAsync(Func<SpaceTuple> func)
-        => await grain.EvaluateAsync(LambdaSerializer.Serialize(func));
+    public async Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
+        => await EvaluationChannel.Writer.WriteAsync(evaluation);
 
     public async ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
         => await grain.PeekAsync(template);

@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Primitives;
+﻿using Orleans.Hosting;
+using OrleanSpaces.Primitives;
 using System.Diagnostics;
 
 namespace OrleanSpaces.Tests.Primitives;
@@ -85,6 +86,13 @@ public class SpaceTupleTests
     {
         var expection = Record.Exception(() => new SpaceTuple());
         Assert.Null(expection);
+    }
+
+
+    [Fact]
+    public void Should_Be_ISpaceElement()
+    {
+        Assert.True(typeof(ISpaceElement).IsAssignableFrom(typeof(SpaceTuple)));
     }
 
     [Fact]

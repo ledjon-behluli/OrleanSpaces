@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Observers;
+﻿using OrleanSpaces.Evaluations;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces;
@@ -14,7 +15,7 @@ public interface ISpaceChannel
     /// </summary>
     Task WriteAsync(SpaceTuple tuple);
 
-    Task EvaluateAsync(Func<SpaceTuple> func);
+    Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
     /// <summary>
     /// <para>Used to read a tuple from the tuple space.</para>

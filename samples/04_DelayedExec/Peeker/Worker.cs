@@ -2,22 +2,22 @@
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Hosting;
 
-public class PeekWorker : BackgroundService
+public class Worker : BackgroundService
 {
-    private readonly ISpaceChannelProvider factory;
+    private readonly ISpaceChannelProvider provider;
     private readonly IHostApplicationLifetime lifetime;
 
-    public PeekWorker(
-        ISpaceChannelProvider factory,
+    public Worker(
+        ISpaceChannelProvider provider,
         IHostApplicationLifetime lifetime)
     {
-        this.factory = factory;
+        this.provider = provider;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await factory.GetAsync();
+        ISpaceChannel channel = await provider.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;
@@ -44,7 +44,8 @@ public class PeekWorker : BackgroundService
 
         while (!callbackExecuted)
         {
-            await Task.Delay(50);
+            Console.WriteLine("WORKER: Doing some other stuff.");
+            await Task.Delay(100);
         }
 
         Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await channel.PeekAsync(template)).IsEmpty}");

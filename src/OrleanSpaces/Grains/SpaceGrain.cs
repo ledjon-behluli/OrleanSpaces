@@ -27,7 +27,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
         return base.OnActivateAsync();
     }
 
-    public ValueTask<Guid> ConnectAsync() => new(stream.Guid);
+    public ValueTask<Guid> ListenAsync() => new(stream.Guid);
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
@@ -40,17 +40,6 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
         await space.WriteStateAsync();
         await stream.OnNextAsync(tuple);
-    }
-
-    public async Task EvaluateAsync(byte[] serializedFunc)
-    {
-        Func<SpaceTuple> function = LambdaSerializer.Deserialize(serializedFunc);
-        object result = function.DynamicInvoke();
-
-        if (result is SpaceTuple tuple)
-        {
-            await WriteAsync(tuple);
-        }
     }
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)

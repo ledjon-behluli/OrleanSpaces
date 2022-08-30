@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OrleanSpaces.Callbacks.Continuations;
+using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 

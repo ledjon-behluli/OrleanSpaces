@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
+public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] _fields;
 

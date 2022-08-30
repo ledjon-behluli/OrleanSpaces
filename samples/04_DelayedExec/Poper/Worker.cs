@@ -2,12 +2,12 @@
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Hosting;
 
-public class PopWorker : BackgroundService
+public class Worker : BackgroundService
 {
     private readonly ISpaceChannelProvider provider;
     private readonly IHostApplicationLifetime lifetime;
 
-    public PopWorker(
+    public Worker(
         ISpaceChannelProvider provider,
         IHostApplicationLifetime lifetime)
     {
@@ -44,7 +44,8 @@ public class PopWorker : BackgroundService
 
         while (!callbackExecuted)
         {
-            await Task.Delay(50);
+            Console.WriteLine("WORKER: Doing some other stuff.");
+            await Task.Delay(100);
         }
 
         Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await channel.PeekAsync(template)).IsEmpty}");

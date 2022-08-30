@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrleanSpaces.Bridges;
+using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Callbacks.Continuations;
+namespace OrleanSpaces.Continuations;
 
 internal class ContinuationProcessor : BackgroundService
 {
@@ -21,11 +22,23 @@ internal class ContinuationProcessor : BackgroundService
     {
         logger.LogDebug("Callback continuation processor started.");
 
-        await foreach (var template in ContinuationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
-                _ = await bridge.PopAsync(template);
+                if (element.GetType() == typeof(SpaceTuple))
+                {
+                    await bridge.WriteAsync((SpaceTuple)element);
+                    continue;
+                }
+
+                if (element.GetType() == typeof(SpaceTemplate))
+                {
+                    _ = await bridge.PopAsync((SpaceTemplate)element);
+                    continue;
+                }
+
+                throw new InvalidOperationException();
             }
             catch (Exception e)
             {
