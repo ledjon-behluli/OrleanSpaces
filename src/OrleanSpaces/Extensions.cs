@@ -43,9 +43,9 @@ public static class Extensions
 
         services.AddSingleton<SpaceGrainBridge>();
 
-        services.AddHostedService<CallbackManager>();
-        services.AddHostedService<ContinuationManager>();
-        services.AddHostedService<ObserverManager>();
+        services.AddHostedService<CallbackProcessor>();
+        services.AddHostedService<ContinuationProcessor>();
+        services.AddHostedService<ObserverProcessor>();
 
         services.AddSingleton<ISpaceChannelProvider, SpaceChannelBridge>();
 

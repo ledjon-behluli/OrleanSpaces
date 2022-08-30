@@ -6,14 +6,14 @@ using OrleanSpaces.Utils;
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackManager : BackgroundService
+internal class CallbackProcessor : BackgroundService
 {
     private readonly CallbackRegistry registry;
-    private readonly ILogger<CallbackManager> logger;
+    private readonly ILogger<CallbackProcessor> logger;
     
-    public CallbackManager(
+    public CallbackProcessor(
         CallbackRegistry registry,
-        ILogger<CallbackManager> logger)
+        ILogger<CallbackProcessor> logger)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -21,7 +21,7 @@ internal class CallbackManager : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Callback manager started.");
+        logger.LogDebug("Callback processor started.");
 
         await foreach (var tuple in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -30,15 +30,12 @@ internal class CallbackManager : BackgroundService
                 var entries = registry.Take(tuple);
                 await ParallelExecutor.WhenAll(entries, async entry =>
                 {
+                    await entry.Callback(tuple);
                     if (entry.IsDestructive)
                     {
                         await ContinuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
                     }
-
-                    await entry.Callback(tuple);
                 });
-
-
             }
             catch (Exception e)
             {
@@ -46,6 +43,6 @@ internal class CallbackManager : BackgroundService
             }
         }
 
-        logger.LogDebug("Callback manager stopped.");
+        logger.LogDebug("Callback processor stopped.");
     }
 }

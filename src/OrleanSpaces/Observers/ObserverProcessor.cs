@@ -5,13 +5,13 @@ using OrleanSpaces.Utils;
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverManager : BackgroundService
+internal class ObserverProcessor : BackgroundService
 {
     private readonly ObserverRegistry registry;
-    private readonly ILogger<ObserverManager> logger;
-    public ObserverManager(
+    private readonly ILogger<ObserverProcessor> logger;
+    public ObserverProcessor(
         ObserverRegistry registry,
-        ILogger<ObserverManager> logger)
+        ILogger<ObserverProcessor> logger)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -19,7 +19,7 @@ internal class ObserverManager : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Observer manager started.");
+        logger.LogDebug("Observer processor started.");
 
         await foreach (SpaceTuple tuple in ObserverChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -33,6 +33,6 @@ internal class ObserverManager : BackgroundService
             }
         }
 
-        logger.LogDebug("Observer manager stopped.");
+        logger.LogDebug("Observer processor stopped.");
     }
 }

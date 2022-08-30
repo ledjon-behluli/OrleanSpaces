@@ -4,14 +4,14 @@ using OrleanSpaces.Bridges;
 
 namespace OrleanSpaces.Callbacks.Continuations;
 
-internal class ContinuationManager : BackgroundService
+internal class ContinuationProcessor : BackgroundService
 {
     private readonly SpaceGrainBridge bridge;
-    private readonly ILogger<ContinuationManager> logger;
+    private readonly ILogger<ContinuationProcessor> logger;
 
-    public ContinuationManager(
+    public ContinuationProcessor(
         SpaceGrainBridge bridge,
-        ILogger<ContinuationManager> logger)
+        ILogger<ContinuationProcessor> logger)
     {
         this.bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -19,7 +19,7 @@ internal class ContinuationManager : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Callback continuation manager started.");
+        logger.LogDebug("Callback continuation processor started.");
 
         await foreach (var template in ContinuationChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -33,6 +33,6 @@ internal class ContinuationManager : BackgroundService
             }
         }
 
-        logger.LogDebug("Callback continuation manager stopped.");
+        logger.LogDebug("Callback continuation processor stopped.");
     }
 }
