@@ -5,9 +5,9 @@ using OrleanSpaces.Primitives;
 public class Ponger : ISpaceObserver
 {
     private readonly SpaceTemplate _template = SpaceTemplate.Create(("Ping", UnitField.Null));
-    private readonly ISpaceChannel _client;
+    private readonly ISpaceAgent _client;
 
-    public Ponger(ISpaceChannel client) => _client = client;
+    public Ponger(ISpaceAgent client) => _client = client;
 
     public async Task OnTupleAsync(SpaceTuple tuple)
     {

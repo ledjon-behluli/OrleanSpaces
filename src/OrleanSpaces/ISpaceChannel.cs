@@ -3,7 +3,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces;
 
-public interface ISpaceChannel
+public interface ISpaceAgent
 {
     ObserverRef Subscribe(ISpaceObserver observer);
     void Unsubscribe(ObserverRef @ref);

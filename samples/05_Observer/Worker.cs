@@ -4,11 +4,11 @@ using Microsoft.Extensions.Hosting;
 
 public class Worker : BackgroundService
 {
-    private readonly ISpaceChannelProvider proxy;
+    private readonly ISpaceChannel proxy;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
-        ISpaceChannelProvider proxy,
+        ISpaceChannel proxy,
         IHostApplicationLifetime lifetime)
     {
         this.proxy = proxy;
@@ -17,7 +17,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await proxy.GetAsync();
+        ISpaceAgent channel = await proxy.GetAsync();
 
         Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");

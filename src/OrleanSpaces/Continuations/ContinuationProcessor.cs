@@ -7,14 +7,14 @@ namespace OrleanSpaces.Continuations;
 
 internal class ContinuationProcessor : BackgroundService
 {
-    private readonly SpaceAgent bridge;
+    private readonly SpaceAgent agent;
     private readonly ILogger<ContinuationProcessor> logger;
 
     public ContinuationProcessor(
-        SpaceAgent bridge,
+        SpaceAgent agent,
         ILogger<ContinuationProcessor> logger)
     {
-        this.bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
+        this.agent = agent ?? throw new ArgumentNullException(nameof(agent));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -28,13 +28,13 @@ internal class ContinuationProcessor : BackgroundService
             {
                 if (element.GetType() == typeof(SpaceTuple))
                 {
-                    await bridge.WriteAsync((SpaceTuple)element);
+                    await agent.WriteAsync((SpaceTuple)element);
                     continue;
                 }
 
                 if (element.GetType() == typeof(SpaceTemplate))
                 {
-                    _ = await bridge.PopAsync((SpaceTemplate)element);
+                    _ = await agent.PopAsync((SpaceTemplate)element);
                     continue;
                 }
 

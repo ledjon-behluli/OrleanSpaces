@@ -37,15 +37,10 @@ public static class Extensions
                 .Build();
     }
 
-    private static IServiceCollection AddClientServices(this IServiceCollection services, Action<SpaceOptions>? config = null)
+    private static IServiceCollection AddClientServices(this IServiceCollection services)
     {
-        SpaceOptions options = new();
-        config?.Invoke(options);
-
-        services.AddSingleton(options);
-
         services.AddSingleton<SpaceAgent>();
-        services.AddSingleton<ISpaceChannelProvider, SpaceChannelBridge>();
+        services.AddSingleton<ISpaceChannel, SpaceChannel>();
 
         if (options.UseObservers)
         {
@@ -71,11 +66,4 @@ public static class Extensions
 
         return services;
     }
-}
-
-public sealed class SpaceOptions
-{
-    public bool UseObservers { get; set; } = true;
-    public bool UseEvaluators { get; set; } = true;
-    public bool UseCallbackReaders { get; set; } = true;
 }

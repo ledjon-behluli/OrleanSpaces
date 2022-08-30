@@ -14,7 +14,7 @@ await client.Connect();   // If not called explicitly, it is handle by the libra
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-var provider = client.ServiceProvider.GetRequiredService<ISpaceChannelProvider>();
+var provider = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
 
 //Normally you would call: "var channel = await provider.OpenAsync();" somewhere here, but I want to showcase the thread-safety of the method.
 

@@ -4,11 +4,11 @@ using Microsoft.Extensions.Hosting;
 
 public class Worker : BackgroundService
 {
-    private readonly ISpaceChannelProvider provider;
+    private readonly ISpaceChannel provider;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
-        ISpaceChannelProvider provider,
+        ISpaceChannel provider,
         IHostApplicationLifetime lifetime)
     {
         this.provider = provider;
@@ -17,7 +17,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceChannel channel = await provider.GetAsync();
+        ISpaceAgent channel = await provider.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;

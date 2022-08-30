@@ -10,10 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Bridges;
 
-/// <summary>
-/// Represents a two-way bridge between <see cref="ISpaceChannel"/> and <see cref="ISpaceGrain"/>.
-/// </summary>
-internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
+internal class SpaceAgent : ISpaceAgent, IAsyncObserver<SpaceTuple>
 {
     private readonly ILogger<SpaceAgent> logger;
     private readonly IClusterClient client;
@@ -34,16 +31,16 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
 
-    #region Connect
+    #region Initialization
 
-    public async Task ConnectAsync()
+    public async Task InitializeAsync()
     {
-        logger.LogDebug("Establishing space grain connection.");
+        logger.LogDebug("Initializing space agent.");
 
         await ConnectToCluster();
         await SubscribeToStream();
 
-        logger.LogDebug("Space grain connection established.");
+        logger.LogDebug("Space agent initialized.");
     }
 
     private async Task ConnectToCluster()
@@ -103,7 +100,7 @@ internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
 
     #endregion
 
-    #region ISpaceClient
+    #region ISpaceAgent
 
     public ObserverRef Subscribe(ISpaceObserver observer)
         => new(observerRegistry.Add(observer), observer);
