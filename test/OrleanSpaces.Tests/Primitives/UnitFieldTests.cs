@@ -42,7 +42,7 @@ public class UnitFieldTests
     }
 
     [Theory]
-    [MemberData(nameof(ValueData))]
+    [MemberData(nameof(Data))]
     public void Should_Be_Equal(object value, bool isEqual)
     {
         var unit = UnitField.Null;
@@ -54,7 +54,7 @@ public class UnitFieldTests
     }
 
     [Theory]
-    [MemberData(nameof(CompareToValueData))]
+    [MemberData(nameof(CompareToData))]
     public void Should_CompareTo_Value_As_Zero(object value)
     {
         var unit = new UnitField();
@@ -63,10 +63,10 @@ public class UnitFieldTests
         Assert.Equal(0, comparable.CompareTo(value));
     }
 
-    public static object[][] CompareToValueData()
-        => ValueData().Select(objects => new[] { objects[0] }).ToArray();
+    public static object[][] CompareToData()
+        => Data().Select(objects => new[] { objects[0] }).ToArray();
 
-    public static object[][] ValueData() =>
+    public static object[][] Data() =>
         new[]
         {
             new object[] {new object(), false},
