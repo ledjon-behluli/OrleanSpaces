@@ -8,7 +8,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Serialize.Linq" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.0">

@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Tests.Registries;
+namespace OrleanSpaces.Tests.Callbacks;
 
 public class CallbackRegistryTests
 {
@@ -10,7 +10,7 @@ public class CallbackRegistryTests
     public CallbackRegistryTests()
     {
         registry.Add(SpaceTemplate.Create(1), new(tuple => Task.CompletedTask, false));
-        registry.Add(SpaceTemplate.Create(1), new(tuple => Task.CompletedTask, false));
+        registry.Add(SpaceTemplate.Create(1), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create("a"), new(tuple => Task.CompletedTask, false));
     }
 

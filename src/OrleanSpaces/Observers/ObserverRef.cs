@@ -1,13 +1,15 @@
-﻿namespace OrleanSpaces.Observers;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public readonly struct ObserverRef
+namespace OrleanSpaces.Observers;
+
+public sealed class ObserverRef
 {
-    public readonly Guid Id;
-    public readonly ISpaceObserver Observer;
+    public Guid Id { get; }
+    [NotNull] public ISpaceObserver Observer { get; }
 
     public ObserverRef(Guid id, ISpaceObserver observer)
     {
         Id = id;
-        Observer = observer;
+        Observer = observer ?? throw new ArgumentNullException(nameof(observer));
     }
 }
