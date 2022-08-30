@@ -4,20 +4,20 @@ using Microsoft.Extensions.Hosting;
 
 public class Worker : BackgroundService
 {
-    private readonly ISpaceChannel provider;
+    private readonly ISpaceChannel channel;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
-        ISpaceChannel provider,
+        ISpaceChannel channel,
         IHostApplicationLifetime lifetime)
     {
-        this.provider = provider;
+        this.channel = channel;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceAgent channel = await provider.GetAsync();
+        ISpaceAgent agent = await channel.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;
@@ -25,7 +25,7 @@ public class Worker : BackgroundService
         SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, typeof(double)));
         Console.WriteLine($"WORKER: Pop-ing a tuple that matches template {template} in a 'blocking' fashion...");
 
-        await channel.PopAsync(template, async tuple =>
+        await agent.PopAsync(template, async tuple =>
         {
             Console.WriteLine($"CALLBACK: Got back response for template {template} in form of this tuple '{tuple}'. Doing some heavy work...");
 
@@ -40,7 +40,7 @@ public class Worker : BackgroundService
 
         SpaceTuple tuple = SpaceTuple.Create((EXCHANGE_KEY, 1.2334));
         Console.WriteLine($"WORKER: Writing sensor data in form of the tuple {tuple}");
-        await channel.WriteAsync(tuple);
+        await agent.WriteAsync(tuple);
 
         while (!callbackExecuted)
         {
@@ -48,7 +48,7 @@ public class Worker : BackgroundService
             await Task.Delay(100);
         }
 
-        Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await channel.PeekAsync(template)).IsEmpty}");
+        Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await agent.PeekAsync(template)).IsEmpty}");
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

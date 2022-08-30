@@ -44,7 +44,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Shoud_Be_Statisfied_By_SpaceTuple()
+    public void Template_Shoud_Be_Statisfied_By_Tuple()
     {
         Assert.True(SpaceTemplate.Create(1).IsSatisfied(SpaceTuple.Create(1)));
         Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create((1, "a"))));
@@ -54,7 +54,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Shoud_Not_Be_Statisfied_By_SpaceTuple()
+    public void Template_Shoud_Not_Be_Statisfied_By_Tuple()
     {
         Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create(1)));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f))));
@@ -101,7 +101,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_ISpaceElement()
+    public void Should_Be_A_SpaceElement()
     {
         Assert.True(typeof(ISpaceElement).IsAssignableFrom(typeof(SpaceTemplate)));
     }

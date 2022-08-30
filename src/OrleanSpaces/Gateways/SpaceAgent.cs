@@ -8,7 +8,7 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Evaluations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrleanSpaces.Bridges;
+namespace OrleanSpaces.Gateways;
 
 internal class SpaceAgent : ISpaceAgent, IAsyncObserver<SpaceTuple>
 {

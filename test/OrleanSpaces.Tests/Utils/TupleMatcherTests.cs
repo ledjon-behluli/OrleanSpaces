@@ -21,6 +21,7 @@ public class TupleMatcherTests
 
     #region Values
 
+    [Fact]
     public void Should_Be_False_If_At_Least_One_Item_Doesnt_Match_OnValues()
     {
         SpaceTemplate template1 = SpaceTemplate.Create((2, "a", 1.5f));

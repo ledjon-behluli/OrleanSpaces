@@ -1,4 +1,4 @@
-﻿namespace OrleanSpaces.Bridges;
+﻿namespace OrleanSpaces.Gateways;
 
 internal class SpaceChannel : ISpaceChannel
 {

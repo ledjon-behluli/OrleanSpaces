@@ -14,19 +14,19 @@ await client.Connect();   // If not called explicitly, it is handle by the libra
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-var provider = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+var channel = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
 
-//Normally you would call: "var channel = await provider.OpenAsync();" somewhere here, but I want to showcase the thread-safety of the method.
+//Normally you would call: "var agent = await channel.GetAsync();" somewhere here, but I want to showcase the thread-safety of the method.
 
 const string EXCHANGE_KEY = "exchange-key";
 
 
 await Task.WhenAll(CreateTasks(10, async index =>
 {
-    var channel = await provider.GetAsync();  // Only to showcase thread-safety (see comment above).
+    var agent = await channel.GetAsync();  // Only to showcase thread-safety (see comment above).
     var tuple = SpaceTuple.Create((EXCHANGE_KEY, index));
 
-    await channel.WriteAsync(tuple);
+    await agent.WriteAsync(tuple);
     Console.WriteLine($"WRITER {index}: {tuple}");
 }));
 
@@ -36,8 +36,8 @@ Console.WriteLine("----------------------");
 
 await Task.WhenAll(CreateTasks(10, async index =>
 {
-    var channel = await provider.GetAsync();  // Only to showcase thread-safety (see comment above).
-    var tuple = await channel.PeekAsync(SpaceTemplate.Create((EXCHANGE_KEY, index)));
+    var agent = await channel.GetAsync();  // Only to showcase thread-safety (see comment above).
+    var tuple = await agent.PeekAsync(SpaceTemplate.Create((EXCHANGE_KEY, index)));
 
     Console.WriteLine($"READER {index}: {tuple}");
 }));

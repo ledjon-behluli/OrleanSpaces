@@ -4,27 +4,27 @@ using Microsoft.Extensions.Hosting;
 
 public class Worker : BackgroundService
 {
-    private readonly ISpaceChannel provider;
+    private readonly ISpaceChannel channel;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
-        ISpaceChannel provider,
+        ISpaceChannel channel,
         IHostApplicationLifetime lifetime)
     {
-        this.provider = provider;
+        this.channel = channel;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceAgent channel = await provider.GetAsync();
+        ISpaceAgent agent = await channel.GetAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool evalExecuted = false;
 
         Console.WriteLine($"WORKER: Evaluating new tuple...");
 
-        await channel.EvaluateAsync(async () =>
+        await agent.EvaluateAsync(async () =>
         {
             Console.WriteLine("EVALUATOR: Doing so heavy work...");
 
@@ -43,7 +43,7 @@ public class Worker : BackgroundService
             await Task.Delay(500);
         }
 
-        Console.WriteLine($"WORKER: Result from evaluation: {await channel.PeekAsync(SpaceTemplate.Create((EXCHANGE_KEY, typeof(double))))}");
+        Console.WriteLine($"WORKER: Result from evaluation: {await agent.PeekAsync(SpaceTemplate.Create((EXCHANGE_KEY, typeof(double))))}");
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

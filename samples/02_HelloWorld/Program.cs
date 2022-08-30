@@ -14,15 +14,15 @@ await client.Connect();   // If not called explicitly, it is handle by the libra
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-var provider = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
-var channel = await provider.GetAsync();
+var channel = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+var agent = await channel.GetAsync();
 
 const string EXCHANGE_KEY = "exchange-key";
 
 var task1 = Task.Run(async () =>
 {
     SpaceTuple tuple = SpaceTuple.Create((EXCHANGE_KEY, "Hey its thread 1"));
-    await channel.WriteAsync(tuple);
+    await agent.WriteAsync(tuple);
 
     Console.WriteLine($"THREAD 1: Placed '{tuple}' into the tuple space.");
     SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, UnitField.Null, UnitField.Null));
@@ -31,7 +31,7 @@ var task1 = Task.Run(async () =>
     {
         Console.WriteLine($"THREAD 1: Searching for matching tuple with template: {template}");
 
-        var helloWorldTuple = await channel.PeekAsync(template);
+        var helloWorldTuple = await agent.PeekAsync(template);
         if (!helloWorldTuple.IsEmpty)
         {
             Console.WriteLine($"THREAD 1: Found this tuple: {helloWorldTuple}");
@@ -49,13 +49,13 @@ var task2 = Task.Run(async () =>
 
     while (true)
     {
-        var helloTuple = await channel.PeekAsync(template);
+        var helloTuple = await agent.PeekAsync(template);
         if (!helloTuple.IsEmpty)
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
 
             SpaceTuple helloWorldTuple = SpaceTuple.Create((helloTuple[0], helloTuple[1], "Whats up its thread 2"));
-            await channel.WriteAsync(helloWorldTuple);
+            await agent.WriteAsync(helloWorldTuple);
 
             Console.WriteLine($"THREAD 2: Placed '{helloWorldTuple}' into the tuple space.");
 

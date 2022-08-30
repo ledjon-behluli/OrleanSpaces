@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OrleanSpaces.Bridges;
+using OrleanSpaces.Gateways;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Continuations;

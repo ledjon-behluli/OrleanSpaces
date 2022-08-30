@@ -28,7 +28,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void SpaceTuple_With_Zero_Length_Should_Be_Created_On_Default_Constructor()
+    public void Tuple_With_Zero_Length_Should_Be_Created_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
 
@@ -90,7 +90,7 @@ public class SpaceTupleTests
 
 
     [Fact]
-    public void Should_Be_ISpaceElement()
+    public void Should_Be_A_SpaceElement()
     {
         Assert.True(typeof(ISpaceElement).IsAssignableFrom(typeof(SpaceTuple)));
     }

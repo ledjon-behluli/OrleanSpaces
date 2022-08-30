@@ -11,6 +11,7 @@ await Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddTupleSpace();
+        services.AddSingleton<Ponger>();
         services.AddHostedService<Worker>();
     })
     .ConfigureLogging((context, builder) =>
