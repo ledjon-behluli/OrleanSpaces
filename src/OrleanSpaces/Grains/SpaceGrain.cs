@@ -3,6 +3,7 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
@@ -10,11 +11,9 @@ internal class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<SpaceState> space;
 
-    private IAsyncStream<SpaceTuple> stream;
+    [AllowNull] private IAsyncStream<SpaceTuple> stream;
 
-#nullable disable
     public SpaceGrain([PersistentState("TupleSpace", StorageNames.TupleSpaceStore)] IPersistentState<SpaceState> space)
-#nullable enable
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }

@@ -7,11 +7,11 @@ namespace OrleanSpaces.Continuations;
 
 internal class ContinuationProcessor : BackgroundService
 {
-    private readonly SpaceGrainBridge bridge;
+    private readonly SpaceAgent bridge;
     private readonly ILogger<ContinuationProcessor> logger;
 
     public ContinuationProcessor(
-        SpaceGrainBridge bridge,
+        SpaceAgent bridge,
         ILogger<ContinuationProcessor> logger)
     {
         this.bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));

@@ -5,12 +5,12 @@
 /// </summary>
 internal class SpaceChannelBridge : ISpaceChannelProvider
 {
-    private readonly SpaceGrainBridge bridge;
+    private readonly SpaceAgent bridge;
 
     private bool isConnected;
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
-    public SpaceChannelBridge(SpaceGrainBridge bridge)
+    public SpaceChannelBridge(SpaceAgent bridge)
     {
         this.bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
     }

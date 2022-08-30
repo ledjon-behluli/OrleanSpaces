@@ -6,25 +6,24 @@ using OrleanSpaces.Observers;
 using Orleans.Streams;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Evaluations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Bridges;
 
 /// <summary>
 /// Represents a two-way bridge between <see cref="ISpaceChannel"/> and <see cref="ISpaceGrain"/>.
 /// </summary>
-internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
+internal class SpaceAgent : IAsyncObserver<SpaceTuple>, ISpaceChannel
 {
-    private readonly ILogger<SpaceGrainBridge> logger;
+    private readonly ILogger<SpaceAgent> logger;
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
     private readonly ObserverRegistry observerRegistry;
 
-#nullable disable
-    private ISpaceGrain grain;
-#nullable enable
+    [AllowNull] private ISpaceGrain grain;
 
-    public SpaceGrainBridge(
-        ILogger<SpaceGrainBridge> logger,
+    public SpaceAgent(
+        ILogger<SpaceAgent> logger,
         IClusterClient client,
         CallbackRegistry callbackRegistry,
         ObserverRegistry observerRegistry)
