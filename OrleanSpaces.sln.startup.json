@@ -37,10 +37,10 @@
         "Evaluator": {}
       }
     },
-    "Observer": {
+    "PingPong": {
       "Projects": {
         "SpaceHost": {},
-        "Observer": {}
+        "PingPong": {}
       }
     }
   }
