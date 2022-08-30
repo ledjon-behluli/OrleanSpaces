@@ -1,12 +1,12 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
 
-namespace OrleanSpaces.Tests;
+namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTemplateTests
 {
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Tuple()
+    public void Should_Be_Created_On_Tuple()
     {
         SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f));
 
@@ -17,7 +17,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Object()
+    public void Should_Be_Created_On_Object()
     {
         SpaceTemplate template = SpaceTemplate.Create("a");
 
@@ -26,7 +26,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_UnitField()
+    public void Should_Be_Created_On_UnitField()
     {
         SpaceTemplate template = SpaceTemplate.Create(UnitField.Null);
 
@@ -35,7 +35,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void SpaceTemplate_Should_Be_Created_On_Type()
+    public void Should_Be_Created_On_Type()
     {
         SpaceTemplate template = SpaceTemplate.Create(typeof(int));
 
@@ -63,38 +63,38 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Null()
+    public void Should_Throw_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Null_Object()
+    public void Should_Throw_On_Null_Object()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((object)null));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Default_Constructor()
+    public void Should_Throw_On_Default_Constructor()
     {
         Assert.Throws<ArgumentException>(() => new SpaceTemplate());
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Empty_ValueTuple()
+    public void Should_Throw_On_Empty_ValueTuple()
     {
         Assert.Throws<ArgumentException>(() => SpaceTemplate.Create(new ValueTuple()));
     }
 
     [Fact]
-    public void Exception_Should_Not_Be_Thrown_If_Template_Contains_UnitField()
+    public void Should_Not_Throw_If_Template_Contains_UnitField()
     {
         var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", UnitField.Null)));
         Assert.Null(expection);
     }
 
     [Fact]
-    public void Exception_Should_Not_Be_Thrown_If_Template_Contains_Types()
+    public void Should_Not_Throw_If_Template_Contains_Types()
     {
         var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), UnitField.Null)));
         Assert.Null(expection);

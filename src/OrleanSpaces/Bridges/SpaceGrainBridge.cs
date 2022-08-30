@@ -6,6 +6,7 @@ using OrleanSpaces.Observers;
 using Orleans.Streams;
 using OrleanSpaces.Utils;
 using OrleanSpaces.Grains;
+using Orleans.Runtime;
 
 namespace OrleanSpaces.Bridges;
 
@@ -53,7 +54,7 @@ internal class SpaceGrainBridge : IAsyncObserver<SpaceTuple>, ISpaceChannel
         {
             logger.LogDebug("Establishing cluster connection.");
 
-            await client.Connect();  // TODO: Implement some retry mechanism
+            await client.Connect();
 
             logger.LogDebug("Cluster connection established.");
         }

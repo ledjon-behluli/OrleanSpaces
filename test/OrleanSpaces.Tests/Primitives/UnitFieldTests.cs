@@ -1,6 +1,6 @@
 using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Tests;
+namespace OrleanSpaces.Tests.Primitives;
 
 public class UnitFieldTests
 {

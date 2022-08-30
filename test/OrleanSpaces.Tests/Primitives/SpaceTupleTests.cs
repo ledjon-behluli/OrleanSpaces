@@ -1,12 +1,12 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
 
-namespace OrleanSpaces.Tests;
+namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
     [Fact]
-    public void SpaceTuple_Should_Be_Created_On_Tuple()
+    public void Should_Be_Created_On_Tuple()
     {
         SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
 
@@ -18,7 +18,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void SpaceTuple_Should_Be_Created_On_Object()
+    public void Should_Be_Created_On_Object()
     {
         SpaceTuple tuple = SpaceTuple.Create("a");
 
@@ -36,43 +36,43 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Null()
+    public void Should_Throw_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(null));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Null_Object()
+    public void Should_Throw_On_Null_Object()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((object)null));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_UnitField()
+    public void Should_Throw_On_UnitField()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create(UnitField.Null));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_On_Type()
+    public void Should_Throw_On_Type()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create(typeof(int)));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_If_Tuple_Contains_UnitField()
+    public void Should_Throw_If_Tuple_Contains_UnitField()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", UnitField.Null)));
     }
 
     [Fact]
-    public void Exception_Should_Be_Thrown_If_Tuple_Contains_Types()
+    public void Should_Throw_If_Tuple_Contains_Types()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, typeof(int), "a")));
     }
 
     [Fact]
-    public void IndexException_Should_Be_Thrown_When_Accessing_Indexer_Of_Empty_Tuple()
+    public void Should_Throw_When_Accessing_Indexer_Of_Empty_Tuple()
     {
         SpaceTuple tuple = new();
 
@@ -81,7 +81,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Exception_Should_Not_Be_Thrown_On_Default_Constructor()
+    public void Should_Not_Throw_On_Default_Constructor()
     {
         var expection = Record.Exception(() => new SpaceTuple());
         Assert.Null(expection);

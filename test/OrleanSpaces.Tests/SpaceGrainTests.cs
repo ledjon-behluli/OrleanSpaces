@@ -1,6 +1,6 @@
 ﻿using Orleans.TestingHost;
 
-namespace OrleanSpaces.Tests.Hosts;
+namespace OrleanSpaces.Tests;
 
 [Collection(ClusterCollection.Name)]
 public class SpaceGrainTests

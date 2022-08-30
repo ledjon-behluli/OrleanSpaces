@@ -1,7 +1,7 @@
 ﻿using Orleans.Hosting;
 using Orleans.TestingHost;
 
-namespace OrleanSpaces.Tests.Hosts;
+namespace OrleanSpaces.Tests;
 
 [CollectionDefinition(Name)]
 public class ClusterCollection : ICollectionFixture<ClusterFixture>
@@ -18,7 +18,7 @@ public class ClusterFixture : IDisposable
         Cluster = new TestClusterBuilder()
             .AddSiloBuilderConfigurator<TestSiloConfigurations>()
             .Build();
-        
+
         Cluster.Deploy();
     }
 
@@ -29,7 +29,9 @@ public class ClusterFixture : IDisposable
         public void Configure(ISiloBuilder siloBuilder)
         {
             siloBuilder.AddTupleSpace();
-            siloBuilder.AddMemoryGrainStorageAsDefault();
+            siloBuilder.AddSimpleMessageStreamProvider(StreamNames.PubSubProvider);
+            siloBuilder.AddMemoryGrainStorage(StreamNames.PubSubStore);
+            siloBuilder.AddMemoryGrainStorage(StorageNames.TupleSpaceStore);
         }
     }
 }
