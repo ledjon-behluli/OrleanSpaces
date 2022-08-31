@@ -24,14 +24,17 @@ internal class ObserverProcessor : BackgroundService
 
         await foreach (SpaceTuple tuple in ObserverChannel.Reader.ReadAllAsync(cancellationToken))
         {
-            try
+            await ParallelExecutor.WhenAll(registry.Observers, async x =>
             {
-                await ParallelExecutor.WhenAll(registry.Observers, x => x.OnTupleAsync(tuple));
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, e.Message);
-            }
+                try
+                {
+                    await x.OnTupleAsync(tuple);
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, e.Message);
+                }
+            });
         }
 
         logger.LogDebug("Observer processor stopped.");

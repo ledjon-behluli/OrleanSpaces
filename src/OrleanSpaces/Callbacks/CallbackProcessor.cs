@@ -25,22 +25,22 @@ internal class CallbackProcessor : BackgroundService
 
         await foreach (var tuple in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
-            try
+            var entries = registry.Take(tuple);
+            await ParallelExecutor.WhenAll(entries, async entry =>
             {
-                var entries = registry.Take(tuple);
-                await ParallelExecutor.WhenAll(entries, async entry =>
+                try
                 {
                     await entry.Callback(tuple);
                     if (entry.IsDestructive)
                     {
                         await ContinuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
                     }
-                });
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, e.Message);
-            }
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, e.Message);
+                }
+            });
         }
 
         logger.LogDebug("Callback processor stopped.");
