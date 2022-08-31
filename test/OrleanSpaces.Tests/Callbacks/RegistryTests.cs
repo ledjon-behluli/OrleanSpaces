@@ -3,11 +3,11 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
-public class CallbackRegistryTests
+public class RegistryTests
 {
     private readonly CallbackRegistry registry = new();
 
-    public CallbackRegistryTests()
+    public RegistryTests()
     {
         registry.Add(SpaceTemplate.Create(1), new(tuple => Task.CompletedTask, false));
         registry.Add(SpaceTemplate.Create(1), new(tuple => Task.CompletedTask, true));

@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Tests.Observers;
 
-public class ObserverRefTests
+public class RefTests
 {
     [Fact]
     public void Should_Create()

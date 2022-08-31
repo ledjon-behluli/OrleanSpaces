@@ -2,13 +2,13 @@
 
 namespace OrleanSpaces.Tests.Observers;
 
-public class ObserverRegistryTests
+public class RegistryTests
 {
     private readonly ObserverRegistry registry = new();
     private readonly TestObserver observer = new();
     private readonly Guid observerId;
 
-    public ObserverRegistryTests()
+    public RegistryTests()
     {
         observerId = registry.Add(observer);
     }
