@@ -18,11 +18,11 @@ internal class EvaluationProcessor : BackgroundService
     {
         logger.LogDebug("Evaluation processor started.");
 
-        await foreach (var evaluator in EvaluationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var evaluation in EvaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
-                SpaceTuple tuple = await evaluator();
+                SpaceTuple tuple = await evaluation();
                 await ContinuationChannel.Writer.WriteAsync(tuple);
             }
             catch (Exception e)

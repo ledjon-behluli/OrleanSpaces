@@ -9,6 +9,7 @@ internal class ObserverProcessor : BackgroundService
 {
     private readonly ObserverRegistry registry;
     private readonly ILogger<ObserverProcessor> logger;
+
     public ObserverProcessor(
         ObserverRegistry registry,
         ILogger<ObserverProcessor> logger)

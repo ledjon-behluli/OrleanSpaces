@@ -1,4 +1,6 @@
-﻿using Orleans.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Orleans;
+using Orleans.Hosting;
 using Orleans.TestingHost;
 
 namespace OrleanSpaces.Tests;
@@ -16,7 +18,8 @@ public class ClusterFixture : IDisposable
     public ClusterFixture()
     {
         Cluster = new TestClusterBuilder()
-            .AddSiloBuilderConfigurator<TestSiloConfigurations>()
+            .AddSiloBuilderConfigurator<TestSiloConfigurator>()
+            .AddClientBuilderConfigurator<TestClientConfigurator>()
             .Build();
 
         Cluster.Deploy();
@@ -24,14 +27,23 @@ public class ClusterFixture : IDisposable
 
     public void Dispose() => Cluster.StopAllSilos();
 
-    private class TestSiloConfigurations : ISiloConfigurator
+    private class TestSiloConfigurator : ISiloConfigurator
     {
         public void Configure(ISiloBuilder siloBuilder)
         {
-            siloBuilder.AddTupleSpace();
             siloBuilder.AddSimpleMessageStreamProvider(StreamNames.PubSubProvider);
             siloBuilder.AddMemoryGrainStorage(StreamNames.PubSubStore);
             siloBuilder.AddMemoryGrainStorage(StorageNames.TupleSpaceStore);
+            siloBuilder.AddTupleSpace();
+        }
+    }
+
+    private class TestClientConfigurator : IClientBuilderConfigurator
+    {
+        public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
+        {
+            clientBuilder.AddSimpleMessageStreamProvider(StreamNames.PubSubProvider);
+            clientBuilder.AddTupleSpace();
         }
     }
 }

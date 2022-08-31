@@ -5,7 +5,7 @@ namespace OrleanSpaces.Tests.Utils;
 public class ParallelExecutorTests
 {
     [Fact]
-    public async void Should_Execute()
+    public async Task Should_Execute()
     {
         List<Callable> callables = new() { new(), new(), new() };
 
