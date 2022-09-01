@@ -3,7 +3,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Observers;
 
-internal class TestObserver : ISpaceObserver
+public class TestObserver : ISpaceObserver
 {
     public SpaceTuple LastReceived { get; private set; }
 
@@ -14,7 +14,7 @@ internal class TestObserver : ISpaceObserver
     }
 }
 
-internal class ThrowingTestObserver : TestObserver
+public class ThrowingTestObserver : TestObserver
 {
     public override Task OnTupleAsync(SpaceTuple tuple)
     {

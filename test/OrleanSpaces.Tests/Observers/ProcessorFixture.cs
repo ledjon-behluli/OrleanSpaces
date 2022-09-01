@@ -6,21 +6,43 @@ namespace OrleanSpaces.Tests.Observers;
 public class ProcessorFixture : IDisposable
 {
     private readonly ObserverProcessor processor;
-
-    internal ObserverRegistry Registry { get; }
-    internal List<TestObserver> Observers { get; }
+    private readonly ObserverRegistry registry;
 
     public ProcessorFixture()
     {
-        Observers = new List<TestObserver>() { new(), new(), new() };
-
-        Registry = new ObserverRegistry();
-        Observers.ForEach(x => Registry.Add(x));
-
-        processor = new ObserverProcessor(Registry, new NullLogger<ObserverProcessor>());
+        registry = new ObserverRegistry();
+        processor = new ObserverProcessor(registry, new NullLogger<ObserverProcessor>());
 
         processor.StartAsync(default).Wait();
     }
 
     public void Dispose() => processor.Dispose();
+
+    public TestObserverScope StartScope() => new(registry);
+
+    public class TestObserverScope : IDisposable
+    {
+        private readonly ObserverRegistry registry;
+        public List<TestObserver> Observers { get; private set; } = new();
+
+        internal TestObserverScope(ObserverRegistry registry)
+        {
+            this.registry = registry;
+        }
+
+        public bool ObserversNotReady(int numOfObservers) =>
+            Observers.Count(observer => !observer.LastReceived.IsEmpty) < numOfObservers;
+
+        public void AddObserver(TestObserver observer)
+        {
+            Observers.Add(observer);
+            registry.Add(observer);
+        }
+
+        public void Dispose()
+        {
+            Observers.ForEach(x => registry.Remove(x));
+            Observers.Clear();
+        }
+    }
 }
