@@ -7,8 +7,6 @@
 *.rsuser
 *.suo
 *.user
-*.v3
-*.startup
 *.userosscache
 *.sln.docstates
 
@@ -156,6 +154,8 @@ coverage*.info
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
+.*v3*
+.*startup*
 nCrunchTemp_*
 
 # MightyMoose
