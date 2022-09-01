@@ -1,5 +1,4 @@
-﻿using Orleans.Hosting;
-using OrleanSpaces.Primitives;
+﻿using OrleanSpaces.Primitives;
 using System.Diagnostics;
 
 namespace OrleanSpaces.Tests.Primitives;
@@ -86,6 +85,20 @@ public class SpaceTupleTests
     {
         var expection = Record.Exception(() => new SpaceTuple());
         Assert.Null(expection);
+    }
+
+    [Fact]
+    public void IsEmpty_Should_Be_True_On_Default_Constructor()
+    {
+        SpaceTuple tuple = new();
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
+    public void Length_Should_Be_Zero_On_Default_Constructor()
+    {
+        SpaceTuple tuple = new();
+        Assert.Equal(0, tuple.Length);
     }
 
 

@@ -7,10 +7,10 @@ public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] _fields;
 
-    public int Length => _fields.Length;
+    public int Length => _fields?.Length ?? 0;
     public object this[int index] => _fields[index];
 
-    public bool IsEmpty => _fields.Length == 0;
+    public bool IsEmpty => _fields == null || _fields.Length == 0;
 
     public SpaceTuple() : this(new object[0]) { }
 
