@@ -1,6 +1,21 @@
 ﻿<SolutionConfiguration>
   <Settings>
     <AllowParallelTestExecution>False</AllowParallelTestExecution>
+    <MetricsExclusionList>
+      <Value>samples\03_Concurrent\Concurrent.csproj</Value>
+      <Value>samples\04_DelayedExec\Evaluator\Evaluator.csproj</Value>
+      <Value>samples\02_HelloWorld\HelloWorld.csproj</Value>
+      <Value>Constants.cs:src\OrleanSpaces\OrleanSpaces.csproj</Value>
+      <Value>ISpaceAgent.cs:src\OrleanSpaces\OrleanSpaces.csproj</Value>
+      <Value>ISpaceChannel.cs:src\OrleanSpaces\OrleanSpaces.csproj</Value>
+      <Value>src\OrleanSpaces\OrleanSpaces.csproj\obj</Value>
+      <Value>test\OrleanSpaces.Tests\OrleanSpaces.Tests.csproj</Value>
+      <Value>samples\04_DelayedExec\Peeker\Peeker.csproj</Value>
+      <Value>samples\05_Observer\PingPong.csproj</Value>
+      <Value>samples\04_DelayedExec\Poper\Poper.csproj</Value>
+      <Value>samples\SpaceHost\SpaceHost.csproj</Value>
+      <Value>samples\01_TupleSyntax\TupleSyntax.csproj</Value>
+    </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
 </SolutionConfiguration>
