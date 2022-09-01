@@ -9,6 +9,9 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.sln.startup
+*.v3.ncrunchsolution
+*.v3.ncrunchsolution.user
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -154,8 +157,6 @@ coverage*.info
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
-.*v3*
-.*startup*
 nCrunchTemp_*
 
 # MightyMoose
