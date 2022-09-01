@@ -29,7 +29,7 @@ public class ProcessorTests : IClassFixture<ProcessorFixture>
     }
 
     [Fact]
-    public async Task Should_Not_Stop_Forwarding_If_Any_Evaluation_Throws()
+    public async Task Should_Continue_Forwarding_If_Any_Evaluation_Throws()
     {
         SpaceTuple tuple = SpaceTuple.Create(1);
 
