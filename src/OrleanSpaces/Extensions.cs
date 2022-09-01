@@ -41,7 +41,6 @@ public static class Extensions
         services.AddSingleton<CallbackRegistry>();
         services.AddSingleton<ObserverRegistry>();
 
-        services.AddSingleton<SpaceAgent>();
         services.AddSingleton<ISpaceChannel, SpaceChannel>();
 
         services.AddHostedService<CallbackProcessor>();
