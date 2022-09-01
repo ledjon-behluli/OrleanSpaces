@@ -30,8 +30,7 @@ public class ProcessorFixture : IDisposable
             this.registry = registry;
         }
 
-        public bool ObserversNotReady(int numOfObservers) =>
-            Observers.Count(observer => !observer.LastReceived.IsEmpty) < numOfObservers;
+        public int TotalInvoked() => Observers.Count(observer => !observer.LastReceived.IsEmpty);
 
         public void AddObserver(TestObserver observer)
         {
