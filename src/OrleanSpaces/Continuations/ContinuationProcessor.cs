@@ -29,16 +29,12 @@ internal class ContinuationProcessor : BackgroundService
                 if (element.GetType() == typeof(SpaceTuple))
                 {
                     await agent.WriteAsync((SpaceTuple)element);
-                    continue;
                 }
 
                 if (element.GetType() == typeof(SpaceTemplate))
                 {
                     _ = await agent.PopAsync((SpaceTemplate)element);
-                    continue;
                 }
-
-                throw new InvalidOperationException();
             }
             catch (Exception e)
             {
