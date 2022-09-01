@@ -10,8 +10,9 @@
 *.userosscache
 *.sln.docstates
 *.sln.startup
-*.v3.ncrunchsolution
-*.v3.ncrunchsolution.user
+
+OrleanSpaces.v3.ncrunchsolution
+OrleanSpaces.sln.startup.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
