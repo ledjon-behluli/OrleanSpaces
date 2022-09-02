@@ -10,7 +10,7 @@ await Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
     .ConfigureServices(services =>
     {
-        services.AddTupleSpace();
+        services.UseLocalhostTupleSpace();
         services.AddSingleton<Ponger>();
         services.AddHostedService<Worker>();
     })

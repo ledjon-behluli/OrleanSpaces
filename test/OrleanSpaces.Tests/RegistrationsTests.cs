@@ -12,11 +12,11 @@ using OrleanSpaces.Observers;
 namespace OrleanSpaces.Tests;
 
 [Collection(ClusterCollection.Name)]
-public class ExtensionsTests
+public class RegistrationsTests
 {
     private readonly TestCluster cluster;
 
-    public ExtensionsTests(ClusterFixture fixture)
+    public RegistrationsTests(ClusterFixture fixture)
     {
         cluster = fixture.Cluster;
     }
@@ -27,7 +27,7 @@ public class ExtensionsTests
         ServiceCollection services = new();
 
         services.AddLogging();
-        services.AddTupleSpace();
+        services.UseLocalhostTupleSpace();
 
         var provider = services.BuildServiceProvider();
 
@@ -52,7 +52,7 @@ public class ExtensionsTests
         ServiceCollection services = new();
 
         services.AddLogging();
-        services.AddTupleSpace(clientFactory);
+        services.UseLocalhostTupleSpace(clientFactory);
 
         var provider = services.BuildServiceProvider();
         var client = provider.GetService<IClusterClient>();
