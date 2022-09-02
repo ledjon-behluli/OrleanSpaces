@@ -6,7 +6,6 @@ using Orleans.TestingHost;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
 
 namespace OrleanSpaces.Tests;
