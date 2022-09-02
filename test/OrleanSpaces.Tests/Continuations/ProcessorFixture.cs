@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
-using OrleanSpaces.Gateways;
 using OrleanSpaces.Observers;
 
 namespace OrleanSpaces.Tests.Continuations;
@@ -15,7 +14,7 @@ public class ProcessorFixture : IDisposable
     {
         processor = new ContinuationProcessor(
             new SpaceChannel(
-                new NullLogger<SpaceAgent>(),
+                new NullLogger<SpaceChannel>(),
                 fixture.Cluster.Client,
                 new CallbackRegistry(),
                 new ObserverRegistry()), 
