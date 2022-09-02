@@ -20,31 +20,19 @@ internal class ContinuationProcessor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         logger.LogDebug("Callback continuation processor started.");
-
-        while (await ContinuationChannel.Reader.WaitToReadAsync(cancellationToken))
-        {
-            
-        }
-            
-        var agent = await channel.GetAsync();
-
+ 
         await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(cancellationToken))
         {
-            try
-            {
-                if (element.GetType() == typeof(SpaceTuple))
-                {
-                    await agent.WriteAsync((SpaceTuple)element);
-                }
+            var agent = await channel.GetAsync();
 
-                if (element.GetType() == typeof(SpaceTemplate))
-                {
-                    _ = await agent.PopAsync((SpaceTemplate)element);
-                }
-            }
-            catch (Exception e)
+            if (element.GetType() == typeof(SpaceTuple))
             {
-                logger.LogError(e, e.Message);
+                await agent.WriteAsync((SpaceTuple)element);
+            }
+
+            if (element.GetType() == typeof(SpaceTemplate))
+            {
+                _ = await agent.PopAsync((SpaceTemplate)element);
             }
         }
 
