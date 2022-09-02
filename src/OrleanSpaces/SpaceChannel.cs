@@ -86,7 +86,7 @@ internal class SpaceChannel : ISpaceChannel
                 logger.LogDebug("Establishing cluster connection.");
 
                 await client.Connect();
-
+                
                 logger.LogDebug("Cluster connection established.");
             }
         }

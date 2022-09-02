@@ -1,14 +1,15 @@
-﻿using OrleanSpaces.Callbacks;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
-public class ProcessorTests : IClassFixture<ProcessorFixture>
+public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     private readonly CallbackRegistry registry;
 
-    public ProcessorTests(ProcessorFixture fixture)
+    public ProcessorTests(Fixture fixture)
     {
         registry = fixture.Registry;
     }
@@ -84,4 +85,21 @@ public class ProcessorTests : IClassFixture<ProcessorFixture>
 
         Assert.Equal(2, rounds);
     }
+
+    public class Fixture : IDisposable
+    {
+        private readonly CallbackProcessor processor;
+        internal CallbackRegistry Registry { get; }
+
+        public Fixture()
+        {
+            Registry = new CallbackRegistry();
+            processor = new CallbackProcessor(Registry, new NullLogger<CallbackProcessor>());
+
+            processor.StartAsync(default).Wait();
+        }
+
+        public void Dispose() => processor.Dispose();
+    }
+
 }

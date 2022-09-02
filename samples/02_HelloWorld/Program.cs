@@ -72,19 +72,3 @@ Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
 await client.Close();
-
-
-// TODO: Find me for testng provider mutli-threading
-
-//ISpaceChannelProxy provider = client.ServiceProvider.GetRequiredService<ISpaceChannelProxy>();
-
-//var tasks = new Task[100];
-//for (int i = 0; i < 100; i++)
-//{
-//    tasks[i] = Task.Run(async () =>
-//    {
-//        await provider.OpenAsync();
-//    });
-//}
-
-//await Task.WhenAll(tasks);

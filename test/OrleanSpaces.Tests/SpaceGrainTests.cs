@@ -2,22 +2,22 @@
 
 namespace OrleanSpaces.Tests;
 
-[Collection(ClusterCollection.Name)]
-public class SpaceGrainTests
-{
-    private readonly TestCluster cluster;
+//[Collection(ClusterCollection.Name)]
+//public class SpaceGrainTests
+//{
+//    private readonly TestCluster cluster;
 
-    public SpaceGrainTests(ClusterFixture fixture)
-    {
-        cluster = fixture.Cluster;
-    }
+//    public SpaceGrainTests(ClusterFixture fixture)
+//    {
+//        cluster = fixture.Cluster;
+//    }
 
-    //[Fact]
-    //public async Task SaysHelloCorrectly()
-    //{
-    //    ISpaceGrain grain = cluster.GrainFactory.GetSpaceGrain();
-    //    int tupleCount = await grain.CountAsync();
+//    [Fact]
+//    public async Task SaysHelloCorrectly()
+//    {
+//        ISpaceGrain grain = cluster.GrainFactory.GetSpaceGrain();
+//        int tupleCount = await grain.CountAsync();
 
-    //    Assert.Equal(0, tupleCount);
-    //}
-}
+//        Assert.Equal(0, tupleCount);
+//    }
+//}

@@ -30,13 +30,13 @@ public class ServiceRegistrationTests
 
         var provider = services.BuildServiceProvider();
 
-        EnsureServices(provider);
+        EnsureAdded(provider);
     }
 
     [Fact]
     public void Should_Register_Services_On_ClientBuilder()
     {
-        EnsureServices(
+        EnsureAdded(
             new ClientBuilder()
                 .UseLocalhostClustering()
                 .AddTupleSpace()
@@ -57,10 +57,10 @@ public class ServiceRegistrationTests
         var client = provider.GetService<IClusterClient>();
 
         Assert.Equal(clientFactory(), client);
-        EnsureServices(provider);
+        EnsureAdded(provider);
     }
 
-    private static void EnsureServices(IServiceProvider provider)
+    private static void EnsureAdded(IServiceProvider provider)
     {
         Assert.NotNull(provider.GetService<CallbackRegistry>());
         Assert.NotNull(provider.GetService<ObserverRegistry>());

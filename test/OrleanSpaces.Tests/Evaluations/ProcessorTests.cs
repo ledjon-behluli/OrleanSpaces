@@ -1,10 +1,11 @@
-﻿using OrleanSpaces.Continuations;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
-public class ProcessorTests : IClassFixture<ProcessorFixture>
+public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     [Fact]
     public async Task Should_Forward_If_Evaluation_Results_In_Tuple()
@@ -64,4 +65,18 @@ public class ProcessorTests : IClassFixture<ProcessorFixture>
             }
         }
     }
+
+    public class Fixture : IDisposable
+    {
+        private readonly EvaluationProcessor processor;
+
+        public Fixture()
+        {
+            processor = new EvaluationProcessor(new NullLogger<EvaluationProcessor>());
+            processor.StartAsync(default).Wait();
+        }
+
+        public void Dispose() => processor.Dispose();
+    }
+
 }

@@ -1,13 +1,14 @@
-﻿using OrleanSpaces.Observers;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Observers;
 
-public class ProcessorTests : IClassFixture<ProcessorFixture>
+public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
-    private readonly ProcessorFixture fixture;
+    private readonly Fixture fixture;
 
-	public ProcessorTests(ProcessorFixture fixture)
+	public ProcessorTests(Fixture fixture)
 	{
         this.fixture = fixture;
 	}
@@ -66,5 +67,48 @@ public class ProcessorTests : IClassFixture<ProcessorFixture>
                 Assert.Equal(tuple, observer.LastReceived);
             }
         });
+    }
+
+    public class Fixture : IDisposable
+    {
+        private readonly ObserverProcessor processor;
+        private readonly ObserverRegistry registry;
+
+        public Fixture()
+        {
+            registry = new ObserverRegistry();
+            processor = new ObserverProcessor(registry, new NullLogger<ObserverProcessor>());
+
+            processor.StartAsync(default).Wait();
+        }
+
+        public void Dispose() => processor.Dispose();
+
+        public TestObserverScope StartScope() => new(registry);
+
+        public class TestObserverScope : IDisposable
+        {
+            private readonly ObserverRegistry registry;
+            public List<TestObserver> Observers { get; private set; } = new();
+
+            internal TestObserverScope(ObserverRegistry registry)
+            {
+                this.registry = registry;
+            }
+
+            public int TotalInvoked() => Observers.Count(observer => !observer.LastReceived.IsEmpty);
+
+            public void AddObserver(TestObserver observer)
+            {
+                Observers.Add(observer);
+                registry.Add(observer);
+            }
+
+            public void Dispose()
+            {
+                Observers.ForEach(x => registry.Remove(x));
+                Observers.Clear();
+            }
+        }
     }
 }
