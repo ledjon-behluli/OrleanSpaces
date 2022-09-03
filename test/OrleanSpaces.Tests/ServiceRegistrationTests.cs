@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using Orleans.Hosting;
-using Orleans.TestingHost;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
@@ -10,14 +9,13 @@ using OrleanSpaces.Observers;
 
 namespace OrleanSpaces.Tests;
 
-[Collection(ClusterCollection.Name)]
-public class ServiceRegistrationTests
+public class ServiceRegistrationTests : IClassFixture<ClusterFixture>
 {
-    private readonly TestCluster cluster;
+    private readonly IClusterClient client;
 
     public ServiceRegistrationTests(ClusterFixture fixture)
     {
-        cluster = fixture.Cluster;
+        client = fixture.Client;
     }
 
     [Fact]
@@ -47,7 +45,7 @@ public class ServiceRegistrationTests
     [Fact]
     public void Should_Register_Services_With_CustomClusterClient_On_ServiceCollection()
     {
-        Func<IClusterClient> clientFactory = () => cluster.Client;
+        Func<IClusterClient> clientFactory = () => this.client;
         ServiceCollection services = new();
 
         services.AddLogging();

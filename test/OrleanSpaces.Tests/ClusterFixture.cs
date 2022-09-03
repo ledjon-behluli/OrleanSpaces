@@ -5,27 +5,23 @@ using Orleans.TestingHost;
 
 namespace OrleanSpaces.Tests;
 
-[CollectionDefinition(Name)]
-public class ClusterCollection : ICollectionFixture<ClusterFixture>
-{
-    public const string Name = "ClusterCollection";
-}
-
 public class ClusterFixture : IDisposable
 {
-    public TestCluster Cluster { get; }
+    private readonly TestCluster cluster;
+    public IClusterClient Client { get; }
 
     public ClusterFixture()
     {
-        Cluster = new TestClusterBuilder()
+        cluster = new TestClusterBuilder()
             .AddSiloBuilderConfigurator<TestSiloConfigurator>()
             .AddClientBuilderConfigurator<TestClientConfigurator>()
             .Build();
 
-        Cluster.Deploy();
+        cluster.Deploy();
+        Client = cluster.Client;
     }
 
-    public void Dispose() => Cluster.StopAllSilos();
+    public void Dispose() => cluster.StopAllSilos();
 
     private class TestSiloConfigurator : ISiloConfigurator
     {

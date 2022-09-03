@@ -4,6 +4,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Observers;
 
+[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     private readonly Fixture fixture;

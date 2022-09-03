@@ -2,8 +2,7 @@
 
 namespace OrleanSpaces.Tests;
 
-//[Collection(ClusterCollection.Name)]
-//public class SpaceGrainTests
+//public class SpaceGrainTests : IClassFixture<ClusterFixture>
 //{
 //    private readonly TestCluster cluster;
 

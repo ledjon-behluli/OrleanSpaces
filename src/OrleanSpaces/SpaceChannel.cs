@@ -86,7 +86,7 @@ internal class SpaceChannel : ISpaceChannel
                 logger.LogDebug("Establishing cluster connection.");
 
                 await client.Connect();
-                
+
                 logger.LogDebug("Cluster connection established.");
             }
         }
@@ -148,7 +148,14 @@ internal class SpaceChannel : ISpaceChannel
             => await grain.WriteAsync(tuple);
 
         public async Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
-            => await EvaluationChannel.Writer.WriteAsync(evaluation);
+        {
+            if (evaluation == null)
+            {
+                throw new ArgumentNullException(nameof(evaluation));
+            }
+
+            await EvaluationChannel.Writer.WriteAsync(evaluation);
+        }
 
         public async ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
             => await grain.PeekAsync(template);

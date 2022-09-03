@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Tests.Observers;
+namespace OrleanSpaces.Tests;
 
 public class TestObserver : ISpaceObserver
 {

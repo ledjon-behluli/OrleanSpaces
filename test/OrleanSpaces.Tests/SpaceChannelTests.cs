@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Observers;
@@ -7,16 +6,16 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests;
 
-[Collection(ClusterCollection.Name)]
-public class SpaceChannelTests
+[Collection("Sequential")]
+public class SpaceChannelTests : IClassFixture<ClusterFixture>
 {
     private readonly IClusterClient client;
-    private readonly SpaceChannel channel;
+    private readonly ISpaceChannel channel;
 
     public SpaceChannelTests(ClusterFixture fixture)
     {
-        client = fixture.Cluster.Client;
-        channel = new SpaceChannel(new NullLogger<SpaceChannel>(), client, new(), new());
+        client = fixture.Client;
+        channel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
     }
 
     [Fact]
@@ -39,28 +38,27 @@ public class SpaceChannelTests
     [Fact]
     public void Should_Not_Get_Agent_From_ServiceProvider()
     {
-        Assert.Throws<InvalidOperationException>(() => client.ServiceProvider.GetRequiredService<ISpaceAgent>());
         Assert.Null(client.ServiceProvider.GetService<ISpaceAgent>());
     }
 
     [Fact]
     public async Task Should_Not_Throw_When_Multiple_Threads_Open_The_Channel()
     {
-        var expection = await Record.ExceptionAsync(async () => _ = await GetAgentConcurrently());
+        var expection = await Record.ExceptionAsync(async () => _ = await OpenChannelAndGetAgentConcurrently());
         Assert.Null(expection);
     }
 
     [Fact]
-    public async Task Should_Subscribe_Only_Once_Even_When_Multiple_Threads_Initialize_The_Agent()
+    public async Task Should_Subscribe_Only_Once_Even_When_Multiple_Threads_Open_The_Channel()
     {
-        ISpaceAgent agent = await GetAgentConcurrently();
+        ISpaceAgent agent = await OpenChannelAndGetAgentConcurrently();
         await agent.WriteAsync(SpaceTuple.Create(1));
 
         Assert.Equal(1, CallbackChannel.Reader.Count);
         Assert.Equal(1, ObserverChannel.Reader.Count);
     }
 
-    private async Task<ISpaceAgent> GetAgentConcurrently()
+    private async Task<ISpaceAgent> OpenChannelAndGetAgentConcurrently()
     {
         ISpaceAgent agent = null;
         var tasks = new Task[100];

@@ -5,6 +5,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
+[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     private readonly CallbackRegistry registry;

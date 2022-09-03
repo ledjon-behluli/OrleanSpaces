@@ -56,7 +56,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
     public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
 
     public override bool Equals(object obj) =>
-        obj is SpaceTemplate overrides && Equals(overrides);
+        obj is SpaceTemplate template && Equals(template);
 
     public bool Equals(SpaceTemplate other)
     {

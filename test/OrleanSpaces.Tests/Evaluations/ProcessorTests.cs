@@ -5,6 +5,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
+[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     [Fact]

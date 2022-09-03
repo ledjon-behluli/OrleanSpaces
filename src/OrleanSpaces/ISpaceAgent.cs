@@ -14,6 +14,11 @@ public interface ISpaceAgent
     /// </summary>
     Task WriteAsync(SpaceTuple tuple);
 
+    /// <summary>
+    /// Evaluate
+    /// </summary>
+    /// <param name="evaluation"></param>
+    /// <returns></returns>
     Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
     /// <summary>

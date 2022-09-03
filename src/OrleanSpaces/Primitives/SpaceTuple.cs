@@ -55,7 +55,7 @@ public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
     public static bool operator !=(SpaceTuple first, SpaceTuple second) => !(first == second);
 
     public override bool Equals(object obj) =>
-        obj is SpaceTuple overrides && Equals(overrides);
+        obj is SpaceTuple tuple && Equals(tuple);
 
     public bool Equals(SpaceTuple other)
     {
