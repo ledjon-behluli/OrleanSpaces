@@ -73,13 +73,13 @@ internal class SpaceChannel : ISpaceChannel
         {
             logger.LogDebug("Initializing space agent.");
 
-            await ConnectToCluster();
-            await SubscribeToStream();
+            await ConnectToClusterAsync();
+            await SubscribeToStreamAsync();
 
             logger.LogDebug("Space agent initialized.");
         }
 
-        private async Task ConnectToCluster()
+        private async Task ConnectToClusterAsync()
         {
             if (!client.IsInitialized)
             {
@@ -91,7 +91,7 @@ internal class SpaceChannel : ISpaceChannel
             }
         }
 
-        private async Task SubscribeToStream()
+        private async Task SubscribeToStreamAsync()
         {
             logger.LogDebug("Establishing space stream connection.");
 
