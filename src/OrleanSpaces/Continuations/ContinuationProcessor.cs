@@ -7,16 +7,16 @@ namespace OrleanSpaces.Continuations;
 internal class ContinuationProcessor : BackgroundService
 {
     private readonly ISpaceChannel spaceChannel;
-    private readonly ContinuationChannel continuation;
+    private readonly ContinuationChannel continuationChannel;
     private readonly ILogger<ContinuationProcessor> logger;
 
     public ContinuationProcessor(
-        ISpaceChannel channel,
-        ContinuationChannel continuation,
+        ISpaceChannel spaceChannel,
+        ContinuationChannel continuationChannel,
         ILogger<ContinuationProcessor> logger)
     {
-        this.spaceChannel = channel ?? throw new ArgumentNullException(nameof(channel));
-        this.continuation = continuation ?? throw new ArgumentNullException(nameof(continuation));
+        this.spaceChannel = spaceChannel ?? throw new ArgumentNullException(nameof(spaceChannel));
+        this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -24,18 +24,22 @@ internal class ContinuationProcessor : BackgroundService
     {
         logger.LogDebug("Callback continuation processor started.");
  
-        await foreach (var element in continuation.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var element in continuationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             var agent = await spaceChannel.GetAsync();
+            Type type = element.GetType();
 
-            if (element.GetType() == typeof(SpaceTuple))
+            if (type == typeof(SpaceTuple))
             {
                 await agent.WriteAsync((SpaceTuple)element);
             }
-
-            if (element.GetType() == typeof(SpaceTemplate))
+            else if (type == typeof(SpaceTemplate))
             {
                 _ = await agent.PopAsync((SpaceTemplate)element);
+            }
+            else
+            {
+                throw new NotImplementedException($"No implementation exists for '{type}'");
             }
         }
 

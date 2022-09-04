@@ -85,8 +85,8 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
             processor = new(Registry, Channel, new NullLogger<ObserverProcessor>());
         }
 
-        public Task InitializeAsync() => processor.StartAsync(default);
-        public Task DisposeAsync() => processor.StopAsync(default);
+        public async Task InitializeAsync() => await processor.StartAsync(default);
+        public async Task DisposeAsync() => await processor.StopAsync(default);
 
 
         public TestObserverScope StartScope() => new(Registry);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Evaluations;
+using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
@@ -11,7 +12,6 @@ public class SpaceAgentTests : IAsyncLifetime
     private readonly ISpaceChannel spaceChannel;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry registry;
-
     private ISpaceAgent agent;
 
     public SpaceAgentTests(ClusterFixture fixture)
@@ -58,6 +58,8 @@ public class SpaceAgentTests : IAsyncLifetime
     [Fact]
     public async Task Should_WriteAsync()
     {
+        //fixture.Client.GetGrain<ISpaceGrain>().
+
         // TODO: Test me better
         await agent.WriteAsync(SpaceTuple.Create(1));
         Assert.True(true);

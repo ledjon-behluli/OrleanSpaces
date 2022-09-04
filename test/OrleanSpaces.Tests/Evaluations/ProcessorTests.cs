@@ -89,7 +89,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
             processor = new(EvaluationChannel, ContinuationChannel, new NullLogger<EvaluationProcessor>());
         }
 
-        public Task InitializeAsync() => processor.StartAsync(default);
-        public Task DisposeAsync() => processor.StopAsync(default);
+        public async Task InitializeAsync() => await processor.StartAsync(default);
+        public async Task DisposeAsync() => await processor.StopAsync(default);
     }
 }
