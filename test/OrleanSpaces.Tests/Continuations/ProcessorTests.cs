@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata.Ecma335;
 
 namespace OrleanSpaces.Tests.Continuations;
 
@@ -19,7 +16,6 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         channel = fixture.Channel;
     }
 
-    [Fact]
     public async Task Should_Write_Tuple_If_SpaceElement_Is_A_Tuple()
     {
         SpaceTuple tuple = SpaceTuple.Create("continue");
@@ -64,7 +60,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
         public Fixture()
         {
-            spaceChannel = ;
+            spaceChannel = new TestChannel();
             Channel = new();
 
             processor = new(spaceChannel, Channel, new NullLogger<ContinuationProcessor>());
@@ -84,69 +80,69 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
     }
 
-    //private class TestChannel : ISpaceChannel
-    //{
-    //    public Task<ISpaceAgent> GetAsync() => Task.FromResult(new TestAgent());
+    private class TestChannel : ISpaceChannel
+    {
+        public Task<ISpaceAgent> GetAsync() => Task.FromResult((ISpaceAgent)new TestAgent());
 
-    //    private class TestAgent : ISpaceAgent
-    //    {
-    //        private readonly List<SpaceTuple> tuples = new();
+        private class TestAgent : ISpaceAgent
+        {
+            private SpaceTuple tuple = new();
 
-    //        public Task WriteAsync(SpaceTuple tuple)
-    //        {
-    //            tuples.Add(tuple);
-    //            return Task.CompletedTask;
-    //        }
+            public Task WriteAsync(SpaceTuple tuple)
+            {
+                this.tuple = tuple;
+                return Task.CompletedTask;
+            }
 
-    //        public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public Task<SpaceTuple> PopAsync(SpaceTemplate template)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public Task<SpaceTuple> PopAsync(SpaceTemplate template)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public ObserverRef Subscribe(ISpaceObserver observer)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public ObserverRef Subscribe(ISpaceObserver observer)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public void Unsubscribe(ObserverRef @ref)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public void Unsubscribe(ObserverRef @ref)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public ValueTask<int> CountAsync()
-    //        {
-    //            throw new NotImplementedException();
-    //        }
+            public ValueTask<int> CountAsync()
+            {
+                throw new NotImplementedException();
+            }
 
-    //        public ValueTask<int> CountAsync(SpaceTemplate template)
-    //        {
-    //            throw new NotImplementedException();
-    //        }
-    //    }
+            public ValueTask<int> CountAsync(SpaceTemplate template)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }
