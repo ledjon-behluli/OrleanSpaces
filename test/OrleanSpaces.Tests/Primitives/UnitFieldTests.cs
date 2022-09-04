@@ -42,7 +42,7 @@ public class UnitFieldTests
     }
 
     [Theory]
-    [MemberData(nameof(Data))]
+    [MemberData(nameof(InlineData))]
     public void Should_Be_Equal(object value, bool isEqual)
     {
         var unit = UnitField.Null;
@@ -64,9 +64,9 @@ public class UnitFieldTests
     }
 
     public static object[][] CompareToData()
-        => Data().Select(objects => new[] { objects[0] }).ToArray();
+        => InlineData().Select(objects => new[] { objects[0] }).ToArray();
 
-    public static object[][] Data() =>
+    public static object[][] InlineData() =>
         new[]
         {
             new object[] {new object(), false},

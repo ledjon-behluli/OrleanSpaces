@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
@@ -12,13 +13,16 @@ public class SpaceAgentTests : IAsyncLifetime
     private readonly ISpaceChannel spaceChannel;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry registry;
+
     private ISpaceAgent agent;
+    private ISpaceElementRouter router;
 
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         registry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
+        router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceElementRouter>();
     }
 
     public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
@@ -53,16 +57,61 @@ public class SpaceAgentTests : IAsyncLifetime
 
     #endregion
 
+    #region Router
+
+    [Fact]
+    public async Task Should_WriteAsync_When_SpaceElement_Is_A_Tuple()
+    {
+        SpaceTuple tuple = SpaceTuple.Create("routing");
+        await router.RouteAsync(tuple);
+
+        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+
+        Assert.False(peekedTuple.IsEmpty);
+        Assert.Equal(tuple, peekedTuple);
+    }
+
+    [Fact]
+    public async Task Should_PopAsync_When_SpaceElement_Is_A_Template()
+    {
+        SpaceTuple tuple = SpaceTuple.Create("routing");
+        SpaceTemplate template = SpaceTemplate.Create(tuple);
+
+        await agent.WriteAsync(tuple);
+        await router.RouteAsync(template);
+
+        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+
+        Assert.True(peekedTuple.IsEmpty);
+        Assert.NotEqual(tuple, peekedTuple);
+    }
+
+    [Fact]
+    public async Task Should_Throw_If_SpaceElement_Is_Null()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
+    }
+
+    [Fact]
+    public async Task Should_Throw_If_SpaceElement_Is_Not_Supported()
+    {
+        await Assert.ThrowsAsync<NotImplementedException>(async () => await router.RouteAsync(new TestElement()));
+    }
+
+    #endregion
+
     #region WriteAsync
 
     [Fact]
     public async Task Should_WriteAsync()
     {
-        //fixture.Client.GetGrain<ISpaceGrain>().
+        SpaceTuple tuple = SpaceTuple.Create(1);
+        await agent.WriteAsync(tuple);
 
-        // TODO: Test me better
-        await agent.WriteAsync(SpaceTuple.Create(1));
-        Assert.True(true);
+        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+
+        Assert.False(peekedTuple.IsEmpty);
+        Assert.Equal(tuple, peekedTuple);
     }
 
     [Fact]
@@ -97,7 +146,7 @@ public class SpaceAgentTests : IAsyncLifetime
     #region PeekAsync
 
     [Theory]
-    [MemberData(nameof(TupleData))]
+    [MemberData(nameof(InlineTupleData))]
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -107,7 +156,7 @@ public class SpaceAgentTests : IAsyncLifetime
     }
 
     [Theory]
-    [MemberData(nameof(TupleData))]
+    [MemberData(nameof(InlineTupleData))]
     public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -145,7 +194,7 @@ public class SpaceAgentTests : IAsyncLifetime
     #region PopAsync
 
     [Theory]
-    [MemberData(nameof(TupleData))]
+    [MemberData(nameof(InlineTupleData))]
     public async Task Should_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -155,7 +204,7 @@ public class SpaceAgentTests : IAsyncLifetime
     }
 
     [Theory]
-    [MemberData(nameof(TupleData))]
+    [MemberData(nameof(InlineTupleData))]
     public async Task Should_Return_Empty_Tuple_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -200,7 +249,74 @@ public class SpaceAgentTests : IAsyncLifetime
 
     #endregion
 
-    public static IEnumerable<object[]> TupleData() =>
+    #region CountAsync
+
+    [Fact, TestPriority(1)]
+    public async Task Should_Get_Total_On_CountAsync()
+    {
+        const string key = "count-total";
+
+        foreach (var tuple in TupleData(key))
+        {
+            await agent.WriteAsync(tuple);
+        }
+
+        int total = await agent.CountAsync();
+
+        Assert.Equal(7, total);
+    }
+
+
+    [Fact, TestPriority(2)]
+    public async Task Should_Get_Matching_On_CountAsync()
+    {
+        const string key = "count-matching";
+
+        foreach (var tuple in TupleData(key))
+        {
+            await agent.WriteAsync(tuple);
+        }
+
+        int total = await agent.CountAsync(
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+
+        Assert.Equal(3, total);
+    }
+
+    #endregion
+
+    #region ScanAsync
+
+    [Fact, TestPriority(3)]
+    public async Task Should_ScanAsync()
+    {
+        const string key = "scan";
+
+        foreach (var tuple in TupleData(key))
+        {
+            await agent.WriteAsync(tuple);
+        }
+
+        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+
+        Assert.Equal(3, tuples.Count());
+    }
+
+    #endregion
+
+    private static IEnumerable<SpaceTuple> TupleData(string key)
+    {
+        yield return SpaceTuple.Create((key, 1, "a", 1.0f, 1.0m));
+        yield return SpaceTuple.Create((key, 1, "b", 1.2f, "d"));
+        yield return SpaceTuple.Create((key, 1, "c", 1.5f, 'e'));
+        yield return SpaceTuple.Create((key, 1, 1.5f, "c", 'e'));
+        yield return SpaceTuple.Create((key, 1, "f", 1.7f, 'g', "f"));
+        yield return SpaceTuple.Create((key, 2, "f", 1.7f, 'g'));
+        yield return SpaceTuple.Create((key, 2, "f", 1.7f, 'g', "f"));
+    }
+
+    public static IEnumerable<object[]> InlineTupleData() =>
         new List<object[]>()
         {
             new object[] { SpaceTuple.Create(1) },
@@ -208,4 +324,9 @@ public class SpaceAgentTests : IAsyncLifetime
             new object[] { SpaceTuple.Create((1, "a", 1.5f)) },
             new object[] { SpaceTuple.Create((1, "a", 1.5f, true)) }
         };
+
+    private class TestElement : ISpaceElement
+    {
+        
+    }
 }

@@ -68,6 +68,11 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
         Assert.NotNull(provider.GetService<ContinuationChannel>());
         Assert.NotNull(provider.GetService<ObserverChannel>());
 
+        Assert.NotNull(provider.GetService<SpaceAgent>());
+        Assert.NotNull(provider.GetService<ISpaceElementRouter>());
+        Assert.NotNull(provider.GetService<ISpaceChannel>());
+        Assert.NotNull(provider.GetService<IClusterClient>());
+
         Assert.All(provider.GetService<IEnumerable<IHostedService>>(), service =>
         {
             Assert.NotNull(service);
@@ -77,8 +82,5 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
                 service.GetType() == typeof(ContinuationProcessor) ||
                 service.GetType() == typeof(ObserverProcessor));
         });
-
-        Assert.NotNull(provider.GetService<ISpaceChannel>());
-        Assert.NotNull(provider.GetService<IClusterClient>());
     }
 }

@@ -35,7 +35,7 @@ public class SpaceChannelTests
     }
 
     [Fact]
-    public void Should_Not_Get_Agent_From_ServiceProvider()
+    public void Should_Not_Get_Agent_From_Interface_Via_ServiceProvider()
     {
         Assert.Null(client.ServiceProvider.GetService<ISpaceAgent>());
     }

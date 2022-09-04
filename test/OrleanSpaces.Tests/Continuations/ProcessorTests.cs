@@ -3,165 +3,85 @@ using Microsoft.Extensions.Logging.Abstractions;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.AccessControl;
 
 namespace OrleanSpaces.Tests.Continuations;
 
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
-    private readonly ISpaceAgent agent;
     private readonly ContinuationChannel channel;
+    private readonly TestRouter router;
 
     public ProcessorTests(Fixture fixture)
     {
-        agent = fixture.Agent;
         channel = fixture.Channel;
-    }
-
-    [Fact]
-    public async Task Should_Write_Tuple_If_SpaceElement_Is_A_Tuple()
-    {
-        SpaceTuple tuple = SpaceTuple.Create("continue");
-
-        await channel.Writer.WriteAsync(tuple);
-
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
-        SpaceTuple peekedTuple;
-
-        do
-        {
-            peekedTuple = await agent.PeekAsync(template);
-        }
-        while (peekedTuple.IsEmpty);
-
-        Assert.Equal(tuple, peekedTuple);
-    }
-
-    [Fact]
-    public async Task Should_Pop_Tuple_If_SpaceElement_Is_A_Template()
-    {
-        SpaceTuple tuple = SpaceTuple.Create("continue");
-        await agent.WriteAsync(tuple);
-
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
-        await channel.Writer.WriteAsync(template);
-
-        SpaceTuple peekedTuple;
-
-        do
-        {
-            peekedTuple = await agent.PeekAsync(template);
-        }
-        while (!peekedTuple.IsEmpty);
-       
-        Assert.NotEqual(tuple, peekedTuple);
+        router = fixture.Router;
     }
 
     //[Fact]
-    //public async Task Should_Throw_On_Unsupported_SpaceElement()
+    //public async Task Should_Forward_Tuple_To_Router()
     //{
-    //    await Assert.ThrowsAsync<NotImplementedException>(async () =>
-    //    {
-    //        await channel.Writer.WriteAsync(new TestElement());
-    //        while (channel.Reader.Count > 0)
-    //        {
+    //    SpaceTuple tuple = SpaceTuple.Create("continue");
+    //    await channel.Writer.WriteAsync(tuple);
 
-    //        }
-    //    });
+    //    ISpaceElement element = null;
+
+    //    do
+    //    {
+    //        element = router.Elements.SingleOrDefault(x => x.Equals(tuple));
+    //    }
+    //    while (element == null);
+
+    //    Assert.Equal(tuple, element);
+    //}
+
+    //[Fact]
+    //public async Task Should_Forward_Template_To_Router()
+    //{
+    //    SpaceTemplate template = SpaceTemplate.Create("continue");
+    //    await channel.Writer.WriteAsync(template);
+
+    //    ISpaceElement element = null;
+
+    //    do
+    //    {
+    //        element = router.Elements.SingleOrDefault(x => x.Equals(template));
+    //    }
+    //    while (element == null);
+
+    //    Assert.Equal(template, element);
     //}
 
     public class Fixture : IAsyncLifetime
     {
         private readonly ContinuationProcessor processor;
-        private readonly ISpaceChannel spaceChannel;
 
-        internal ISpaceAgent Agent { get; private set; }
+        internal TestRouter Router { get; }
         internal ContinuationChannel Channel { get; }
 
         public Fixture()
         {
-            spaceChannel = new TestChannel();
             Channel = new();
+            Router = new TestRouter();
 
-            processor = new(spaceChannel, Channel, new NullLogger<ContinuationProcessor>());
+            processor = new(Channel, Router, new NullLogger<ContinuationProcessor>());
         }
 
-        public async Task InitializeAsync()
-        {
-            await processor.StartAsync(default);
-            Agent = await spaceChannel.GetAsync();
-        }
-
+        public async Task InitializeAsync() => await processor.StartAsync(default);
         public async Task DisposeAsync() => await processor.StopAsync(default);
     }
 
-    private class TestElement : ISpaceElement
+    internal class TestRouter : ISpaceElementRouter
     {
+        private readonly List<ISpaceElement> elements = new();
+        public IEnumerable<ISpaceElement> Elements => elements;
 
-    }
-
-    private class TestChannel : ISpaceChannel
-    {
-        public Task<ISpaceAgent> GetAsync() => Task.FromResult((ISpaceAgent)new TestAgent());
-
-        private class TestAgent : ISpaceAgent
+        public Task RouteAsync(ISpaceElement element)
         {
-            private SpaceTuple tuple = new();
-
-            public Task WriteAsync(SpaceTuple tuple)
-            {
-                this.tuple = tuple;
-                return Task.CompletedTask;
-            }
-
-            public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<SpaceTuple> PopAsync(SpaceTemplate template)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ObserverRef Subscribe(ISpaceObserver observer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Unsubscribe(ObserverRef @ref)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask<int> CountAsync()
-            {
-                throw new NotImplementedException();
-            }
-
-            public ValueTask<int> CountAsync(SpaceTemplate template)
-            {
-                throw new NotImplementedException();
-            }
+            elements.Add(element);
+            return Task.CompletedTask;
         }
     }
 }
