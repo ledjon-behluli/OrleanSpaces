@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
@@ -16,15 +17,22 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         channel = fixture.Channel;
     }
 
+    [Fact]
     public async Task Should_Write_Tuple_If_SpaceElement_Is_A_Tuple()
     {
         SpaceTuple tuple = SpaceTuple.Create("continue");
 
         await channel.Writer.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+        SpaceTemplate template = SpaceTemplate.Create(tuple);
+        SpaceTuple peekedTuple;
 
-        Assert.False(peekedTuple.IsEmpty);
+        do
+        {
+            peekedTuple = await agent.PeekAsync(template);
+        }
+        while (peekedTuple.IsEmpty);
+
         Assert.Equal(tuple, peekedTuple);
     }
 
@@ -37,18 +45,29 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         SpaceTemplate template = SpaceTemplate.Create(tuple);
         await channel.Writer.WriteAsync(template);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(template);
+        SpaceTuple peekedTuple;
 
-        Assert.True(peekedTuple.IsEmpty);
+        do
+        {
+            peekedTuple = await agent.PeekAsync(template);
+        }
+        while (!peekedTuple.IsEmpty);
+       
         Assert.NotEqual(tuple, peekedTuple);
     }
 
-    [Fact]
-    public async Task Should_Throw_On_Unsupported_SpaceElement()
-    {
-        await Assert.ThrowsAsync<NotImplementedException>(async () => await channel.Writer.WriteAsync(new TestElement()));
-    }
+    //[Fact]
+    //public async Task Should_Throw_On_Unsupported_SpaceElement()
+    //{
+    //    await Assert.ThrowsAsync<NotImplementedException>(async () =>
+    //    {
+    //        await channel.Writer.WriteAsync(new TestElement());
+    //        while (channel.Reader.Count > 0)
+    //        {
 
+    //        }
+    //    });
+    //}
 
     public class Fixture : IAsyncLifetime
     {
