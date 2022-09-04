@@ -9,11 +9,11 @@ using OrleanSpaces.Observers;
 
 namespace OrleanSpaces.Tests;
 
-public class ServiceRegistrationTests : IClassFixture<ClusterFixture>
+public class ExtensionsTests : IClassFixture<ClusterFixture>
 {
     private readonly IClusterClient client;
 
-    public ServiceRegistrationTests(ClusterFixture fixture)
+    public ExtensionsTests(ClusterFixture fixture)
     {
         client = fixture.Client;
     }
@@ -62,6 +62,11 @@ public class ServiceRegistrationTests : IClassFixture<ClusterFixture>
     {
         Assert.NotNull(provider.GetService<CallbackRegistry>());
         Assert.NotNull(provider.GetService<ObserverRegistry>());
+
+        Assert.NotNull(provider.GetService<CallbackChannel>());
+        Assert.NotNull(provider.GetService<EvaluationChannel>());
+        Assert.NotNull(provider.GetService<ContinuationChannel>());
+        Assert.NotNull(provider.GetService<ObserverChannel>());
 
         Assert.All(provider.GetService<IEnumerable<IHostedService>>(), service =>
         {

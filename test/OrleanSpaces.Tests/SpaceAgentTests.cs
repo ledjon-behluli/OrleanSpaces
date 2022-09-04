@@ -5,21 +5,23 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests;
 
-[Collection("Sequential")]
-public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
+[Collection(ClusterCollection.Name)]
+public class SpaceAgentTests : IAsyncLifetime
 {
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceChannel spaceChannel;
+    private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry registry;
 
     private ISpaceAgent agent;
 
     public SpaceAgentTests(ClusterFixture fixture)
     {
-        channel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         registry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
     }
 
-    public async Task InitializeAsync() => agent = await channel.GetAsync();
+    public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
     #region Subscriptions
@@ -56,6 +58,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
     [Fact]
     public async Task Should_WriteAsync()
     {
+        // TODO: Test me better
         await agent.WriteAsync(SpaceTuple.Create(1));
         Assert.True(true);
     }
@@ -76,7 +79,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
         SpaceTuple tuple = SpaceTuple.Create(1);
         await agent.EvaluateAsync(() => Task.FromResult(tuple));
 
-        Func<Task<SpaceTuple>> evaluation = await EvaluationChannel.Reader.ReadAsync();
+        Func<Task<SpaceTuple>> evaluation = await evaluationChannel.Reader.ReadAsync();
 
         Assert.Equal(tuple, await evaluation());
     }
@@ -114,7 +117,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
     [Fact]
     public async Task Should_Keep_Tuple_In_Space_When_PeekAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = SpaceTuple.Create("peek");
         SpaceTemplate template = SpaceTemplate.Create(tuple);
 
         await agent.WriteAsync(tuple);
@@ -127,6 +130,13 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
             Assert.Equal(tuple, peekedTuple);
         }
     }
+
+    [Fact]
+    public async Task Should_Throw_On_PeekAsync_If_Null()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(SpaceTemplate.Create(0), null));
+    }
+
 
     #endregion
 
@@ -155,7 +165,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
     [Fact]
     public async Task Should_Remove_Tuple_From_Space_When_PopAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = SpaceTuple.Create("pop");
         SpaceTemplate template = SpaceTemplate.Create(tuple);
 
         await agent.WriteAsync(tuple);
@@ -178,6 +188,12 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>, IAsyncLifetime
 
             firstIteration = false;
         }
+    }
+
+    [Fact]
+    public async Task Should_Throw_On_PopAsync_If_Null()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(SpaceTemplate.Create(0), null));
     }
 
     #endregion

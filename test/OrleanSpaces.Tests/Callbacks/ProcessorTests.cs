@@ -5,23 +5,26 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
-[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     private readonly CallbackRegistry registry;
+    private readonly CallbackChannel callbackChannel;
+    private readonly ContinuationChannel continuationChannel;
 
     public ProcessorTests(Fixture fixture)
     {
         registry = fixture.Registry;
+        callbackChannel = fixture.CallbackChannel;
+        continuationChannel = fixture.ContinuationChannel;
     }
 
     [Fact]
     public async void Should_Not_Forward_Templates_If_Tuple_Matches_Nothing_In_Registry()
     {
         SpaceTuple tuple = SpaceTuple.Create(1);
-        await CallbackChannel.Writer.WriteAsync(tuple);
+        await callbackChannel.Writer.WriteAsync(tuple);
 
-        ContinuationChannel.Reader.TryRead(out ISpaceElement element);
+        continuationChannel.Reader.TryRead(out ISpaceElement element);
 
         Assert.Null(element);
     }
@@ -37,11 +40,11 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         registry.Add(SpaceTemplate.Create((1, "a", 1.5F)), new(tuple => Task.CompletedTask, true));
 
         SpaceTuple tuple = SpaceTuple.Create((1, "a"));
-        await CallbackChannel.Writer.WriteAsync(tuple);
+        await callbackChannel.Writer.WriteAsync(tuple);
 
         int rounds = 0;
 
-        await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(default))
+        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
         {
             Assert.NotNull(element);
             Assert.True(element is SpaceTemplate);
@@ -49,7 +52,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
             rounds++;
 
-            if (ContinuationChannel.Reader.Count == 0)
+            if (continuationChannel.Reader.Count == 0)
             {
                 break;
             }
@@ -66,11 +69,11 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         registry.Add(SpaceTemplate.Create((1, UnitField.Null)), new(tuple => Task.CompletedTask, true));
 
         SpaceTuple tuple = SpaceTuple.Create((1, "a"));
-        await CallbackChannel.Writer.WriteAsync(tuple);
+        await callbackChannel.Writer.WriteAsync(tuple);
 
         int rounds = 0;
 
-        await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(default))
+        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
         {
             Assert.NotNull(element);
             Assert.True(element is SpaceTemplate);
@@ -78,7 +81,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
             rounds++;
 
-            if (ContinuationChannel.Reader.Count == 0)
+            if (continuationChannel.Reader.Count == 0)
             {
                 break;
             }
@@ -87,20 +90,23 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         Assert.Equal(2, rounds);
     }
 
-    public class Fixture : IDisposable
+    public class Fixture : IAsyncLifetime
     {
         private readonly CallbackProcessor processor;
+        
+        internal CallbackChannel CallbackChannel { get; }
+        internal ContinuationChannel ContinuationChannel { get; }
         internal CallbackRegistry Registry { get; }
 
         public Fixture()
         {
-            Registry = new CallbackRegistry();
-            processor = new CallbackProcessor(Registry, new NullLogger<CallbackProcessor>());
-
-            processor.StartAsync(default).Wait();
+            CallbackChannel = new();
+            ContinuationChannel = new();
+            Registry = new();
+            processor = new(Registry, CallbackChannel, ContinuationChannel, new NullLogger<CallbackProcessor>());
         }
 
-        public void Dispose() => processor.Dispose();
+        public Task InitializeAsync() => processor.StartAsync(default);
+        public Task DisposeAsync() => processor.StopAsync(default);
     }
-
 }

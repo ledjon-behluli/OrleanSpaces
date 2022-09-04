@@ -1,34 +1,33 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
-using OrleanSpaces.Callbacks;
-using OrleanSpaces.Observers;
+using OrleanSpaces.Grains;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests;
 
-[Collection("Sequential")]
-public class SpaceChannelTests : IClassFixture<ClusterFixture>
+[Collection(ClusterCollection.Name)]
+public class SpaceChannelTests
 {
     private readonly IClusterClient client;
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceChannel spaceChannel;
 
     public SpaceChannelTests(ClusterFixture fixture)
     {
         client = fixture.Client;
-        channel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
     }
 
     [Fact]
     public async Task Should_Get_Agent()
     {
-        Assert.NotNull(await channel.GetAsync());
+        Assert.NotNull(await spaceChannel.GetAsync());
     }
 
     [Fact]
     public async Task Should_Get_Same_Agent_When_Called_Multiple_Times()
     {
-        ISpaceAgent agent1 = await channel.GetAsync();
-        ISpaceAgent agent2 = await channel.GetAsync();
+        ISpaceAgent agent1 = await spaceChannel.GetAsync();
+        ISpaceAgent agent2 = await spaceChannel.GetAsync();
 
         Assert.Equal(agent1, agent2);
         Assert.True(agent1 == agent2);
@@ -42,20 +41,24 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Not_Throw_When_Multiple_Threads_Open_The_Channel()
+    public async Task Should_Not_Throw_When_Channel_Gets_Opened_Concurrently()
     {
         var expection = await Record.ExceptionAsync(async () => _ = await OpenChannelAndGetAgentConcurrently());
         Assert.Null(expection);
     }
 
     [Fact]
-    public async Task Should_Subscribe_Only_Once_Even_When_Multiple_Threads_Open_The_Channel()
+    public async Task Should_Subscribe_Once_When_Channel_Gets_Opened_Concurrently()
     {
-        ISpaceAgent agent = await OpenChannelAndGetAgentConcurrently();
-        await agent.WriteAsync(SpaceTuple.Create(1));
+        _ = await OpenChannelAndGetAgentConcurrently();
 
-        Assert.Equal(1, CallbackChannel.Reader.Count);
-        Assert.Equal(1, ObserverChannel.Reader.Count);
+        var grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
+        var streamId = await grain.ListenAsync();
+        var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
+        var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
+
+        var subscriptions = await stream.GetAllSubscriptionHandles();
+        Assert.Equal(1, subscriptions.Count);
     }
 
     private async Task<ISpaceAgent> OpenChannelAndGetAgentConcurrently()
@@ -67,7 +70,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         {
             tasks[i] = Task.Run(async () =>
             {
-                agent = await channel.GetAsync();
+                agent = await spaceChannel.GetAsync();
             });
         }
 

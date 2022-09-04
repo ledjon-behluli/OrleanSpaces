@@ -6,14 +6,17 @@ namespace OrleanSpaces.Continuations;
 
 internal class ContinuationProcessor : BackgroundService
 {
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceChannel spaceChannel;
+    private readonly ContinuationChannel continuation;
     private readonly ILogger<ContinuationProcessor> logger;
 
     public ContinuationProcessor(
         ISpaceChannel channel,
+        ContinuationChannel continuation,
         ILogger<ContinuationProcessor> logger)
     {
-        this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
+        this.spaceChannel = channel ?? throw new ArgumentNullException(nameof(channel));
+        this.continuation = continuation ?? throw new ArgumentNullException(nameof(continuation));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -21,9 +24,9 @@ internal class ContinuationProcessor : BackgroundService
     {
         logger.LogDebug("Callback continuation processor started.");
  
-        await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var element in continuation.Reader.ReadAllAsync(cancellationToken))
         {
-            var agent = await channel.GetAsync();
+            var agent = await spaceChannel.GetAsync();
 
             if (element.GetType() == typeof(SpaceTuple))
             {

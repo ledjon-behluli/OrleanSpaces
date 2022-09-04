@@ -5,16 +5,24 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
-[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
+    private readonly EvaluationChannel evaluationChannel;
+    private readonly ContinuationChannel continuationChannel;
+
+    public ProcessorTests(Fixture fixture)
+    {
+        evaluationChannel = fixture.EvaluationChannel;
+        continuationChannel = fixture.ContinuationChannel;
+    }
+
     [Fact]
     public async Task Should_Forward_If_Evaluation_Results_In_Tuple()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
-        await EvaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
+        SpaceTuple tuple = SpaceTuple.Create("eval");
+        await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        ISpaceElement element = await ContinuationChannel.Reader.ReadAsync(default);
+        ISpaceElement element = await continuationChannel.Reader.ReadAsync(default);
 
         Assert.NotNull(element);
         Assert.True(element is SpaceTuple);
@@ -24,8 +32,8 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
-        await EvaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
-        ContinuationChannel.Reader.TryRead(out ISpaceElement element);
+        await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
+        continuationChannel.Reader.TryRead(out ISpaceElement element);
 
         Assert.Null(element);
     }
@@ -33,7 +41,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
     [Fact]
     public async Task Should_Continue_Forwarding_If_Any_Evaluation_Throws()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = SpaceTuple.Create("eval");
 
         await WriteAsync(tuple, 3, false);
         await WriteAsync(tuple, 2, true);
@@ -41,7 +49,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
         int rounds = 0;
 
-        await foreach (var element in ContinuationChannel.Reader.ReadAllAsync(default))
+        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
         {
             Assert.NotNull(element);
             Assert.True(element is SpaceTuple);
@@ -49,7 +57,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
             rounds++;
 
-            if (ContinuationChannel.Reader.Count == 0)
+            if (continuationChannel.Reader.Count == 0)
             {
                 break;
             }
@@ -57,27 +65,31 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 
         Assert.Equal(6, rounds);
 
-        static async Task WriteAsync(SpaceTuple tuple, int times, bool doThrow)
+        async Task WriteAsync(SpaceTuple tuple, int times, bool doThrow)
         {
             for (int i = 0; i < times; i++)
             {
-                await EvaluationChannel.Writer.WriteAsync(
+                await evaluationChannel.Writer.WriteAsync(
                     () => doThrow ? throw new Exception("Test") : Task.FromResult(tuple));
             }
         }
     }
 
-    public class Fixture : IDisposable
+    public class Fixture : IAsyncLifetime
     {
         private readonly EvaluationProcessor processor;
 
+        internal EvaluationChannel EvaluationChannel { get; }
+        internal ContinuationChannel ContinuationChannel { get; }
+
         public Fixture()
         {
-            processor = new EvaluationProcessor(new NullLogger<EvaluationProcessor>());
-            processor.StartAsync(default).Wait();
+            EvaluationChannel = new();
+            ContinuationChannel = new();
+            processor = new(EvaluationChannel, ContinuationChannel, new NullLogger<EvaluationProcessor>());
         }
 
-        public void Dispose() => processor.Dispose();
+        public Task InitializeAsync() => processor.StartAsync(default);
+        public Task DisposeAsync() => processor.StopAsync(default);
     }
-
 }

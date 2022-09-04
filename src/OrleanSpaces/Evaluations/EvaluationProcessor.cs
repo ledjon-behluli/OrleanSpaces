@@ -7,10 +7,17 @@ namespace OrleanSpaces.Evaluations;
 
 internal class EvaluationProcessor : BackgroundService
 {
+    private readonly EvaluationChannel evaluationChannel;
+    private readonly ContinuationChannel continuationChannel;
     private readonly ILogger<EvaluationProcessor> logger;
 
-    public EvaluationProcessor(ILogger<EvaluationProcessor> logger)
+    public EvaluationProcessor(
+        EvaluationChannel evaluationChannel,
+        ContinuationChannel continuationChannel,
+        ILogger<EvaluationProcessor> logger)
     {
+        this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
+        this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -18,12 +25,12 @@ internal class EvaluationProcessor : BackgroundService
     {
         logger.LogDebug("Evaluation processor started.");
 
-        await foreach (var evaluation in EvaluationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
                 SpaceTuple tuple = await evaluation();
-                await ContinuationChannel.Writer.WriteAsync(tuple);
+                await continuationChannel.Writer.WriteAsync(tuple);
             }
             catch (Exception e)
             {

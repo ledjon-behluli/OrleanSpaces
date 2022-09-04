@@ -4,14 +4,15 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Observers;
 
-[Collection("Sequential")]
 public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
 {
     private readonly Fixture fixture;
+    private readonly ObserverChannel channel;
 
 	public ProcessorTests(Fixture fixture)
 	{
         this.fixture = fixture;
+        channel = fixture.Channel;
 	}
 
     [Fact]
@@ -24,7 +25,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         scope.AddObserver(new TestObserver());
 
         SpaceTuple tuple = SpaceTuple.Create(1);
-        await ObserverChannel.Writer.WriteAsync(tuple);
+        await channel.Writer.WriteAsync(tuple);
 
         while (scope.TotalInvoked() < 3)
         {
@@ -48,7 +49,7 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         scope.AddObserver(new TestObserver());
 
         SpaceTuple tuple = SpaceTuple.Create(1);
-        await ObserverChannel.Writer.WriteAsync(tuple);
+        await channel.Writer.WriteAsync(tuple);
 
         while (scope.TotalInvoked() < 2)
         {
@@ -70,22 +71,26 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         });
     }
 
-    public class Fixture : IDisposable
+    public class Fixture : IAsyncLifetime
     {
         private readonly ObserverProcessor processor;
-        private readonly ObserverRegistry registry;
+
+        internal ObserverRegistry Registry { get; }
+        internal ObserverChannel Channel { get; }
 
         public Fixture()
         {
-            registry = new ObserverRegistry();
-            processor = new ObserverProcessor(registry, new NullLogger<ObserverProcessor>());
-
-            processor.StartAsync(default).Wait();
+            Registry = new();
+            Channel = new();
+            processor = new(Registry, Channel, new NullLogger<ObserverProcessor>());
         }
 
-        public void Dispose() => processor.Dispose();
+        public Task InitializeAsync() => processor.StartAsync(default);
+        public Task DisposeAsync() => processor.StopAsync(default);
 
-        public TestObserverScope StartScope() => new(registry);
+
+        public TestObserverScope StartScope() => new(Registry);
+
 
         public class TestObserverScope : IDisposable
         {

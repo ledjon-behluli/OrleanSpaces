@@ -8,15 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
-public static class ServiceRegistrations
+public static class Extensions
 {
     public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(ServiceRegistrations).Assembly).WithReferences());
+            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
     public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(ServiceRegistrations).Assembly).WithReferences());
+            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
     public static IClientBuilder AddTupleSpace(this IClientBuilder builder) =>
         builder.ConfigureServices(services => services.AddClientServices());
@@ -39,6 +39,11 @@ public static class ServiceRegistrations
     {
         services.AddSingleton<CallbackRegistry>();
         services.AddSingleton<ObserverRegistry>();
+
+        services.AddSingleton<CallbackChannel>();
+        services.AddSingleton<EvaluationChannel>();
+        services.AddSingleton<ContinuationChannel>();
+        services.AddSingleton<ObserverChannel>();
 
         services.AddSingleton<ISpaceChannel, SpaceChannel>();
 

@@ -3,10 +3,10 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Continuations;
 
-internal static class ContinuationChannel
+internal class ContinuationChannel
 {
-    private readonly static Channel<ISpaceElement> channel = Channel.CreateUnbounded<ISpaceElement>();
+    private readonly Channel<ISpaceElement> channel = Channel.CreateUnbounded<ISpaceElement>();
 
-    public static ChannelReader<ISpaceElement> Reader => channel.Reader;
-    public static ChannelWriter<ISpaceElement> Writer => channel.Writer;
+    public ChannelReader<ISpaceElement> Reader => channel.Reader;
+    public ChannelWriter<ISpaceElement> Writer => channel.Writer;
 }

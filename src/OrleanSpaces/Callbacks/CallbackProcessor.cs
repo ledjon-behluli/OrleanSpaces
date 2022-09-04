@@ -9,13 +9,19 @@ namespace OrleanSpaces.Callbacks;
 internal class CallbackProcessor : BackgroundService
 {
     private readonly CallbackRegistry registry;
+    private readonly CallbackChannel callbackChannel;
+    private readonly ContinuationChannel continuationChannel;
     private readonly ILogger<CallbackProcessor> logger;
     
     public CallbackProcessor(
         CallbackRegistry registry,
+        CallbackChannel callbackChannel,
+        ContinuationChannel continuationChannel,
         ILogger<CallbackProcessor> logger)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
+        this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -23,7 +29,7 @@ internal class CallbackProcessor : BackgroundService
     {
         logger.LogDebug("Callback processor started.");
 
-        await foreach (var tuple in CallbackChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (var tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             var entries = registry.Take(tuple);
             await ParallelExecutor.WhenAll(entries, async entry =>
@@ -33,7 +39,7 @@ internal class CallbackProcessor : BackgroundService
                     await entry.Callback(tuple);
                     if (entry.IsDestructive)
                     {
-                        await ContinuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
+                        await continuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
                     }
                 }
                 catch (Exception e)
