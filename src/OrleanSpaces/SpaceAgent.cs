@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Orleans.Streams;
+﻿using Orleans.Streams;
 using Orleans;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
@@ -13,7 +12,6 @@ namespace OrleanSpaces;
 
 internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<SpaceTuple>
 {
-    private readonly ILogger<SpaceAgent> logger;
     private readonly IClusterClient client;
 
     private readonly EvaluationChannel evaluationChannel;
@@ -26,7 +24,6 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
     [AllowNull] private ISpaceGrain grain;
 
     public SpaceAgent(
-        ILogger<SpaceAgent> logger,
         IClusterClient client,
         EvaluationChannel evaluationChannel,
         CallbackChannel callbackChannel,
@@ -34,7 +31,6 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
         CallbackRegistry callbackRegistry,
         ObserverRegistry observerRegistry)
     {
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
 
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
@@ -45,46 +41,21 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
 
-    #region Initialization
-
     public async Task InitializeAsync()
-    {
-        logger.LogDebug("Initializing space agent.");
-
-        await ConnectToClusterAsync();
-        await SubscribeToStreamAsync();
-
-        logger.LogDebug("Space agent initialized.");
-    }
-
-    private async Task ConnectToClusterAsync()
     {
         if (!client.IsInitialized)
         {
-            logger.LogDebug("Establishing cluster connection.");
-
             await client.Connect();
-
-            logger.LogDebug("Cluster connection established.");
         }
-    }
-
-    private async Task SubscribeToStreamAsync()
-    {
-        logger.LogDebug("Establishing space stream connection.");
 
         grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
         var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
-            
+
         await stream.SubscribeAsync(this);
-
-        logger.LogDebug("Space stream connection established.");
     }
-
-    #endregion
 
     #region IAsyncObserver
 
@@ -92,8 +63,6 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
     {
         await callbackChannel.Writer.WriteAsync(tuple);
         await observerChannel.Writer.WriteAsync(tuple);
-
-        logger.LogDebug("Forwarded tuple {SpaceTuple} to channels for processing.", tuple);
     }
 
     public Task OnCompletedAsync()
@@ -101,16 +70,10 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
         callbackChannel.Writer.Complete();
         observerChannel.Writer.Complete();
 
-        logger.LogDebug("Marked channels as 'completed' since {Namespace} stream closed.", StreamNamespaces.TupleWrite);
-
         return Task.CompletedTask;
     }
 
-    public Task OnErrorAsync(Exception e)
-    {
-        logger.LogError(e, e.Message);
-        return Task.CompletedTask;
-    }
+    public Task OnErrorAsync(Exception e) => Task.CompletedTask;
 
     #endregion
 

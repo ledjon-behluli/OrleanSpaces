@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
@@ -11,24 +10,19 @@ internal class CallbackProcessor : BackgroundService
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel callbackChannel;
     private readonly ContinuationChannel continuationChannel;
-    private readonly ILogger<CallbackProcessor> logger;
     
     public CallbackProcessor(
         CallbackRegistry registry,
         CallbackChannel callbackChannel,
-        ContinuationChannel continuationChannel,
-        ILogger<CallbackProcessor> logger)
+        ContinuationChannel continuationChannel)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
-        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        logger.LogDebug("Callback processor started.");
-
         await foreach (var tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             var entries = registry.Take(tuple);
@@ -42,13 +36,11 @@ internal class CallbackProcessor : BackgroundService
                         await continuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple));
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    logger.LogError(e, e.Message);
+                    
                 }
             });
         }
-
-        logger.LogDebug("Callback processor stopped.");
     }
 }

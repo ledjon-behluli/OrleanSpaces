@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using OrleanSpaces.Continuations;
+﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
-public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
+public class ProcessorTests : IClassFixture<Fixture>
 {
     private readonly EvaluationChannel evaluationChannel;
     private readonly ContinuationChannel continuationChannel;
@@ -73,23 +72,5 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
                     () => doThrow ? throw new Exception("Test") : Task.FromResult(tuple));
             }
         }
-    }
-
-    public class Fixture : IAsyncLifetime
-    {
-        private readonly EvaluationProcessor processor;
-
-        internal EvaluationChannel EvaluationChannel { get; }
-        internal ContinuationChannel ContinuationChannel { get; }
-
-        public Fixture()
-        {
-            EvaluationChannel = new();
-            ContinuationChannel = new();
-            processor = new(EvaluationChannel, ContinuationChannel, new NullLogger<EvaluationProcessor>());
-        }
-
-        public async Task InitializeAsync() => await processor.StartAsync(default);
-        public async Task DisposeAsync() => await processor.StopAsync(default);
     }
 }

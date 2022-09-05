@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using OrleanSpaces.Callbacks;
+﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
-public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
+public class ProcessorTests : IClassFixture<Fixture>
 {
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel callbackChannel;
@@ -88,25 +87,5 @@ public class ProcessorTests : IClassFixture<ProcessorTests.Fixture>
         }
 
         Assert.Equal(2, rounds);
-    }
-
-    public class Fixture : IAsyncLifetime
-    {
-        private readonly CallbackProcessor processor;
-        
-        internal CallbackChannel CallbackChannel { get; }
-        internal ContinuationChannel ContinuationChannel { get; }
-        internal CallbackRegistry Registry { get; }
-
-        public Fixture()
-        {
-            CallbackChannel = new();
-            ContinuationChannel = new();
-            Registry = new();
-            processor = new(Registry, CallbackChannel, ContinuationChannel, new NullLogger<CallbackProcessor>());
-        }
-
-        public async Task InitializeAsync() => await processor.StartAsync(default);
-        public async Task DisposeAsync() => await processor.StopAsync(default);
     }
 }
