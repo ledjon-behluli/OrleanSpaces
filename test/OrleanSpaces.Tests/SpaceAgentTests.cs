@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
@@ -13,9 +12,10 @@ public class SpaceAgentTests : IAsyncLifetime
     private readonly ISpaceChannel spaceChannel;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry registry;
+    private readonly ISpaceElementRouter router;
 
     private ISpaceAgent agent;
-    private ISpaceElementRouter router;
+    
 
     public SpaceAgentTests(ClusterFixture fixture)
     {
@@ -249,45 +249,9 @@ public class SpaceAgentTests : IAsyncLifetime
 
     #endregion
 
-    #region CountAsync
-
-    [Fact, TestPriority(1)]
-    public async Task Should_Get_Total_On_CountAsync()
-    {
-        const string key = "count-total";
-
-        foreach (var tuple in TupleData(key))
-        {
-            await agent.WriteAsync(tuple);
-        }
-
-        int total = await agent.CountAsync();
-
-        Assert.Equal(7, total);
-    }
-
-
-    [Fact, TestPriority(2)]
-    public async Task Should_Get_Matching_On_CountAsync()
-    {
-        const string key = "count-matching";
-
-        foreach (var tuple in TupleData(key))
-        {
-            await agent.WriteAsync(tuple);
-        }
-
-        int total = await agent.CountAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
-
-        Assert.Equal(3, total);
-    }
-
-    #endregion
-
     #region ScanAsync
 
-    [Fact, TestPriority(3)]
+    [Fact]
     public async Task Should_ScanAsync()
     {
         const string key = "scan";
@@ -301,6 +265,43 @@ public class SpaceAgentTests : IAsyncLifetime
             SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
 
         Assert.Equal(3, tuples.Count());
+    }
+
+    #endregion
+
+    #region CountAsync
+
+    [Fact]
+    public async Task Should_CountAsync_Case_1()
+    {
+        const string key = "count-case-1";
+
+        foreach (var tuple in TupleData(key))
+        {
+            await agent.WriteAsync(tuple);
+        }
+
+        int matchingCount = await agent.CountAsync(
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+
+        Assert.Equal(3, matchingCount);
+    }
+
+    [Fact]
+    public async Task Should_CountAsync_Case_2()
+    {
+        const string key = "count-case-2";
+
+        foreach (var tuple in TupleData(key))
+        {
+            await agent.WriteAsync(tuple);
+        }
+
+        int totalCount = await agent.CountAsync();
+        int matchingCount = await agent.CountAsync(
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+
+        Assert.True(totalCount > matchingCount);
     }
 
     #endregion
