@@ -1,14 +1,16 @@
 ﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
+using System;
 
 namespace OrleanSpaces.Tests.Continuations;
 
-public class ProcessorTests : IClassFixture<Fixture>
+[Collection("continuations")]
+public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
 {
     private readonly ContinuationChannel channel;
     private readonly TestRouter router;
 
-    public ProcessorTests(Fixture fixture)
+    public TupleRouting_ProcessorTests(Fixture fixture)
     {
         channel = fixture.Channel;
         router = fixture.Router;
@@ -17,34 +19,41 @@ public class ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Forward_Tuple_To_Router()
     {
-        SpaceTuple tuple = SpaceTuple.Create("continue");
+        SpaceTuple tuple = SpaceTuple.Create(1);
         await channel.Writer.WriteAsync(tuple);
 
-        ISpaceElement element = null;
-
-        do
+        while(router.Element == null)
         {
-            element = router.Elements.SingleOrDefault(x => x.Equals(tuple));
-        }
-        while (element == null);
 
-        Assert.Equal(tuple, element);
+        }
+
+        Assert.Equal(tuple, router.Element);
+    }
+}
+
+[Collection("continuations")]
+public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
+{
+    private readonly ContinuationChannel channel;
+    private readonly TestRouter router;
+
+    public TemplateRouting_ProcessorTests(Fixture fixture)
+    {
+        channel = fixture.Channel;
+        router = fixture.Router;
     }
 
     [Fact]
     public async Task Should_Forward_Template_To_Router()
     {
-        SpaceTemplate template = SpaceTemplate.Create("continue");
+        SpaceTemplate template = SpaceTemplate.Create(1);
         await channel.Writer.WriteAsync(template);
 
-        ISpaceElement element = null;
-
-        do
+        while (router.Element == null)
         {
-            element = router.Elements.SingleOrDefault(x => x.Equals(template));
-        }
-        while (element == null);
 
-        Assert.Equal(template, element);
+        }
+
+        Assert.Equal(template, router.Element);
     }
 }

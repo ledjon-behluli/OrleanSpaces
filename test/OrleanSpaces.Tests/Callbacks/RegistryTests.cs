@@ -18,21 +18,21 @@ public class RegistryTests
     public void Should_Take_0_Entries()
     {
         var entries = registry.Take(SpaceTuple.Create(1.5));
-        Assert.Equal(0, entries.Count);
+        Assert.Empty(entries);
     }
 
     [Fact]
     public void Should_Take_1_Entries()
     {
         var entries = registry.Take(SpaceTuple.Create("a"));
-        Assert.Equal(1, entries.Count);
+        Assert.Single(entries);
     }
 
     [Fact]
     public void Should_Take_2_Entries()
     {
         var entries = registry.Take(SpaceTuple.Create(1));
-        Assert.Equal(2, entries.Count);
+        Assert.Equal(2, entries.Count());
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class RegistryTests
         Func<SpaceTuple, Task> callback = tuple => Task.CompletedTask;
 
         registry.Add(SpaceTemplate.Create("test"), new(callback, isDestructive));
-        var entry = registry.Take(SpaceTuple.Create("test"))[0];
+        var entry = registry.Take(SpaceTuple.Create("test")).ElementAt(0);
 
         Assert.NotNull(entry);
         Assert.Equal(callback, entry.Callback);

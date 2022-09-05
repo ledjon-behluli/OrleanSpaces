@@ -5,13 +5,21 @@ namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
+    class test1 {  }
+
+    [Fact]
+    public void a()
+    {
+        SpaceTuple tuple = SpaceTuple.Create(new test1());
+        Assert.Equal(1, tuple.Length);
+    }
+
     [Fact]
     public void Should_Be_Created_On_Tuple()
     {
         SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
 
         Assert.Equal(3, tuple.Length);
-
         Assert.Equal(1, tuple[0]);
         Assert.Equal("a", tuple[1]);
         Assert.Equal(1.5f, tuple[2]);

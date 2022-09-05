@@ -65,14 +65,7 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
         await observerChannel.Writer.WriteAsync(tuple);
     }
 
-    public Task OnCompletedAsync()
-    {
-        callbackChannel.Writer.Complete();
-        observerChannel.Writer.Complete();
-
-        return Task.CompletedTask;
-    }
-
+    public Task OnCompletedAsync() => Task.CompletedTask;
     public Task OnErrorAsync(Exception e) => Task.CompletedTask;
 
     #endregion

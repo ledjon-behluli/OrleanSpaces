@@ -19,6 +19,16 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
+    public void Should_Add_ApplicationParts_On_SiloHostBuilder()
+    {
+        var manager = new SiloHostBuilder()
+            .AddTupleSpace()
+            .GetApplicationPartManager();
+
+        Assert.True(manager.ApplicationParts.Any());
+    }
+
+    [Fact]
     public void Should_Register_Services_On_ServiceCollection()
     {
         ServiceCollection services = new();

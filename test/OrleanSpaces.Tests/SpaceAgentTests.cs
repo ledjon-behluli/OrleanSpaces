@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+using System;
+using System.Collections.ObjectModel;
 
 namespace OrleanSpaces.Tests;
 
@@ -10,19 +13,20 @@ namespace OrleanSpaces.Tests;
 public class SpaceAgentTests : IAsyncLifetime
 {
     private readonly ISpaceChannel spaceChannel;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly ObserverRegistry registry;
     private readonly ISpaceElementRouter router;
+    private readonly EvaluationChannel evaluationChannel;
+    private readonly ObserverRegistry observerRegistry;
+    private readonly CallbackRegistry callbackRegistry;
 
     private ISpaceAgent agent;
     
-
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
-        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
-        registry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceElementRouter>();
+        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
+        observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
+        callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
     }
 
     public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
@@ -42,17 +46,17 @@ public class SpaceAgentTests : IAsyncLifetime
         Assert.NotNull(@ref.Observer);
         Assert.NotEqual(Guid.Empty, @ref.Id);
         Assert.Equal(observer, @ref.Observer);
-        Assert.Equal(1, registry.Observers.Count(x => x.Equals(observer)));
+        Assert.Equal(1, observerRegistry.Observers.Count(x => x.Equals(observer)));
 
         // Re-subscribe
         ObserverRef newRef = agent.Subscribe(observer);
 
         Assert.Equal(@ref, newRef);
-        Assert.Equal(1, registry.Observers.Count(x => x.Equals(observer)));
+        Assert.Equal(1, observerRegistry.Observers.Count(x => x.Equals(observer)));
 
         // Unsubscribe
         agent.Unsubscribe(@ref);
-        Assert.Equal(0, registry.Observers.Count(x => x.Equals(observer)));
+        Assert.Equal(0, observerRegistry.Observers.Count(x => x.Equals(observer)));
     }
 
     #endregion
@@ -165,8 +169,46 @@ public class SpaceAgentTests : IAsyncLifetime
         Assert.True(peekedTuple.IsEmpty);
     }
 
+    [Theory]
+    [MemberData(nameof(InlineTupleData))]
+    public async Task Should_Invoke_Callback_If_Tuple_Is_Available_On_PeekAsync(SpaceTuple tuple)
+    {
+        await agent.WriteAsync(tuple);
+
+        SpaceTuple peekedTuple = new();
+
+        await agent.PeekAsync(SpaceTemplate.Create(tuple), tuple =>
+        {
+            peekedTuple = tuple;
+            return Task.CompletedTask;
+        });
+
+        Assert.False(peekedTuple.IsEmpty);
+        Assert.Equal(tuple, peekedTuple);
+
+    }
+
     [Fact]
-    public async Task Should_Keep_Tuple_In_Space_When_PeekAsync()
+    public async Task Should_Store_Callback_In_Registry_If_Tuple_Is_Not_Available_On_PeekAsync()
+    {
+        SpaceTuple peekedTuple = new();
+        SpaceTemplate template = SpaceTemplate.Create("peek-not-available");
+        Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
+
+        await agent.PeekAsync(template, callback);
+
+        ReadOnlyCollection<CallbackEntry> entries;
+        while (!callbackRegistry.Entries.TryGetValue(template, out entries))
+        {
+
+        }
+
+        Assert.True(peekedTuple.IsEmpty);
+        Assert.Equal(callback, entries.Single().Callback);
+    }
+
+    [Fact]
+    public async Task Should_Keep_Tuple_In_Space_On_PeekAsync()
     {
         SpaceTuple tuple = SpaceTuple.Create("peek");
         SpaceTemplate template = SpaceTemplate.Create(tuple);
@@ -187,7 +229,6 @@ public class SpaceAgentTests : IAsyncLifetime
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(SpaceTemplate.Create(0), null));
     }
-
 
     #endregion
 
@@ -213,8 +254,46 @@ public class SpaceAgentTests : IAsyncLifetime
         Assert.True(popedTuple.IsEmpty);
     }
 
+    [Theory]
+    [MemberData(nameof(InlineTupleData))]
+    public async Task Should_Invoke_Callback_If_Tuple_Is_Available_On_PopAsync(SpaceTuple tuple)
+    {
+        await agent.WriteAsync(tuple);
+
+        SpaceTuple popedTuple = new();
+
+        await agent.PopAsync(SpaceTemplate.Create(tuple), tuple =>
+        {
+            popedTuple = tuple;
+            return Task.CompletedTask;
+        });
+
+        Assert.False(popedTuple.IsEmpty);
+        Assert.Equal(tuple, popedTuple);
+
+    }
+
     [Fact]
-    public async Task Should_Remove_Tuple_From_Space_When_PopAsync()
+    public async Task Should_Store_Callback_In_Registry_If_Tuple_Is_Not_Available_On_PopAsync()
+    {
+        SpaceTuple peekedTuple = new();
+        SpaceTemplate template = SpaceTemplate.Create("pop-not-available");
+        Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
+
+        await agent.PopAsync(template, callback);
+
+        ReadOnlyCollection<CallbackEntry> entries;
+        while (!callbackRegistry.Entries.TryGetValue(template, out entries))
+        {
+
+        }
+
+        Assert.True(peekedTuple.IsEmpty);
+        Assert.Equal(callback, entries.Single().Callback);
+    }
+
+    [Fact]
+    public async Task Should_Remove_Tuple_From_Space_On_PopAsync()
     {
         SpaceTuple tuple = SpaceTuple.Create("pop");
         SpaceTemplate template = SpaceTemplate.Create(tuple);

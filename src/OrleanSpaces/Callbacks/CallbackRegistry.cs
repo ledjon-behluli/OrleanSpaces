@@ -1,12 +1,17 @@
 ﻿using OrleanSpaces.Primitives;
 using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.Data;
 
 namespace OrleanSpaces.Callbacks;
 
 internal class CallbackRegistry
 {
     private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
+
+    public ReadOnlyDictionary<SpaceTemplate, ReadOnlyCollection<CallbackEntry>> Entries =>
+      new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
 
     public void Add(SpaceTemplate template, CallbackEntry entry)
     {
@@ -18,23 +23,19 @@ internal class CallbackRegistry
         entries[template].Add(entry);
     }
 
-    public IList<CallbackEntry> Take(SpaceTuple tuple)
+    public IEnumerable<CallbackEntry> Take(SpaceTuple tuple)
     {
-        List<CallbackEntry> matchingEntries = new();
-
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
             if (TupleMatcher.IsMatch(tuple, pair.Key))
             {
-                foreach (var callback in entries[pair.Key])
+                foreach (var entry in entries[pair.Key])
                 {
-                    matchingEntries.Add(callback);
+                    yield return entry;
                 }
 
                 entries.TryRemove(pair.Key, out _);
             }
         }
-
-        return matchingEntries;
     }
 }
