@@ -5,6 +5,19 @@ namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
+    private struct TestStruct { }
+    private class TestClass { }
+
+    [Fact]
+    public void Should_Be_Created_On_Struct()
+    {
+        TestStruct test = new();
+        SpaceTuple tuple = SpaceTuple.Create(test);
+
+        Assert.Equal(1, tuple.Length);
+        Assert.Equal(test, tuple[0]);
+    }
+
     [Fact]
     public void Should_Be_Created_On_Tuple()
     {
@@ -17,7 +30,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_Object()
+    public void Should_Be_Created_On_String()
     {
         SpaceTuple tuple = SpaceTuple.Create("a");
 
@@ -69,7 +82,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Reference_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new object())));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new TestClass())));
     }
 
     [Fact]
