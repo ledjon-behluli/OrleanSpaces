@@ -2,7 +2,6 @@
 
 namespace OrleanSpaces.Utils;
 
-// TODO: Benchmark performance of this!!!
 internal static class TupleMatcher
 {
     public static bool IsMatch(SpaceTuple tuple, SpaceTemplate template)
@@ -12,31 +11,36 @@ internal static class TupleMatcher
             return false;
         }
 
-        bool result = true;
-
         for (int i = 0; i < tuple.Length; i++)
         {
-            object field = template[i];
-
-            if (field is UnitField)
+            if (template[i] is UnitField)
             {
-                result = true;
+                continue;
             }
-            else if (field is Type templateType)
+            else if (template[i] is Type templateType)
             {
-                result &= templateType.Equals(tuple[i].GetType());
+                if (templateType.Equals(tuple[i].GetType()))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                result &= field.Equals(tuple[i]);
-            }
-
-            if (!result)
-            {
-                return false;
+                if (template[i].Equals(tuple[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
-        return result;
+        return true;
     }
 }
