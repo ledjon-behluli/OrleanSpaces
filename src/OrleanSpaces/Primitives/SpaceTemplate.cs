@@ -50,7 +50,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
-    public bool IsSatisfied(SpaceTuple tuple) => TupleMatcher.IsMatch(tuple, this);
+    public bool IsSatisfiedBy(SpaceTuple tuple) => TupleMatcher.IsMatch(tuple, this);
 
     public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
     public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);

@@ -19,19 +19,6 @@ public class TupleMatcherTests
         Assert.False(TupleMatcher.IsMatch(tuple, template));
     }
 
-    class test { }
-
-    [Fact]
-    public void A()
-    {
-        test test = new();
-
-        SpaceTuple tuple = SpaceTuple.Create(test);
-        SpaceTemplate template = SpaceTemplate.Create(test);
-
-        Assert.True(TupleMatcher.IsMatch(tuple, template));
-    }
-
     #region Values
 
     [Fact]

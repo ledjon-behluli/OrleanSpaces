@@ -26,19 +26,9 @@ internal static class TupleMatcher
             {
                 result &= templateType.Equals(tuple[i].GetType());
             }
-
-            //else
-            //{
-            //    result &= field.Equals(tuple[i]);
-            //}
-
-            else if (field.GetType().IsValueType)
-            {
-                result &= field.Equals(tuple[i]);
-            }
             else
             {
-                result &= ReferenceEquals(field, tuple[i]);
+                result &= field.Equals(tuple[i]);
             }
 
             if (!result)

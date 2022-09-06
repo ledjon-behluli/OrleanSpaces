@@ -15,7 +15,7 @@ public class Ponger : ISpaceObserver
 
     public async Task OnTupleAsync(SpaceTuple tuple)
     {
-        if (template.IsSatisfied(tuple))
+        if (template.IsSatisfiedBy(tuple))
         {
             Console.WriteLine("PONG-er: Got it");
 

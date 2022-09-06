@@ -5,15 +5,6 @@ namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
-    class test1 {  }
-
-    [Fact]
-    public void a()
-    {
-        SpaceTuple tuple = SpaceTuple.Create(new test1());
-        Assert.Equal(1, tuple.Length);
-    }
-
     [Fact]
     public void Should_Be_Created_On_Tuple()
     {
@@ -46,25 +37,21 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((ValueType)null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((string)null));
     }
 
     [Fact]
-    public void Should_Throw_On_Null_Object()
+    public void Should_Throw_On_Empty_String()
     {
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((object)null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(""));
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(string.Empty));
     }
 
     [Fact]
     public void Should_Throw_On_UnitField()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create(UnitField.Null));
-    }
-
-    [Fact]
-    public void Should_Throw_On_Type()
-    {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(typeof(int)));
     }
 
     [Fact]
@@ -77,6 +64,12 @@ public class SpaceTupleTests
     public void Should_Throw_If_Tuple_Contains_Types()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, typeof(int), "a")));
+    }
+
+    [Fact]
+    public void Should_Throw_If_Tuple_Contains_Reference_Type_Field()
+    {
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new object())));
     }
 
     [Fact]

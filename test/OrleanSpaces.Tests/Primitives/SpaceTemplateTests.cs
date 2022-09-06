@@ -46,20 +46,20 @@ public class SpaceTemplateTests
     [Fact]
     public void Template_Shoud_Be_Statisfied_By_Tuple()
     {
-        Assert.True(SpaceTemplate.Create(1).IsSatisfied(SpaceTuple.Create(1)));
-        Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create((1, "a"))));
-        Assert.True(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfied(SpaceTuple.Create((1, "a", 1.5f))));
-        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
-        Assert.True(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+        Assert.True(SpaceTemplate.Create(1).IsSatisfiedBy(SpaceTuple.Create(1)));
+        Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create((1, "a"))));
+        Assert.True(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f))));
+        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+        Assert.True(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
     }
 
     [Fact]
     public void Template_Shoud_Not_Be_Statisfied_By_Tuple()
     {
-        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfied(SpaceTuple.Create(1)));
-        Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f))));
-        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
-        Assert.False(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfied(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
+        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create(1)));
+        Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f))));
+        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
+        Assert.False(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
     }
 
     [Fact]

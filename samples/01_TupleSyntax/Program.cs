@@ -13,8 +13,7 @@ static void SpaceTupleSyntax()
     Console.WriteLine("\nThis section illustrates SpaceTuple creation");
     Console.WriteLine("---------------- BEGIN -------------------");
 
-    Console.WriteLine($"Space tuple with one field (Object): {SpaceTuple.Create(1)}");
-    Console.WriteLine($"Space tuple with two fields (Tuple): {SpaceTuple.Create(Tuple.Create(1, "a"))}");
+    Console.WriteLine($"Space tuple with one field (Int32): {SpaceTuple.Create(1)}");
     Console.WriteLine($"Space tuple with two fields (ValueTuple): {SpaceTuple.Create((1, "a"))}");
     Console.WriteLine($"Space tuple with three fields (ValueTuple): {SpaceTuple.Create(ValueTuple.Create(1, "a", 1.5f))}");
 
@@ -26,7 +25,7 @@ static void SpaceTemplateSyntax()
     Console.WriteLine("\nThis section illustrates SpaceTemplate creation");
     Console.WriteLine("---------------- BEGIN -------------------");
 
-    Console.WriteLine($"Space template with one field (Object): {SpaceTemplate.Create(1)}");
+    Console.WriteLine($"Space template with one field (Int32): {SpaceTemplate.Create(1)}");
     Console.WriteLine($"Space template with two fields (Tuple): {SpaceTemplate.Create(Tuple.Create(1, "a"))}");
     Console.WriteLine($"Space template with two fields (ValueTuple): {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"Space template with two fields (SpaceTuple): {SpaceTemplate.Create(SpaceTuple.Create((1, "a")))}");
