@@ -17,7 +17,7 @@ public class SpaceAgentTests : IAsyncLifetime
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
-
+    
     private ISpaceAgent agent;
     
     public SpaceAgentTests(ClusterFixture fixture)
@@ -27,6 +27,23 @@ public class SpaceAgentTests : IAsyncLifetime
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
+    }
+
+    class test { }
+
+    [Fact]
+    public async Task B()
+    {
+        test test = new();
+
+        SpaceTuple tuple = SpaceTuple.Create(test);
+        SpaceTemplate template = SpaceTemplate.Create(test);
+
+        await agent.WriteAsync(tuple);
+        SpaceTuple pTuple = await agent.PeekAsync(template);
+
+        Assert.False(pTuple.IsEmpty);
+        Assert.Equal(tuple, pTuple);
     }
 
     public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();

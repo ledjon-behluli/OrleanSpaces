@@ -16,17 +16,29 @@ internal static class TupleMatcher
 
         for (int i = 0; i < tuple.Length; i++)
         {
-            if (template[i] is UnitField)
+            object field = template[i];
+
+            if (field is UnitField)
             {
                 result = true;
             }
-            else if (template[i] is Type templateType)
+            else if (field is Type templateType)
             {
                 result &= templateType.Equals(tuple[i].GetType());
             }
+
+            //else
+            //{
+            //    result &= field.Equals(tuple[i]);
+            //}
+
+            else if (field.GetType().IsValueType)
+            {
+                result &= field.Equals(tuple[i]);
+            }
             else
             {
-                result &= template[i].Equals(tuple[i]);
+                result &= ReferenceEquals(field, tuple[i]);
             }
 
             if (!result)
