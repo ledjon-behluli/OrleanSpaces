@@ -21,7 +21,7 @@ internal class ObserverProcessor : BackgroundService
     {
         await foreach (SpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
-            await ParallelExecutor.WhenAll(registry.Observers, async x =>
+            await TaskPartitioner.WhenAll(registry.Observers, async x =>
             {
                 try
                 {

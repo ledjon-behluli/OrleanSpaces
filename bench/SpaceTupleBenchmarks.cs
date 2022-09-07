@@ -14,42 +14,42 @@ public class SpaceTupleBenchmarks
     private readonly static SpaceTuple longTuple = SpaceTuple.Create((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
 
     [BenchmarkCategory("Short Tuple"), Benchmark]
-    public void ShortSameLength()
+    public static void ShortSameLength()
     {
         for (int i = 0; i < iterations; i++)
             shortTuple.Equals(shortTuple);
     }
 
     [BenchmarkCategory("Short Tuple"), Benchmark]
-    public void ShortDiffLengths()
+    public static void ShortDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
             shortTuple.Equals(baseTuple);
     }
 
     [BenchmarkCategory("Medium Tuple"), Benchmark]
-    public void MediumSameLength()
+    public static void MediumSameLength()
     {
         for (int i = 0; i < iterations; i++)
             mediumTuple.Equals(mediumTuple);
     }
 
     [BenchmarkCategory("Medium Tuple"), Benchmark]
-    public void MediumDiffLengths()
+    public static void MediumDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
             mediumTuple.Equals(baseTuple);
     }
 
     [BenchmarkCategory("Long Tuple"), Benchmark]
-    public void LongSameLength()
+    public static void LongSameLength()
     {
         for (int i = 0; i < iterations; i++)
             longTuple.Equals(longTuple);
     }
 
     [BenchmarkCategory("Long Tuple"), Benchmark]
-    public void LongDiffLengths()
+    public static void LongDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
             longTuple.Equals(baseTuple);

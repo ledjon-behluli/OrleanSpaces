@@ -26,7 +26,7 @@ internal class CallbackProcessor : BackgroundService
         await foreach (var tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             var entries = registry.Take(tuple);
-            await ParallelExecutor.WhenAll(entries, async entry =>
+            await TaskPartitioner.WhenAll(entries, async entry =>
             {
                 try
                 {

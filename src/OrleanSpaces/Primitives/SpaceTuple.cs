@@ -7,6 +7,8 @@ public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
 {
     private readonly object[] fields;
 
+    public ReadOnlySpan<object> Fields => new(fields);
+
     public int Length => fields?.Length ?? 0;
     public object this[int index] => fields[index];
 

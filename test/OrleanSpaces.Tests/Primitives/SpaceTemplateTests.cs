@@ -44,25 +44,6 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Template_Shoud_Be_Statisfied_By_Tuple()
-    {
-        Assert.True(SpaceTemplate.Create(1).IsSatisfiedBy(SpaceTuple.Create(1)));
-        Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create((1, "a"))));
-        Assert.True(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f))));
-        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
-        Assert.True(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
-    }
-
-    [Fact]
-    public void Template_Shoud_Not_Be_Statisfied_By_Tuple()
-    {
-        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create(1)));
-        Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f))));
-        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
-        Assert.False(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
-    }
-
-    [Fact]
     public void Should_Throw_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
@@ -187,4 +168,196 @@ public class SpaceTemplateTests
         Assert.Equal("<1, a, 1.5, b, {NULL}>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null)).ToString());
         Assert.Equal("<1, a, 1.5, b, {NULL}, System.Int32>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int))).ToString());
     }
+}
+
+public class SpaceTemplate_TupleStatisfactionTests
+{
+    private readonly SpaceTuple tuple;
+
+    public SpaceTemplate_TupleStatisfactionTests()
+    {
+        tuple = SpaceTuple.Create((1, "a", 1.5f));
+    }
+
+    [Fact]
+    public void Should_Be_False_If_Lengths_Are_Not_Equal()
+    {
+        SpaceTemplate template = SpaceTemplate.Create((1, "a"));
+        Assert.False(template.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Shoud_Be_Statisfied_By_Various_Tuples()
+    {
+        Assert.True(SpaceTemplate.Create(1).IsSatisfiedBy(SpaceTuple.Create(1)));
+        Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create((1, "a"))));
+        Assert.True(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f))));
+        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+        Assert.True(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+    }
+
+    [Fact]
+    public void Shoud_Not_Be_Statisfied_By_Various_Tuples()
+    {
+        Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create(1)));
+        Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f))));
+        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
+        Assert.False(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
+    }
+
+    #region Values
+
+    [Fact]
+    public void Should_Be_False_If_At_Least_One_Item_Doesnt_Match_OnValues()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((2, "a", 1.5f));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, "b", 1.5f));
+        SpaceTemplate template3 = SpaceTemplate.Create((1, "a", 1.6f));
+
+        Assert.False(template1.IsSatisfiedBy(tuple));
+        Assert.False(template2.IsSatisfiedBy(tuple));
+        Assert.False(template3.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_OnValues()
+    {
+        SpaceTemplate template = SpaceTemplate.Create(tuple);
+        Assert.True(template.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_False_If_All_Items_Match_But_Are_Out_Of_Order_OnValues()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create(("a", 1, 1.5f));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, 1.5f, "a"));
+        SpaceTemplate template3 = SpaceTemplate.Create((1.5f, "a", 1));
+
+        Assert.False(template1.IsSatisfiedBy(tuple));
+        Assert.False(template2.IsSatisfiedBy(tuple));
+        Assert.False(template3.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnValues()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((1, "a", SpaceUnit.Null));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f));
+        SpaceTemplate template3 = SpaceTemplate.Create((1, SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, "a", 1.5f));
+        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, 1.5f));
+        SpaceTemplate template6 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+
+        Assert.True(template1.IsSatisfiedBy(tuple));
+        Assert.True(template2.IsSatisfiedBy(tuple));
+        Assert.True(template3.IsSatisfiedBy(tuple));
+        Assert.True(template4.IsSatisfiedBy(tuple));
+        Assert.True(template5.IsSatisfiedBy(tuple));
+        Assert.True(template6.IsSatisfiedBy(tuple));
+    }
+
+    #endregion
+
+    #region Types
+
+    [Fact]
+    public void Should_Be_False_If_At_Least_One_Item_Doesnt_Match_OnTypes()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((typeof(int), typeof(string), typeof(double)));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), typeof(double), typeof(float)));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(double), typeof(string), typeof(float)));
+
+        Assert.False(template1.IsSatisfiedBy(tuple));
+        Assert.False(template2.IsSatisfiedBy(tuple));
+        Assert.False(template3.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_OnTypes()
+    {
+        SpaceTemplate template = SpaceTemplate.Create((typeof(int), typeof(string), typeof(float)));
+        Assert.True(template.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_False_If_All_Items_Match_But_Are_Out_Of_Order_OnTypes()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((typeof(int), typeof(int), typeof(float)));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(string), typeof(string), typeof(float)));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(string), typeof(string), typeof(float)));
+
+        Assert.False(template1.IsSatisfiedBy(tuple));
+        Assert.False(template2.IsSatisfiedBy(tuple));
+        Assert.False(template3.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnTypes()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((typeof(int), typeof(string), SpaceUnit.Null));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, typeof(float)));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, typeof(string), typeof(float)));
+        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, typeof(float)));
+        SpaceTemplate template6 = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+
+        Assert.True(template1.IsSatisfiedBy(tuple));
+        Assert.True(template2.IsSatisfiedBy(tuple));
+        Assert.True(template3.IsSatisfiedBy(tuple));
+        Assert.True(template4.IsSatisfiedBy(tuple));
+        Assert.True(template5.IsSatisfiedBy(tuple));
+        Assert.True(template6.IsSatisfiedBy(tuple));
+    }
+
+    #endregion
+
+    #region Mixed
+
+    [Fact]
+    public void Should_Be_False_If_At_Least_One_Item_Doesnt_Match_OnMixed()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((typeof(string), "a", 1.5f));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, typeof(int), 1.5f));
+        SpaceTemplate template3 = SpaceTemplate.Create((1, "a", typeof(double)));
+
+        Assert.False(template1.IsSatisfiedBy(tuple));
+        Assert.False(template2.IsSatisfiedBy(tuple));
+        Assert.False(template3.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_OnMixed()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((1, typeof(string), 1.5f));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, typeof(string), typeof(float)));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), "a", 1.5f));
+        SpaceTemplate template4 = SpaceTemplate.Create((typeof(int), "a", typeof(float)));
+        SpaceTemplate template5 = SpaceTemplate.Create((typeof(int), typeof(string), 1.5f));
+        SpaceTemplate template6 = SpaceTemplate.Create((typeof(int), typeof(string), typeof(float)));
+
+        Assert.True(template1.IsSatisfiedBy(tuple));
+        Assert.True(template2.IsSatisfiedBy(tuple));
+        Assert.True(template3.IsSatisfiedBy(tuple));
+        Assert.True(template4.IsSatisfiedBy(tuple));
+        Assert.True(template5.IsSatisfiedBy(tuple));
+        Assert.True(template6.IsSatisfiedBy(tuple));
+    }
+
+    [Fact]
+    public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnMixed()
+    {
+        SpaceTemplate template1 = SpaceTemplate.Create((1, SpaceUnit.Null, typeof(float)));
+        SpaceTemplate template2 = SpaceTemplate.Create((typeof(int), "a", SpaceUnit.Null));
+        SpaceTemplate template3 = SpaceTemplate.Create((typeof(int), SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template4 = SpaceTemplate.Create((SpaceUnit.Null, typeof(string), 1.5f));
+        SpaceTemplate template5 = SpaceTemplate.Create((SpaceUnit.Null, "a", typeof(float)));
+
+        Assert.True(template1.IsSatisfiedBy(tuple));
+        Assert.True(template2.IsSatisfiedBy(tuple));
+        Assert.True(template3.IsSatisfiedBy(tuple));
+        Assert.True(template4.IsSatisfiedBy(tuple));
+        Assert.True(template5.IsSatisfiedBy(tuple));
+    }
+
+    #endregion
 }

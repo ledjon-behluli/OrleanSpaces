@@ -1,8 +1,10 @@
 ﻿using BenchmarkDotNet.Running;
 
-BenchmarkRunner.Run<TupleMatcherBenchmarks>();
-BenchmarkRunner.Run<SpaceTupleBenchmarks>();
-BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
-BenchmarkRunner.Run<SpaceUnitBenchmarks>();
+//BenchmarkRunner.Run<SpaceUnitBenchmarks>();
+//BenchmarkRunner.Run<SpaceTupleBenchmarks>();
+//BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
+//BenchmarkRunner.Run<TaskPartitionerBenchmarks>();
+
+BenchmarkRunner.Run<SpaceTemplateBenchmarksTest>();
 
 Console.ReadKey();

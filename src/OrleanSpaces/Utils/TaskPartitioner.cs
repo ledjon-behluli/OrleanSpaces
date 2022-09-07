@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Utils;
 
-internal static class ParallelExecutor
+internal static class TaskPartitioner
 {
     internal static Task WhenAll<T>(IEnumerable<T> source, Func<T, Task> func)
     {
@@ -19,7 +19,7 @@ internal static class ParallelExecutor
             {
                 while (partition.MoveNext())
                 {
-                    await Task.Yield(); // prevents a sync thread hangup
+                    //await Task.Yield(); // prevents a sync thread hangup
                     await func(partition.Current);
                 }
             }

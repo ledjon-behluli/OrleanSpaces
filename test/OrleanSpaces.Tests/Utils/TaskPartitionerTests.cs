@@ -2,14 +2,14 @@
 
 namespace OrleanSpaces.Tests.Utils;
 
-public class ParallelExecutorTests
+public class TaskPartitionerTests
 {
     [Fact]
     public async Task Should_Execute()
     {
         List<Callable> callables = new() { new(), new(), new() };
 
-        await ParallelExecutor.WhenAll(callables, async x => await x.CallMe());
+        await TaskPartitioner.WhenAll(callables, async x => await x.CallMe());
 
         Assert.All(callables, x => Assert.True(x.WasCalled));
     }

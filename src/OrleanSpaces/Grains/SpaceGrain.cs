@@ -2,7 +2,6 @@
 using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
-using OrleanSpaces.Utils;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
@@ -47,7 +46,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
         foreach (var tuple in tuples)
         {
-            if (TupleMatcher.IsMatch(tuple, template))
+            if (template.IsSatisfiedBy(tuple))
             {
                 return new(tuple);
             }
@@ -62,7 +61,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
         foreach (var tuple in tuples)
         {
-            if (TupleMatcher.IsMatch(tuple, template))
+            if (template.IsSatisfiedBy(tuple))
             {
                 space.State.Tuples.Remove(tuple);
                 await space.WriteStateAsync();
@@ -81,7 +80,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
 
         foreach (var tuple in tuples)
         {
-            if (TupleMatcher.IsMatch(tuple, template))
+            if (template.IsSatisfiedBy(tuple))
             {
                 results.Add(tuple);
             }
@@ -97,7 +96,6 @@ internal class SpaceGrain : Grain, ISpaceGrain
             return new(space.State.Tuples.Count);
         }
 
-        return new(space.State.Tuples.Count(sp =>
-            sp.Length == ((SpaceTemplate)template).Length && TupleMatcher.IsMatch(sp, (SpaceTemplate)template)));
+        return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).IsSatisfiedBy(tuple))); 
     }
 }

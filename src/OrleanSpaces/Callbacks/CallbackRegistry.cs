@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Primitives;
-using OrleanSpaces.Utils;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -27,7 +26,7 @@ internal class CallbackRegistry
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
-            if (TupleMatcher.IsMatch(tuple, pair.Key))
+            if(pair.Key.IsSatisfiedBy(tuple))
             {
                 foreach (var entry in entries[pair.Key])
                 {

@@ -1,5 +1,9 @@
-﻿using OrleanSpaces.Utils;
+﻿using Orleans.Concurrency;
+using OrleanSpaces.Utils;
+using System.Collections.Immutable;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Primitives;
 
@@ -49,7 +53,125 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
-    public bool IsSatisfiedBy(SpaceTuple tuple) => TupleMatcher.IsMatch(tuple, this);
+    public bool IsSatisfiedBy(SpaceTuple tuple)
+    {
+        if (tuple.Length != Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < tuple.Length; i++)
+        {
+            if (this[i] is SpaceUnit)
+            {
+                continue;
+            }
+            else if (this[i] is Type templateType)
+            {
+                if (templateType.Equals(tuple[i].GetType()))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (this[i].Equals(tuple[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public bool IsSatisfiedBySpan(SpaceTuple tuple)
+    {
+        if (tuple.Length != Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < tuple.Fields.Length; i++)
+        {
+            if (this[i] is SpaceUnit)
+            {
+                continue;
+            }
+            else if (this[i] is Type templateType)
+            {
+                if (templateType.Equals(tuple.Fields[i].GetType()))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (this[i].Equals(tuple[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public bool IsSatisfiedByTraverseBothSides(SpaceTuple tuple)
+    {
+        if (tuple.Length != Length)
+        {
+            return false;
+        }
+
+        for (int i = 0, j = tuple.Length - 1; i <= j; i++, j--)
+        {
+            if (_fields[i] is SpaceUnit)
+            {
+                continue;
+            }
+            else if (_fields[i] is Type templateType)
+            {
+                if (templateType.Equals(tuple[i].GetType()))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (_fields[i].Equals(tuple[i]))
+                {
+                    continue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
     public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
     public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
