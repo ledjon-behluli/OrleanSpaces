@@ -12,6 +12,8 @@ public class TestObserver : ISpaceObserver
         LastReceived = tuple;
         return Task.CompletedTask;
     }
+
+    public Task OnEmptySpaceAsync() => Task.CompletedTask;
 }
 
 public class ThrowingTestObserver : TestObserver

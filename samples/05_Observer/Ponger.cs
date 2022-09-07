@@ -23,4 +23,6 @@ public class Ponger : ISpaceObserver
             await agent.WriteAsync(SpaceTuple.Create(("Pong", DateTime.Now)));
         }
     }
+
+    public Task OnEmptySpaceAsync() => Task.CompletedTask;
 }

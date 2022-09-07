@@ -7,9 +7,9 @@ public struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] fields;
 
-    public int Length => fields.Length;
     public ref readonly object this[int index] => ref fields[index];
-
+    public int Length => fields.Length;
+    
     public SpaceTemplate() : this(new object[0]) { }
 
     private SpaceTemplate(params object[] fields)
@@ -95,36 +95,15 @@ public struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
             return false;
         }
 
-        for (int i = 0, j = tuple.Length - 1; i <= j; i++, j--)
+        for (int left = 0, right = tuple.Length - 1; left <= right; left++, right--)
         {
-            if (Check(i, ref this, ref tuple) && Check(j, ref this, ref tuple))
-
-            if (fields[i] is SpaceUnit)
+            if (Check(left, ref this, ref tuple) &&
+                Check(right, ref this, ref tuple))
             {
                 continue;
             }
-            else if (fields[i] is Type templateType)
-            {
-                if (templateType.Equals(tuple[i].GetType()))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (fields[i].Equals(tuple[i]))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+
+            return false;
         }
 
         return true;
