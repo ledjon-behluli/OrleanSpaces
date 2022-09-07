@@ -101,13 +101,15 @@ public class SpaceTemplateBenchmarks
 }
 
 [MemoryDiagnoser]
-[ShortRunJob]
-[CategoriesColumn]
 public class SpaceTemplateBenchmarksTest
 {
     private const int iterations = 10_000;
 
     private readonly static SpaceTuple smallTuple = SpaceTuple.Create((1, 1, 1, 1, 1));
+    private readonly static SpaceTuple mediumTuple = SpaceTuple.Create(
+        (1, 1, 1, 1, 1,
+         1, 1, 1, 1, 1,
+         1, 1, 1, 1, 1));
     private readonly static SpaceTuple largeTuple = SpaceTuple.Create(
         (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -117,6 +119,7 @@ public class SpaceTemplateBenchmarksTest
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
 
     private readonly static SpaceTemplate smallTemplate = SpaceTemplate.Create(smallTuple);
+    private readonly static SpaceTemplate mediumTemplate = SpaceTemplate.Create(mediumTuple);
     private readonly static SpaceTemplate largeTemplate = SpaceTemplate.Create(largeTuple);
 
     [Benchmark]
@@ -131,6 +134,20 @@ public class SpaceTemplateBenchmarksTest
     {
         for (int i = 0; i < iterations; i++)
             smallTemplate.IsSatisfiedBySpan(smallTuple);
+    }
+
+    [Benchmark]
+    public void Medium_FullMatch()
+    {
+        for (int i = 0; i < iterations; i++)
+            mediumTemplate.IsSatisfiedBy(mediumTuple);
+    }
+
+    [Benchmark]
+    public void Medium_FullMatch_Span()
+    {
+        for (int i = 0; i < iterations; i++)
+            mediumTemplate.IsSatisfiedBySpan(mediumTuple);
     }
 
     [Benchmark]

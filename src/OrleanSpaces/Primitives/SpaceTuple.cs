@@ -3,16 +3,16 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
+public struct SpaceTuple : ISpaceElement, IEquatable<SpaceTuple>
 {
     private readonly object[] fields;
-
-    public ReadOnlySpan<object> Fields => new(fields);
 
     public int Length => fields?.Length ?? 0;
     public object this[int index] => fields[index];
 
     public bool IsEmpty => fields == null || fields.Length == 0;
+
+    public ReadOnlySpan<object> AsReadOnlySpan() => new(fields);
 
     public SpaceTuple() : this(new object[0]) { }
 
@@ -76,9 +76,13 @@ public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
             return false;
         }
 
-        for (int i = 0; i < Length; i++)
+        ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
+        ReadOnlySpan<object> thatSpan = other.AsReadOnlySpan();
+
+        for (int i = 0, j = Length - 1; i <= j; i++, j--)
         {
-            if (!this[i].Equals(other[i]))
+            if (!thisSpan[i].Equals(thatSpan[i]) ||
+                !thisSpan[j].Equals(thisSpan[j]))
             {
                 return false;
             }

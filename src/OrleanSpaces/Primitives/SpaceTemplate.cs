@@ -1,6 +1,8 @@
 ﻿using Orleans.Concurrency;
 using OrleanSpaces.Utils;
+using System;
 using System.Collections.Immutable;
+using System.Data;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,12 +10,14 @@ using System.Runtime.InteropServices;
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
+public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
 {
-    private readonly object[] _fields;
+    private readonly object[] fields;
 
-    public int Length => _fields.Length;
-    public object this[int index] => _fields[index];
+    public int Length => fields.Length;
+    public object this[int index] => fields[index];
+
+    public ReadOnlySpan<object> AsReadOnlySpan() => new(fields);
 
     public SpaceTemplate() : this(new object[0]) { }
 
@@ -24,7 +28,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
             throw new ArgumentException($"Construction of '{nameof(SpaceTemplate)}' without any fields is not allowed.");
         }
 
-        _fields = fields;
+        this.fields = fields;
     }
 
     public static SpaceTemplate Create(object field)
@@ -100,15 +104,18 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
             return false;
         }
 
-        for (int i = 0; i < tuple.Fields.Length; i++)
+        ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
+        ReadOnlySpan<object> thatSpan = tuple.AsReadOnlySpan();
+
+        for (int i = 0; i < thatSpan.Length; i++)
         {
-            if (this[i] is SpaceUnit)
+            if (thisSpan[i] is SpaceUnit)
             {
                 continue;
             }
-            else if (this[i] is Type templateType)
+            else if (thisSpan[i] is Type templateType)
             {
-                if (templateType.Equals(tuple.Fields[i].GetType()))
+                if (templateType.Equals(thatSpan[i].GetType()))
                 {
                     continue;
                 }
@@ -119,7 +126,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
             }
             else
             {
-                if (this[i].Equals(tuple[i]))
+                if (thisSpan[i].Equals(thatSpan[i]))
                 {
                     continue;
                 }
@@ -142,11 +149,11 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
 
         for (int i = 0, j = tuple.Length - 1; i <= j; i++, j--)
         {
-            if (_fields[i] is SpaceUnit)
+            if (fields[i] is SpaceUnit)
             {
                 continue;
             }
-            else if (_fields[i] is Type templateType)
+            else if (fields[i] is Type templateType)
             {
                 if (templateType.Equals(tuple[i].GetType()))
                 {
@@ -159,7 +166,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
             }
             else
             {
-                if (_fields[i].Equals(tuple[i]))
+                if (fields[i].Equals(tuple[i]))
                 {
                     continue;
                 }
@@ -179,6 +186,27 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
     public override bool Equals(object obj) =>
         obj is SpaceTemplate template && Equals(template);
 
+    //public bool Equals(SpaceTemplate other)
+    //{
+    //    if (Length != other.Length)
+    //    {
+    //        return false;
+    //    }
+
+    //    ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
+    //    ReadOnlySpan<object> thatSpan = other.AsReadOnlySpan();
+
+    //    for (int i = 0; i < Length; i++)
+    //    {
+    //        if (!thisSpan[i].Equals(thatSpan[i]))
+    //        {
+    //            return false;
+    //        }
+    //    }
+
+    //    return true;
+    //}
+
     public bool Equals(SpaceTemplate other)
     {
         if (Length != other.Length)
@@ -186,9 +214,13 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
             return false;
         }
 
-        for (int i = 0; i < Length; i++)
+        ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
+        ReadOnlySpan<object> thatSpan = other.AsReadOnlySpan();
+
+        for (int i = 0, j = Length - 1; i <= j; i++, j--)
         {
-            if (!this[i].Equals(other[i]))
+            if (!thisSpan[i].Equals(thatSpan[i]) ||
+                !thisSpan[j].Equals(thisSpan[j]))
             {
                 return false;
             }
@@ -197,7 +229,7 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(_fields, Length);
+    public override int GetHashCode() => HashCode.Combine(fields, Length);
 
-    public override string ToString() => $"<{string.Join(", ", _fields)}>";
+    public override string ToString() => $"<{string.Join(", ", fields)}>";
 }
