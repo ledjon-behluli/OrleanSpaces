@@ -82,9 +82,9 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_A_SpaceElement()
+    public void Should_Be_A_SpaceTuple()
     {
-        Assert.True(typeof(ISpaceElement).IsAssignableFrom(typeof(SpaceTemplate)));
+        Assert.True(typeof(ISpaceTuple).IsAssignableFrom(typeof(SpaceTemplate)));
     }
 
     [Fact]

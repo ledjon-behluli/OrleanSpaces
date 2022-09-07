@@ -1,8 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace OrleanSpaces.Primitives;
 
-namespace OrleanSpaces.Primitives;
-
-internal interface ISpaceElement : ITuple
+internal interface ISpaceTuple
 {
-    ReadOnlySpan<object> AsReadOnlySpan();
+    ref readonly object this[int index] { get; }
+    int Length { get; }
 }

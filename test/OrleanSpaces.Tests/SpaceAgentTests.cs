@@ -12,7 +12,7 @@ namespace OrleanSpaces.Tests;
 public class SpaceAgentTests : IAsyncLifetime
 {
     private readonly ISpaceChannel spaceChannel;
-    private readonly ISpaceElementRouter router;
+    private readonly ISpaceTupleRouter router;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
@@ -22,7 +22,7 @@ public class SpaceAgentTests : IAsyncLifetime
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
-        router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceElementRouter>();
+        router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceTupleRouter>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
@@ -63,7 +63,7 @@ public class SpaceAgentTests : IAsyncLifetime
     #region Router
 
     [Fact]
-    public async Task Should_WriteAsync_When_SpaceElement_Is_A_Tuple()
+    public async Task Should_WriteAsync_When_SpaceTuple_Is_A_Tuple()
     {
         SpaceTuple tuple = SpaceTuple.Create("routing");
         await router.RouteAsync(tuple);
@@ -75,7 +75,7 @@ public class SpaceAgentTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Should_PopAsync_When_SpaceElement_Is_A_Template()
+    public async Task Should_PopAsync_When_SpaceTuple_Is_A_Template()
     {
         SpaceTuple tuple = SpaceTuple.Create("routing");
         SpaceTemplate template = SpaceTemplate.Create(tuple);
@@ -90,15 +90,15 @@ public class SpaceAgentTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Should_Throw_If_SpaceElement_Is_Null()
+    public async Task Should_Throw_If_ISpaceTuple_Is_Null()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
     }
 
     [Fact]
-    public async Task Should_Throw_If_SpaceElement_Is_Not_Supported()
+    public async Task Should_Throw_If_ISpaceTuple_Is_Not_Supported()
     {
-        await Assert.ThrowsAsync<NotImplementedException>(async () => await router.RouteAsync(new TestElement()));
+        await Assert.ThrowsAsync<NotImplementedException>(async () => await router.RouteAsync(new TestTuple()));
     }
 
     #endregion
@@ -404,8 +404,9 @@ public class SpaceAgentTests : IAsyncLifetime
             new object[] { SpaceTuple.Create((1, "a", 1.5f, true)) }
         };
 
-    private class TestElement : ISpaceElement
+    private class TestTuple : ISpaceTuple
     {
-        
+        public ref readonly object this[int index] => throw new NotImplementedException();
+        public int Length => throw new NotImplementedException();
     }
 }

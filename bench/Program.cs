@@ -5,6 +5,4 @@
 //BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 //BenchmarkRunner.Run<TaskPartitionerBenchmarks>();
 
-BenchmarkRunner.Run<SpaceTemplateBenchmarksTest>();
-
 Console.ReadKey();

@@ -3,13 +3,13 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Continuations;
 
-internal class TestRouter : ISpaceElementRouter
+internal class TestRouter : ISpaceTupleRouter
 {
-    public ISpaceElement Element { get; private set; }
+    public ISpaceTuple SpaceTuple { get; private set; }
     
-    public Task RouteAsync(ISpaceElement element)
+    public Task RouteAsync(ISpaceTuple spaceTuple)
     {
-        Element = element;
+        SpaceTuple = spaceTuple;
         return Task.CompletedTask;
     }
 }

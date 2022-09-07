@@ -9,13 +9,13 @@ public class SpaceUnitBenchmarks
     private static readonly SpaceUnit[] units = new SpaceUnit[iterations];
 
     [Benchmark]
-    public static void ArrayWithOneItem()
+    public void ArrayWithOneItem()
     {
         units[0] = SpaceUnit.Null;
     }
 
     [Benchmark]
-    public static void ArrayWithMultipleItems()
+    public void ArrayWithMultipleItems()
     {
         for (int i = 0; i < iterations; i++)
             units[i] = SpaceUnit.Null;

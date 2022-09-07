@@ -79,7 +79,7 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
         Assert.NotNull(provider.GetService<ObserverChannel>());
 
         Assert.NotNull(provider.GetService<SpaceAgent>());
-        Assert.NotNull(provider.GetService<ISpaceElementRouter>());
+        Assert.NotNull(provider.GetService<ISpaceTupleRouter>());
         Assert.NotNull(provider.GetService<ISpaceChannel>());
         Assert.NotNull(provider.GetService<IClusterClient>());
 

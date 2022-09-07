@@ -21,20 +21,20 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        ISpaceElement element = await continuationChannel.Reader.ReadAsync(default);
+        ISpaceTuple spaceTuple = await continuationChannel.Reader.ReadAsync(default);
 
-        Assert.NotNull(element);
-        Assert.True(element is SpaceTuple);
-        Assert.Equal(tuple, (SpaceTuple)element);
+        Assert.NotNull(spaceTuple);
+        Assert.True(spaceTuple is SpaceTuple);
+        Assert.Equal(tuple, (SpaceTuple)spaceTuple);
     }
 
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
-        continuationChannel.Reader.TryRead(out ISpaceElement element);
+        continuationChannel.Reader.TryRead(out ISpaceTuple spaceTuple);
 
-        Assert.Null(element);
+        Assert.Null(spaceTuple);
     }
 
     [Fact]
@@ -48,11 +48,11 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         int rounds = 0;
 
-        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(element);
-            Assert.True(element is SpaceTuple);
-            Assert.Equal(tuple, (SpaceTuple)element);
+            Assert.NotNull(spaceTuple);
+            Assert.True(spaceTuple is SpaceTuple);
+            Assert.Equal(tuple, (SpaceTuple)spaceTuple);
 
             rounds++;
 

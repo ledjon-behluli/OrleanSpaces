@@ -23,9 +23,9 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await callbackChannel.Writer.WriteAsync(tuple);
 
-        continuationChannel.Reader.TryRead(out ISpaceElement element);
+        continuationChannel.Reader.TryRead(out ISpaceTuple spaceTuple);
 
-        Assert.Null(element);
+        Assert.Null(spaceTuple);
     }
 
     [Fact]
@@ -43,11 +43,11 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         int rounds = 0;
 
-        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(element);
-            Assert.True(element is SpaceTemplate);
-            Assert.True(((SpaceTemplate)element).IsSatisfiedBy(tuple));
+            Assert.NotNull(spaceTuple);
+            Assert.True(spaceTuple is SpaceTemplate);
+            Assert.True(((SpaceTemplate)spaceTuple).IsSatisfiedBy(tuple));
 
             rounds++;
 
@@ -72,11 +72,11 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         int rounds = 0;
 
-        await foreach (var element in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(element);
-            Assert.True(element is SpaceTemplate);
-            Assert.True(((SpaceTemplate)element).IsSatisfiedBy(tuple));
+            Assert.NotNull(spaceTuple);
+            Assert.True(spaceTuple is SpaceTemplate);
+            Assert.True(((SpaceTemplate)spaceTuple).IsSatisfiedBy(tuple));
 
             rounds++;
 

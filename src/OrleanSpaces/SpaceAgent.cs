@@ -10,7 +10,7 @@ using OrleanSpaces.Continuations;
 
 namespace OrleanSpaces;
 
-internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<SpaceTuple>
+internal class SpaceAgent : ISpaceAgent, ISpaceTupleRouter, IAsyncObserver<SpaceTuple>
 {
     private readonly IClusterClient client;
 
@@ -70,24 +70,24 @@ internal class SpaceAgent : ISpaceAgent, ISpaceElementRouter, IAsyncObserver<Spa
 
     #endregion
 
-    #region ISpaceElementRouter
+    #region ISpaceTupleRouter
 
-    public async Task RouteAsync(ISpaceElement element)
+    public async Task RouteAsync(ISpaceTuple tuple)
     {
-        if (element == null)
+        if (tuple == null)
         {
-            throw new ArgumentNullException(nameof(element));
+            throw new ArgumentNullException(nameof(tuple));
         }
 
-        Type type = element.GetType();
+        Type type = tuple.GetType();
 
         if (type == typeof(SpaceTuple))
         {
-            await WriteAsync((SpaceTuple)element);
+            await WriteAsync((SpaceTuple)tuple);
         }
         else if (type == typeof(SpaceTemplate))
         {
-            _ = await PopAsync((SpaceTemplate)element);
+            _ = await PopAsync((SpaceTemplate)tuple);
         }
         else
         {

@@ -5,8 +5,8 @@ namespace OrleanSpaces.Continuations;
 
 internal class ContinuationChannel
 {
-    private readonly Channel<ISpaceElement> channel = Channel.CreateUnbounded<ISpaceElement>();
+    private readonly Channel<ISpaceTuple> channel = Channel.CreateUnbounded<ISpaceTuple>();
 
-    public ChannelReader<ISpaceElement> Reader => channel.Reader;
-    public ChannelWriter<ISpaceElement> Writer => channel.Writer;
+    public ChannelReader<ISpaceTuple> Reader => channel.Reader;
+    public ChannelWriter<ISpaceTuple> Writer => channel.Writer;
 }

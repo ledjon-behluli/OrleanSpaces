@@ -1,23 +1,14 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces.Utils;
-using System;
-using System.Collections.Immutable;
-using System.Data;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
+public struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] fields;
 
     public int Length => fields.Length;
-    public object this[int index] => fields[index];
-
-    public ReadOnlySpan<object> AsReadOnlySpan() => new(fields);
+    public ref readonly object this[int index] => ref fields[index];
 
     public SpaceTemplate() : this(new object[0]) { }
 
@@ -97,49 +88,6 @@ public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public bool IsSatisfiedBySpan(SpaceTuple tuple)
-    {
-        if (tuple.Length != Length)
-        {
-            return false;
-        }
-
-        ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
-        ReadOnlySpan<object> thatSpan = tuple.AsReadOnlySpan();
-
-        for (int i = 0; i < thatSpan.Length; i++)
-        {
-            if (thisSpan[i] is SpaceUnit)
-            {
-                continue;
-            }
-            else if (thisSpan[i] is Type templateType)
-            {
-                if (templateType.Equals(thatSpan[i].GetType()))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (thisSpan[i].Equals(thatSpan[i]))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     public bool IsSatisfiedByTraverseBothSides(SpaceTuple tuple)
     {
         if (tuple.Length != Length)
@@ -149,6 +97,8 @@ public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
 
         for (int i = 0, j = tuple.Length - 1; i <= j; i++, j--)
         {
+            if (Check(i, ref this, ref tuple) && Check(j, ref this, ref tuple))
+
             if (fields[i] is SpaceUnit)
             {
                 continue;
@@ -178,6 +128,36 @@ public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
         }
 
         return true;
+
+        static bool Check(int index, ref SpaceTemplate template, ref SpaceTuple tuple)
+        {
+            if (template[index] is SpaceUnit)
+            {
+                return true;
+            }
+            else if (template[index] is Type templateType)
+            {
+                if (templateType.Equals(tuple[index].GetType()))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (template[index].Equals(tuple[index]))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 
     public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
@@ -186,27 +166,6 @@ public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
     public override bool Equals(object obj) =>
         obj is SpaceTemplate template && Equals(template);
 
-    //public bool Equals(SpaceTemplate other)
-    //{
-    //    if (Length != other.Length)
-    //    {
-    //        return false;
-    //    }
-
-    //    ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
-    //    ReadOnlySpan<object> thatSpan = other.AsReadOnlySpan();
-
-    //    for (int i = 0; i < Length; i++)
-    //    {
-    //        if (!thisSpan[i].Equals(thatSpan[i]))
-    //        {
-    //            return false;
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
     public bool Equals(SpaceTemplate other)
     {
         if (Length != other.Length)
@@ -214,13 +173,10 @@ public struct SpaceTemplate : ISpaceElement, IEquatable<SpaceTemplate>
             return false;
         }
 
-        ReadOnlySpan<object> thisSpan = AsReadOnlySpan();
-        ReadOnlySpan<object> thatSpan = other.AsReadOnlySpan();
-
         for (int i = 0, j = Length - 1; i <= j; i++, j--)
         {
-            if (!thisSpan[i].Equals(thatSpan[i]) ||
-                !thisSpan[j].Equals(thisSpan[j]))
+            if (!this[i].Equals(other[i]) ||
+                !this[j].Equals(other[j]))
             {
                 return false;
             }

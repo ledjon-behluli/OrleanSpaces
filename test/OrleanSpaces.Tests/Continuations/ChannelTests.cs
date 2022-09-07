@@ -13,7 +13,7 @@ public class ChannelTests
         SpaceTuple tuple = SpaceTuple.Create(1);
 
         await channel.Writer.WriteAsync(tuple);
-        ISpaceElement result = await channel.Reader.ReadAsync();
+        ISpaceTuple result = await channel.Reader.ReadAsync();
 
         Assert.Equal(tuple, result);
         Assert.Equal(typeof(SpaceTuple), result.GetType());
@@ -26,7 +26,7 @@ public class ChannelTests
         SpaceTemplate template = SpaceTemplate.Create(1);
 
         await channel.Writer.WriteAsync(template);
-        ISpaceElement result = await channel.Reader.ReadAsync();
+        ISpaceTuple result = await channel.Reader.ReadAsync();
 
         Assert.Equal(template, result);
         Assert.Equal(typeof(SpaceTemplate), result.GetType());
