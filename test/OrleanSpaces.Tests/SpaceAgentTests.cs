@@ -340,7 +340,7 @@ public class SpaceAgentTests : IAsyncLifetime
         }
 
         IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.Equal(3, tuples.Count());
     }
@@ -360,7 +360,7 @@ public class SpaceAgentTests : IAsyncLifetime
         }
 
         int matchingCount = await agent.CountAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.Equal(3, matchingCount);
     }
@@ -377,7 +377,7 @@ public class SpaceAgentTests : IAsyncLifetime
 
         int totalCount = await agent.CountAsync();
         int matchingCount = await agent.CountAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), UnitField.Null)));
+            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.True(totalCount > matchingCount);
     }

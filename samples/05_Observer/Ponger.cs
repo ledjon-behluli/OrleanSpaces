@@ -10,7 +10,7 @@ public class Ponger : ISpaceObserver
     public Ponger(ISpaceChannel channel)
     {
         this.channel = channel;
-        template = SpaceTemplate.Create(("Ping", UnitField.Null));
+        template = SpaceTemplate.Create(("Ping", SpaceUnit.Null));
     }
 
     public async Task OnTupleAsync(SpaceTuple tuple)

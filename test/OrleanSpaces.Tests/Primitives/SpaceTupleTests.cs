@@ -62,15 +62,15 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Throw_On_UnitField()
+    public void Should_Throw_On_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(UnitField.Null));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(SpaceUnit.Null));
     }
 
     [Fact]
-    public void Should_Throw_If_Tuple_Contains_UnitField()
+    public void Should_Throw_If_Tuple_Contains_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", UnitField.Null)));
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", SpaceUnit.Null)));
     }
 
     [Fact]

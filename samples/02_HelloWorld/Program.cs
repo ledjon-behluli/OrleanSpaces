@@ -25,7 +25,7 @@ var task1 = Task.Run(async () =>
     await agent.WriteAsync(tuple);
 
     Console.WriteLine($"THREAD 1: Placed '{tuple}' into the tuple space.");
-    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, UnitField.Null, UnitField.Null));
+    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, SpaceUnit.Null, SpaceUnit.Null));
 
     while (true)
     {
@@ -44,7 +44,7 @@ var task1 = Task.Run(async () =>
 
 var task2 = Task.Run(async () =>
 {
-    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, UnitField.Null));
+    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, SpaceUnit.Null));
     Console.WriteLine($"THREAD 2: Searching for matching tuple with template: {template}");
 
     while (true)

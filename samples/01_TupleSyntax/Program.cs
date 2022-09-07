@@ -30,8 +30,8 @@ static void SpaceTemplateSyntax()
     Console.WriteLine($"Space template with two fields (ValueTuple): {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"Space template with two fields (SpaceTuple): {SpaceTemplate.Create(SpaceTuple.Create((1, "a")))}");
     Console.WriteLine($"Space template with three fields (ValueTuple): {SpaceTemplate.Create(ValueTuple.Create(1, "a", 1.5f))}");
-    Console.WriteLine($"Space template with NULL placeholder field: {SpaceTemplate.Create((1, "a", UnitField.Null, 1.5f))}");
-    Console.WriteLine($"Space template with NULL placeholder and \"NULL\" string: {SpaceTemplate.Create((UnitField.Null, "NULL"))}");
+    Console.WriteLine($"Space template with NULL placeholder field: {SpaceTemplate.Create((1, "a", SpaceUnit.Null, 1.5f))}");
+    Console.WriteLine($"Space template with NULL placeholder and \"NULL\" string: {SpaceTemplate.Create((SpaceUnit.Null, "NULL"))}");
 
     Console.WriteLine("---------------- END -------------------\n");
 }
@@ -60,17 +60,17 @@ static void SpaceTemplateEquality()
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {SpaceTemplate.Create(1)}, {SpaceTemplate.Create(1)}");
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {SpaceTemplate.Create((1, "a"))}, {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {SpaceTemplate.Create((1, "a", typeof(int)))}, {SpaceTemplate.Create((1, "a", typeof(int)))}");
-    Console.WriteLine($"These are equal (fields, types, values, indices - match): {SpaceTemplate.Create((1, "a", typeof(int), UnitField.Null))}, {SpaceTemplate.Create((1, "a", typeof(int), UnitField.Null))}");
+    Console.WriteLine($"These are equal (fields, types, values, indices - match): {SpaceTemplate.Create((1, "a", typeof(int), SpaceUnit.Null))}, {SpaceTemplate.Create((1, "a", typeof(int), SpaceUnit.Null))}");
 
     Console.WriteLine($"These are not equal (types, values, indices match - fields don't): {SpaceTemplate.Create(1)}, {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"These are not equal (types, values, indices match - fields don't): {SpaceTemplate.Create(1)}, {SpaceTemplate.Create((1, typeof(string)))}");
-    Console.WriteLine($"These are not equal (types, values, indices match - fields don't): {SpaceTemplate.Create(1)}, {SpaceTemplate.Create((1, UnitField.Null))}");
+    Console.WriteLine($"These are not equal (types, values, indices match - fields don't): {SpaceTemplate.Create(1)}, {SpaceTemplate.Create((1, SpaceUnit.Null))}");
     Console.WriteLine($"These are not equal (types, values, fields match - indices don't): {SpaceTemplate.Create(("a", 1))}, {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"These are not equal (types, values, fields match - indices don't): {SpaceTemplate.Create(("a", typeof(int)))}, {SpaceTemplate.Create((typeof(int), "a"))}");
-    Console.WriteLine($"These are not equal (types, values, fields match - indices don't): {SpaceTemplate.Create(("a", UnitField.Null))}, {SpaceTemplate.Create((UnitField.Null, "a"))}");
+    Console.WriteLine($"These are not equal (types, values, fields match - indices don't): {SpaceTemplate.Create(("a", SpaceUnit.Null))}, {SpaceTemplate.Create((SpaceUnit.Null, "a"))}");
     Console.WriteLine($"These are not equal (types, fields, indices match - values don't): {SpaceTemplate.Create((1, "b"))}, {SpaceTemplate.Create((1, "a"))}");
     Console.WriteLine($"These are not equal (types, fields, indices match - values don't): {SpaceTemplate.Create((1, typeof(int)))}, {SpaceTemplate.Create((1, typeof(string)))}");
-    Console.WriteLine($"These are not equal (types, fields, indices match - values don't): {SpaceTemplate.Create((1, typeof(int)))}, {SpaceTemplate.Create((1, UnitField.Null))}");
+    Console.WriteLine($"These are not equal (types, fields, indices match - values don't): {SpaceTemplate.Create((1, typeof(int)))}, {SpaceTemplate.Create((1, SpaceUnit.Null))}");
 
     Console.WriteLine("---------------- END -------------------\n");
 }

@@ -26,12 +26,12 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_UnitField()
+    public void Should_Be_Created_On_SpaceUnit()
     {
-        SpaceTemplate template = SpaceTemplate.Create(UnitField.Null);
+        SpaceTemplate template = SpaceTemplate.Create(SpaceUnit.Null);
 
         Assert.Equal(1, template.Length);
-        Assert.Equal(UnitField.Null, template[0]);
+        Assert.Equal(SpaceUnit.Null, template[0]);
     }
 
     [Fact]
@@ -49,8 +49,8 @@ public class SpaceTemplateTests
         Assert.True(SpaceTemplate.Create(1).IsSatisfiedBy(SpaceTuple.Create(1)));
         Assert.True(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create((1, "a"))));
         Assert.True(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f))));
-        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
-        Assert.True(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+        Assert.True(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
+        Assert.True(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 1.5f, 1.1m))));
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class SpaceTemplateTests
     {
         Assert.False(SpaceTemplate.Create((1, "a")).IsSatisfiedBy(SpaceTuple.Create(1)));
         Assert.False(SpaceTemplate.Create((1, "a", 1.5f)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f))));
-        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
-        Assert.False(SpaceTemplate.Create((1, UnitField.Null, 1.5f, UnitField.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
+        Assert.False(SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "b", 1.5f, 1.1m))));
+        Assert.False(SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f, SpaceUnit.Null)).IsSatisfiedBy(SpaceTuple.Create((1, "a", 2.5f, 1.1m))));
     }
 
     [Fact]
@@ -87,16 +87,16 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Not_Throw_If_Template_Contains_UnitField()
+    public void Should_Not_Throw_If_Template_Contains_SpaceUnit()
     {
-        var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", UnitField.Null)));
+        var expection = Record.Exception(() => SpaceTemplate.Create((1, "a", SpaceUnit.Null)));
         Assert.Null(expection);
     }
 
     [Fact]
     public void Should_Not_Throw_If_Template_Contains_Types()
     {
-        var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), UnitField.Null)));
+        var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), SpaceUnit.Null)));
         Assert.Null(expection);
     }
 
@@ -109,8 +109,8 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Equal()
     {
-        SpaceTemplate template1 = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));
-        SpaceTemplate template2 = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));
+        SpaceTemplate template1 = SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null));
+        SpaceTemplate template2 = SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null));
 
         Assert.Equal(template1, template2);
         Assert.True(template1 == template2);
@@ -120,8 +120,8 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Equal_On_Object()
     {
-        SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));
-        object obj = SpaceTemplate.Create((1, "a", 1.5f, UnitField.Null));
+        SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null));
+        object obj = SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null));
 
         Assert.True(template.Equals(obj));
     }
@@ -130,7 +130,7 @@ public class SpaceTemplateTests
     public void Should_Not_Be_Equal_On_Object()
     {
         SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f));
-        object obj = SpaceTemplate.Create((1, "a", UnitField.Null));
+        object obj = SpaceTemplate.Create((1, "a", SpaceUnit.Null));
 
         Assert.False(template.Equals(obj));
     }
@@ -184,7 +184,7 @@ public class SpaceTemplateTests
         Assert.Equal("<1, a>", SpaceTemplate.Create((1, "a")).ToString());
         Assert.Equal("<1, a, 1.5>", SpaceTemplate.Create((1, "a", 1.5f)).ToString());
         Assert.Equal("<1, a, 1.5, b>", SpaceTemplate.Create((1, "a", 1.5f, 'b')).ToString());
-        Assert.Equal("<1, a, 1.5, b, {NULL}>", SpaceTemplate.Create((1, "a", 1.5f, 'b', UnitField.Null)).ToString());
-        Assert.Equal("<1, a, 1.5, b, {NULL}, System.Int32>", SpaceTemplate.Create((1, "a", 1.5f, 'b', UnitField.Null, typeof(int))).ToString());
+        Assert.Equal("<1, a, 1.5, b, {NULL}>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null)).ToString());
+        Assert.Equal("<1, a, 1.5, b, {NULL}, System.Int32>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int))).ToString());
     }
 }

@@ -5,23 +5,23 @@ namespace OrleanSpaces.Primitives;
 [Serializable]
 public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
 {
-    private readonly object[] _fields;
+    private readonly object[] fields;
 
-    public int Length => _fields?.Length ?? 0;
-    public object this[int index] => _fields[index];
+    public int Length => fields?.Length ?? 0;
+    public object this[int index] => fields[index];
 
-    public bool IsEmpty => _fields == null || _fields.Length == 0;
+    public bool IsEmpty => fields == null || fields.Length == 0;
 
     public SpaceTuple() : this(new object[0]) { }
 
     private SpaceTuple(params object[] fields)
     {
-        if (fields.Any(x => x is null || x is UnitField))
+        if (fields.Any(x => x is SpaceUnit))
         {
-            throw new ArgumentException($"Nulls are not valid '{nameof(SpaceTuple)}' fields");
+            throw new ArgumentException($"'{nameof(SpaceUnit.Null)}' is not a valid '{nameof(SpaceTuple)}' field");
         }
 
-        _fields = fields ?? new object[0];
+        this.fields = fields ?? new object[0];
     }
 
     public static SpaceTuple Create(ValueType value)
@@ -85,7 +85,7 @@ public struct SpaceTuple : ISpaceElement, ITuple, IEquatable<SpaceTuple>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(_fields, Length);
+    public override int GetHashCode() => HashCode.Combine(fields, Length);
 
-    public override string ToString() => $"<{string.Join(", ", _fields)}>";
+    public override string ToString() => $"<{string.Join(", ", fields)}>";
 }

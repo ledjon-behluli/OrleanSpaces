@@ -41,7 +41,6 @@ public struct SpaceTemplate : ISpaceElement, ITuple, IEquatable<SpaceTemplate>
         }
 
         var fields = new object[tuple.Length];
-
         for (int i = 0; i < tuple.Length; i++)
         {
             fields[i] = tuple[i];

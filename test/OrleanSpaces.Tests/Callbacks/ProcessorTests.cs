@@ -33,9 +33,9 @@ public class ProcessorTests : IClassFixture<Fixture>
     {
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, false));
-        registry.Add(SpaceTemplate.Create((1, UnitField.Null)), new(tuple => Task.CompletedTask, true));
-        registry.Add(SpaceTemplate.Create((1, UnitField.Null)), new(tuple => Task.CompletedTask, false));
-        registry.Add(SpaceTemplate.Create((1, UnitField.Null)), new(tuple => Task.CompletedTask, true));
+        registry.Add(SpaceTemplate.Create((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
+        registry.Add(SpaceTemplate.Create((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, false));
+        registry.Add(SpaceTemplate.Create((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create((1, "a", 1.5F)), new(tuple => Task.CompletedTask, true));
 
         SpaceTuple tuple = SpaceTuple.Create((1, "a"));
@@ -65,7 +65,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     {
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => throw new Exception("Test"), true));
-        registry.Add(SpaceTemplate.Create((1, UnitField.Null)), new(tuple => Task.CompletedTask, true));
+        registry.Add(SpaceTemplate.Create((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
 
         SpaceTuple tuple = SpaceTuple.Create((1, "a"));
         await callbackChannel.Writer.WriteAsync(tuple);
