@@ -1,5 +1,11 @@
 ﻿namespace OrleanSpaces;
 
+public interface ISpaceChannel
+{
+    /// <remarks>Method is thread-safe.</remarks>
+    Task<ISpaceAgent> GetAsync();
+}
+
 internal class SpaceChannel : ISpaceChannel
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);

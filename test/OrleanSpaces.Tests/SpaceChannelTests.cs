@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests;
 
-[Collection(ClusterCollection.Name)]
-public class SpaceChannelTests
+public class SpaceChannelTests : IClassFixture<ClusterFixture>
 {
     private readonly IClusterClient client;
     private readonly ISpaceChannel spaceChannel;

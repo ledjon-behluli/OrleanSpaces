@@ -25,7 +25,14 @@ internal class ObserverProcessor : BackgroundService
             {
                 try
                 {
-                    await x.OnTupleAsync(tuple);
+                    if (!tuple.IsEmpty)
+                    {
+                        await x.OnTupleAsync(tuple);
+                    }
+                    else
+                    {
+                        await x.OnEmptySpaceAsync();
+                    }
                 }
                 catch (Exception)
                 {

@@ -8,14 +8,14 @@ public class ProcessorTests : IClassFixture<Fixture>
     private readonly Fixture fixture;
     private readonly ObserverChannel channel;
 
-	public ProcessorTests(Fixture fixture)
+    public ProcessorTests(Fixture fixture)
 	{
         this.fixture = fixture;
         channel = fixture.Channel;
 	}
 
     [Fact]
-    public async void Should_Notify_All_Observers()
+    public async Task Should_Notify_All_Observers_OnTuple()
     {
         using var scope = fixture.StartScope();
 
@@ -26,7 +26,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked() < 3)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsEmpty) < 3)
         {
 
         }
@@ -39,7 +39,31 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async void Should_Continue_To_Notify_Other_Observers_When_Some_Throw()
+    public async Task Should_Notify_All_Observers_OnEmptySpace()
+    {
+        using var scope = fixture.StartScope();
+
+        scope.AddObserver(new TestObserver());
+        scope.AddObserver(new TestObserver());
+        scope.AddObserver(new TestObserver());
+
+        SpaceTuple tuple = new();
+
+        await channel.Writer.WriteAsync(tuple);
+
+        while (scope.TotalInvoked(observer => observer.SpaceEmptiedReceived) < 3)
+        {
+
+        }
+
+        Assert.All(scope.Observers, observer =>
+        {
+            Assert.True(observer.SpaceEmptiedReceived);
+        });
+    }
+
+    [Fact]
+    public async Task Should_Continue_To_Notify_Other_Observers_When_Some_Throw()
     {
         using var scope = fixture.StartScope();
 
@@ -50,7 +74,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked() < 2)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsEmpty) < 2)
         {
 
         }

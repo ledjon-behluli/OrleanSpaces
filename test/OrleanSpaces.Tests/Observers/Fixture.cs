@@ -33,7 +33,7 @@ public class Fixture : IAsyncLifetime
             this.registry = registry;
         }
 
-        public int TotalInvoked() => Observers.Count(observer => !observer.LastReceived.IsEmpty);
+        public int TotalInvoked(Func<TestObserver, bool> func) => Observers.Count(observer => func(observer));
 
         public void AddObserver(TestObserver observer)
         {

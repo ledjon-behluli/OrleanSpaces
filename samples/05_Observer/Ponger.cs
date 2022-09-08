@@ -24,5 +24,9 @@ public class Ponger : ISpaceObserver
         }
     }
 
-    public Task OnEmptySpaceAsync() => Task.CompletedTask;
+    public Task OnEmptySpaceAsync()
+    {
+        Console.WriteLine("PONG-er: Got info that space is empty");
+        return Task.CompletedTask;
+    }
 }

@@ -60,47 +60,6 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
         return new(fields);
     }
 
-    //public bool IsSatisfiedBy(SpaceTuple tuple)
-    //{
-    //    if (tuple.Length != Length)
-    //    {
-    //        return false;
-    //    }
-
-    //    for (int i = 0; i < tuple.Length; i++)
-    //    {
-    //        if (this[i] is SpaceUnit)
-    //        {
-    //            continue;
-    //        }
-    //        else if (this[i] is Type templateType)
-    //        {
-    //            if (templateType.Equals(tuple[i].GetType()))
-    //            {
-    //                continue;
-    //            }
-    //            else
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            if (this[i].Equals(tuple[i]))
-    //            {
-    //                continue;
-    //            }
-    //            else
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
-
     public bool IsSatisfiedBy(SpaceTuple tuple)
     {
         // No need to pass by "ref SpaceTuple tuple" as the size of SpaceTuple is small, so its faster to copy the struct than having a reference to it.

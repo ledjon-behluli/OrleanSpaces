@@ -5,12 +5,6 @@ using Orleans.TestingHost;
 
 namespace OrleanSpaces.Tests;
 
-[CollectionDefinition(Name)]
-public class ClusterCollection : ICollectionFixture<ClusterFixture>
-{
-    public const string Name = "ClusterCollection";
-}
-
 public class ClusterFixture : IDisposable
 {
     private readonly TestCluster cluster;

@@ -52,9 +52,20 @@ public class Worker : BackgroundService
         Console.WriteLine("----------------------\n");
         Console.WriteLine("Total tuples in space:\n");
 
-        foreach (var tuple in await agent.ScanAsync(SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null))))
+        SpaceTemplate template = SpaceTemplate.Create((SpaceUnit.Null, SpaceUnit.Null));
+
+        foreach (var tuple in await agent.ScanAsync(template))
         {
             Console.WriteLine(tuple);
+        }
+
+        Console.WriteLine("----------------------\n");
+        Console.WriteLine("Removing all tuples from space to see observation...\n");
+
+        int count = await agent.CountAsync();
+        for (int i = 0; i < count; i++)
+        {
+            await agent.PopAsync(template);
         }
 
         agent.Unsubscribe(obsvRef);

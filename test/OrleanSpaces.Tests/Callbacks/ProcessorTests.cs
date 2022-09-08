@@ -18,7 +18,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async void Should_Not_Forward_Templates_If_Tuple_Matches_Nothing_In_Registry()
+    public async Task Should_Not_Forward_Templates_If_Tuple_Matches_Nothing_In_Registry()
     {
         SpaceTuple tuple = SpaceTuple.Create(1);
         await callbackChannel.Writer.WriteAsync(tuple);
@@ -29,7 +29,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async void Should_Forward_Templates_When_Tuple_Matches_Them_In_Registry()
+    public async Task Should_Forward_Templates_When_Tuple_Matches_Them_In_Registry()
     {
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, false));

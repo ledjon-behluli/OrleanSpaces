@@ -4,7 +4,18 @@ using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrleanSpaces.Grains;
+namespace OrleanSpaces;
+
+internal interface ISpaceGrain : IGrainWithGuidKey
+{
+    ValueTask<Guid> ListenAsync();
+
+    Task WriteAsync(SpaceTuple tuple);
+    ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
+    Task<SpaceTuple> PopAsync(SpaceTemplate template);
+    ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
+    ValueTask<int> CountAsync(SpaceTemplate? template);
+}
 
 internal class SpaceGrain : Grain, ISpaceGrain
 {
@@ -66,6 +77,11 @@ internal class SpaceGrain : Grain, ISpaceGrain
                 space.State.Tuples.Remove(tuple);
                 await space.WriteStateAsync();
 
+                if (space.State.Tuples.Count == 0)
+                {
+                    await stream.OnNextAsync(new());  // Empty tuple to indicate space is tuple-free.
+                }
+
                 return tuple;
             }
         }
@@ -96,6 +112,12 @@ internal class SpaceGrain : Grain, ISpaceGrain
             return new(space.State.Tuples.Count);
         }
 
-        return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).IsSatisfiedBy(tuple))); 
+        return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).IsSatisfiedBy(tuple)));
+    }
+
+    [Serializable]
+    internal class SpaceState
+    {
+        public List<SpaceTuple> Tuples { get; set; } = new();
     }
 }
