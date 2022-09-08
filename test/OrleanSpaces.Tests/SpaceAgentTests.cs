@@ -62,31 +62,30 @@ public class SpaceAgentTests : IAsyncLifetime
 
     #region Router
 
-    [Fact]
-    public async Task Should_WriteAsync_When_SpaceTuple_Is_A_Tuple()
-    {
-        SpaceTuple tuple = SpaceTuple.Create("routing");
-        await router.RouteAsync(tuple);
+    static readonly SpaceTuple routingTuple = SpaceTuple.Create("routing");
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+    [Fact]
+    public async Task Should_WriteAsync_When_ISpaceTuple_Is_A_Tuple()
+    {
+        await router.RouteAsync(routingTuple);
+
+        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(routingTuple));
 
         Assert.False(peekedTuple.IsEmpty);
-        Assert.Equal(tuple, peekedTuple);
+        Assert.Equal(routingTuple, peekedTuple);
     }
 
     [Fact]
-    public async Task Should_PopAsync_When_SpaceTuple_Is_A_Template()
+    public async Task Should_PopAsync_When_ISpaceTuple_Is_A_Template()
     {
-        SpaceTuple tuple = SpaceTuple.Create("routing");
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
+        SpaceTemplate template = SpaceTemplate.Create(routingTuple);
 
-        await agent.WriteAsync(tuple);
         await router.RouteAsync(template);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(routingTuple));
 
         Assert.True(peekedTuple.IsEmpty);
-        Assert.NotEqual(tuple, peekedTuple);
+        Assert.NotEqual(routingTuple, peekedTuple);
     }
 
     [Fact]

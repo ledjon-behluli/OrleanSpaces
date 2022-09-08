@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
@@ -24,58 +23,42 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
         this.fields = fields;
     }
 
-    public static SpaceTemplate Create(object value)
+    public static SpaceTemplate Create(object field)
     {
-        if (value is null)
+        if (field is null)
         {
-            throw new ArgumentNullException(nameof(value));
+            throw new ArgumentNullException(nameof(field));
         }
 
-        if (value is ITuple tuple)
-        {
-            var fields = new object[tuple.Length];
-            for (int i = 0; i < tuple.Length; i++)
-            {
-                if (tuple[i] is not ValueType &&
-                    tuple[i] is not string)
-                {
-                    throw new ArgumentException($"Reference types are not valid '{nameof(SpaceTuple)}' fields");
-                }
-
-                fields[i] = tuple[i];
-            }
-
-            return new(fields);
-        }
-
-        return new(value);
+        return new(field);
     }
 
-    //public static SpaceTemplate Create(object field)
-    //{
-    //    if (field is null)
-    //    {
-    //        throw new ArgumentNullException(nameof(field));
-    //    }
+    public static SpaceTemplate Create(ITuple tuple)
+    {
+        if (tuple is null)
+        {
+            throw new ArgumentNullException(nameof(tuple));
+        }
 
-    //    return new(field);
-    //}
+        var fields = new object[tuple.Length];
+        for (int i = 0; i < tuple.Length; i++)
+        {
+            fields[i] = tuple[i];
+        }
 
-    //public static SpaceTemplate Create(ITuple tuple)
-    //{
-    //    if (tuple is null)
-    //    {
-    //        throw new ArgumentNullException(nameof(tuple));
-    //    }
+        return new(fields);
+    }
 
-    //    var fields = new object[tuple.Length];
-    //    for (int i = 0; i < tuple.Length; i++)
-    //    {
-    //        fields[i] = tuple[i];
-    //    }
+    public static SpaceTemplate Create(SpaceTuple spaceTuple)
+    {
+        var fields = new object[spaceTuple.Length];
+        for (int i = 0; i < spaceTuple.Length; i++)
+        {
+            fields[i] = spaceTuple[i];
+        }
 
-    //    return new(fields);
-    //}
+        return new(fields);
+    }
 
     //public bool IsSatisfiedBy(SpaceTuple tuple)
     //{
