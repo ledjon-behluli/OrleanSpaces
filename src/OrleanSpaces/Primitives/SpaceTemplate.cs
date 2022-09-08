@@ -24,31 +24,58 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
         this.fields = fields;
     }
 
-    public static SpaceTemplate Create(object field)
+    public static SpaceTemplate Create(object value)
     {
-        if (field is null)
+        if (value is null)
         {
-            throw new ArgumentNullException(nameof(field));
+            throw new ArgumentNullException(nameof(value));
         }
 
-        return new(field);
+        if (value is ITuple tuple)
+        {
+            var fields = new object[tuple.Length];
+            for (int i = 0; i < tuple.Length; i++)
+            {
+                if (tuple[i] is not ValueType &&
+                    tuple[i] is not string)
+                {
+                    throw new ArgumentException($"Reference types are not valid '{nameof(SpaceTuple)}' fields");
+                }
+
+                fields[i] = tuple[i];
+            }
+
+            return new(fields);
+        }
+
+        return new(value);
     }
 
-    public static SpaceTemplate Create(ITuple tuple)
-    {
-        if (tuple is null)
-        {
-            throw new ArgumentNullException(nameof(tuple));
-        }
+    //public static SpaceTemplate Create(object field)
+    //{
+    //    if (field is null)
+    //    {
+    //        throw new ArgumentNullException(nameof(field));
+    //    }
 
-        var fields = new object[tuple.Length];
-        for (int i = 0; i < tuple.Length; i++)
-        {
-            fields[i] = tuple[i];
-        }
+    //    return new(field);
+    //}
 
-        return new(fields);
-    }
+    //public static SpaceTemplate Create(ITuple tuple)
+    //{
+    //    if (tuple is null)
+    //    {
+    //        throw new ArgumentNullException(nameof(tuple));
+    //    }
+
+    //    var fields = new object[tuple.Length];
+    //    for (int i = 0; i < tuple.Length; i++)
+    //    {
+    //        fields[i] = tuple[i];
+    //    }
+
+    //    return new(fields);
+    //}
 
     //public bool IsSatisfiedBy(SpaceTuple tuple)
     //{
@@ -90,31 +117,37 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
     //    return true;
     //}
 
-    // TODO: Run tests!!1
-    public bool IsSatisfiedBy(SpaceTuple tuple) // No need to pass by 'ref' as the size of SpaceTuple is small, so its faster to copy the struct than having a reference to it. In addition the field's itself are access via 'ref'.
+
+    public bool IsSatisfiedBy(SpaceTuple tuple)
     {
+        // No need to pass by "ref SpaceTuple tuple" as the size of SpaceTuple is small, so its faster to copy the struct than having a reference to it.
+        // In addition the field's themselves can be accessed via "ref readonly".
+
         if (tuple.Length != Length)
         {
             return false;
         }
 
-        int length = tuple.Length;  // Moving loop-invariant code out of the loop, as Length can not be changed.
+        int length = tuple.Length;  // Can safley perform "Loop-Invariant Code Motion" as 'Length' can not be changed.
         int i = 0;
 
         do
         {
-            if (this[i] is not SpaceUnit)
+            ref readonly object templateField = ref this[i];   // Avoiding "Defensive-Copying"
+            ref readonly object tupleField = ref tuple[i];     // Avoiding "Defensive-Copying" 
+
+            if (templateField is not SpaceUnit)
             {
-                if (this[i] is Type templateType)
+                if (templateField is Type templateType)
                 {
-                    if (!templateType.Equals(tuple[i].GetType()))
+                    if (!templateType.Equals(tupleField.GetType()))
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (!this[i].Equals(tuple[i]))
+                    if (!templateField.Equals(tupleField))
                     {
                         return false;
                     }

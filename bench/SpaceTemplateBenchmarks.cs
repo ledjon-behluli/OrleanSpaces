@@ -8,7 +8,7 @@ public class SpaceTemplateBenchmarks
 {
     private const int iterations = 100_000;
 
-    #region Template Equality
+    #region Equality Benchmarks
 
     private const string equalityCategory = "Template Equality";
     private readonly static SpaceTemplate baseTemplate = SpaceTemplate.Create(1);
@@ -60,9 +60,9 @@ public class SpaceTemplateBenchmarks
 
     #endregion
 
-    #region Tuple Satisfaction
+    #region Satisfaction Benchmarks
 
-    private const string satisfactionCategory = "Tuple Satisfaction";
+    private const string satisfactionCategory = "Satisfaction";
     private readonly static SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
     private readonly static SpaceTemplate template1 = SpaceTemplate.Create((1, "a", 1.5f));
     private readonly static SpaceTemplate template2 = SpaceTemplate.Create((1, SpaceUnit.Null, 1.5f));

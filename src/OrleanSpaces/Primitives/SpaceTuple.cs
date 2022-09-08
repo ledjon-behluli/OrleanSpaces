@@ -16,7 +16,6 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     private SpaceTuple(params object[] fields)
     {
-        
         if (fields.Any(x => x is SpaceUnit))
         {
             throw new ArgumentException($"'{nameof(SpaceUnit.Null)}' is not a valid '{nameof(SpaceTuple)}' field");
@@ -52,14 +51,14 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
         return new(value);
     }
 
-    public static SpaceTuple Create(string field)
+    public static SpaceTuple Create(string value)
     {
-        if (string.IsNullOrEmpty(field))
+        if (string.IsNullOrEmpty(value))
         {
-            throw new ArgumentNullException(nameof(field));
+            throw new ArgumentNullException(nameof(value));
         }
 
-        return new(field);
+        return new(value);
     }
 
     public static bool operator ==(SpaceTuple first, SpaceTuple second) => first.Equals(second);
