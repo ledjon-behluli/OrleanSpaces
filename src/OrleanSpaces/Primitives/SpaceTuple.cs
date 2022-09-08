@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
+public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
     private readonly object[] fields;
 
@@ -16,12 +16,13 @@ public struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     private SpaceTuple(params object[] fields)
     {
+        
         if (fields.Any(x => x is SpaceUnit))
         {
             throw new ArgumentException($"'{nameof(SpaceUnit.Null)}' is not a valid '{nameof(SpaceTuple)}' field");
         }
 
-        this.fields = fields ?? new object[0];
+        this.fields = fields ?? Array.Empty<object>();
     }
 
     public static SpaceTuple Create(ValueType value)
@@ -74,10 +75,9 @@ public struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
             return false;
         }
 
-        for (int i = 0, j = Length - 1; i <= j; i++, j--)
+        for (int i = 0; i < Length; i++)
         {
-            if (!this[i].Equals(other[i]) ||
-                !this[j].Equals(other[j]))
+            if (!this[i].Equals(other[i]))
             {
                 return false;
             }

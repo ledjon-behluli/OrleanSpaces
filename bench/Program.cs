@@ -7,32 +7,28 @@ using OrleanSpaces.Primitives;
 //BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 //BenchmarkRunner.Run<TaskPartitionerBenchmarks>();
 
-BenchmarkRunner.Run<SpaceTemplateBenchmarks1>();
+BenchmarkRunner.Run<TestBench>();
 
 Console.ReadKey();
 
-
-
 [MemoryDiagnoser]
-public class SpaceTemplateBenchmarks1
+[ShortRunJob]
+public class TestBench
 {
-    private const int iterations = 10;
-        //1_000_000;
-
-    private readonly static SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f, 1, "a", 1.5f, 1, "a", 1.5f, 1, "a", 1.5f));
-    private readonly static SpaceTemplate template1 = SpaceTemplate.Create((1, "a", 1.5f, 1, "a", 1.5f, 1, "a", 1.5f, 1, "a", 1.5f));
+    private readonly static SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
+    private readonly static SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f));
 
     [Benchmark]
-    public void FullMatch_Uni()
+    public void Normal()
     {
-        for (int i = 0; i < iterations; i++)
-            template1.IsSatisfiedBy(tuple);
+        for (int i = 0; i < 10_000; i++)
+            template.IsSatisfiedBy(tuple);
     }
 
     [Benchmark]
-    public void FullMatch_Bi()
+    public void ByRef()
     {
-        for (int i = 0; i < iterations; i++)
-            template1.IsSatisfiedByTraverseBothSides(tuple);
+        for (int i = 0; i < 10_000; i++)
+            template.IsSatisfiedByRef(tuple);
     }
 }
