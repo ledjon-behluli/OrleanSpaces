@@ -25,7 +25,7 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="evaluation"></param>
     /// <returns></returns>
-    Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
+    ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
     /// <summary>
     /// <para>Used to read a tuple from the tuple space.</para>
@@ -158,7 +158,7 @@ internal class SpaceAgent : ISpaceAgent, ISpaceTupleRouter, IAsyncObserver<Space
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);
 
-    public async Task EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
+    public async ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
         if (evaluation == null)
         {
