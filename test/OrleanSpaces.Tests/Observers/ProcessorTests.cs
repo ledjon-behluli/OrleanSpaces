@@ -57,9 +57,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         }
 
         Assert.All(scope.Observers, observer =>
-        {
-            Assert.True(observer.SpaceEmptiedReceived);
-        });
+            Assert.True(observer.SpaceEmptiedReceived));
     }
 
     [Fact]

@@ -18,7 +18,7 @@ internal class ContinuationProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await foreach (ISpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
-            await router.RouteAsync(tuple);
+        await foreach (ISpaceTuple spaceTuple in channel.Reader.ReadAllAsync(cancellationToken))
+            await router.RouteAsync(spaceTuple);
     }
 }

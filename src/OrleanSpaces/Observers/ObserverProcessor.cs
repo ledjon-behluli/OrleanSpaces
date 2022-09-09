@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Primitives;
-using OrleanSpaces.Utils;
 
 namespace OrleanSpaces.Observers;
 
@@ -21,24 +20,33 @@ internal class ObserverProcessor : BackgroundService
     {
         await foreach (SpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
-            await TaskPartitioner.WhenAll(registry.Observers, async x =>
-            {
-                try
-                {
-                    if (!tuple.IsEmpty)
-                    {
-                        await x.OnTupleAsync(tuple, cancellationToken);
-                    }
-                    else
-                    {
-                        await x.OnEmptySpaceAsync(cancellationToken);
-                    }
-                }
-                catch (Exception)
-                {
+            List<Task> tasks = new();
 
-                }
-            });
+            foreach (var observer in registry.Observers)
+            {
+                tasks.Add(NotifyAsync(observer, tuple, cancellationToken));
+            }
+            
+            await Task.WhenAll(tasks);
+        }
+    }
+
+    private async Task NotifyAsync(ISpaceObserver observer, SpaceTuple tuple, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!tuple.IsEmpty)
+            {
+                await observer.OnTupleAsync(tuple, cancellationToken);
+            }
+            else
+            {
+                await observer.OnEmptySpaceAsync(cancellationToken);
+            }
+        }
+        catch
+        {
+
         }
     }
 }

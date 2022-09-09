@@ -75,21 +75,18 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
 
         do
         {
-            ref readonly object templateField = ref this[i];   // Avoiding "Defensive-Copying"
-            ref readonly object tupleField = ref tuple[i];     // Avoiding "Defensive-Copying" 
-
-            if (templateField is not SpaceUnit)
+            if (this[i] is not SpaceUnit)
             {
-                if (templateField is Type templateType)
+                if (this[i] is Type templateType)
                 {
-                    if (!templateType.Equals(tupleField.GetType()))
+                    if (!templateType.Equals(tuple[i].GetType()))
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (!templateField.Equals(tupleField))
+                    if (!this[i].Equals(tuple[i]))
                     {
                         return false;
                     }

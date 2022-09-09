@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
-using OrleanSpaces.Utils;
 
 namespace OrleanSpaces.Callbacks;
 
@@ -23,24 +22,32 @@ internal class CallbackProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await foreach (var tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (SpaceTuple tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
-            var entries = registry.Take(tuple);
-            await TaskPartitioner.WhenAll(entries, async entry =>
+            List<Task> tasks = new();
+
+            foreach (CallbackEntry entry in registry.Take(tuple))
             {
-                try
-                {
-                    await entry.Callback(tuple);
-                    if (entry.IsDestructive)
-                    {
-                        await continuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple), cancellationToken);
-                    }
-                }
-                catch (Exception)
-                {
-                    
-                }
-            });
+                tasks.Add(CallbackAsync(entry, tuple, cancellationToken));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+    }
+
+    private async Task CallbackAsync(CallbackEntry entry, SpaceTuple tuple, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await entry.Callback(tuple);
+            if (entry.IsDestructive)
+            {
+                await continuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple), cancellationToken);
+            }
+        }
+        catch
+        {
+
         }
     }
 }
