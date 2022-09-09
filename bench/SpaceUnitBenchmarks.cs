@@ -1,8 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 using OrleanSpaces.Primitives;
 
 [MemoryDiagnoser]
-[ShortRunJob]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class SpaceUnitBenchmarks
 {
     private const int iterations = 100_000;
