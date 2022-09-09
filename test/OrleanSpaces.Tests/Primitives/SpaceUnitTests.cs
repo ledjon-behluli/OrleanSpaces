@@ -32,15 +32,6 @@ public class SpaceUnitTests
         Assert.Equal("{NULL}", SpaceUnit.Null.ToString());
     }
 
-    [Fact]
-    public void Should_CompareTo_As_Zero()
-    {
-        var unit1 = new SpaceUnit();
-        var unit2 = new SpaceUnit();
-
-        Assert.Equal(0, unit1.CompareTo(unit2));
-    }
-
     [Theory]
     [MemberData(nameof(InlineData))]
     public void Should_Be_Equal(object value, bool isEqual)
@@ -52,19 +43,6 @@ public class SpaceUnitTests
         else
             Assert.False(unit.Equals(value));
     }
-
-    [Theory]
-    [MemberData(nameof(CompareToData))]
-    public void Should_CompareTo_Value_As_Zero(object value)
-    {
-        var unit = new SpaceUnit();
-        var comparable = (IComparable)unit;
-
-        Assert.Equal(0, comparable.CompareTo(value));
-    }
-
-    public static object[][] CompareToData()
-        => InlineData().Select(objects => new[] { objects[0] }).ToArray();
 
     public static object[][] InlineData() =>
         new[]

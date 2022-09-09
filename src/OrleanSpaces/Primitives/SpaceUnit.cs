@@ -1,13 +1,10 @@
 ﻿namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public readonly struct SpaceUnit : IEquatable<SpaceUnit>, IComparable<SpaceUnit>, IComparable
+public readonly struct SpaceUnit : IEquatable<SpaceUnit>
 {
-    private static readonly SpaceUnit _null = new();
-    public static ref readonly SpaceUnit Null => ref _null;
-
-    public int CompareTo(SpaceUnit other) => 0;
-    int IComparable.CompareTo(object? obj) => 0;
+    private static readonly SpaceUnit @null = new();
+    public static ref readonly SpaceUnit Null => ref @null;
 
     public bool Equals(SpaceUnit other) => true;
     public override bool Equals(object? obj) => obj is SpaceUnit;
