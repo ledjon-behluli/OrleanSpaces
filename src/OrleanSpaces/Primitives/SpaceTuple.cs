@@ -12,6 +12,8 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     public bool IsEmpty => fields == null || fields.Length == 0;
 
+    public ReadOnlySpan<object> AsSpan() => new(fields);
+
     public SpaceTuple() : this(new object[0]) { }
 
     private SpaceTuple(params object[] fields)
