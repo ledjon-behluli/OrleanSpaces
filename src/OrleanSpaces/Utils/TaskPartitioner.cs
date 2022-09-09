@@ -4,7 +4,7 @@ namespace OrleanSpaces.Utils;
 
 internal static class TaskPartitioner
 {
-    internal static Task WhenAll<T>(IEnumerable<T> source, Func<T, Task> func)
+    internal static Task WhenAll<T>(IEnumerable<T> source, Func<T, ValueTask> func)
     {
         return Task.WhenAll(
             Partitioner

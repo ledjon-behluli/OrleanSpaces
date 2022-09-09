@@ -5,7 +5,7 @@ using OrleanSpaces.Utils;
 [ShortRunJob]
 public class TaskPartitionerBenchmarks
 {
-    [Params(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384)]
+    [Params(128, 256, 1024)]//, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384)]
     public int ItemsCount { get; set; }
 
     [Benchmark]
@@ -41,7 +41,7 @@ public class TaskPartitionerBenchmarks
     {
         public async Task PingAsync()
         {
-            await Task.Delay(5000);
+            await Task.Delay(1000);
         }
     }
 }

@@ -17,9 +17,6 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Tests</_Parameter1>
 		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>OrleanSpaces.Benchmarks</_Parameter1>
-		</AssemblyAttribute>
 	</ItemGroup>
 
 </Project>

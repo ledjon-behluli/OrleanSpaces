@@ -13,7 +13,7 @@ public class Ponger : ISpaceObserver
         template = SpaceTemplate.Create(("Ping", SpaceUnit.Null));
     }
 
-    public async Task OnTupleAsync(SpaceTuple tuple)
+    public async Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (template.IsSatisfiedBy(tuple))
         {
@@ -24,7 +24,7 @@ public class Ponger : ISpaceObserver
         }
     }
 
-    public Task OnEmptySpaceAsync()
+    public Task OnEmptySpaceAsync(CancellationToken cancellationToken)
     {
         Console.WriteLine("PONG-er: Got info that space is empty");
         return Task.CompletedTask;

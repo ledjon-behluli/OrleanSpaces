@@ -12,7 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
+	  <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

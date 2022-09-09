@@ -27,11 +27,11 @@ internal class ObserverProcessor : BackgroundService
                 {
                     if (!tuple.IsEmpty)
                     {
-                        await x.OnTupleAsync(tuple);
+                        await x.OnTupleAsync(tuple, cancellationToken);
                     }
                     else
                     {
-                        await x.OnEmptySpaceAsync();
+                        await x.OnEmptySpaceAsync(cancellationToken);
                     }
                 }
                 catch (Exception)
