@@ -6,15 +6,18 @@ namespace OrleanSpaces.Callbacks;
 
 internal class CallbackProcessor : BackgroundService
 {
+    private readonly IHostApplicationLifetime lifetime;
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel callbackChannel;
     private readonly ContinuationChannel continuationChannel;
     
     public CallbackProcessor(
+        IHostApplicationLifetime lifetime,
         CallbackRegistry registry,
         CallbackChannel callbackChannel,
         ContinuationChannel continuationChannel)
     {
+        this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
@@ -47,7 +50,7 @@ internal class CallbackProcessor : BackgroundService
         }
         catch
         {
-
+            lifetime.StopApplication();
         }
     }
 }

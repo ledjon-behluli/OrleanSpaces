@@ -33,7 +33,7 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
     {
         ServiceCollection services = new();
 
-        services.AddLogging();
+        services.AddSingleton<IHostApplicationLifetime, TestHostAppLifetime>();
         services.AddTupleSpace();
 
         var provider = services.BuildServiceProvider();
@@ -47,6 +47,7 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
         EnsureAdded(
             new ClientBuilder()
                 .UseLocalhostClustering()
+                .ConfigureServices(sp => sp.AddSingleton<IHostApplicationLifetime, TestHostAppLifetime>())
                 .AddTupleSpace()
                 .Build()
                 .ServiceProvider);
@@ -58,7 +59,7 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
         Func<IClusterClient> clientFactory = () => this.client;
         ServiceCollection services = new();
 
-        services.AddLogging();
+        services.AddSingleton<IHostApplicationLifetime, TestHostAppLifetime>();
         services.AddTupleSpace(clientFactory);
 
         var provider = services.BuildServiceProvider();

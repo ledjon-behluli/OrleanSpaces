@@ -10,11 +10,18 @@ public class ProcessorTests : IClassFixture<Fixture>
     private readonly CallbackChannel callbackChannel;
     private readonly ContinuationChannel continuationChannel;
 
+    private bool appStopped;
+
     public ProcessorTests(Fixture fixture)
     {
         registry = fixture.Registry;
         callbackChannel = fixture.CallbackChannel;
         continuationChannel = fixture.ContinuationChannel;
+
+        fixture.Lifetime.ApplicationStopped.Register(() =>
+        {
+            appStopped = true;
+        });
     }
 
     [Fact]
@@ -61,7 +68,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Continue_Forwarding_If_Any_Callback_Throws()
+    public async Task Should_Stop_Host_If_Any_Callback_Throws()
     {
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, true));
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => throw new Exception("Test"), true));
@@ -87,5 +94,6 @@ public class ProcessorTests : IClassFixture<Fixture>
         }
 
         Assert.Equal(2, rounds);
+        Assert.True(appStopped);   //TODO: Do this the same for other processors
     }
 }

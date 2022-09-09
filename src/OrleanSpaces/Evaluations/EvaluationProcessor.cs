@@ -6,13 +6,16 @@ namespace OrleanSpaces.Evaluations;
 
 internal class EvaluationProcessor : BackgroundService
 {
+    private readonly IHostApplicationLifetime lifetime;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ContinuationChannel continuationChannel;
 
     public EvaluationProcessor(
+        IHostApplicationLifetime lifetime,
         EvaluationChannel evaluationChannel,
         ContinuationChannel continuationChannel)
     {
+        this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
     }
@@ -28,7 +31,7 @@ internal class EvaluationProcessor : BackgroundService
             }
             catch (Exception)
             {
-
+                lifetime.StopApplication();
             }
         }
     }

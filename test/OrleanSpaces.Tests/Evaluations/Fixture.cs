@@ -14,7 +14,7 @@ public class Fixture : IAsyncLifetime
     {
         EvaluationChannel = new();
         ContinuationChannel = new();
-        processor = new(EvaluationChannel, ContinuationChannel);
+        processor = new(new TestHostAppLifetime(), EvaluationChannel, ContinuationChannel);
     }
 
     public async Task InitializeAsync() => await processor.StartAsync(default);

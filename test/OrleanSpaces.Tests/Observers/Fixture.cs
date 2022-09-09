@@ -13,7 +13,7 @@ public class Fixture : IAsyncLifetime
     {
         Registry = new();
         Channel = new();
-        processor = new(Registry, Channel);
+        processor = new(new TestHostAppLifetime(), Registry, Channel);
     }
 
     public async Task InitializeAsync() => await processor.StartAsync(default);

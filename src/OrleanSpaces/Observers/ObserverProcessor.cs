@@ -5,13 +5,16 @@ namespace OrleanSpaces.Observers;
 
 internal class ObserverProcessor : BackgroundService
 {
+    private readonly IHostApplicationLifetime lifetime;
     private readonly ObserverRegistry registry;
     private readonly ObserverChannel channel;
 
     public ObserverProcessor(
+        IHostApplicationLifetime lifetime,
         ObserverRegistry registry,
         ObserverChannel channel)
     {
+        this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
     }
@@ -46,7 +49,7 @@ internal class ObserverProcessor : BackgroundService
         }
         catch
         {
-
+            lifetime.StopApplication();
         }
     }
 }
