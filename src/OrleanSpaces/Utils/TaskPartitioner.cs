@@ -19,7 +19,7 @@ internal static class TaskPartitioner
             {
                 while (partition.MoveNext())
                 {
-                    //await Task.Yield(); // prevents a sync thread hangup
+                    await Task.Yield(); // prevents a sync thread hangup
                     await func(partition.Current);
                 }
             }

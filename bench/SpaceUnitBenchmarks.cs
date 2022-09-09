@@ -3,21 +3,50 @@ using OrleanSpaces.Primitives;
 
 [MemoryDiagnoser]
 [ShortRunJob]
+[CategoriesColumn]
 public class SpaceUnitBenchmarks
 {
     private const int iterations = 100_000;
-    private static readonly SpaceUnit[] units = new SpaceUnit[iterations];
 
-    [Benchmark]
-    public void ArrayWithOneItem()
+    private const string structCategory = "Ref Struct";
+    private const string classCategory = "Class";
+
+    private static readonly SpaceUnit[] unitStructs = new SpaceUnit[iterations];
+    private static readonly SpaceUnitClass[] unitClasses = new SpaceUnitClass[iterations];
+
+    [BenchmarkCategory(structCategory), Benchmark]
+    public void InsertFirstArrayItem_RefStruct()
     {
-        units[0] = SpaceUnit.Null;
+        unitStructs[0] = SpaceUnit.Null;
     }
 
-    [Benchmark]
-    public void ArrayWithMultipleItems()
+    [BenchmarkCategory(structCategory), Benchmark]
+    public void InsertAllArrayItems_RefStruct()
     {
         for (int i = 0; i < iterations; i++)
-            units[i] = SpaceUnit.Null;
+        {
+            unitStructs[i] = SpaceUnit.Null;
+        }
+    }
+
+    [BenchmarkCategory(classCategory), Benchmark]
+    public void InsertFirstTestArrayItem_Class()
+    {
+        unitClasses[0] = SpaceUnitClass.Null;
+    }
+
+    [BenchmarkCategory(classCategory), Benchmark]
+    public void InsertAllTestArrayItems_Class()
+    {
+        for (int i = 0; i < iterations; i++)
+        {
+            unitClasses[i] = SpaceUnitClass.Null;
+        }
+    }
+
+    private class SpaceUnitClass
+    {
+        private static readonly SpaceUnitClass @null = new();
+        public static ref readonly SpaceUnitClass Null => ref @null;
     }
 }
