@@ -9,10 +9,14 @@ public class ProcessorTests : IClassFixture<Fixture>
     private readonly EvaluationChannel evaluationChannel;
     private readonly ContinuationChannel continuationChannel;
 
+    private bool hostStopped;
+
     public ProcessorTests(Fixture fixture)
     {
         evaluationChannel = fixture.EvaluationChannel;
-        continuationChannel = fixture.ContinuationChannel;
+        continuationChannel = fixture.ContinuationChannel; 
+
+        fixture.Lifetime.ApplicationStopped.Register(() => hostStopped = true);
     }
 
     [Fact]
@@ -38,7 +42,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Continue_Forwarding_If_Any_Evaluation_Throws()
+    public async Task Should_Stop_Host_If_Any_Evaluation_Throws()
     {
         SpaceTuple tuple = SpaceTuple.Create("eval");
 
@@ -63,6 +67,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         }
 
         Assert.Equal(6, rounds);
+        Assert.True(hostStopped);
 
         async Task WriteAsync(SpaceTuple tuple, int times, bool doThrow)
         {

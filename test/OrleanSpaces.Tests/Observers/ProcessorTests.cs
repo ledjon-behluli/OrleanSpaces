@@ -8,11 +8,15 @@ public class ProcessorTests : IClassFixture<Fixture>
     private readonly Fixture fixture;
     private readonly ObserverChannel channel;
 
+    private bool hostStopped;
+
     public ProcessorTests(Fixture fixture)
 	{
         this.fixture = fixture;
         channel = fixture.Channel;
-	}
+
+        fixture.Lifetime.ApplicationStopped.Register(() => hostStopped = true);
+    }
 
     [Fact]
     public async Task Should_Notify_All_Observers_OnTuple()
@@ -61,7 +65,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Continue_To_Notify_Other_Observers_When_Some_Throw()
+    public async Task Should_Stop_Host_If_Observer_Throws()
     {
         using var scope = fixture.StartScope();
 
@@ -90,5 +94,6 @@ public class ProcessorTests : IClassFixture<Fixture>
                 Assert.Equal(tuple, observer.LastReceived);
             }
         });
+        Assert.True(hostStopped);
     }
 }

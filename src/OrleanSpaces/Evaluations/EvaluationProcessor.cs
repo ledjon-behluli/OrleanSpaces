@@ -29,7 +29,7 @@ internal class EvaluationProcessor : BackgroundService
                 SpaceTuple tuple = await evaluation();
                 await continuationChannel.Writer.WriteAsync(tuple, cancellationToken);
             }
-            catch (Exception)
+            catch
             {
                 lifetime.StopApplication();
             }

@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Observers;
+﻿using Microsoft.Extensions.Hosting;
+using OrleanSpaces.Observers;
 
 namespace OrleanSpaces.Tests.Observers;
 
@@ -6,14 +7,16 @@ public class Fixture : IAsyncLifetime
 {
     private readonly ObserverProcessor processor;
 
+    internal IHostApplicationLifetime Lifetime;
     internal ObserverRegistry Registry { get; }
     internal ObserverChannel Channel { get; }
 
     public Fixture()
     {
+        Lifetime = new TestHostAppLifetime();
         Registry = new();
         Channel = new();
-        processor = new(new TestHostAppLifetime(), Registry, Channel);
+        processor = new(Lifetime, Registry, Channel);
     }
 
     public async Task InitializeAsync() => await processor.StartAsync(default);
