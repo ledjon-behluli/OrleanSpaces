@@ -6,8 +6,8 @@ namespace OrleanSpaces.Primitives;
 public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
 {
     private readonly object[] fields;
-
     public ref readonly object this[int index] => ref fields[index];
+    
     public int Length => fields.Length;
 
 
