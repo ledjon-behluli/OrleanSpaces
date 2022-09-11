@@ -26,9 +26,8 @@ static void SpaceTemplateSyntax()
     Console.WriteLine("---------------- BEGIN -------------------");
 
     Console.WriteLine($"Space template with one field (Int32): {SpaceTemplate.Create(1)}");
-    Console.WriteLine($"Space template with two fields (Tuple): {SpaceTemplate.Create(Tuple.Create(1, "a"))}");
     Console.WriteLine($"Space template with two fields (ValueTuple): {SpaceTemplate.Create((1, "a"))}");
-    Console.WriteLine($"Space template with two fields (SpaceTuple): {SpaceTemplate.Create(SpaceTuple.Create((1, "a")))}");
+    Console.WriteLine($"Space template with two fields (SpaceTuple): {(SpaceTemplate)SpaceTuple.Create((1, "a"))}");
     Console.WriteLine($"Space template with three fields (ValueTuple): {SpaceTemplate.Create(ValueTuple.Create(1, "a", 1.5f))}");
     Console.WriteLine($"Space template with NULL placeholder field: {SpaceTemplate.Create((1, "a", SpaceUnit.Null, 1.5f))}");
     Console.WriteLine($"Space template with NULL placeholder and \"NULL\" string: {SpaceTemplate.Create((SpaceUnit.Null, "NULL"))}");

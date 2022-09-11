@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Continuations;
 
 internal class ContinuationProcessor : BackgroundService
 {
     private readonly ContinuationChannel channel;
-    private readonly ISpaceTupleRouter router;
+    private readonly ITupleRouter router;
 
     public ContinuationProcessor(
         ContinuationChannel channel,
-        ISpaceTupleRouter router)
+        ITupleRouter router)
     {
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
@@ -18,7 +18,7 @@ internal class ContinuationProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await foreach (ISpaceTuple spaceTuple in channel.Reader.ReadAllAsync(cancellationToken))
-            await router.RouteAsync(spaceTuple);
+        await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+            await router.RouteAsync(tuple);
     }
 }

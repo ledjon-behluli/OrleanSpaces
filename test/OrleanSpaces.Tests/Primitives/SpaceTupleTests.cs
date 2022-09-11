@@ -1,32 +1,29 @@
 ﻿using OrleanSpaces.Primitives;
-using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
-    private struct TestStruct { }
-    private class TestClass { }
-
-    [Fact]
-    public void Should_Be_Created_On_Struct()
-    {
-        TestStruct test = new();
-        SpaceTuple tuple = SpaceTuple.Create(test);
-
-        Assert.Equal(1, tuple.Length);
-        Assert.Equal(test, tuple[0]);
-    }
-
     [Fact]
     public void Should_Be_Created_On_Tuple()
     {
-        SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
+        SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f, TestEnum.A));
 
-        Assert.Equal(3, tuple.Length);
+        Assert.Equal(4, tuple.Length);
         Assert.Equal(1, tuple[0]);
         Assert.Equal("a", tuple[1]);
         Assert.Equal(1.5f, tuple[2]);
+        Assert.Equal(TestEnum.A, tuple[3]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_ValueType()
+    {
+        SpaceTuple tuple = SpaceTuple.Create(1);
+
+        Assert.Equal(1, tuple.Length);
+        Assert.Equal(1, tuple[0]);
     }
 
     [Fact]
@@ -46,6 +43,13 @@ public class SpaceTupleTests
         Assert.Equal(0, tuple.Length);
         Assert.True(tuple.IsEmpty);
     }
+
+    [Fact]
+    public void Should_Throw_On_Indexer_If_Empty()
+    {
+        Assert.Throws<IndexOutOfRangeException>(() => new SpaceTuple()[0]);
+    }
+
 
     [Fact]
     public void Should_Throw_On_Null()
@@ -80,18 +84,15 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Throw_If_Tuple_Contains_Reference_Type_Field()
+    public void Should_Throw_If_Tuple_Contains_Class_Type_Field()
     {
         Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new TestClass())));
     }
 
     [Fact]
-    public void Should_Throw_When_Accessing_Indexer_Of_Empty_Tuple()
+    public void Should_Throw_If_Tuple_Contains_Struct_Type_Field()
     {
-        SpaceTuple tuple = new();
-
-        Assert.True(tuple.IsEmpty);
-        Assert.Throws<IndexOutOfRangeException>(() => tuple[0]);
+        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new TestStruct())));
     }
 
     [Fact]
@@ -115,11 +116,10 @@ public class SpaceTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
-
     [Fact]
-    public void Should_Be_A_SpaceTuple()
+    public void Should_Be_Assignable_From_Tuple()
     {
-        Assert.True(typeof(ISpaceTuple).IsAssignableFrom(typeof(SpaceTuple)));
+        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTuple)));
     }
 
     [Fact]
@@ -174,31 +174,12 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Faster_For_Different_Lengths()
-    {
-        long firstRun = Run(SpaceTuple.Create((1, "a")), SpaceTuple.Create((1, "b")));
-        long secondRun = Run(SpaceTuple.Create((1, "a")), SpaceTuple.Create(1));
-
-        Assert.True(firstRun > secondRun);
-
-        static long Run(SpaceTuple tuple1, SpaceTuple tuple2)
-        {
-            Stopwatch watch = new();
-
-            watch.Start();
-            _ = tuple1 == tuple2;
-            watch.Stop();
-
-            return watch.ElapsedTicks;
-        }
-    }
-
-    [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("<1>", SpaceTuple.Create(1).ToString());
-        Assert.Equal("<1, a>", SpaceTuple.Create((1, "a")).ToString());
-        Assert.Equal("<1, a, 1.5>", SpaceTuple.Create((1, "a", 1.5f)).ToString());
-        Assert.Equal("<1, a, 1.5, b>", SpaceTuple.Create((1, "a", 1.5f, 'b')).ToString());
+        Assert.Equal("()", new SpaceTuple().ToString());
+        Assert.Equal("(1)", SpaceTuple.Create(1).ToString());
+        Assert.Equal("(1, a)", SpaceTuple.Create((1, "a")).ToString());
+        Assert.Equal("(1, a, 1.5)", SpaceTuple.Create((1, "a", 1.5f)).ToString());
+        Assert.Equal("(1, a, 1.5, b)", SpaceTuple.Create((1, "a", 1.5f, 'b')).ToString());
     }
 }

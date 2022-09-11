@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Continuations;
 
@@ -13,7 +14,7 @@ public class ChannelTests
         SpaceTuple tuple = SpaceTuple.Create(1);
 
         await channel.Writer.WriteAsync(tuple);
-        ISpaceTuple result = await channel.Reader.ReadAsync();
+        ITuple result = await channel.Reader.ReadAsync();
 
         Assert.Equal(tuple, result);
         Assert.Equal(typeof(SpaceTuple), result.GetType());
@@ -26,7 +27,7 @@ public class ChannelTests
         SpaceTemplate template = SpaceTemplate.Create(1);
 
         await channel.Writer.WriteAsync(template);
-        ISpaceTuple result = await channel.Reader.ReadAsync();
+        ITuple result = await channel.Reader.ReadAsync();
 
         Assert.Equal(template, result);
         Assert.Equal(typeof(SpaceTemplate), result.GetType());

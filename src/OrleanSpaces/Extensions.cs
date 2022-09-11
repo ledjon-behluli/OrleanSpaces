@@ -46,7 +46,7 @@ public static class Extensions
         services.AddSingleton<ObserverChannel>();
 
         services.AddSingleton<SpaceAgent>();
-        services.AddSingleton<ISpaceTupleRouter>(sp => sp.GetRequiredService<SpaceAgent>());
+        services.AddSingleton<ITupleRouter>(sp => sp.GetRequiredService<SpaceAgent>());
         services.AddSingleton<ISpaceChannel, SpaceChannel>();
 
         services.AddHostedService<CallbackProcessor>();

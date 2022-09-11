@@ -3,74 +3,78 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
+public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {
-    private readonly object[] fields;
-    public ref readonly object this[int index] => ref fields[index];
-    
-    public int Length => fields.Length;
+    private readonly ITuple tuple;
 
+    public object this[int index] => tuple[index];
+    public int Length => tuple.Length;
 
-    public SpaceTemplate() : this(new object[0]) { }
+    public SpaceTemplate() : this(SpaceUnit.Null) { }
+    private SpaceTemplate(ITuple tuple) => this.tuple = tuple;
 
-    private SpaceTemplate(params object[] fields)
+    public static SpaceTemplate Create(ValueType value)
     {
-        if (fields.Length == 0)
+        if (value is null)
         {
-            throw new ArgumentException($"'{nameof(SpaceTemplate)}' without any fields is not valid.");
+            throw new ArgumentNullException(nameof(value));
         }
 
-        this.fields = fields;
+        if (value is ITuple tuple)
+        {
+            for (int i = 0; i < tuple.Length; i++)
+            {
+                ThrowOnNotSupported(tuple[i], i);
+            }
+
+            return new(tuple);
+        }
+
+        ThrowOnNotSupported(value);
+
+        return new(new ValueTuple<ValueType>(value));
     }
 
-    public static SpaceTemplate Create(object field)
+    private static void ThrowOnNotSupported(object obj, int index = 0)
     {
-        if (field is null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        Type type = obj.GetType();
 
-        return new(field);
+        if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+        {
+            throw new ArgumentException(
+                $"The field at position = {index}, is not a valid '{nameof(SpaceTuple)}' member. " +
+                $"Valid members are: '{nameof(String)}', '{nameof(ValueType)}'");
+        }
     }
 
-    public static SpaceTemplate Create(ITuple tuple)
+    public static SpaceTemplate Create(Type type)
     {
-        if (tuple is null)
+        if (type is null)
         {
-            throw new ArgumentNullException(nameof(tuple));
+            throw new ArgumentNullException(nameof(type));
         }
 
-        var fields = new object[tuple.Length];
-        for (int i = 0; i < tuple.Length; i++)
-        {
-            fields[i] = tuple[i];
-        }
-
-        return new(fields);
+        return new(new ValueTuple<Type>(type));
     }
 
-    public static SpaceTemplate Create(SpaceTuple spaceTuple)
+    public static SpaceTemplate Create(string value)
     {
-        var fields = new object[spaceTuple.Length];
-        for (int i = 0; i < spaceTuple.Length; i++)
+        if (string.IsNullOrEmpty(value))
         {
-            fields[i] = spaceTuple[i];
+            throw new ArgumentNullException(nameof(value));
         }
 
-        return new(fields);
+        return new(new ValueTuple<string>(value));
     }
 
     public bool IsSatisfiedBy(SpaceTuple tuple)
     {
-        // No need to pass by "ref SpaceTuple tuple" as the size of SpaceTuple is small, so its faster to copy the struct than having a reference to it.
-        // In addition the field's themselves can be accessed via "ref readonly".
-
         if (tuple.Length != Length)
         {
             return false;
         }
 
-        int length = tuple.Length;  // Can safley perform "Loop-Invariant Code Motion" as 'Length' can not be changed.
+        int length = tuple.Length;
         int i = 0;
 
         do
@@ -101,8 +105,10 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public static bool operator ==(SpaceTemplate first, SpaceTemplate second) => first.Equals(second);
-    public static bool operator !=(SpaceTemplate first, SpaceTemplate second) => !(first == second);
+    public static implicit operator SpaceTemplate(SpaceTuple tuple) => new(tuple);
+
+    public static bool operator ==(SpaceTemplate left, SpaceTemplate right) => left.Equals(right);
+    public static bool operator !=(SpaceTemplate left, SpaceTemplate right) => !(left == right);
 
     public override bool Equals(object obj) =>
         obj is SpaceTemplate template && Equals(template);
@@ -125,7 +131,8 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(fields, Length);
+    public override int GetHashCode() => HashCode.Combine(tuple, Length);
 
-    public override string ToString() => $"<{string.Join(", ", fields)}>";
+    public override string ToString() => Length == 1 && tuple[0] is SpaceUnit ?
+        $"({SpaceUnit.Null})" : tuple.ToString();
 }

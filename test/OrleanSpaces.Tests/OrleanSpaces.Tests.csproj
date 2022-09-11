@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Orleans_CodeGenInputs Remove="Primitives\TypeCheckerTests.cs" />
+  </ItemGroup>
+
 </Project>

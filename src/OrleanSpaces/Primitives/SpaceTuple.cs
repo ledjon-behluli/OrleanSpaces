@@ -3,26 +3,18 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
+public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
-    private readonly object[] fields;
+    private readonly ITuple? tuple;
 
-    public ref readonly object this[int index] => ref fields[index];
-    public int Length => fields?.Length ?? 0;
+    public object this[int index] => (tuple ?? throw new IndexOutOfRangeException())[index];
 
-    public bool IsEmpty => fields == null || fields.Length == 0;
+    public int Length => tuple?.Length ?? 0;
 
-    public SpaceTuple() : this(new object[0]) { }
+    public bool IsEmpty => Length == 0;
 
-    private SpaceTuple(params object[] fields)
-    {
-        if (fields.Any(x => x is SpaceUnit))
-        {
-            throw new ArgumentException($"'{nameof(SpaceUnit.Null)}' is not a valid '{nameof(SpaceTuple)}' field");
-        }
-
-        this.fields = fields ?? Array.Empty<object>();
-    }
+    public SpaceTuple() : this(null) { }
+    private SpaceTuple(ITuple? tuple) => this.tuple = tuple;
 
     public static SpaceTuple Create(ValueType value)
     {
@@ -33,22 +25,27 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
         if (value is ITuple tuple)
         {
-            var fields = new object[tuple.Length];
             for (int i = 0; i < tuple.Length; i++)
             {
-                if (tuple[i] is not ValueType && 
-                    tuple[i] is not string)
-                {
-                    throw new ArgumentException($"Reference types are not valid '{nameof(SpaceTuple)}' fields");
-                }
-
-                fields[i] = tuple[i];
+                ThrowOnNotSupported(tuple[i], i);
             }
 
-            return new(fields);
+            return new(tuple);
         }
 
-        return new(value);
+        ThrowOnNotSupported(value);
+
+        return new(new ValueTuple<ValueType>(value));
+    }
+
+    private static void ThrowOnNotSupported(object obj, int index = 0)
+    {
+        if (!TypeChecker.IsSimpleType(obj.GetType()))
+        {
+            throw new ArgumentException(
+                $"The field at position = {index}, is not a valid '{nameof(SpaceTuple)}' member. " +
+                $"Valid members are: '{nameof(String)}', '{nameof(ValueType)}'");
+        }
     }
 
     public static SpaceTuple Create(string value)
@@ -58,11 +55,11 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
             throw new ArgumentNullException(nameof(value));
         }
 
-        return new(value);
+        return new(new ValueTuple<string>(value));
     }
 
-    public static bool operator ==(SpaceTuple first, SpaceTuple second) => first.Equals(second);
-    public static bool operator !=(SpaceTuple first, SpaceTuple second) => !(first == second);
+    public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
+    public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
     public override bool Equals(object obj) =>
         obj is SpaceTuple tuple && Equals(tuple);
@@ -85,7 +82,7 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(fields, Length);
+    public override int GetHashCode() => HashCode.Combine(tuple, Length);
 
-    public override string ToString() => $"<{string.Join(", ", fields)}>";
+    public override string ToString() => tuple?.ToString() ?? "()";
 }

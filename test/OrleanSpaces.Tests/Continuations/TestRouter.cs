@@ -1,15 +1,15 @@
 ﻿using OrleanSpaces.Continuations;
-using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Continuations;
 
-internal class TestRouter : ISpaceTupleRouter
+internal class TestRouter : ITupleRouter
 {
-    public ISpaceTuple SpaceTuple { get; private set; }
+    public ITuple Tuple { get; private set; }
     
-    public Task RouteAsync(ISpaceTuple spaceTuple)
+    public Task RouteAsync(ITuple tuple)
     {
-        SpaceTuple = spaceTuple;
+        Tuple = tuple;
         return Task.CompletedTask;
     }
 }

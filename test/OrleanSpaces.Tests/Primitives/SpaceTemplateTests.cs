@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces.Primitives;
-using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Primitives;
 
@@ -17,12 +17,30 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_Object()
+    public void Should_Be_Created_On_ValueType()
+    {
+        SpaceTemplate template = SpaceTemplate.Create(1);
+
+        Assert.Equal(1, template.Length);
+        Assert.Equal(1, template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_String()
     {
         SpaceTemplate template = SpaceTemplate.Create("a");
 
         Assert.Equal(1, template.Length);
         Assert.Equal("a", template[0]);
+    }
+
+    [Fact]
+    public void Should_Implicitly_Convert_From_SpaceTuple()
+    {
+        SpaceTemplate normalTemplate = SpaceTemplate.Create(1);
+        SpaceTemplate implicitTemplate = SpaceTuple.Create(1);
+
+        Assert.Equal(normalTemplate, implicitTemplate);
     }
 
     [Fact]
@@ -46,25 +64,41 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Throw_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((Type)null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((ValueType)null));
     }
 
     [Fact]
-    public void Should_Throw_On_Null_Object()
+    public void Should_Throw_On_Empty_String()
     {
-        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((object)null));
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(""));
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(string.Empty));
     }
 
     [Fact]
-    public void Should_Throw_On_Default_Constructor()
+    public void Should_Throw_If_Tuple_Contains_Class_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTemplate());
+        Assert.Throws<ArgumentException>(() => SpaceTemplate.Create((1, "a", new TestClass())));
     }
 
     [Fact]
-    public void Should_Throw_On_Empty_ValueTuple()
+    public void Should_Throw_If_Tuple_Contains_Struct_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTemplate.Create(new ValueTuple()));
+        Assert.Throws<ArgumentException>(() => SpaceTemplate.Create((1, "a", new TestStruct())));
+    }
+
+    [Fact]
+    public void Should_Not_Throw_On_Default_Constructor()
+    {
+        var expection = Record.Exception(() => new SpaceTemplate());
+        Assert.Null(expection);
+    }
+
+    [Fact]
+    public void Should_Not_Throw_On_Empty_ValueTuple()
+    {
+        var expection = Record.Exception(() => SpaceTemplate.Create(new ValueTuple()));
+        Assert.Null(expection);
     }
 
     [Fact]
@@ -82,9 +116,9 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_A_SpaceTuple()
+    public void Should_Be_Assignable_From_Tuple()
     {
-        Assert.True(typeof(ISpaceTuple).IsAssignableFrom(typeof(SpaceTemplate)));
+        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTemplate)));
     }
 
     [Fact]
@@ -139,34 +173,15 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Faster_For_Different_Lengths()
-    {
-        long firstRun = Run(SpaceTemplate.Create((1, "a")), SpaceTemplate.Create((1, "b")));
-        long secondRun = Run(SpaceTemplate.Create((1, "a")), SpaceTemplate.Create(1));
-
-        Assert.True(firstRun > secondRun);
-
-        static long Run(SpaceTemplate template1, SpaceTemplate template2)
-        {
-            Stopwatch watch = new();
-
-            watch.Start();
-            _ = template1 == template2;
-            watch.Stop();
-
-            return watch.ElapsedTicks;
-        }
-    }
-
-    [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("<1>", SpaceTemplate.Create(1).ToString());
-        Assert.Equal("<1, a>", SpaceTemplate.Create((1, "a")).ToString());
-        Assert.Equal("<1, a, 1.5>", SpaceTemplate.Create((1, "a", 1.5f)).ToString());
-        Assert.Equal("<1, a, 1.5, b>", SpaceTemplate.Create((1, "a", 1.5f, 'b')).ToString());
-        Assert.Equal("<1, a, 1.5, b, {NULL}>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null)).ToString());
-        Assert.Equal("<1, a, 1.5, b, {NULL}, System.Int32>", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int))).ToString());
+        Assert.Equal($"({SpaceUnit.Null})", new SpaceTemplate().ToString());
+        Assert.Equal("(1)", SpaceTemplate.Create(1).ToString());
+        Assert.Equal("(1, a)", SpaceTemplate.Create((1, "a")).ToString());
+        Assert.Equal("(1, a, 1.5)", SpaceTemplate.Create((1, "a", 1.5f)).ToString());
+        Assert.Equal("(1, a, 1.5, b)", SpaceTemplate.Create((1, "a", 1.5f, 'b')).ToString());
+        Assert.Equal("(1, a, 1.5, b, {NULL})", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null)).ToString());
+        Assert.Equal("(1, a, 1.5, b, {NULL}, System.Int32)", SpaceTemplate.Create((1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int))).ToString());
     }
 }
 
@@ -222,7 +237,7 @@ public class SpaceTemplate_TupleStatisfactionTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_OnValues()
     {
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
+        SpaceTemplate template = tuple;
         Assert.True(template.IsSatisfiedBy(tuple));
     }
 

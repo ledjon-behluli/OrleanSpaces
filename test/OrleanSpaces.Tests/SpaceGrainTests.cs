@@ -48,10 +48,10 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         await grain.WriteAsync(tuple1);
         await grain.WriteAsync(tuple2);
 
-        await grain.PopAsync(SpaceTemplate.Create(tuple1));
+        await grain.PopAsync(tuple1);
         Assert.False(observer.SpaceEmptiedReceived);
 
-        await grain.PopAsync(SpaceTemplate.Create(tuple2));
+        await grain.PopAsync(tuple2);
         Assert.True(observer.SpaceEmptiedReceived);
     }
 

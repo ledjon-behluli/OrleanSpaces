@@ -1,6 +1,7 @@
 ﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
@@ -27,9 +28,9 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await callbackChannel.Writer.WriteAsync(tuple);
 
-        continuationChannel.Reader.TryRead(out ISpaceTuple spaceTuple);
+        continuationChannel.Reader.TryRead(out ITuple result);
 
-        Assert.Null(spaceTuple);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -47,11 +48,11 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         int rounds = 0;
 
-        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ITuple result in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(spaceTuple);
-            Assert.True(spaceTuple is SpaceTemplate);
-            Assert.True(((SpaceTemplate)spaceTuple).IsSatisfiedBy(tuple));
+            Assert.NotNull(result);
+            Assert.True(result is SpaceTemplate);
+            Assert.True(((SpaceTemplate)result).IsSatisfiedBy(tuple));
 
             rounds++;
 
@@ -68,19 +69,19 @@ public class ProcessorTests : IClassFixture<Fixture>
     public async Task Should_Stop_Host_If_Callback_Throws()
     {
         registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => Task.CompletedTask, true));
-        registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => throw new Exception("Test"), true));
         registry.Add(SpaceTemplate.Create((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
+        registry.Add(SpaceTemplate.Create((1, "a")), new(tuple => throw new Exception("Test"), true));
 
         SpaceTuple tuple = SpaceTuple.Create((1, "a"));
         await callbackChannel.Writer.WriteAsync(tuple);
 
         int rounds = 0;
 
-        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ITuple result in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(spaceTuple);
-            Assert.True(spaceTuple is SpaceTemplate);
-            Assert.True(((SpaceTemplate)spaceTuple).IsSatisfiedBy(tuple));
+            Assert.NotNull(result);
+            Assert.True(result is SpaceTemplate);
+            Assert.True(((SpaceTemplate)result).IsSatisfiedBy(tuple));
 
             rounds++;
 

@@ -1,6 +1,7 @@
 ﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
@@ -25,20 +26,20 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        ISpaceTuple spaceTuple = await continuationChannel.Reader.ReadAsync(default);
+        ITuple result = await continuationChannel.Reader.ReadAsync(default);
 
-        Assert.NotNull(spaceTuple);
-        Assert.True(spaceTuple is SpaceTuple);
-        Assert.Equal(tuple, (SpaceTuple)spaceTuple);
+        Assert.NotNull(result);
+        Assert.True(result is SpaceTuple);
+        Assert.Equal(tuple, (SpaceTuple)result);
     }
 
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
-        continuationChannel.Reader.TryRead(out ISpaceTuple spaceTuple);
+        continuationChannel.Reader.TryRead(out ITuple result);
 
-        Assert.Null(spaceTuple);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -52,11 +53,11 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         int rounds = 0;
 
-        await foreach (ISpaceTuple spaceTuple in continuationChannel.Reader.ReadAllAsync(default))
+        await foreach (ITuple result in continuationChannel.Reader.ReadAllAsync(default))
         {
-            Assert.NotNull(spaceTuple);
-            Assert.True(spaceTuple is SpaceTuple);
-            Assert.Equal(tuple, (SpaceTuple)spaceTuple);
+            Assert.NotNull(result);
+            Assert.True(result is SpaceTuple);
+            Assert.Equal(tuple, (SpaceTuple)result);
 
             rounds++;
 

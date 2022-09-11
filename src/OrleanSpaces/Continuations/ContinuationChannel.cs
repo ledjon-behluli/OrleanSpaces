@@ -1,12 +1,12 @@
-﻿using OrleanSpaces.Primitives;
+﻿using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Continuations;
 
 internal class ContinuationChannel
 {
-    private readonly Channel<ISpaceTuple> channel = Channel.CreateUnbounded<ISpaceTuple>();
+    private readonly Channel<ITuple> channel = Channel.CreateUnbounded<ITuple>();
 
-    public ChannelReader<ISpaceTuple> Reader => channel.Reader;
-    public ChannelWriter<ISpaceTuple> Writer => channel.Writer;
+    public ChannelReader<ITuple> Reader => channel.Reader;
+    public ChannelWriter<ITuple> Writer => channel.Writer;
 }

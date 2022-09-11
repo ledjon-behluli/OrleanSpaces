@@ -45,7 +45,7 @@ internal class CallbackProcessor : BackgroundService
             await entry.Callback(tuple);
             if (entry.IsDestructive)
             {
-                await continuationChannel.Writer.WriteAsync(SpaceTemplate.Create(tuple), cancellationToken);
+                await continuationChannel.Writer.WriteAsync((SpaceTemplate)tuple, cancellationToken);
             }
         }
         catch

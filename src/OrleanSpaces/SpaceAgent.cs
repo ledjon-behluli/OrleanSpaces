@@ -6,6 +6,7 @@ using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Continuations;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
 
@@ -57,7 +58,7 @@ public interface ISpaceAgent
     ValueTask<int> CountAsync(SpaceTemplate template);
 }
 
-internal class SpaceAgent : ISpaceAgent, ISpaceTupleRouter, IAsyncObserver<SpaceTuple>
+internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<SpaceTuple>
 {
     private readonly IClusterClient client;
 
@@ -120,9 +121,9 @@ internal class SpaceAgent : ISpaceAgent, ISpaceTupleRouter, IAsyncObserver<Space
 
     #endregion
 
-    #region ISpaceTupleRouter
+    #region ITupleRouter
 
-    public async Task RouteAsync(ISpaceTuple tuple)
+    public async Task RouteAsync(ITuple tuple)
     {
         if (tuple == null)
         {
@@ -141,7 +142,7 @@ internal class SpaceAgent : ISpaceAgent, ISpaceTupleRouter, IAsyncObserver<Space
         }
         else
         {
-            throw new NotImplementedException($"No implementation exists for '{type}'");
+            throw new NotSupportedException($"There is no routing logic for '{type}'");
         }
     }
 

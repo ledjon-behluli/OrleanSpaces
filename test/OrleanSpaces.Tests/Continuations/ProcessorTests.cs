@@ -21,12 +21,12 @@ public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while(router.SpaceTuple == null)
+        while(router.Tuple == null)
         {
 
         }
 
-        Assert.Equal(tuple, router.SpaceTuple);
+        Assert.Equal(tuple, router.Tuple);
     }
 }
 
@@ -48,11 +48,11 @@ public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
         SpaceTemplate template = SpaceTemplate.Create(1);
         await channel.Writer.WriteAsync(template);
 
-        while (router.SpaceTuple == null)
+        while (router.Tuple == null)
         {
 
         }
 
-        Assert.Equal(template, router.SpaceTuple);
+        Assert.Equal(template, router.Tuple);
     }
 }

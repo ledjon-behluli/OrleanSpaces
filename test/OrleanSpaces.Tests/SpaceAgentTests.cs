@@ -5,13 +5,14 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
 public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly ISpaceChannel spaceChannel;
-    private readonly ISpaceTupleRouter router;
+    private readonly ITupleRouter router;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
@@ -21,7 +22,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
-        router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceTupleRouter>();
+        router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
@@ -64,39 +65,39 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     static readonly SpaceTuple routingTuple = SpaceTuple.Create("routing");
 
     [Fact]
-    public async Task Should_WriteAsync_When_ISpaceTuple_Is_A_Tuple()
+    public async Task Should_WriteAsync_When_Tuple_Is_A_SpaceTuple()
     {
         await router.RouteAsync(routingTuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(routingTuple));
+        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple);
 
         Assert.False(peekedTuple.IsEmpty);
         Assert.Equal(routingTuple, peekedTuple);
     }
 
     [Fact]
-    public async Task Should_PopAsync_When_ISpaceTuple_Is_A_Template()
+    public async Task Should_PopAsync_When_Tuple_Is_A_SpaceTemplate()
     {
-        SpaceTemplate template = SpaceTemplate.Create(routingTuple);
+        SpaceTemplate template = routingTuple;
 
         await router.RouteAsync(template);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(routingTuple));
+        SpaceTuple peekedTuple = await agent.PeekAsync(template);
 
         Assert.True(peekedTuple.IsEmpty);
         Assert.NotEqual(routingTuple, peekedTuple);
     }
 
     [Fact]
-    public async Task Should_Throw_If_ISpaceTuple_Is_Null()
+    public async Task Should_Throw_If_Tuple_Is_Null()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
     }
 
     [Fact]
-    public async Task Should_Throw_If_ISpaceTuple_Is_Not_Supported()
+    public async Task Should_Throw_If_Tuple_Is_Not_Supported()
     {
-        await Assert.ThrowsAsync<NotImplementedException>(async () => await router.RouteAsync(new TestTuple()));
+        await Assert.ThrowsAsync<NotSupportedException>(async () => await router.RouteAsync(new TestTuple()));
     }
 
     #endregion
@@ -109,7 +110,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         SpaceTuple tuple = SpaceTuple.Create(1);
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
         Assert.False(peekedTuple.IsEmpty);
         Assert.Equal(tuple, peekedTuple);
@@ -151,7 +152,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(tuple));
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -174,7 +175,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         SpaceTuple peekedTuple = new();
 
-        await agent.PeekAsync(SpaceTemplate.Create(tuple), tuple =>
+        await agent.PeekAsync(tuple, tuple =>
         {
             peekedTuple = tuple;
             return Task.CompletedTask;
@@ -208,13 +209,12 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Keep_Tuple_In_Space_On_PeekAsync()
     {
         SpaceTuple tuple = SpaceTuple.Create("peek");
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
 
         await agent.WriteAsync(tuple);
 
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple peekedTuple = await agent.PeekAsync(template);
+            SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
             Assert.False(peekedTuple.IsEmpty);
             Assert.Equal(tuple, peekedTuple);
@@ -236,7 +236,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple popedTuple = await agent.PopAsync(SpaceTemplate.Create(tuple));
+        SpaceTuple popedTuple = await agent.PopAsync(tuple);
 
         Assert.Equal(tuple, popedTuple);
     }
@@ -259,7 +259,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         SpaceTuple popedTuple = new();
 
-        await agent.PopAsync(SpaceTemplate.Create(tuple), tuple =>
+        await agent.PopAsync(tuple, tuple =>
         {
             popedTuple = tuple;
             return Task.CompletedTask;
@@ -293,14 +293,13 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Remove_Tuple_From_Space_On_PopAsync()
     {
         SpaceTuple tuple = SpaceTuple.Create("pop");
-        SpaceTemplate template = SpaceTemplate.Create(tuple);
 
         await agent.WriteAsync(tuple);
 
         bool firstIteration = true;
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple popedTuple = await agent.PopAsync(template);
+            SpaceTuple popedTuple = await agent.PopAsync(tuple);
 
             if (firstIteration)
             {
@@ -393,9 +392,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         yield return SpaceTuple.Create((key, 2, "f", 1.7f, 'g', "f"));
     }
 
-    private class TestTuple : ISpaceTuple
+    private class TestTuple : ITuple
     {
-        public ref readonly object this[int index] => throw new NotImplementedException();
+        public object this[int index] => throw new NotImplementedException();
         public int Length => throw new NotImplementedException();
     }
 }
