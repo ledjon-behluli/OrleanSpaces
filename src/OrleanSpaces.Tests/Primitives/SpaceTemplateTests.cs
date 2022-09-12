@@ -144,6 +144,17 @@ public class SpaceTemplateTests
     }
 
     [Fact]
+    public void Should_Be_Equal_On_Default_Constructor()
+    {
+        SpaceTemplate template1 = new();
+        SpaceTemplate template2 = new();
+
+        Assert.Equal(template1, template2);
+        Assert.True(template1 == template2);
+        Assert.False(template1 != template2);
+    }
+
+    [Fact]
     public void Should_Be_Equal_On_Object()
     {
         SpaceTemplate template = SpaceTemplate.Create((1, "a", 1.5f, SpaceUnit.Null));

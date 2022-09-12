@@ -118,6 +118,17 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Should_Be_Equal_On_Default_Constructor()
+    {
+        SpaceTuple tuple1 = new();
+        SpaceTuple tuple2 = new();
+
+        Assert.Equal(tuple1, tuple2);
+        Assert.True(tuple1 == tuple2);
+        Assert.False(tuple1 != tuple2);
+    }
+
+    [Fact]
     public void Should_Be_Equal_On_Object()
     {
         SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
