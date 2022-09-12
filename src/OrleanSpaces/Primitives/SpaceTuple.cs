@@ -3,18 +3,17 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
+public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
-    private readonly ITuple? tuple;
+    private readonly ITuple tuple;
 
-    public object this[int index] => (tuple ?? throw new IndexOutOfRangeException())[index];
+    public object this[int index] => tuple[index];
+    public int Length => tuple.Length;
 
-    public int Length => tuple?.Length ?? 0;
+    public bool IsEmpty => tuple[0] is SpaceUnit;
 
-    public bool IsEmpty => Length == 0;
-
-    public SpaceTuple() : this(null) { }
-    private SpaceTuple(ITuple? tuple) => this.tuple = tuple;
+    public SpaceTuple() : this(SpaceUnit.Null) { }
+    private SpaceTuple(ITuple tuple) => this.tuple = tuple;
 
     public static SpaceTuple Create(ValueType value)
     {
@@ -84,5 +83,5 @@ public struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public override int GetHashCode() => HashCode.Combine(tuple, Length);
 
-    public override string ToString() => tuple?.ToString() ?? "()";
+    public override string ToString() => IsEmpty ? "()" : tuple.ToString();
 }

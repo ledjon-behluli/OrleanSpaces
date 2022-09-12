@@ -36,22 +36,6 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Tuple_With_Zero_Length_Should_Be_Created_On_Default_Constructor()
-    {
-        SpaceTuple tuple = new();
-
-        Assert.Equal(0, tuple.Length);
-        Assert.True(tuple.IsEmpty);
-    }
-
-    [Fact]
-    public void Should_Throw_On_Indexer_If_Empty()
-    {
-        Assert.Throws<IndexOutOfRangeException>(() => new SpaceTuple()[0]);
-    }
-
-
-    [Fact]
     public void Should_Throw_On_Null()
     {
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((ValueType)null));
@@ -103,17 +87,17 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void IsEmpty_Should_Be_True_On_Default_Constructor()
+    public void Should_Be_Considered_As_Empty_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
         Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
-    public void Length_Should_Be_Zero_On_Default_Constructor()
+    public void Should_Have_Length_Of_One_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
-        Assert.Equal(0, tuple.Length);
+        Assert.Equal(1, tuple.Length);
     }
 
     [Fact]

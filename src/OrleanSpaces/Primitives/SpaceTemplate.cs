@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Primitives;
 
 [Serializable]
-public struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
+public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {
     private readonly ITuple tuple;
 

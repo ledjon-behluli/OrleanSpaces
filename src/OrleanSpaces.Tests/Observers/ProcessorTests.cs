@@ -86,7 +86,7 @@ public class ProcessorTests : IClassFixture<Fixture>
             if (observer is ThrowingTestObserver)
             {
                 Assert.True(observer.LastReceived.IsEmpty);
-                Assert.Equal(default, observer.LastReceived);
+                Assert.Equal(new(), observer.LastReceived);
             }
             else
             {
@@ -94,6 +94,7 @@ public class ProcessorTests : IClassFixture<Fixture>
                 Assert.Equal(tuple, observer.LastReceived);
             }
         });
+
         Assert.True(hostStopped);
     }
 }

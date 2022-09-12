@@ -37,10 +37,21 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Implicitly_Convert_From_SpaceTuple()
     {
-        SpaceTemplate normalTemplate = SpaceTemplate.Create(1);
-        SpaceTemplate implicitTemplate = SpaceTuple.Create(1);
+        SpaceTemplate template1 = new SpaceTemplate();
+        SpaceTemplate implicitTemplate1 = new SpaceTuple();
 
-        Assert.Equal(normalTemplate, implicitTemplate);
+        SpaceTemplate template2 = SpaceTemplate.Create(1);
+        SpaceTemplate implicitTemplate2 = SpaceTuple.Create(1);
+
+        Assert.Equal(template1, implicitTemplate1);
+        Assert.Equal(template2, implicitTemplate2);
+    }
+
+    [Fact]
+    public void Should_Have_Length_Of_One_On_Default_Constructor()
+    {
+        SpaceTemplate tuple = new();
+        Assert.Equal(1, tuple.Length);
     }
 
     [Fact]

@@ -5,7 +5,7 @@ namespace OrleanSpaces.Tests;
 
 public class TestObserver : ISpaceObserver
 {
-    public SpaceTuple LastReceived { get; private set; }
+    public SpaceTuple LastReceived { get; private set; } = new();
     public bool SpaceEmptiedReceived { get; private set; }
 
     public virtual Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
