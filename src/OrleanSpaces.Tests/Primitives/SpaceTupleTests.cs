@@ -38,15 +38,9 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_On_Null()
     {
+        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((string)null));
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((ValueType)null));
         Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((string)null));
-    }
-
-    [Fact]
-    public void Should_Throw_On_Empty_String()
-    {
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(""));
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create(string.Empty));
     }
 
     [Fact]
@@ -83,6 +77,17 @@ public class SpaceTupleTests
     public void Should_Not_Throw_On_Default_Constructor()
     {
         var expection = Record.Exception(() => new SpaceTuple());
+        Assert.Null(expection);
+    }
+
+    [Fact]
+    public void Should_Not_Throw_On_Empty_String()
+    {
+        var expection = Record.Exception(() =>
+        {
+            SpaceTuple.Create("");
+            SpaceTuple.Create(string.Empty);
+        });
         Assert.Null(expection);
     }
 

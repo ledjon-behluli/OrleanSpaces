@@ -1,21 +1,18 @@
 ﻿using System.Collections.Concurrent;
-
 namespace OrleanSpaces.Primitives;
 
 internal static class TypeChecker
 {
-    private static readonly ConcurrentDictionary<Type, bool> cache = new();
-
     public static bool IsSimpleType(Type type)
     {
-        return cache.GetOrAdd(type, x =>
-            x.IsPrimitive ||
-            x.IsEnum ||
-            x == typeof(string) ||
-            x == typeof(decimal) ||
-            x == typeof(DateTime) ||
-            x == typeof(DateTimeOffset) ||
-            x == typeof(TimeSpan) ||
-            x == typeof(Guid));
+        return 
+            type.IsPrimitive ||
+            type.IsEnum ||
+            type == typeof(string) ||
+            type == typeof(decimal) ||
+            type == typeof(DateTime) ||
+            type == typeof(DateTimeOffset) ||
+            type == typeof(TimeSpan) ||
+            type == typeof(Guid);
     }
 }

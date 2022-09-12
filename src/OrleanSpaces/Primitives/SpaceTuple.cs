@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
@@ -12,9 +13,10 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public bool IsEmpty => tuple[0] is SpaceUnit;
 
-    public SpaceTuple() : this(SpaceUnit.Null) { }
     private SpaceTuple(ITuple tuple) => this.tuple = tuple;
 
+    public SpaceTuple() : this(SpaceUnit.Null) { }
+    
     public static SpaceTuple Create(ValueType value)
     {
         if (value is null)
@@ -33,23 +35,21 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
         }
 
         ThrowOnNotSupported(value);
-
+        
         return new(new ValueTuple<ValueType>(value));
-    }
 
-    private static void ThrowOnNotSupported(object obj, int index = 0)
-    {
-        if (!TypeChecker.IsSimpleType(obj.GetType()))
+        static void ThrowOnNotSupported(object obj, int index = 0)
         {
-            throw new ArgumentException(
-                $"The field at position = {index}, is not a valid '{nameof(SpaceTuple)}' member. " +
-                $"Valid members are: '{nameof(String)}', '{nameof(ValueType)}'");
+            if (!TypeChecker.IsSimpleType(obj.GetType()))
+            {
+                throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives and enums.");
+            }
         }
     }
 
-    public static SpaceTuple Create(string value)
+    public static SpaceTuple Create([NotNull] string value)
     {
-        if (string.IsNullOrEmpty(value))
+        if (value is null)
         {
             throw new ArgumentNullException(nameof(value));
         }
@@ -81,7 +81,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(tuple, Length);
+    public override int GetHashCode() => tuple.GetHashCode();
 
     public override string ToString() => IsEmpty ? "()" : tuple.ToString();
 }

@@ -10,8 +10,8 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
 
-    public SpaceTemplate() : this(SpaceUnit.Null) { }
     private SpaceTemplate(ITuple tuple) => this.tuple = tuple;
+    public SpaceTemplate() : this(SpaceUnit.Null) { }
 
     public static SpaceTemplate Create(ValueType value)
     {
@@ -33,17 +33,15 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         ThrowOnNotSupported(value);
 
         return new(new ValueTuple<ValueType>(value));
-    }
 
-    private static void ThrowOnNotSupported(object obj, int index = 0)
-    {
-        Type type = obj.GetType();
-
-        if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+        static void ThrowOnNotSupported(object obj, int index = 0)
         {
-            throw new ArgumentException(
-                $"The field at position = {index}, is not a valid '{nameof(SpaceTuple)}' member. " +
-                $"Valid members are: '{nameof(String)}', '{nameof(ValueType)}'");
+            Type type = obj.GetType();
+
+            if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+            {
+                throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives, enums and '{nameof(SpaceUnit)}'.");
+            }
         }
     }
 
@@ -59,7 +57,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 
     public static SpaceTemplate Create(string value)
     {
-        if (string.IsNullOrEmpty(value))
+        if (value is null)
         {
             throw new ArgumentNullException(nameof(value));
         }
@@ -131,8 +129,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public override int GetHashCode() => HashCode.Combine(tuple, Length);
+    public override int GetHashCode() => tuple.GetHashCode();
 
-    public override string ToString() => Length == 1 && tuple[0] is SpaceUnit ?
-        $"({SpaceUnit.Null})" : tuple.ToString();
+    public override string ToString() => Length == 1 ? $"({tuple[0]})" : tuple.ToString();
 }

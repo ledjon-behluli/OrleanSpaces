@@ -75,15 +75,9 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Throw_On_Null()
     {
+        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((string)null));
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((Type)null));
         Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create((ValueType)null));
-    }
-
-    [Fact]
-    public void Should_Throw_On_Empty_String()
-    {
-        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(""));
-        Assert.Throws<ArgumentNullException>(() => SpaceTemplate.Create(string.Empty));
     }
 
     [Fact]
@@ -123,6 +117,17 @@ public class SpaceTemplateTests
     public void Should_Not_Throw_If_Template_Contains_Types()
     {
         var expection = Record.Exception(() => SpaceTemplate.Create((1, typeof(int), SpaceUnit.Null)));
+        Assert.Null(expection);
+    }
+
+    [Fact]
+    public void Should_Not_Throw_On_Empty_String()
+    {
+        var expection = Record.Exception(() =>
+        {
+            SpaceTemplate.Create("");
+            SpaceTemplate.Create(string.Empty);
+        });
         Assert.Null(expection);
     }
 
@@ -207,11 +212,11 @@ public class SpaceTemplateTests
     }
 }
 
-public class SpaceTemplate_TupleStatisfactionTests
+public class StatisfactionTests
 {
     private readonly SpaceTuple tuple;
 
-    public SpaceTemplate_TupleStatisfactionTests()
+    public StatisfactionTests()
     {
         tuple = SpaceTuple.Create((1, "a", 1.5f));
     }
