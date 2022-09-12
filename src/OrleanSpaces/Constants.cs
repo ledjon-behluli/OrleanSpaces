@@ -13,5 +13,5 @@ public static class StreamNames
 
 internal static class StreamNamespaces
 {
-    public const string TupleWrite = "TupleWrite";
+    public const string Tuple = "Tuple";
 }

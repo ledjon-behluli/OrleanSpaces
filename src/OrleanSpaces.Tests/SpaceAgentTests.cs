@@ -5,11 +5,10 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
-public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
+public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly ISpaceChannel spaceChannel;
     private readonly ITupleRouter router;
@@ -92,12 +91,6 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Throw_If_Tuple_Is_Null()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
-    }
-
-    [Fact]
-    public async Task Should_Throw_If_Tuple_Is_Not_Supported()
-    {
-        await Assert.ThrowsAsync<NotSupportedException>(async () => await router.RouteAsync(new TestTuple()));
     }
 
     #endregion
@@ -390,11 +383,5 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         yield return new((key, 1, "f", 1.7f, 'g', "f"));
         yield return new((key, 2, "f", 1.7f, 'g'));
         yield return new((key, 2, "f", 1.7f, 'g', "f"));
-    }
-
-    private class TestTuple : ITuple
-    {
-        public object this[int index] => throw new NotImplementedException();
-        public int Length => throw new NotImplementedException();
     }
 }

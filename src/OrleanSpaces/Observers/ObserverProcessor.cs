@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Observers;
 
@@ -21,7 +22,7 @@ internal class ObserverProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await foreach (SpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
 
@@ -34,17 +35,20 @@ internal class ObserverProcessor : BackgroundService
         }
     }
 
-    private async Task NotifyAsync(ISpaceObserver observer, SpaceTuple tuple, CancellationToken cancellationToken)
+    private async Task NotifyAsync(ISpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
     {
         try
         {
-            if (!tuple.IsEmpty)
+            if (tuple is SpaceTuple spaceTuple)
             {
-                await observer.OnTupleAsync(tuple, cancellationToken);
+                await observer.OnTupleAsync(spaceTuple, cancellationToken);
+                return;
             }
-            else
-            {
+           
+            if (tuple is SpaceUnit)
+            { 
                 await observer.OnEmptySpaceAsync(cancellationToken);
+                return;
             }
         }
         catch

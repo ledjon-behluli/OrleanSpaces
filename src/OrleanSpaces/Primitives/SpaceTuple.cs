@@ -10,7 +10,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
 
-    public bool IsEmpty => tuple[0] is SpaceUnit;
+    public bool IsEmpty => tuple[0] is SpaceUnit; //TODO: See if you can remove this!!!
 
     public SpaceTuple()
     {

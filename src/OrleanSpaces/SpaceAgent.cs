@@ -58,7 +58,7 @@ public interface ISpaceAgent
     ValueTask<int> CountAsync(SpaceTemplate template);
 }
 
-internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<SpaceTuple>
+internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITuple>
 {
     private readonly IClusterClient client;
 
@@ -100,19 +100,19 @@ internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<SpaceTuple
 
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
+        var stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
 
         await stream.SubscribeAsync(this);
     }
 
     #region IAsyncObserver
 
-    public async Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
+    public async Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
     {   
         await observerChannel.Writer.WriteAsync(tuple);
-        if (!tuple.IsEmpty)
+        if (tuple is SpaceTuple spaceTuple)
         {
-            await callbackChannel.Writer.WriteAsync(tuple);
+            await callbackChannel.Writer.WriteAsync(spaceTuple);
         }
     }
 
@@ -130,19 +130,16 @@ internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<SpaceTuple
             throw new ArgumentNullException(nameof(tuple));
         }
 
-        Type type = tuple.GetType();
-
-        if (type == typeof(SpaceTuple))
+        if (tuple is SpaceTuple spaceTuple)
         {
-            await WriteAsync((SpaceTuple)tuple);
+            await WriteAsync(spaceTuple);
+            return;
         }
-        else if (type == typeof(SpaceTemplate))
+        
+        if (tuple is SpaceTemplate spaceTemplate)
         {
-            _ = await PopAsync((SpaceTemplate)tuple);
-        }
-        else
-        {
-            throw new NotSupportedException($"There is no routing logic for '{type}'");
+            _ = await PopAsync(spaceTemplate);
+            return;
         }
     }
 

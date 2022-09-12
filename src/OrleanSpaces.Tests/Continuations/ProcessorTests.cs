@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tests.Continuations;
 public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
 {
     private readonly ContinuationChannel channel;
-    private readonly TestRouter router;
+    private readonly TestTupleRouter router;
 
     public TupleRouting_ProcessorTests(Fixture fixture)
     {
@@ -34,7 +34,7 @@ public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
 public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
 {
     private readonly ContinuationChannel channel;
-    private readonly TestRouter router;
+    private readonly TestTupleRouter router;
 
     public TemplateRouting_ProcessorTests(Fixture fixture)
     {

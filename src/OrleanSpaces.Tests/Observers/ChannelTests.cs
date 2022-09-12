@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Observers;
 
@@ -13,7 +14,7 @@ public class ChannelTests
         SpaceTuple tuple = new(1);
 
         await channel.Writer.WriteAsync(tuple);
-        SpaceTuple result = await channel.Reader.ReadAsync();
+        ITuple result = await channel.Reader.ReadAsync();
 
         Assert.Equal(tuple, result);
     }

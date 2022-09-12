@@ -16,6 +16,7 @@
       <Value>samples\SpaceHost\SpaceHost.csproj</Value>
       <Value>samples\01_TupleSyntax\TupleSyntax.csproj</Value>
       <Value>bench\OrleanSpaces.Benchmarks.csproj</Value>
+      <Value>src\OrleanSpaces.Benchmarks\OrleanSpaces.Benchmarks.csproj</Value>
     </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>

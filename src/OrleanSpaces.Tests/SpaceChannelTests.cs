@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using OrleanSpaces.Primitives;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -53,7 +54,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         var grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.TupleWrite);
+        var stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
 
         var subscriptions = await stream.GetAllSubscriptionHandles();
         Assert.Equal(1, subscriptions.Count);

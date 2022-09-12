@@ -6,13 +6,13 @@ public class Fixture : IAsyncLifetime
 {
     private readonly ContinuationProcessor processor;
 
-    internal TestRouter Router { get; }
+    internal TestTupleRouter Router { get; }
     internal ContinuationChannel Channel { get; }
 
     public Fixture()
     {
         Channel = new();
-        Router = new TestRouter();
+        Router = new TestTupleRouter();
 
         processor = new(Channel, Router);
     }
