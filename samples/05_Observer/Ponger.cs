@@ -10,7 +10,7 @@ public class Ponger : ISpaceObserver
     public Ponger(ISpaceChannel channel)
     {
         this.channel = channel;
-        template = SpaceTemplate.Create(("Ping", SpaceUnit.Null));
+        template = new(("Ping", SpaceUnit.Null));
     }
 
     public async Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
@@ -20,7 +20,7 @@ public class Ponger : ISpaceObserver
             Console.WriteLine("PONG-er: Got it");
 
             var agent = await channel.GetAsync();
-            await agent.WriteAsync(SpaceTuple.Create(("Pong", DateTime.Now)));
+            await agent.WriteAsync(new(("Pong", DateTime.Now)));
         }
     }
 

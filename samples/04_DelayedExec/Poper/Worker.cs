@@ -22,7 +22,7 @@ public class Worker : BackgroundService
         const string EXCHANGE_KEY = "sensor-data";
         bool callbackExecuted = false;
 
-        SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, typeof(double)));
+        SpaceTemplate template = new((EXCHANGE_KEY, typeof(double)));
         Console.WriteLine($"WORKER: Pop-ing a tuple that matches template {template} in a 'blocking' fashion...");
 
         await agent.PopAsync(template, async tuple =>
@@ -38,7 +38,7 @@ public class Worker : BackgroundService
         Console.WriteLine($"WORKER: Simulating some delay until a tuple that matches template {template} is written...");
         await Task.Delay(5000);
 
-        SpaceTuple tuple = SpaceTuple.Create((EXCHANGE_KEY, 1.2334));
+        SpaceTuple tuple = new((EXCHANGE_KEY, 1.2334));
         Console.WriteLine($"WORKER: Writing sensor data in form of the tuple {tuple}");
         await agent.WriteAsync(tuple);
 

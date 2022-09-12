@@ -42,8 +42,8 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Notify_Observer_On_Space_Emptying()
     {
-        SpaceTuple tuple1 = SpaceTuple.Create(1);
-        SpaceTuple tuple2 = SpaceTuple.Create((1, "a"));
+        SpaceTuple tuple1 = new(1);
+        SpaceTuple tuple2 = new((1, "a"));
 
         await grain.WriteAsync(tuple1);
         await grain.WriteAsync(tuple2);

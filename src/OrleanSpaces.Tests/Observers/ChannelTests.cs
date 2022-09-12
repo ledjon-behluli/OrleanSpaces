@@ -10,7 +10,7 @@ public class ChannelTests
     [Fact]
     public async Task Should_Read_What_Was_Writen()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
 
         await channel.Writer.WriteAsync(tuple);
         SpaceTuple result = await channel.Reader.ReadAsync();

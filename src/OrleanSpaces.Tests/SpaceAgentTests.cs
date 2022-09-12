@@ -62,7 +62,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     #region Router
 
-    static readonly SpaceTuple routingTuple = SpaceTuple.Create("routing");
+    static readonly SpaceTuple routingTuple = new("routing");
 
     [Fact]
     public async Task Should_WriteAsync_When_Tuple_Is_A_SpaceTuple()
@@ -107,7 +107,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_WriteAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
         SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
@@ -129,7 +129,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_EvaluateAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
         await agent.EvaluateAsync(() => Task.FromResult(tuple));
 
         Func<Task<SpaceTuple>> evaluation = await evaluationChannel.Reader.ReadAsync();
@@ -162,7 +162,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(SpaceTemplate.Create(0));
+        SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
 
         Assert.True(peekedTuple.IsEmpty);
     }
@@ -190,7 +190,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Store_Callback_In_Registry_If_Tuple_Is_Not_Available_On_PeekAsync()
     {
         SpaceTuple peekedTuple = new();
-        SpaceTemplate template = SpaceTemplate.Create("peek-not-available");
+        SpaceTemplate template = new("peek-not-available");
         Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
 
         await agent.PeekAsync(template, callback);
@@ -208,7 +208,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Keep_Tuple_In_Space_On_PeekAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create("peek");
+        SpaceTuple tuple = new("peek");
 
         await agent.WriteAsync(tuple);
 
@@ -224,7 +224,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Throw_On_PeekAsync_If_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(SpaceTemplate.Create(0), null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null));
     }
 
     #endregion
@@ -246,7 +246,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Return_Empty_Tuple_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple popedTuple = await agent.PopAsync(SpaceTemplate.Create(0));
+        SpaceTuple popedTuple = await agent.PopAsync(new(0));
 
         Assert.True(popedTuple.IsEmpty);
     }
@@ -274,7 +274,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Store_Callback_In_Registry_If_Tuple_Is_Not_Available_On_PopAsync()
     {
         SpaceTuple peekedTuple = new();
-        SpaceTemplate template = SpaceTemplate.Create("pop-not-available");
+        SpaceTemplate template = new("pop-not-available");
         Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
 
         await agent.PopAsync(template, callback);
@@ -292,7 +292,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Remove_Tuple_From_Space_On_PopAsync()
     {
-        SpaceTuple tuple = SpaceTuple.Create("pop");
+        SpaceTuple tuple = new("pop");
 
         await agent.WriteAsync(tuple);
 
@@ -319,7 +319,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Throw_On_PopAsync_If_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(SpaceTemplate.Create(0), null));
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null));
     }
 
     #endregion
@@ -337,7 +337,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         }
 
         IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.Equal(3, tuples.Count());
     }
@@ -357,7 +357,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         }
 
         int matchingCount = await agent.CountAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.Equal(3, matchingCount);
     }
@@ -374,7 +374,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         int totalCount = await agent.CountAsync();
         int matchingCount = await agent.CountAsync(
-            SpaceTemplate.Create((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
 
         Assert.True(totalCount > matchingCount);
     }
@@ -383,13 +383,13 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     private static IEnumerable<SpaceTuple> TupleData(string key)
     {
-        yield return SpaceTuple.Create((key, 1, "a", 1.0f, 1.0m));
-        yield return SpaceTuple.Create((key, 1, "b", 1.2f, "d"));
-        yield return SpaceTuple.Create((key, 1, "c", 1.5f, 'e'));
-        yield return SpaceTuple.Create((key, 1, 1.5f, "c", 'e'));
-        yield return SpaceTuple.Create((key, 1, "f", 1.7f, 'g', "f"));
-        yield return SpaceTuple.Create((key, 2, "f", 1.7f, 'g'));
-        yield return SpaceTuple.Create((key, 2, "f", 1.7f, 'g', "f"));
+        yield return new((key, 1, "a", 1.0f, 1.0m));
+        yield return new((key, 1, "b", 1.2f, "d"));
+        yield return new((key, 1, "c", 1.5f, 'e'));
+        yield return new((key, 1, 1.5f, "c", 'e'));
+        yield return new((key, 1, "f", 1.7f, 'g', "f"));
+        yield return new((key, 2, "f", 1.7f, 'g'));
+        yield return new((key, 2, "f", 1.7f, 'g', "f"));
     }
 
     private class TestTuple : ITuple

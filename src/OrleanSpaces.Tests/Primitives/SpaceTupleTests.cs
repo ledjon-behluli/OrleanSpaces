@@ -8,7 +8,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Created_On_Tuple()
     {
-        SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f, TestEnum.A));
+        SpaceTuple tuple = new((1, "a", 1.5f, TestEnum.A));
 
         Assert.Equal(4, tuple.Length);
         Assert.Equal(1, tuple[0]);
@@ -20,7 +20,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Created_On_ValueType()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
 
         Assert.Equal(1, tuple.Length);
         Assert.Equal(1, tuple[0]);
@@ -29,7 +29,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Created_On_String()
     {
-        SpaceTuple tuple = SpaceTuple.Create("a");
+        SpaceTuple tuple = new("a");
 
         Assert.Equal(1, tuple.Length);
         Assert.Equal("a", tuple[0]);
@@ -38,39 +38,39 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((string)null));
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((ValueType)null));
-        Assert.Throws<ArgumentNullException>(() => SpaceTuple.Create((string)null));
+        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((string)null));
+        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((ValueType)null));
+        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((string)null));
     }
 
     [Fact]
     public void Should_Throw_On_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create(SpaceUnit.Null));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(SpaceUnit.Null));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", SpaceUnit.Null)));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", SpaceUnit.Null)));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Types()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, typeof(int), "a")));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, typeof(int), "a")));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Class_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new TestClass())));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", new TestClass())));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Struct_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => SpaceTuple.Create((1, "a", new TestStruct())));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", new TestStruct())));
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class SpaceTupleTests
     {
         var expection = Record.Exception(() =>
         {
-            SpaceTuple.Create("");
-            SpaceTuple.Create(string.Empty);
+            new SpaceTuple("");
+            new SpaceTuple(string.Empty);
         });
         Assert.Null(expection);
     }
@@ -114,8 +114,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Equal()
     {
-        SpaceTuple tuple1 = SpaceTuple.Create((1, "a", 1.5f));
-        SpaceTuple tuple2 = SpaceTuple.Create((1, "a", 1.5f));
+        SpaceTuple tuple1 = new((1, "a", 1.5f));
+        SpaceTuple tuple2 = new((1, "a", 1.5f));
 
         Assert.Equal(tuple1, tuple2);
         Assert.True(tuple1 == tuple2);
@@ -136,8 +136,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Equal_On_Object()
     {
-        SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
-        object obj = SpaceTuple.Create((1, "a", 1.5f));
+        SpaceTuple tuple = new((1, "a", 1.5f));
+        object obj = new SpaceTuple((1, "a", 1.5f));
 
         Assert.True(tuple.Equals(obj));
     }
@@ -145,8 +145,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_On_Object()
     {
-        SpaceTuple tuple = SpaceTuple.Create((1, "a", 1.5f));
-        object obj = SpaceTuple.Create((1, "a"));
+        SpaceTuple tuple = new((1, "a", 1.5f));
+        object obj = new SpaceTuple((1, "a"));
 
         Assert.False(tuple.Equals(obj));
     }
@@ -154,8 +154,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_For_Same_Lengths()
     {
-        SpaceTuple tuple1 = SpaceTuple.Create((1, "a", 1.5f));
-        SpaceTuple tuple2 = SpaceTuple.Create((1, "b", 1.5f));
+        SpaceTuple tuple1 = new((1, "a", 1.5f));
+        SpaceTuple tuple2 = new((1, "b", 1.5f));
 
         Assert.NotEqual(tuple1, tuple2);
         Assert.False(tuple1 == tuple2);
@@ -165,8 +165,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_For_Different_Lengths()
     {
-        SpaceTuple tuple1 = SpaceTuple.Create((1, "a", 1.5f));
-        SpaceTuple tuple2 = SpaceTuple.Create((1, "a"));
+        SpaceTuple tuple1 = new((1, "a", 1.5f));
+        SpaceTuple tuple2 = new((1, "a"));
 
         Assert.NotEqual(tuple1, tuple2);
         Assert.False(tuple1 == tuple2);
@@ -177,9 +177,9 @@ public class SpaceTupleTests
     public void Should_ToString()
     {
         Assert.Equal("()", new SpaceTuple().ToString());
-        Assert.Equal("(1)", SpaceTuple.Create(1).ToString());
-        Assert.Equal("(1, a)", SpaceTuple.Create((1, "a")).ToString());
-        Assert.Equal("(1, a, 1.5)", SpaceTuple.Create((1, "a", 1.5f)).ToString());
-        Assert.Equal("(1, a, 1.5, b)", SpaceTuple.Create((1, "a", 1.5f, 'b')).ToString());
+        Assert.Equal("(1)", new SpaceTuple(1).ToString());
+        Assert.Equal("(1, a)", new SpaceTuple((1, "a")).ToString());
+        Assert.Equal("(1, a, 1.5)", new SpaceTuple((1, "a", 1.5f)).ToString());
+        Assert.Equal("(1, a, 1.5, b)", new SpaceTuple((1, "a", 1.5f, 'b')).ToString());
     }
 }

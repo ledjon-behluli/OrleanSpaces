@@ -23,7 +23,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Forward_If_Evaluation_Results_In_Tuple()
     {
-        SpaceTuple tuple = SpaceTuple.Create("eval");
+        SpaceTuple tuple = new("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
         ITuple result = await continuationChannel.Reader.ReadAsync(default);
@@ -45,7 +45,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Stop_Host_If_Any_Evaluation_Throws()
     {
-        SpaceTuple tuple = SpaceTuple.Create("eval");
+        SpaceTuple tuple = new("eval");
 
         await WriteAsync(tuple, 3, false);
         await WriteAsync(tuple, 2, true);

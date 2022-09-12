@@ -21,11 +21,11 @@ const string EXCHANGE_KEY = "exchange-key";
 
 var task1 = Task.Run(async () =>
 {
-    SpaceTuple tuple = SpaceTuple.Create((EXCHANGE_KEY, "Hey its thread 1"));
+    SpaceTuple tuple = new((EXCHANGE_KEY, "Hey its thread 1"));
     await agent.WriteAsync(tuple);
 
     Console.WriteLine($"THREAD 1: Placed '{tuple}' into the tuple space.");
-    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, SpaceUnit.Null, SpaceUnit.Null));
+    SpaceTemplate template = new((EXCHANGE_KEY, SpaceUnit.Null, SpaceUnit.Null));
 
     while (true)
     {
@@ -44,7 +44,7 @@ var task1 = Task.Run(async () =>
 
 var task2 = Task.Run(async () =>
 {
-    SpaceTemplate template = SpaceTemplate.Create((EXCHANGE_KEY, SpaceUnit.Null));
+    SpaceTemplate template = new((EXCHANGE_KEY, SpaceUnit.Null));
     Console.WriteLine($"THREAD 2: Searching for matching tuple with template: {template}");
 
     while (true)
@@ -54,7 +54,7 @@ var task2 = Task.Run(async () =>
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
 
-            SpaceTuple helloWorldTuple = SpaceTuple.Create((helloTuple[0], helloTuple[1], "Whats up its thread 2"));
+            SpaceTuple helloWorldTuple = new((helloTuple[0], helloTuple[1], "Whats up its thread 2"));
             await agent.WriteAsync(helloWorldTuple);
 
             Console.WriteLine($"THREAD 2: Placed '{helloWorldTuple}' into the tuple space.");

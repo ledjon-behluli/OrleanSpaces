@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
@@ -13,30 +12,42 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public bool IsEmpty => tuple[0] is SpaceUnit;
 
-    private SpaceTuple(ITuple tuple) => this.tuple = tuple;
+    public SpaceTuple()
+    {
+        tuple = SpaceUnit.Null;
+    }
 
-    public SpaceTuple() : this(SpaceUnit.Null) { }
-    
-    public static SpaceTuple Create(ValueType value)
+    public SpaceTuple(string value)
     {
         if (value is null)
         {
             throw new ArgumentNullException(nameof(value));
         }
+     
+        tuple = new ValueTuple<string>(value);
+    }
 
-        if (value is ITuple tuple)
+    public SpaceTuple(ValueType valueType)
+    {
+        if (valueType is null)
         {
-            for (int i = 0; i < tuple.Length; i++)
-            {
-                ThrowOnNotSupported(tuple[i], i);
-            }
-
-            return new(tuple);
+            throw new ArgumentNullException(nameof(valueType));
         }
 
-        ThrowOnNotSupported(value);
-        
-        return new(new ValueTuple<ValueType>(value));
+        if (valueType is ITuple _tuple)
+        {
+            for (int i = 0; i < _tuple.Length; i++)
+            {
+                ThrowOnNotSupported(_tuple[i], i);
+            }
+
+            tuple = _tuple;
+        }
+        else
+        {
+            ThrowOnNotSupported(valueType);
+            tuple = new ValueTuple<ValueType>(valueType);
+        }
 
         static void ThrowOnNotSupported(object obj, int index = 0)
         {
@@ -45,16 +56,6 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
                 throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives and enums.");
             }
         }
-    }
-
-    public static SpaceTuple Create([NotNull] string value)
-    {
-        if (value is null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        return new(new ValueTuple<string>(value));
     }
 
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);

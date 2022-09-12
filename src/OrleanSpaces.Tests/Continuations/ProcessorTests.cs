@@ -18,7 +18,7 @@ public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Forward_Tuple_To_Router()
     {
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
         while(router.Tuple == null)
@@ -45,7 +45,7 @@ public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Forward_Template_To_Router()
     {
-        SpaceTemplate template = SpaceTemplate.Create(1);
+        SpaceTemplate template = new(1);
         await channel.Writer.WriteAsync(template);
 
         while (router.Tuple == null)

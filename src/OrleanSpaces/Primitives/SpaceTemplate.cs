@@ -10,31 +10,54 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
 
-    private SpaceTemplate(ITuple tuple) => this.tuple = tuple;
-    public SpaceTemplate() : this(SpaceUnit.Null) { }
-
-    public static SpaceTemplate Create(ValueType value)
+    public SpaceTemplate()
     {
-        if (value is null)
+        tuple = SpaceUnit.Null;
+    }
+
+    public SpaceTemplate(string value)
+    {
+        if (value is null) 
         {
             throw new ArgumentNullException(nameof(value));
         }
 
-        if (value is ITuple tuple)
-        {
-            for (int i = 0; i < tuple.Length; i++)
-            {
-                ThrowOnNotSupported(tuple[i], i);
-            }
+        tuple = new ValueTuple<string>(value);
+    }
 
-            return new(tuple);
+    public SpaceTemplate(Type type)
+    {
+        if (type is null) 
+        {
+            throw new ArgumentNullException(nameof(type));
         }
 
-        ThrowOnNotSupported(value);
+        tuple = new ValueTuple<Type>(type);
+    }
 
-        return new(new ValueTuple<ValueType>(value));
+    public SpaceTemplate(ValueType valueType)
+    {
+        if (valueType is null) 
+        {
+            throw new ArgumentNullException(nameof(valueType));
+        }
 
-        static void ThrowOnNotSupported(object obj, int index = 0)
+        if (valueType is ITuple _tuple)
+        {
+            for (int i = 0; i < _tuple.Length; i++)
+            {
+                ThrowIfNotSupported(_tuple[i], i);
+            }
+
+            tuple = _tuple;
+        }
+        else
+        {
+            ThrowIfNotSupported(valueType);
+            tuple = new ValueTuple<ValueType>(valueType);
+        }
+
+        static void ThrowIfNotSupported(object obj, int index = 0)
         {
             Type type = obj.GetType();
 
@@ -43,26 +66,6 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
                 throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives, enums and '{nameof(SpaceUnit)}'.");
             }
         }
-    }
-
-    public static SpaceTemplate Create(Type type)
-    {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        return new(new ValueTuple<Type>(type));
-    }
-
-    public static SpaceTemplate Create(string value)
-    {
-        if (value is null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        return new(new ValueTuple<string>(value));
     }
 
     public bool IsSatisfiedBy(SpaceTuple tuple)

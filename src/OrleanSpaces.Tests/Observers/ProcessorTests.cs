@@ -27,7 +27,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
         scope.AddObserver(new TestObserver());
 
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
         while (scope.TotalInvoked(observer => !observer.LastReceived.IsEmpty) < 3)
@@ -73,7 +73,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new ThrowingTestObserver());
         scope.AddObserver(new TestObserver());
 
-        SpaceTuple tuple = SpaceTuple.Create(1);
+        SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
         while (scope.TotalInvoked(observer => !observer.LastReceived.IsEmpty) < 2)
