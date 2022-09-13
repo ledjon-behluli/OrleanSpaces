@@ -19,7 +19,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Notify_All_Observers_OnTuple()
+    public async Task Should_Notify_All_Observers_OnNewTuple()
     {
         using var scope = fixture.StartScope();
 
@@ -30,14 +30,14 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsNull) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsPassive) < 3)
         {
 
         }
 
         Assert.All(scope.Observers, observer =>
         {
-            Assert.False(observer.LastReceived.IsNull);
+            Assert.False(observer.LastReceived.IsPassive);
             Assert.Equal(tuple, observer.LastReceived);
         });
     }
@@ -51,7 +51,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
         scope.AddObserver(new TestObserver());
 
-        await channel.Writer.WriteAsync(SpaceUnit.Null);
+        await channel.Writer.WriteAsync(SpaceTuple.Passive);
 
         while (scope.TotalInvoked(observer => observer.SpaceEmptiedReceived) < 3)
         {
@@ -74,7 +74,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsNull) < 2)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsPassive) < 2)
         {
 
         }
@@ -83,12 +83,12 @@ public class ProcessorTests : IClassFixture<Fixture>
         {
             if (observer is ThrowingTestObserver)
             {
-                Assert.True(observer.LastReceived.IsNull);
+                Assert.True(observer.LastReceived.IsPassive);
                 Assert.Equal(new(), observer.LastReceived);
             }
             else
             {
-                Assert.False(observer.LastReceived.IsNull);
+                Assert.False(observer.LastReceived.IsPassive);
                 Assert.Equal(tuple, observer.LastReceived);
             }
         });

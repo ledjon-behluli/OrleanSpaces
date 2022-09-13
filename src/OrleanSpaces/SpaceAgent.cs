@@ -110,7 +110,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<Spa
     public async Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
     {   
         await observerChannel.Writer.WriteAsync(tuple);
-        if (!tuple.IsNull)
+        if (!tuple.IsPassive)
         {
             await callbackChannel.Writer.WriteAsync(tuple);
         }
@@ -178,7 +178,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<Spa
 
         SpaceTuple tuple = await grain.PeekAsync(template);
 
-        if (!tuple.IsNull)
+        if (!tuple.IsPassive)
         {
             await callback(tuple);
         }
@@ -200,7 +200,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<Spa
 
         SpaceTuple tuple = await grain.PopAsync(template);
 
-        if (!tuple.IsNull)
+        if (!tuple.IsPassive)
         {
             await callback(tuple);
         }

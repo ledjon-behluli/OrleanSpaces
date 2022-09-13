@@ -3,8 +3,6 @@
 //BenchmarkRunner.Run<TypeCheckerBenchmarks>();
 //BenchmarkRunner.Run<SpaceUnitBenchmarks>();
 //BenchmarkRunner.Run<SpaceTupleBenchmarks>();
-//BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
-
-BenchmarkRunner.Run<test>();
+BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 
 Console.ReadKey();

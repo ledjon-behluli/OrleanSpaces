@@ -38,9 +38,9 @@ internal sealed class ObserverProcessor : BackgroundService
     {
         try
         {
-            if (!tuple.IsNull)
+            if (!tuple.IsPassive)
             {
-                await observer.OnTupleAsync(tuple, cancellationToken);
+                await observer.OnNewTupleAsync(tuple, cancellationToken);
                 return;
             }
             else

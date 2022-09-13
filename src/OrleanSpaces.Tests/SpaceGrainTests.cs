@@ -39,7 +39,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Notify_Observer_On_Space_Emptying()
+    public async Task Should_Notify_Observer_OnEmptySpace()
     {
         SpaceTuple tuple1 = new(1);
         SpaceTuple tuple2 = new((1, "a"));
@@ -56,11 +56,11 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Notify_Observer_On_New_Tuple(SpaceTuple tuple)
+    public async Task Should_Notify_Observer_OnNewTuple(SpaceTuple tuple)
     {
         await grain.WriteAsync(tuple);
 
-        Assert.False(observer.LastReceived.IsNull);
+        Assert.False(observer.LastReceived.IsPassive);
         Assert.Equal(tuple, observer.LastReceived);
     }
 
@@ -71,7 +71,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         public Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
         {
-            if (!tuple.IsNull)
+            if (!tuple.IsPassive)
             {
                 LastReceived = tuple;
             }

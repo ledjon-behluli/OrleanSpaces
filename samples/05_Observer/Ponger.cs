@@ -13,7 +13,7 @@ public class Ponger : ISpaceObserver
         template = new(("Ping", SpaceUnit.Null));
     }
 
-    public async Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public async Task OnNewTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (template.IsSatisfiedBy(tuple))
         {

@@ -26,7 +26,7 @@ public class TestObserver : ISpaceObserver
     public SpaceTuple LastReceived { get; private set; } = new();
     public bool SpaceEmptiedReceived { get; private set; }
 
-    public virtual Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public virtual Task OnNewTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         LastReceived = tuple;
         return Task.CompletedTask;
@@ -41,7 +41,7 @@ public class TestObserver : ISpaceObserver
 
 public class ThrowingTestObserver : TestObserver
 {
-    public override Task OnTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnNewTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         throw new Exception("Test");
     }

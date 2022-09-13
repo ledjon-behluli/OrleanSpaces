@@ -32,7 +32,7 @@ var task1 = Task.Run(async () =>
         Console.WriteLine($"THREAD 1: Searching for matching tuple with template: {template}");
 
         var helloWorldTuple = await agent.PeekAsync(template);
-        if (!helloWorldTuple.IsNull)
+        if (!helloWorldTuple.IsPassive)
         {
             Console.WriteLine($"THREAD 1: Found this tuple: {helloWorldTuple}");
             break;
@@ -50,7 +50,7 @@ var task2 = Task.Run(async () =>
     while (true)
     {
         var helloTuple = await agent.PeekAsync(template);
-        if (!helloTuple.IsNull)
+        if (!helloTuple.IsPassive)
         {
             Console.WriteLine($"THREAD 2: Found this tuple: {helloTuple}");
 
