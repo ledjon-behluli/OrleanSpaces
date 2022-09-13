@@ -6,7 +6,7 @@ public interface ISpaceChannel
     Task<ISpaceAgent> GetAsync();
 }
 
-internal class SpaceChannel : ISpaceChannel
+internal sealed class SpaceChannel : ISpaceChannel
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 

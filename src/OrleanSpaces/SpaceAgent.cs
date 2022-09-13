@@ -58,7 +58,7 @@ public interface ISpaceAgent
     ValueTask<int> CountAsync(SpaceTemplate template);
 }
 
-internal class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITuple>
+internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITuple>
 {
     private readonly IClusterClient client;
 

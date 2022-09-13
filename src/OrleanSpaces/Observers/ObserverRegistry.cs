@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverRegistry
+internal sealed class ObserverRegistry
 {
     private readonly ConcurrentDictionary<ISpaceObserver, Guid> observers = new();
     public IEnumerable<ISpaceObserver> Observers => observers.Keys;

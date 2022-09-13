@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverChannel
+internal sealed class ObserverChannel
 {
     private readonly Channel<ITuple> channel = Channel.CreateUnbounded<ITuple>();
 

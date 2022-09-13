@@ -18,7 +18,7 @@ internal interface ISpaceGrain : IGrainWithGuidKey
     ValueTask<int> CountAsync(SpaceTemplate? template);
 }
 
-internal class SpaceGrain : Grain, ISpaceGrain
+internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<SpaceState> space;
 
@@ -64,7 +64,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return new(new SpaceTuple());
+        return new(SpaceTuple.Unit);
     }
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
@@ -117,7 +117,7 @@ internal class SpaceGrain : Grain, ISpaceGrain
     }
 
     [Serializable]
-    internal class SpaceState
+    internal sealed class SpaceState
     {
         public List<SpaceTuple> Tuples { get; set; } = new();
     }

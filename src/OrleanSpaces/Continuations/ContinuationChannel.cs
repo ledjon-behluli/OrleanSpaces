@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Continuations;
 
-internal class ContinuationChannel
+internal sealed class ContinuationChannel
 {
     private readonly Channel<ITuple> channel = Channel.CreateUnbounded<ITuple>();
 

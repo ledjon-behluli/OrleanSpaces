@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Observers;
 
-internal class ObserverProcessor : BackgroundService
+internal sealed class ObserverProcessor : BackgroundService
 {
     private readonly IHostApplicationLifetime lifetime;
     private readonly ObserverRegistry registry;

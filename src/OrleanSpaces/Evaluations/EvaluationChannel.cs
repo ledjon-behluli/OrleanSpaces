@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Evaluations;
 
-internal class EvaluationChannel
+internal sealed class EvaluationChannel
 {
     private readonly Channel<Func<Task<SpaceTuple>>> channel 
         = Channel.CreateUnbounded<Func<Task<SpaceTuple>>>();

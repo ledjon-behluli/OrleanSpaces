@@ -4,7 +4,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Evaluations;
 
-internal class EvaluationProcessor : BackgroundService
+internal sealed class EvaluationProcessor : BackgroundService
 {
     private readonly IHostApplicationLifetime lifetime;
     private readonly EvaluationChannel evaluationChannel;

@@ -10,7 +10,10 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
 
-    public bool IsUnit => tuple[0] is SpaceUnit;
+    public bool IsUnit => Equals(Unit);//tuple[0] is SpaceUnit;
+
+    private static readonly SpaceTuple unit = new();
+    public static ref readonly SpaceTuple Unit => ref unit;
 
     public SpaceTuple()
     {

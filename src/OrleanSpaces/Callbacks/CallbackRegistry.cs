@@ -5,7 +5,7 @@ using System.Data;
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackRegistry
+internal sealed class CallbackRegistry
 {
     private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
 

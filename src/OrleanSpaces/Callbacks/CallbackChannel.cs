@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackChannel
+internal sealed class CallbackChannel
 {
     private readonly Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>();
 

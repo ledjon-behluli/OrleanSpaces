@@ -4,7 +4,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackProcessor : BackgroundService
+internal sealed class CallbackProcessor : BackgroundService
 {
     private readonly IHostApplicationLifetime lifetime;
     private readonly CallbackRegistry registry;

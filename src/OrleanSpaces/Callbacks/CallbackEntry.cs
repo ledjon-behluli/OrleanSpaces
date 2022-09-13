@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Callbacks;
 
-internal class CallbackEntry
+internal sealed class CallbackEntry
 {
     public Func<SpaceTuple, Task> Callback { get; }
     public bool IsDestructive { get; }

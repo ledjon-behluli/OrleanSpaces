@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Continuations;
 
-internal class ContinuationProcessor : BackgroundService
+internal sealed class ContinuationProcessor : BackgroundService
 {
     private readonly ContinuationChannel channel;
     private readonly ITupleRouter router;
