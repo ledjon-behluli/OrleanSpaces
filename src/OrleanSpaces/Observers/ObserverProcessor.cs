@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Primitives;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Observers;
@@ -35,27 +34,11 @@ internal sealed class ObserverProcessor : BackgroundService
         }
     }
 
-    private async Task NotifyAsync(ISpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
+    private async Task NotifyAsync(SpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
     {
         try
         {
-            if (tuple is SpaceTuple spaceTuple)
-            {
-                await observer.OnAddedAsync(spaceTuple, cancellationToken);
-                return;
-            }
-
-            if (tuple is SpaceTemplate template)
-            { 
-                await observer.OnRemovedAsync(template, cancellationToken);
-                return;
-            }
-
-            if (tuple is SpaceUnit)
-            {
-                await observer.OnEmptyAsync(cancellationToken);
-                return;
-            }
+            await observer.Handle(tuple, cancellationToken);
         }
         catch
         {

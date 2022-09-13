@@ -4,10 +4,10 @@ namespace OrleanSpaces.Observers;
 
 internal sealed class ObserverRegistry
 {
-    private readonly ConcurrentDictionary<ISpaceObserver, Guid> observers = new();
-    public IEnumerable<ISpaceObserver> Observers => observers.Keys;
+    private readonly ConcurrentDictionary<SpaceObserver, Guid> observers = new();
+    public IEnumerable<SpaceObserver> Observers => observers.Keys;
 
-    public Guid Add(ISpaceObserver observer)
+    public Guid Add(SpaceObserver observer)
     {
         if (!observers.TryGetValue(observer, out _))
         {
@@ -17,6 +17,6 @@ internal sealed class ObserverRegistry
         return observers[observer];
     }
 
-    public void Remove(ISpaceObserver observer)
+    public void Remove(SpaceObserver observer)
         => observers.TryRemove(observer, out _);
 }

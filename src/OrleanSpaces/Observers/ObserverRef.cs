@@ -5,9 +5,9 @@ namespace OrleanSpaces.Observers;
 public sealed class ObserverRef : IEquatable<ObserverRef>
 {
     public Guid Id { get; }
-    [NotNull] public ISpaceObserver Observer { get; }
+    [NotNull] public SpaceObserver Observer { get; }
 
-    public ObserverRef(Guid id, ISpaceObserver observer)
+    public ObserverRef(Guid id, SpaceObserver observer)
     {
         Id = id;
         Observer = observer ?? throw new ArgumentNullException(nameof(observer));
