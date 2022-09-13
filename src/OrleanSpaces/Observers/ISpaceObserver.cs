@@ -4,6 +4,7 @@ namespace OrleanSpaces.Observers;
 
 public interface ISpaceObserver
 {
-    Task OnNewTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken);
-    Task OnEmptySpaceAsync(CancellationToken cancellationToken);
+    Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken);
+    Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken);
+    Task OnEmptyAsync(CancellationToken cancellationToken);
 }

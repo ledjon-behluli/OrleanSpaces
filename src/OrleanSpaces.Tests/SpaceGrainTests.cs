@@ -1,7 +1,7 @@
 ﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
-using System;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -12,7 +12,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly ISpaceGrain grain;
     private readonly AsyncObserver observer;
 
-    private IAsyncStream<SpaceTuple> stream;
+    private IAsyncStream<ITuple> stream;
     private Guid streamId;
 
     public SpaceGrainTests(ClusterFixture fixture)
@@ -26,7 +26,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.Tuple);
+        stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
         await stream.SubscribeAsync(observer);
     }
 
@@ -40,7 +40,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Notify_Observer_OnEmptySpace()
+    public async Task Should_Notify_Observer_On_Empty_Space()
     {
         SpaceTuple tuple1 = new(1);
         SpaceTuple tuple2 = new((1, "a"));
@@ -63,7 +63,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Notify_Observer_OnNewTuple(SpaceTuple tuple)
+    public async Task Should_Notify_Observer_On_Added_Tuple(SpaceTuple tuple)
     {
         await grain.WriteAsync(tuple);
 
@@ -75,15 +75,26 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         observer.Reset();
     }
 
-    private class AsyncObserver : IAsyncObserver<SpaceTuple>
+    private class AsyncObserver : IAsyncObserver<ITuple>
     {
         public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
         public bool SpaceEmptiedReceived { get; private set; }
 
-        public Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
+        public Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
         {
-            LastReceived = tuple;
-            SpaceEmptiedReceived = tuple.IsPassive;
+            if (tuple is SpaceTuple spaceTuple)
+            {
+                LastReceived = spaceTuple;
+            }
+
+            if (tuple is SpaceTemplate template)
+            {
+                //TODO: Fill me!
+            }
+            else if (tuple is SpaceUnit)
+            {
+                SpaceEmptiedReceived = true;
+            }
 
             return Task.CompletedTask;
         }

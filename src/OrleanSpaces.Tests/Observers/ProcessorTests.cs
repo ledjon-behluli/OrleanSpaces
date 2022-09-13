@@ -19,7 +19,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Notify_All_Observers_OnNewTuple()
+    public async Task Should_Notify_All_Observers_On_Added_Tuple()
     {
         using var scope = fixture.StartScope();
 
@@ -42,8 +42,10 @@ public class ProcessorTests : IClassFixture<Fixture>
         });
     }
 
+    // TODO: Write test for OnRemovedAsync
+
     [Fact]
-    public async Task Should_Notify_All_Observers_OnEmptySpace()
+    public async Task Should_Notify_All_Observers_On_Empty_Space()
     {
         using var scope = fixture.StartScope();
 
