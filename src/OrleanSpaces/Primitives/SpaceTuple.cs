@@ -84,5 +84,5 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public override int GetHashCode() => tuple.GetHashCode();
 
-    public override string ToString() => IsUnit ? "()" : tuple.ToString();
+    public override string ToString() => Length == 1 ? $"({tuple[0]})" : tuple.ToString();
 }

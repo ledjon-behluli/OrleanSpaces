@@ -176,7 +176,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new SpaceTuple().ToString());
+        Assert.Equal($"({SpaceUnit.Null})", new SpaceTuple().ToString());
         Assert.Equal("(1)", new SpaceTuple(1).ToString());
         Assert.Equal("(1, a)", new SpaceTuple((1, "a")).ToString());
         Assert.Equal("(1, a, 1.5)", new SpaceTuple((1, "a", 1.5f)).ToString());
