@@ -23,7 +23,7 @@ public class TestTupleRouter : ITupleRouter
 
 public class TestObserver : ISpaceObserver
 {
-    public SpaceTuple LastReceived { get; private set; } = new();
+    public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
     public bool SpaceEmptiedReceived { get; private set; }
 
     public virtual Task OnNewTupleAsync(SpaceTuple tuple, CancellationToken cancellationToken)

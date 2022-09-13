@@ -1,6 +1,7 @@
 ﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
+using System;
 
 namespace OrleanSpaces.Tests;
 
@@ -47,11 +48,17 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         await grain.WriteAsync(tuple1);
         await grain.WriteAsync(tuple2);
 
-        await grain.PopAsync(tuple1);
+        _ = await grain.PopAsync(tuple1);
         Assert.False(observer.SpaceEmptiedReceived);
 
-        await grain.PopAsync(tuple2);
+        _ = await grain.PopAsync(tuple2);
         Assert.True(observer.SpaceEmptiedReceived);
+
+        // Clear for next test
+        await grain.PopAsync(tuple1);
+        await grain.PopAsync(tuple2);
+
+        observer.Reset();
     }
 
     [Theory]
@@ -62,28 +69,32 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         Assert.False(observer.LastReceived.IsPassive);
         Assert.Equal(tuple, observer.LastReceived);
+
+        // Clear for next test
+        await grain.PopAsync(tuple);
+        observer.Reset();
     }
 
     private class AsyncObserver : IAsyncObserver<SpaceTuple>
     {
-        public SpaceTuple LastReceived { get; private set; } = new();
+        public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
         public bool SpaceEmptiedReceived { get; private set; }
 
         public Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
         {
-            if (!tuple.IsPassive)
-            {
-                LastReceived = tuple;
-            }
-            else
-            { 
-                SpaceEmptiedReceived = true;
-            }
+            LastReceived = tuple;
+            SpaceEmptiedReceived = tuple.IsPassive;
 
             return Task.CompletedTask;
         }
 
         public Task OnCompletedAsync() => Task.CompletedTask;
         public Task OnErrorAsync(Exception ex) => Task.CompletedTask;
+
+        public void Reset()
+        {
+            LastReceived = SpaceTuple.Passive;
+            SpaceEmptiedReceived = false;
+        }
     }
 }
