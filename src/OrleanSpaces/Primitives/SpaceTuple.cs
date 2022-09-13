@@ -7,13 +7,13 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
     private readonly ITuple tuple;
 
+    private static readonly SpaceTuple @null = new();
+    public static ref readonly SpaceTuple Null => ref @null;
+
     public object this[int index] => tuple[index];
+
     public int Length => tuple.Length;
-
-    public bool IsUnit => Equals(Unit);//tuple[0] is SpaceUnit;
-
-    private static readonly SpaceTuple unit = new();
-    public static ref readonly SpaceTuple Unit => ref unit;
+    public bool IsNull => Equals(Null);
 
     public SpaceTuple()
     {

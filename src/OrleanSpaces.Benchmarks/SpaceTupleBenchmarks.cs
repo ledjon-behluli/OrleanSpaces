@@ -14,42 +14,60 @@ public class SpaceTupleBenchmarks
     private readonly static SpaceTuple mediumTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
     private readonly static SpaceTuple longTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
 
-    [BenchmarkCategory("Short"), Benchmark]
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateNullWithNew()
+    {
+        for (int i = 0; i < iterations; i++)
+        {
+            _ = new SpaceTuple();
+        }
+    }
+
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateNullWithRef()
+    {
+        for (int i = 0; i < 1_000; i++)
+        {
+            _ = SpaceTuple.Null;
+        }
+    }
+
+    [BenchmarkCategory("Equality", "Short"), Benchmark]
     public void ShortSameLength()
     {
         for (int i = 0; i < iterations; i++)
             shortTuple.Equals(shortTuple);
     }
 
-    [BenchmarkCategory("Short"), Benchmark]
+    [BenchmarkCategory("Equality", "Short"), Benchmark]
     public void ShortDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
             shortTuple.Equals(baseTuple);
     }
 
-    [BenchmarkCategory("Medium"), Benchmark]
+    [BenchmarkCategory("Equality", "Medium"), Benchmark]
     public void MediumSameLength()
     {
         for (int i = 0; i < iterations; i++)
             mediumTuple.Equals(mediumTuple);
     }
 
-    [BenchmarkCategory("Medium"), Benchmark]
+    [BenchmarkCategory("Equality", "Medium"), Benchmark]
     public void MediumDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
             mediumTuple.Equals(baseTuple);
     }
 
-    [BenchmarkCategory("Long"), Benchmark]
+    [BenchmarkCategory("Equality", "Long"), Benchmark]
     public void LongSameLength()
     {
         for (int i = 0; i < iterations; i++)
             longTuple.Equals(longTuple);
     }
 
-    [BenchmarkCategory("Long"), Benchmark]
+    [BenchmarkCategory("Equality", "Long"), Benchmark]
     public void LongDiffLengths()
     {
         for (int i = 0; i < iterations; i++)

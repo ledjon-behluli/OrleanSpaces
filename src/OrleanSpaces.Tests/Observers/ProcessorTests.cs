@@ -30,14 +30,14 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsUnit) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsNull) < 3)
         {
 
         }
 
         Assert.All(scope.Observers, observer =>
         {
-            Assert.False(observer.LastReceived.IsUnit);
+            Assert.False(observer.LastReceived.IsNull);
             Assert.Equal(tuple, observer.LastReceived);
         });
     }
@@ -74,7 +74,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsUnit) < 2)
+        while (scope.TotalInvoked(observer => !observer.LastReceived.IsNull) < 2)
         {
 
         }
@@ -83,12 +83,12 @@ public class ProcessorTests : IClassFixture<Fixture>
         {
             if (observer is ThrowingTestObserver)
             {
-                Assert.True(observer.LastReceived.IsUnit);
+                Assert.True(observer.LastReceived.IsNull);
                 Assert.Equal(new(), observer.LastReceived);
             }
             else
             {
-                Assert.False(observer.LastReceived.IsUnit);
+                Assert.False(observer.LastReceived.IsNull);
                 Assert.Equal(tuple, observer.LastReceived);
             }
         });

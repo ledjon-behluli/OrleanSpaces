@@ -70,7 +70,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple);
 
-        Assert.False(peekedTuple.IsUnit);
+        Assert.False(peekedTuple.IsNull);
         Assert.Equal(routingTuple, peekedTuple);
     }
 
@@ -83,7 +83,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(template);
 
-        Assert.True(peekedTuple.IsUnit);
+        Assert.True(peekedTuple.IsNull);
         Assert.NotEqual(routingTuple, peekedTuple);
     }
 
@@ -105,7 +105,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
-        Assert.False(peekedTuple.IsUnit);
+        Assert.False(peekedTuple.IsNull);
         Assert.Equal(tuple, peekedTuple);
     }
 
@@ -157,7 +157,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         await agent.WriteAsync(tuple);
         SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
 
-        Assert.True(peekedTuple.IsUnit);
+        Assert.True(peekedTuple.IsNull);
     }
 
     [Theory]
@@ -174,7 +174,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             return Task.CompletedTask;
         });
 
-        Assert.False(peekedTuple.IsUnit);
+        Assert.False(peekedTuple.IsNull);
         Assert.Equal(tuple, peekedTuple);
 
     }
@@ -194,7 +194,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         }
 
-        Assert.True(peekedTuple.IsUnit);
+        Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
     }
 
@@ -209,7 +209,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         {
             SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
-            Assert.False(peekedTuple.IsUnit);
+            Assert.False(peekedTuple.IsNull);
             Assert.Equal(tuple, peekedTuple);
         }
     }
@@ -241,7 +241,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         await agent.WriteAsync(tuple);
         SpaceTuple popedTuple = await agent.PopAsync(new(0));
 
-        Assert.True(popedTuple.IsUnit);
+        Assert.True(popedTuple.IsNull);
     }
 
     [Theory]
@@ -258,7 +258,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             return Task.CompletedTask;
         });
 
-        Assert.False(popedTuple.IsUnit);
+        Assert.False(popedTuple.IsNull);
         Assert.Equal(tuple, popedTuple);
 
     }
@@ -278,7 +278,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         }
 
-        Assert.True(peekedTuple.IsUnit);
+        Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
     }
 
@@ -296,12 +296,12 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
             if (firstIteration)
             {
-                Assert.False(popedTuple.IsUnit);
+                Assert.False(popedTuple.IsNull);
                 Assert.Equal(tuple, popedTuple);
             }
             else
             {
-                Assert.True(popedTuple.IsUnit);
+                Assert.True(popedTuple.IsNull);
                 Assert.NotEqual(tuple, popedTuple);
             }
 

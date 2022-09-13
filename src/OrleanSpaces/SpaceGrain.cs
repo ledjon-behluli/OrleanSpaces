@@ -41,9 +41,9 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
-        if (tuple.IsUnit)
+        if (tuple.IsNull)
         {
-            throw new ArgumentException("Unit tuples are not allowed to be writen in the tuple space.");
+            throw new ArgumentException($"{nameof(SpaceTuple.Null)} are not allowed to be writen in the tuple space.");
         }
 
         space.State.Tuples.Add(tuple);
@@ -64,7 +64,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return new(SpaceTuple.Unit);
+        return new(SpaceTuple.Null);
     }
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
@@ -87,7 +87,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return new();
+        return SpaceTuple.Null;
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)

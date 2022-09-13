@@ -95,7 +95,7 @@ public class SpaceTupleTests
     public void Should_Be_Considered_As_Empty_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
-        Assert.True(tuple.IsUnit);
+        Assert.True(tuple.IsNull);
     }
 
     [Fact]

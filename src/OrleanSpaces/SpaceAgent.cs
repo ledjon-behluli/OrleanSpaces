@@ -178,7 +178,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
         SpaceTuple tuple = await grain.PeekAsync(template);
 
-        if (!tuple.IsUnit)
+        if (!tuple.IsNull)
         {
             await callback(tuple);
         }
@@ -200,7 +200,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
         SpaceTuple tuple = await grain.PopAsync(template);
 
-        if (!tuple.IsUnit)
+        if (!tuple.IsNull)
         {
             await callback(tuple);
         }
