@@ -75,10 +75,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
             return false;
         }
 
-        int length = tuple.Length;
-        int i = 0;
-
-        do
+        for (int i = 0; i < tuple.Length; i++)
         {
             if (this[i] is not SpaceUnit)
             {
@@ -97,11 +94,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
                     }
                 }
             }
-
-            i++;
-            length--;
         }
-        while (length > 0);
 
         return true;
     }

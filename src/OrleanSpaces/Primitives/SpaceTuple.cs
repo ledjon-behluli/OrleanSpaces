@@ -10,7 +10,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
 
-    public bool IsEmpty => tuple[0] is SpaceUnit; //TODO: See if you can remove this!!!
+    public bool IsUnit => tuple[0] is SpaceUnit;
 
     public SpaceTuple()
     {
@@ -84,5 +84,5 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public override int GetHashCode() => tuple.GetHashCode();
 
-    public override string ToString() => IsEmpty ? "()" : tuple.ToString();
+    public override string ToString() => IsUnit ? "()" : tuple.ToString();
 }

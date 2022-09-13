@@ -62,7 +62,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         await grain.WriteAsync(tuple);
 
-        Assert.False(observer.LastReceived.IsEmpty);
+        Assert.False(observer.LastReceived.IsUnit);
         Assert.Equal(tuple, observer.LastReceived);
     }
 
