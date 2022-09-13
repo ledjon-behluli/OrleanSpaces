@@ -1,19 +1,17 @@
 ﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
-// The majority of the grains' methods is tested via the agent tests.
-// Here we test only some edge cases!
+// The majority of grain methods are tested via the agent tests. Here we test only some edge cases.
 public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly IClusterClient client;
     private readonly ISpaceGrain grain;
     private readonly AsyncObserver observer;
 
-    private IAsyncStream<ITuple> stream;
+    private IAsyncStream<SpaceTuple> stream;
     private Guid streamId;
 
     public SpaceGrainTests(ClusterFixture fixture)
@@ -27,7 +25,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
+        stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.Tuple);
         await stream.SubscribeAsync(observer);
     }
 
@@ -66,20 +64,19 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         Assert.Equal(tuple, observer.LastReceived);
     }
 
-    private class AsyncObserver : IAsyncObserver<ITuple>
+    private class AsyncObserver : IAsyncObserver<SpaceTuple>
     {
         public SpaceTuple LastReceived { get; private set; } = new();
         public bool SpaceEmptiedReceived { get; private set; }
 
-        public Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
+        public Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
         {
-            if (tuple is SpaceTuple spaceTuple)
+            if (!tuple.IsNull)
             {
-                LastReceived = spaceTuple;
+                LastReceived = tuple;
             }
-
-            if (tuple is SpaceUnit)
-            {
+            else
+            { 
                 SpaceEmptiedReceived = true;
             }
 

@@ -55,7 +55,7 @@ static void SpaceTemplateEquality()
 {
     Console.WriteLine("\nThis section illustrates SpaceTemplate equality");
     Console.WriteLine("---------------- BEGIN -------------------");
-
+    
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {new SpaceTemplate(1)}, {new SpaceTemplate(1)}");
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {new SpaceTemplate((1, "a"))}, {new SpaceTemplate((1, "a"))}");
     Console.WriteLine($"These are equal (fields, types, values, indices - match): {new SpaceTemplate((1, "a", typeof(int)))}, {new SpaceTemplate((1, "a", typeof(int)))}");

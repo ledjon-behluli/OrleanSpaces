@@ -1,12 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Primitives;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
 internal sealed class ObserverChannel
 {
-    private readonly Channel<ITuple> channel = Channel.CreateUnbounded<ITuple>();
+    private readonly Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>();
 
-    public ChannelReader<ITuple> Reader => channel.Reader;
-    public ChannelWriter<ITuple> Writer => channel.Writer;
+    public ChannelReader<SpaceTuple> Reader => channel.Reader;
+    public ChannelWriter<SpaceTuple> Writer => channel.Writer;
 }

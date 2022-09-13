@@ -12,7 +12,7 @@ public class SpaceUnitBenchmarks
     private static readonly SpaceUnitClass[] unitClasses = new SpaceUnitClass[iterations];
 
     [Benchmark]
-    public void StructFillArray()
+    public void UnitStructFillArray()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -21,7 +21,7 @@ public class SpaceUnitBenchmarks
     }
 
     [Benchmark]
-    public void ClassFillArray()
+    public void UnitClassFillArray()
     {
         for (int i = 0; i < iterations; i++)
         {

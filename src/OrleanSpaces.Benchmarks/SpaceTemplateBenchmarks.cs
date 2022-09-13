@@ -9,6 +9,42 @@ public class SpaceTemplateBenchmarks
 {
     private const int iterations = 100_000;
 
+    #region Instantiation
+
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateNullWithNew()
+    {
+        for (int i = 0; i < iterations; i++)
+        {
+            _ = new SpaceTemplate(SpaceUnit.Null);
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+        }
+    }
+
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateNullWithRef()
+    {
+        for (int i = 0; i < iterations; i++)
+        {
+            _ = SpaceTemplateCachedFactory.Singlet;
+            _ = SpaceTemplateCachedFactory.Pair;
+            _ = SpaceTemplateCachedFactory.Triple;
+            _ = SpaceTemplateCachedFactory.Quadruple;
+            _ = SpaceTemplateCachedFactory.Quintuple;
+            _ = SpaceTemplateCachedFactory.Sextuple;
+            _ = SpaceTemplateCachedFactory.Septuple;
+            _ = SpaceTemplateCachedFactory.Octuple;
+        }
+    }
+
+    #endregion
+
     #region Equality
 
     private readonly static SpaceTemplate baseTemplate = new(1);
@@ -97,4 +133,25 @@ public class SpaceTemplateBenchmarks
     }
 
     #endregion
+}
+
+public readonly partial struct SpaceTemplateCachedFactory
+{
+    private static readonly SpaceTemplate singlet = new(SpaceUnit.Null);
+    private static readonly SpaceTemplate pair = new((SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate triple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate quadruple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate quintuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate sextuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate septuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate octuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+
+    public static ref readonly SpaceTemplate Singlet => ref singlet;
+    public static ref readonly SpaceTemplate Pair => ref pair;
+    public static ref readonly SpaceTemplate Triple => ref triple;
+    public static ref readonly SpaceTemplate Quadruple => ref quadruple;
+    public static ref readonly SpaceTemplate Quintuple => ref quintuple;
+    public static ref readonly SpaceTemplate Sextuple => ref sextuple;
+    public static ref readonly SpaceTemplate Septuple => ref septuple;
+    public static ref readonly SpaceTemplate Octuple => ref octuple;
 }

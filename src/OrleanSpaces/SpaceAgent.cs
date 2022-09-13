@@ -58,7 +58,7 @@ public interface ISpaceAgent
     ValueTask<int> CountAsync(SpaceTemplate template);
 }
 
-internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITuple>
+internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<SpaceTuple>
 {
     private readonly IClusterClient client;
 
@@ -100,19 +100,19 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        var stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
+        var stream = provider.GetStream<SpaceTuple>(streamId, StreamNamespaces.Tuple);
 
         await stream.SubscribeAsync(this);
     }
 
     #region IAsyncObserver
 
-    public async Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
+    public async Task OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
     {   
         await observerChannel.Writer.WriteAsync(tuple);
-        if (tuple is SpaceTuple spaceTuple)
+        if (!tuple.IsNull)
         {
-            await callbackChannel.Writer.WriteAsync(spaceTuple);
+            await callbackChannel.Writer.WriteAsync(tuple);
         }
     }
 

@@ -9,10 +9,7 @@ public class SpaceTupleBenchmarks
 {
     private const int iterations = 100_000;
 
-    private readonly static SpaceTuple baseTuple = new(1);
-    private readonly static SpaceTuple shortTuple = new((1, "a"));
-    private readonly static SpaceTuple mediumTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
-    private readonly static SpaceTuple longTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
+    #region Instantiation
 
     [BenchmarkCategory("Instantiation"), Benchmark]
     public void InstantiateNullWithNew()
@@ -26,11 +23,20 @@ public class SpaceTupleBenchmarks
     [BenchmarkCategory("Instantiation"), Benchmark]
     public void InstantiateNullWithRef()
     {
-        for (int i = 0; i < 1_000; i++)
+        for (int i = 0; i < iterations; i++)
         {
             _ = SpaceTuple.Null;
         }
     }
+
+    #endregion
+
+    #region Equality
+
+    private readonly static SpaceTuple baseTuple = new(1);
+    private readonly static SpaceTuple shortTuple = new((1, "a"));
+    private readonly static SpaceTuple mediumTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
+    private readonly static SpaceTuple longTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
 
     [BenchmarkCategory("Equality", "Short"), Benchmark]
     public void ShortSameLength()
@@ -73,4 +79,6 @@ public class SpaceTupleBenchmarks
         for (int i = 0; i < iterations; i++)
             longTuple.Equals(baseTuple);
     }
+
+    #endregion
 }

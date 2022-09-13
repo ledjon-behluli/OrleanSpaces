@@ -129,24 +129,3 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 
     public override string ToString() => Length == 1 ? $"({tuple[0]})" : tuple.ToString();
 }
-
-
-public readonly partial struct SpaceTemplate
-{
-    private static readonly SpaceTemplate singlet = new();
-    private static readonly SpaceTemplate pair = new((SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate triple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate quadruple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate quintuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate sextuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate septuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate octuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-
-    public static ref readonly SpaceTemplate Singlet => ref singlet;
-    public static ref readonly SpaceTemplate Pair => ref pair;
-    public static ref readonly SpaceTemplate Triple => ref triple;
-    public static ref readonly SpaceTemplate Quadruple => ref quadruple;
-    public static ref readonly SpaceTemplate Sextuple => ref sextuple;
-    public static ref readonly SpaceTemplate Septuple => ref septuple;
-    public static ref readonly SpaceTemplate Octuple => ref octuple;
-}
