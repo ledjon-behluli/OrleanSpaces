@@ -7,6 +7,7 @@ public class Worker : BackgroundService
     private readonly Ponger ponger;
     private readonly Auditor auditor;
     private readonly Completer completer;
+    private readonly Archiver archiver;
     private readonly ISpaceChannel channel;
     private readonly IHostApplicationLifetime lifetime;
 
@@ -14,12 +15,14 @@ public class Worker : BackgroundService
         Ponger ponger,
         Auditor auditor,
         Completer completer,
+        Archiver archiver,
         ISpaceChannel channel,
         IHostApplicationLifetime lifetime)
     {
         this.ponger = ponger;
         this.auditor = auditor;
         this.completer = completer;
+        this.archiver = archiver;
         this.channel = channel;
         this.lifetime = lifetime;
     }
@@ -34,8 +37,9 @@ public class Worker : BackgroundService
         Console.WriteLine("----------------------\n");
 
         var pongerRef = agent.Subscribe(ponger);
-        var auditorRef = agent.Subscribe(auditor);
-        var completerRef = agent.Subscribe(completer);
+        _ = agent.Subscribe(auditor);
+        _ = agent.Subscribe(completer);
+        _ = agent.Subscribe(archiver);
 
         while (!cancellationToken.IsCancellationRequested)
         {

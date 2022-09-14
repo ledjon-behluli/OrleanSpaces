@@ -2,14 +2,14 @@
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
-public class Ponger : DynamicObserver
+public class Ponger : SpaceObserver
 {
     private readonly SpaceTemplate template;
     private readonly ISpaceChannel channel;
 
     public Ponger(ISpaceChannel channel)
     {
-        Interested(In.Expansions);
+        Show(Interest.InExpansions);
 
         this.channel = channel;
         template = new(("Ping", SpaceUnit.Null));

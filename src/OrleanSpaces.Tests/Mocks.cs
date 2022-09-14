@@ -21,13 +21,13 @@ public class TestTupleRouter : ITupleRouter
     }
 }
 
-public class TestObserver : DynamicObserver
+public class TestObserver : SpaceObserver
 {
     public SpaceTuple LastTuple { get; private set; } = new();
     public SpaceTemplate LastTemplate { get; private set; } = new();
     public bool LastFlattening { get; private set; }
 
-    public TestObserver() => Interested(In.Everything);
+    public TestObserver() => Show(Interest.InEverything);
 
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {

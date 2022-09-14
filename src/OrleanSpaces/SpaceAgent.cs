@@ -12,7 +12,7 @@ namespace OrleanSpaces;
 
 public interface ISpaceAgent
 {
-    ObserverRef Subscribe(DynamicObserver observer);
+    ObserverRef Subscribe(SpaceObserver observer);
     void Unsubscribe(ObserverRef @ref);
 
     /// <summary>
@@ -147,7 +147,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     #region ISpaceAgent
 
-    public ObserverRef Subscribe(DynamicObserver observer)
+    public ObserverRef Subscribe(SpaceObserver observer)
         => new(observerRegistry.Add(observer), observer);
 
     public void Unsubscribe(ObserverRef @ref)

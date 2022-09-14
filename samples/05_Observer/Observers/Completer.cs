@@ -1,10 +1,10 @@
 ﻿using OrleanSpaces.Observers;
 
-public class Completer : DynamicObserver
+public class Completer : SpaceObserver
 {
     public Completer()
     {
-        Interested(In.Flattening);
+        Show(Interest.InFlattening);
     }
 
     public override async Task OnFlatteningAsync(CancellationToken cancellationToken)

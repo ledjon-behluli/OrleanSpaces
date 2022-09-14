@@ -8,16 +8,16 @@ public partial class ObserverTests
     private static readonly SpaceTuple tuple = new(1);
     private static readonly SpaceTemplate template = new(1);
 
-    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Expansion =>
-        async (observer) => await observer.HandleAsync(tuple);
+    private static Func<SpaceObserver, Task> Expansion =>
+        async (observer) => await observer.HandleAsync(tuple, default);
 
-    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Contraction =>
-        async (observer) => await observer.HandleAsync(template);
+    private static Func<SpaceObserver, Task> Contraction =>
+        async (observer) => await observer.HandleAsync(template, default);
 
-    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Flattening =>
-        async (observer) => await observer.HandleAsync(SpaceUnit.Null);
+    private static Func<SpaceObserver, Task> Flattening =>
+        async (observer) => await observer.HandleAsync(SpaceUnit.Null, default);
 
-    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Everything =>
+    private static Func<SpaceObserver, Task> Everything =>
         async (observer) =>
         {
             await Expansion(observer);
@@ -127,37 +127,37 @@ public partial class ObserverTests
 
     private class EverythingObserver : BaseObserver
     {
-        public EverythingObserver() => Interested(In.Everything);
+        public EverythingObserver() => Show(Interest.InEverything);
     }
 
     private class ExpansionsObserver : BaseObserver
     {
-        public ExpansionsObserver() => Interested(In.Expansions);
+        public ExpansionsObserver() => Show(Interest.InExpansions);
     }
 
     private class ContractionsObserver : BaseObserver
     {
-        public ContractionsObserver() => Interested(In.Contractions);
+        public ContractionsObserver() => Show(Interest.InContractions);
     }
 
     private class CombinedObserver : BaseObserver
     {
-        public CombinedObserver() => Interested(In.Expansions | In.Contractions);
+        public CombinedObserver() => Show(Interest.InExpansions | Interest.InContractions);
     }
 
     private class FlatteningsObserver : BaseObserver
     {
-        public FlatteningsObserver() => Interested(In.Flattening);
+        public FlatteningsObserver() => Show(Interest.InFlattening);
     }
 
     private class NothingObserver : BaseObserver
     {
-        public NothingObserver() => Interested(In.Nothing);
+        public NothingObserver() => Show(Interest.InNothing);
     }
 
     private class DynamicObserver : BaseObserver
     {
-        public DynamicObserver() => Interested(In.Expansions);
+        public DynamicObserver() => Show(Interest.InExpansions);
 
         public void Reset()
         {
@@ -169,7 +169,7 @@ public partial class ObserverTests
         public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
         {
             base.OnExpansionAsync(tuple, cancellationToken);
-            Interested(In.Contractions);
+            Show(Interest.InContractions);
 
             return Task.CompletedTask;
         }
@@ -177,7 +177,7 @@ public partial class ObserverTests
         public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
         {
             base.OnContractionAsync(template, cancellationToken);
-            Interested(In.Flattening);
+            Show(Interest.InFlattening);
 
             return Task.CompletedTask;
         }
@@ -185,13 +185,13 @@ public partial class ObserverTests
         public override Task OnFlatteningAsync(CancellationToken cancellationToken)
         {
             base.OnFlatteningAsync(cancellationToken);
-            Interested(In.Nothing);
+            Show(Interest.InNothing);
 
             return Task.CompletedTask;
         }
     }
 
-    private class BaseObserver : OrleanSpaces.Observers.DynamicObserver
+    private class BaseObserver : SpaceObserver
     {
         public SpaceTuple LastTuple { get; protected set; } = new();
         public SpaceTemplate LastTemplate { get; protected set; } = new();

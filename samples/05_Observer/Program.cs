@@ -14,6 +14,7 @@ await Host.CreateDefaultBuilder(args)
         services.AddSingleton<Ponger>();
         services.AddSingleton<Auditor>();
         services.AddSingleton<Completer>();
+        services.AddSingleton<Archiver>();
         services.AddHostedService<Worker>();
     })
     .ConfigureLogging((context, builder) =>
