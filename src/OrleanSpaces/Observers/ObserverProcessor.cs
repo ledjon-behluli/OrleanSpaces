@@ -38,7 +38,7 @@ internal sealed class ObserverProcessor : BackgroundService
     {
         try
         {
-            await observer.Handle(tuple, cancellationToken);
+            await observer.HandleAsync(tuple, cancellationToken);
         }
         catch
         {

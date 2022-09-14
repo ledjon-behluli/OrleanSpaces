@@ -12,7 +12,7 @@ public abstract class SpaceObserver
         { SpaceEvent.SpaceEmptied, false }
     };
 
-    protected void Observe(SpaceEvent type) => events[type] = true;
+    protected void Observe(SpaceEvent @event) => events[@event] = true;
     protected void ObserveAll()
     {
         foreach (var type in events.Keys)
@@ -21,7 +21,9 @@ public abstract class SpaceObserver
         }
     }
 
-    internal async ValueTask Handle(ITuple tuple, CancellationToken cancellationToken)
+    protected void Interested(In @in) { }
+
+    internal async ValueTask HandleAsync(ITuple tuple, CancellationToken cancellationToken)
     {
         if (tuple is SpaceTuple spaceTuple && events[SpaceEvent.TupleAdded])
         {
@@ -48,8 +50,16 @@ public abstract class SpaceObserver
 
     protected enum SpaceEvent
     {
-        TupleAdded,
-        TupleRemoved,
-        SpaceEmptied
+        TupleAdded = 0,
+        TupleRemoved = 1,
+        SpaceEmptied = 2
+    }
+
+    [Flags]
+    protected enum In
+    {
+        TupleAdditions = 0,
+        TupleRemovals = 1,
+        SpaceEmptying = 2
     }
 }

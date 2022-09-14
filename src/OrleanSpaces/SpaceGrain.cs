@@ -77,11 +77,13 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             if (template.IsSatisfiedBy(tuple))
             {
                 space.State.Tuples.Remove(tuple);
+
                 await space.WriteStateAsync();
+                await stream.OnNextAsync(template);
 
                 if (space.State.Tuples.Count == 0)
                 {
-                    await stream.OnNextAsync(SpaceTuple.Passive);
+                    await stream.OnNextAsync(SpaceUnit.Null);
                 }
 
                 return tuple;

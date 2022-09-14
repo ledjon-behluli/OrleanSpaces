@@ -23,7 +23,8 @@ public class TestTupleRouter : ITupleRouter
 
 public class TestObserver : SpaceObserver
 {
-    public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
+    public SpaceTuple LastTuple { get; private set; } = new();
+    public SpaceTemplate LastTemplate { get; private set; } = new();
     public bool SpaceEmptiedReceived { get; private set; }
 
     public TestObserver()
@@ -33,12 +34,13 @@ public class TestObserver : SpaceObserver
 
     public override Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        LastReceived = tuple;
+        LastTuple = tuple;
         return Task.CompletedTask;
     }
 
     public override Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
     {
+        LastTemplate = template;
         return Task.CompletedTask;
     }
 

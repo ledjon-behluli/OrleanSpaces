@@ -34,6 +34,5 @@ public sealed class ObserverRef : IEquatable<ObserverRef>
         return ReferenceEquals(Observer, other.Observer);
     }
 
-    public override int GetHashCode() =>
-        HashCode.Combine(Id.GetHashCode(), Observer.GetHashCode());
+    public override int GetHashCode() => Id.GetHashCode();
 }

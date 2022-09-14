@@ -19,7 +19,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Notify_All_Observers_On_Added_Tuple()
+    public async Task Should_Notify_All_Observers_On_Added_And_Removed()
     {
         using var scope = fixture.StartScope();
 
@@ -27,22 +27,30 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
         scope.AddObserver(new TestObserver());
 
-        SpaceTuple tuple = new(1);
+        // Add
+        SpaceTuple tuple = new((1, "a"));
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsPassive) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastTuple.IsPassive) < 3)
+        {
+
+        }
+
+        // Remove
+        SpaceTemplate template = tuple;
+        await channel.Writer.WriteAsync(template);
+
+        while (scope.TotalInvoked(observer => observer.LastTemplate.IsSatisfiedBy(tuple)) < 3)
         {
 
         }
 
         Assert.All(scope.Observers, observer =>
         {
-            Assert.False(observer.LastReceived.IsPassive);
-            Assert.Equal(tuple, observer.LastReceived);
+            Assert.Equal(tuple, observer.LastTuple);
+            Assert.Equal(template, observer.LastTemplate);
         });
     }
-
-    // TODO: Write test for OnRemovedAsync
 
     [Fact]
     public async Task Should_Notify_All_Observers_On_Empty_Space()
@@ -53,7 +61,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
         scope.AddObserver(new TestObserver());
 
-        await channel.Writer.WriteAsync(SpaceTuple.Passive);
+        await channel.Writer.WriteAsync(SpaceUnit.Null);
 
         while (scope.TotalInvoked(observer => observer.SpaceEmptiedReceived) < 3)
         {
@@ -76,7 +84,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastReceived.IsPassive) < 2)
+        while (scope.TotalInvoked(observer => !observer.LastTuple.IsPassive) < 2)
         {
 
         }
@@ -85,13 +93,11 @@ public class ProcessorTests : IClassFixture<Fixture>
         {
             if (observer is ThrowingTestObserver)
             {
-                Assert.True(observer.LastReceived.IsPassive);
-                Assert.Equal(new(), observer.LastReceived);
+                Assert.Equal(new(), observer.LastTuple);
             }
             else
             {
-                Assert.False(observer.LastReceived.IsPassive);
-                Assert.Equal(tuple, observer.LastReceived);
+                Assert.Equal(tuple, observer.LastTuple);
             }
         });
 

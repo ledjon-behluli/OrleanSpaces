@@ -63,33 +63,37 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Notify_Observer_On_Added_Tuple(SpaceTuple tuple)
+    public async Task Should_Notify_Observer_On_Added_And_Removed(SpaceTuple tuple)
     {
+        // Add
         await grain.WriteAsync(tuple);
 
-        Assert.False(observer.LastReceived.IsPassive);
-        Assert.Equal(tuple, observer.LastReceived);
+        // Remove
+        SpaceTemplate template = tuple;
+        await grain.PopAsync(template);
+
+        Assert.Equal(tuple, observer.LastTuple);
+        Assert.Equal(template, observer.LastTemplate);
 
         // Clear for next test
-        await grain.PopAsync(tuple);
         observer.Reset();
     }
 
     private class AsyncObserver : IAsyncObserver<ITuple>
     {
-        public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
+        public SpaceTuple LastTuple { get; private set; } = new();
+        public SpaceTemplate LastTemplate { get; private set; } = new();
         public bool SpaceEmptiedReceived { get; private set; }
 
         public Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
         {
             if (tuple is SpaceTuple spaceTuple)
             {
-                LastReceived = spaceTuple;
+                LastTuple = spaceTuple;
             }
-
-            if (tuple is SpaceTemplate template)
+            else if (tuple is SpaceTemplate template)
             {
-                //TODO: Fill me!
+                LastTemplate = template;
             }
             else if (tuple is SpaceUnit)
             {
@@ -104,7 +108,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         public void Reset()
         {
-            LastReceived = SpaceTuple.Passive;
+            LastTuple = SpaceTuple.Passive;
             SpaceEmptiedReceived = false;
         }
     }

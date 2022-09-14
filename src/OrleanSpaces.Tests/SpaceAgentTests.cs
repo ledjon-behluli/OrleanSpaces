@@ -105,7 +105,6 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
-        Assert.False(peekedTuple.IsPassive);
         Assert.Equal(tuple, peekedTuple);
     }
 
