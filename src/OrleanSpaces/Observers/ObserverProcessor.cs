@@ -34,7 +34,7 @@ internal sealed class ObserverProcessor : BackgroundService
         }
     }
 
-    private async Task NotifyAsync(SpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
+    private async Task NotifyAsync(DynamicObserver observer, ITuple tuple, CancellationToken cancellationToken)
     {
         try
         {

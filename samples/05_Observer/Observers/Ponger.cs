@@ -1,22 +1,21 @@
 ﻿using OrleanSpaces;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
-using System;
 
-public class Ponger : SpaceObserver
+public class Ponger : DynamicObserver
 {
     private readonly SpaceTemplate template;
     private readonly ISpaceChannel channel;
 
     public Ponger(ISpaceChannel channel)
     {
-        Observe(SpaceEvent.TupleAdded);
+        Interested(In.Expansions);
 
         this.channel = channel;
         template = new(("Ping", SpaceUnit.Null));
     }
 
-    public override async Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (template.IsSatisfiedBy(tuple))
         {

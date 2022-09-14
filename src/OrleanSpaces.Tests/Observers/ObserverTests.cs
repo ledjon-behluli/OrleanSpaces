@@ -8,117 +8,210 @@ public partial class ObserverTests
     private static readonly SpaceTuple tuple = new(1);
     private static readonly SpaceTemplate template = new(1);
 
+    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Expansion =>
+        async (observer) => await observer.HandleAsync(tuple);
+
+    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Contraction =>
+        async (observer) => await observer.HandleAsync(template);
+
+    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Flattening =>
+        async (observer) => await observer.HandleAsync(SpaceUnit.Null);
+
+    private static Func<OrleanSpaces.Observers.DynamicObserver, Task> Everything =>
+        async (observer) =>
+        {
+            await Expansion(observer);
+            await Contraction(observer);
+            await Flattening(observer);
+        };
+
+
     [Fact]
-    public async Task Should_Invoke_All_For_AllObserver()
+    public async Task Should_Invoke_All_For_EverythingObserver()
     {
-        AllObserver allObserver = new();
+        EverythingObserver observer = new();
 
-        await Run(allObserver);
+        await Everything(observer);
 
-        Assert.Equal(tuple, allObserver.LastTuple);
-        Assert.Equal(template, allObserver.LastTemplate);
-        Assert.True(allObserver.SpaceEmptiedReceived);
+        Assert.Equal(tuple, observer.LastTuple);
+        Assert.Equal(template, observer.LastTemplate);
+        Assert.True(observer.LastFlattening);
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnAdded_For_TupleAddedObserver()
+    public async Task Should_Invoke_Only_OnExpansion_For_ExpansionsObserver()
     {
-        TupleAddedObserver observer = new();
+        ExpansionsObserver observer = new();
 
-        await Run(observer);
+        await Everything(observer);
 
         Assert.Equal(tuple, observer.LastTuple);
         Assert.NotEqual(template, observer.LastTemplate);
-        Assert.False(observer.SpaceEmptiedReceived);
+        Assert.False(observer.LastFlattening);
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnRemoved_For_TupleRemovedObserver()
+    public async Task Should_Invoke_Only_OnContraction_For_ContractionsObserver()
     {
-        TupleAddedObserver observer = new();
+        ContractionsObserver observer = new();
 
-        await Run(observer);
+        await Everything(observer);
 
         Assert.NotEqual(tuple, observer.LastTuple);
         Assert.Equal(template, observer.LastTemplate);
-        Assert.False(observer.SpaceEmptiedReceived);
+        Assert.False(observer.LastFlattening);
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnEmpty_For_EmptySpaceObserver()
+    public async Task Should_Invoke_OnExpansion_And_OnContraction_For_CombinedObserver()
     {
-        TupleAddedObserver observer = new();
+        CombinedObserver observer = new();
 
-        await Run(observer);
+        await Everything(observer);
+
+        Assert.Equal(tuple, observer.LastTuple);
+        Assert.Equal(template, observer.LastTemplate);
+        Assert.False(observer.LastFlattening);
+    }
+
+    [Fact]
+    public async Task Should_Invoke_Only_OnFlattening_For_FlatteningsObserver()
+    {
+        FlatteningsObserver observer = new();
+
+        await Everything(observer);
 
         Assert.NotEqual(tuple, observer.LastTuple);
         Assert.NotEqual(template, observer.LastTemplate);
-        Assert.True(observer.SpaceEmptiedReceived);
+        Assert.True(observer.LastFlattening);
     }
 
-    private static async Task Run(SpaceObserver observer)
+    [Fact]
+    public async Task Should_Invoke_Nothing_For_NothingObserver()
     {
-        await observer.HandleAsync(tuple, default);
-        await observer.HandleAsync(template, default);
-        await observer.HandleAsync(SpaceUnit.Null, default);
+        NothingObserver observer = new();
+        await Everything(observer);
+
+        Assert.NotEqual(tuple, observer.LastTuple);
+        Assert.NotEqual(template, observer.LastTemplate);
+        Assert.False(observer.LastFlattening);
+    }
+
+    [Fact]
+    public async Task Should_Be_Able_To_Change_Interests_During_Runtime()
+    {
+        DynamicObserver observer = new();
+
+        await Flattening(observer);
+        Assert.False(observer.LastFlattening);
+
+        await Contraction(observer);
+        Assert.NotEqual(template, observer.LastTemplate);
+
+        await Expansion(observer);
+        Assert.Equal(tuple, observer.LastTuple);
+
+        observer.Reset();
+
+        await Contraction(observer);
+        Assert.Equal(template, observer.LastTemplate);
+
+        await Flattening(observer);
+        Assert.True(observer.LastFlattening);
+
+        await Expansion(observer);
+        Assert.NotEqual(tuple, observer.LastTuple);
     }
 
     #region Observers
 
-    private class AllObserver : BaseObserver
+    private class EverythingObserver : BaseObserver
     {
-        public AllObserver() => ObserveAll();
+        public EverythingObserver() => Interested(In.Everything);
     }
 
-    private class TupleAddedObserver : BaseObserver
+    private class ExpansionsObserver : BaseObserver
     {
-        public TupleAddedObserver() => Observe(SpaceEvent.TupleAdded);
+        public ExpansionsObserver() => Interested(In.Expansions);
     }
 
-    private class TupleRemovedObserver : BaseObserver
+    private class ContractionsObserver : BaseObserver
     {
-        public TupleRemovedObserver() => Observe(SpaceEvent.TupleRemoved);
+        public ContractionsObserver() => Interested(In.Contractions);
     }
 
-    private class EmptySpaceObserver : BaseObserver
+    private class CombinedObserver : BaseObserver
     {
-        public EmptySpaceObserver()
+        public CombinedObserver() => Interested(In.Expansions | In.Contractions);
+    }
+
+    private class FlatteningsObserver : BaseObserver
+    {
+        public FlatteningsObserver() => Interested(In.Flattening);
+    }
+
+    private class NothingObserver : BaseObserver
+    {
+        public NothingObserver() => Interested(In.Nothing);
+    }
+
+    private class DynamicObserver : BaseObserver
+    {
+        public DynamicObserver() => Interested(In.Expansions);
+
+        public void Reset()
         {
-            Observe(SpaceEvent.SpaceEmptied);
+            LastTuple = new();
+            LastTemplate = new();
+            LastFlattening = false;
+        }
+
+        public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+        {
+            base.OnExpansionAsync(tuple, cancellationToken);
+            Interested(In.Contractions);
+
+            return Task.CompletedTask;
+        }
+
+        public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        {
+            base.OnContractionAsync(template, cancellationToken);
+            Interested(In.Flattening);
+
+            return Task.CompletedTask;
+        }
+
+        public override Task OnFlatteningAsync(CancellationToken cancellationToken)
+        {
+            base.OnFlatteningAsync(cancellationToken);
+            Interested(In.Nothing);
+
+            return Task.CompletedTask;
         }
     }
 
-    private class TupleAddedAndRemovedObserver : BaseObserver
+    private class BaseObserver : OrleanSpaces.Observers.DynamicObserver
     {
-        public TupleAddedAndRemovedObserver()
-        {
-            Interested(In.TupleAdditions);
-            Interested(In.TupleRemovals);
-            Interested(In.SpaceEmptying);
-        }
-    }
+        public SpaceTuple LastTuple { get; protected set; } = new();
+        public SpaceTemplate LastTemplate { get; protected set; } = new();
+        public bool LastFlattening { get; protected set; }
 
-    private class BaseObserver : SpaceObserver
-    {
-        public SpaceTuple LastTuple { get; private set; } = new();
-        public SpaceTemplate LastTemplate { get; private set; } = new();
-        public bool SpaceEmptiedReceived { get; private set; }
-
-        public override Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+        public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
         {
             LastTuple = tuple;
             return Task.CompletedTask;
         }
 
-        public override Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
+        public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
         {
             LastTemplate = template;
             return Task.CompletedTask;
         }
 
-        public override Task OnEmptyAsync(CancellationToken cancellationToken)
+        public override Task OnFlatteningAsync(CancellationToken cancellationToken)
         {
-            SpaceEmptiedReceived = true;
+            LastFlattening = true;
             return Task.CompletedTask;
         }
     }

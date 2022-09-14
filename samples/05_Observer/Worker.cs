@@ -76,9 +76,7 @@ public class Worker : BackgroundService
             await agent.PopAsync(template);
         }
 
-        agent.Unsubscribe(pongerRef);
-        agent.Unsubscribe(auditorRef);
-        agent.Unsubscribe(completerRef);
+        await Task.Delay(3000, cancellationToken);   // Giving some time for Completer.cs to do its thing.
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

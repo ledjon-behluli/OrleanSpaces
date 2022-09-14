@@ -44,7 +44,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     {
         if (tuple.IsPassive)
         {
-            throw new ArgumentException("Passive tuples are not allowed to be writen in the tuple space.");
+            throw new ArgumentException("Passive tuples are not allowed to be writen _in the tuple space.");
         }
 
         space.State.Tuples.Add(tuple);

@@ -1,15 +1,16 @@
 ﻿using OrleanSpaces.Observers;
 
-public class Completer : SpaceObserver
+public class Completer : DynamicObserver
 {
     public Completer()
     {
-        Observe(SpaceEvent.SpaceEmptied);
+        Interested(In.Flattening);
     }
 
-    public override async Task OnEmptyAsync(CancellationToken cancellationToken)
+    public override async Task OnFlatteningAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine("COMPLETER-er: Got info that space is empty. Performing some gracefully shutdown ops...");
-        await Task.Delay(1000);
+        Console.WriteLine("COMPLETER-er: Space has been flattened. Performing gracefully shutdown...");
+        await Task.Delay(1000, cancellationToken);
+        Console.WriteLine("COMPLETER-er: Done");
     }
 }

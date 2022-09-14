@@ -19,7 +19,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Notify_All_Observers_On_Added_And_Removed()
+    public async Task Should_Notify_All_Observers_On_Expansion_And_Contraction()
     {
         using var scope = fixture.StartScope();
 
@@ -53,7 +53,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     }
 
     [Fact]
-    public async Task Should_Notify_All_Observers_On_Empty_Space()
+    public async Task Should_Notify_All_Observers_On_Flattening()
     {
         using var scope = fixture.StartScope();
 
@@ -63,13 +63,13 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         await channel.Writer.WriteAsync(SpaceUnit.Null);
 
-        while (scope.TotalInvoked(observer => observer.SpaceEmptiedReceived) < 3)
+        while (scope.TotalInvoked(observer => observer.LastFlattening) < 3)
         {
 
         }
 
         Assert.All(scope.Observers, observer =>
-            Assert.True(observer.SpaceEmptiedReceived));
+            Assert.True(observer.LastFlattening));
     }
 
     [Fact]

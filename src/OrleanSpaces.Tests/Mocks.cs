@@ -21,39 +21,36 @@ public class TestTupleRouter : ITupleRouter
     }
 }
 
-public class TestObserver : SpaceObserver
+public class TestObserver : DynamicObserver
 {
     public SpaceTuple LastTuple { get; private set; } = new();
     public SpaceTemplate LastTemplate { get; private set; } = new();
-    public bool SpaceEmptiedReceived { get; private set; }
+    public bool LastFlattening { get; private set; }
 
-    public TestObserver()
-    {
-        ObserveAll();
-    }
+    public TestObserver() => Interested(In.Everything);
 
-    public override Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         LastTuple = tuple;
         return Task.CompletedTask;
     }
 
-    public override Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
     {
         LastTemplate = template;
         return Task.CompletedTask;
     }
 
-    public override Task OnEmptyAsync(CancellationToken cancellationToken)
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken)
     {
-        SpaceEmptiedReceived = true;
+        LastFlattening = true;
         return Task.CompletedTask;
     }
 }
 
 public class ThrowingTestObserver : TestObserver
 {
-    public override Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         throw new Exception("Test");
     }

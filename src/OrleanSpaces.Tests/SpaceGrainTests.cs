@@ -40,7 +40,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Notify_Observer_On_Empty_Space()
+    public async Task Should_Notify_Observer_On_Flattening()
     {
         SpaceTuple tuple1 = new(1);
         SpaceTuple tuple2 = new((1, "a"));
@@ -49,10 +49,10 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         await grain.WriteAsync(tuple2);
 
         _ = await grain.PopAsync(tuple1);
-        Assert.False(observer.SpaceEmptiedReceived);
+        Assert.False(observer.LastFlattening);
 
         _ = await grain.PopAsync(tuple2);
-        Assert.True(observer.SpaceEmptiedReceived);
+        Assert.True(observer.LastFlattening);
 
         // Clear for next test
         await grain.PopAsync(tuple1);
@@ -63,7 +63,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Notify_Observer_On_Added_And_Removed(SpaceTuple tuple)
+    public async Task Should_Notify_Observer_On_Expansion_And_Contraction(SpaceTuple tuple)
     {
         // Add
         await grain.WriteAsync(tuple);
@@ -83,7 +83,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         public SpaceTuple LastTuple { get; private set; } = new();
         public SpaceTemplate LastTemplate { get; private set; } = new();
-        public bool SpaceEmptiedReceived { get; private set; }
+        public bool LastFlattening { get; private set; }
 
         public Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
         {
@@ -97,7 +97,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
             }
             else if (tuple is SpaceUnit)
             {
-                SpaceEmptiedReceived = true;
+                LastFlattening = true;
             }
 
             return Task.CompletedTask;
@@ -109,7 +109,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         public void Reset()
         {
             LastTuple = SpaceTuple.Passive;
-            SpaceEmptiedReceived = false;
+            LastFlattening = false;
         }
     }
 }
