@@ -21,23 +21,28 @@ public class TestTupleRouter : ITupleRouter
     }
 }
 
-public class TestObserver : ISpaceObserver
+public class TestObserver : SpaceObserver
 {
     public SpaceTuple LastReceived { get; private set; } = SpaceTuple.Passive;
     public bool SpaceEmptiedReceived { get; private set; }
 
-    public virtual Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public TestObserver()
+    {
+        ObserveAll();
+    }
+
+    public override Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         LastReceived = tuple;
         return Task.CompletedTask;
     }
 
-    public virtual Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    public override Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
-    public Task OnEmptyAsync(CancellationToken cancellationToken)
+    public override Task OnEmptyAsync(CancellationToken cancellationToken)
     {
         SpaceEmptiedReceived = true;
         return Task.CompletedTask;

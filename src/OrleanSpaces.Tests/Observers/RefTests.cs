@@ -8,7 +8,7 @@ public class RefTests
     public void Should_Create()
     {
         Guid id = Guid.NewGuid();
-        ISpaceObserver observer = new TestObserver();
+        TestObserver observer = new();
 
         ObserverRef @ref = new(id, observer);
 
@@ -20,7 +20,7 @@ public class RefTests
     public void Should_Equal()
     {
         Guid id = Guid.NewGuid();
-        ISpaceObserver observer = new TestObserver();
+        TestObserver observer = new();
 
         ObserverRef ref1 = new(id, observer);
         ObserverRef ref2 = new(id, observer);
@@ -44,7 +44,7 @@ public class RefTests
     [Fact]
     public void Should_Not_Equal_If_Ids_Dont_Match()
     {
-        ISpaceObserver observer = new TestObserver();
+        TestObserver observer = new();
 
         ObserverRef ref1 = new(Guid.NewGuid(), observer);
         ObserverRef ref2 = new(Guid.NewGuid(), observer);

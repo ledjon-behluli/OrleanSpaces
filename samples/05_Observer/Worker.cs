@@ -5,15 +5,21 @@ using Microsoft.Extensions.Hosting;
 public class Worker : BackgroundService
 {
     private readonly Ponger ponger;
+    private readonly Auditor auditor;
+    private readonly Completer completer;
     private readonly ISpaceChannel channel;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
         Ponger ponger,
+        Auditor auditor,
+        Completer completer,
         ISpaceChannel channel,
         IHostApplicationLifetime lifetime)
     {
         this.ponger = ponger;
+        this.auditor = auditor;
+        this.completer = completer;
         this.channel = channel;
         this.lifetime = lifetime;
     }
@@ -27,7 +33,9 @@ public class Worker : BackgroundService
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");
 
-        var obsvRef = agent.Subscribe(ponger);
+        var pongerRef = agent.Subscribe(ponger);
+        var auditorRef = agent.Subscribe(auditor);
+        var completerRef = agent.Subscribe(completer);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -39,7 +47,7 @@ public class Worker : BackgroundService
 
             if (message == "-u")
             {
-                agent.Unsubscribe(obsvRef);
+                agent.Unsubscribe(pongerRef);
                 continue;
             }
 
@@ -68,7 +76,9 @@ public class Worker : BackgroundService
             await agent.PopAsync(template);
         }
 
-        agent.Unsubscribe(obsvRef);
+        agent.Unsubscribe(pongerRef);
+        agent.Unsubscribe(auditorRef);
+        agent.Unsubscribe(completerRef);
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Orleans.Concurrency;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
+[Immutable]
 [Serializable]
 public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 {
@@ -9,7 +11,6 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
     public object this[int index] => tuple[index];
     public int Length => tuple.Length;
-
 
     private static readonly SpaceTuple passive = new();
     public static ref readonly SpaceTuple Passive => ref passive;

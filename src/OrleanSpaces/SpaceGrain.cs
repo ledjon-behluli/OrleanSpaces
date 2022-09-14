@@ -1,6 +1,7 @@
 ﻿using Orleans;
 using Orleans.Runtime;
 using Orleans.Streams;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;

@@ -45,7 +45,7 @@ public class SpaceTemplateBenchmarks
     }
 
     #endregion
-/*
+
     #region Equality
 
     private readonly static SpaceTemplate baseTemplate = new(1);
@@ -101,7 +101,7 @@ public class SpaceTemplateBenchmarks
 
     private readonly static SpaceTuple tuple = new((1, "a", 1.5f));
     private readonly static SpaceTemplate template1 = new((1, "a", 1.5f));
-    private readonly static SpaceTemplate template2 = new((1, SpaceUnit.Passive, 1.5f));
+    private readonly static SpaceTemplate template2 = new((1, SpaceUnit.Null, 1.5f));
     private readonly static SpaceTemplate template3 = new((1, "a", 2.5f));
     private readonly static SpaceTemplate template4 = new((1, "a"));
 
@@ -134,7 +134,6 @@ public class SpaceTemplateBenchmarks
     }
 
     #endregion
-*/
 }
 
 public readonly partial struct SpaceTemplateCachedFactory

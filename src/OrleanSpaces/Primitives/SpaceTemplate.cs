@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Orleans.Concurrency;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
+[Immutable]
 [Serializable]
 public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 {

@@ -5,53 +5,48 @@ namespace OrleanSpaces.Observers;
 
 public abstract class SpaceObserver
 {
-    private readonly Dictionary<EventType, bool> choices = new()
+    private readonly Dictionary<SpaceEvent, bool> events = new()
     {
-        { EventType.TupleAdded, false },
-        { EventType.TupleRemoved, false },
-        { EventType.SpaceEmptied, false }
+        { SpaceEvent.TupleAdded, false },
+        { SpaceEvent.TupleRemoved, false },
+        { SpaceEvent.SpaceEmptied, false }
     };
 
-    protected void Observe(EventType type) => choices[type] = true;
+    protected void Observe(SpaceEvent type) => events[type] = true;
     protected void ObserveAll()
     {
-        foreach (var type in choices.Keys)
+        foreach (var type in events.Keys)
         {
             Observe(type);
         }
     }
 
-    internal async Task Handle(ITuple tuple, CancellationToken cancellationToken)
+    internal async ValueTask Handle(ITuple tuple, CancellationToken cancellationToken)
     {
-        if (tuple is SpaceTuple spaceTuple && choices[EventType.TupleAdded])
+        if (tuple is SpaceTuple spaceTuple && events[SpaceEvent.TupleAdded])
         {
             await OnAddedAsync(spaceTuple, cancellationToken);
             return;
         }
 
-        if (tuple is SpaceTemplate template && choices[EventType.TupleRemoved])
+        if (tuple is SpaceTemplate template && events[SpaceEvent.TupleRemoved])
         {
             await OnRemovedAsync(template, cancellationToken);
             return;
         }
 
-        if (tuple is SpaceUnit && choices[EventType.SpaceEmptied])
+        if (tuple is SpaceUnit && events[SpaceEvent.SpaceEmptied])
         {
             await OnEmptyAsync(cancellationToken);
             return;
         }
     }
 
-    public virtual Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken)
-        => Task.CompletedTask;
+    public virtual Task OnAddedAsync(SpaceTuple tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    public virtual Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken) => Task.CompletedTask;
+    public virtual Task OnEmptyAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    public virtual Task OnEmptyAsync(CancellationToken cancellationToken)
-        => Task.CompletedTask;
-
-    public virtual Task OnRemovedAsync(SpaceTemplate template, CancellationToken cancellationToken)
-        => Task.CompletedTask;
-
-    protected enum EventType
+    protected enum SpaceEvent
     {
         TupleAdded,
         TupleRemoved,
