@@ -29,25 +29,32 @@ public class Fixture : IAsyncLifetime
     public class TestObserverScope : IDisposable
     {
         private readonly ObserverRegistry registry;
-        public List<TestObserver> Observers { get; private set; } = new();
+        private readonly Dictionary<Guid, TestObserver> localRegistry;
+
+        public IEnumerable<TestObserver> Observers => localRegistry.Values;
 
         internal TestObserverScope(ObserverRegistry registry)
         {
             this.registry = registry;
+            this.localRegistry = new();
         }
 
         public int TotalInvoked(Func<TestObserver, bool> func) => Observers.Count(observer => func(observer));
 
         public void AddObserver(TestObserver observer)
         {
-            Observers.Add(observer);
+            localRegistry.Add(Guid.NewGuid(), observer);
             registry.Add(observer);
         }
 
         public void Dispose()
         {
-            Observers.ForEach(x => registry.Remove(x));
-            Observers.Clear();
+            foreach (Guid key in localRegistry.Keys)
+            {
+                registry.Remove(key);
+            }
+
+            localRegistry.Clear();
         }
     }
 }

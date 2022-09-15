@@ -151,7 +151,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         => new(observerRegistry.Add(observer), observer);
 
     public void Unsubscribe(ObserverRef @ref)
-        => observerRegistry.Remove(@ref.Observer);
+        => observerRegistry.Remove(@ref.Id);
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);

@@ -1,6 +1,7 @@
 ﻿using OrleanSpaces;
 using OrleanSpaces.Primitives;
 using Microsoft.Extensions.Hosting;
+using OrleanSpaces.Observers;
 
 public class Worker : BackgroundService
 {
@@ -35,6 +36,8 @@ public class Worker : BackgroundService
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
         Console.WriteLine("----------------------\n");
+
+        ObserverRef observerRef = new ObserverRef()
 
         var pongerRef = agent.Subscribe(ponger);
         _ = agent.Subscribe(auditor);

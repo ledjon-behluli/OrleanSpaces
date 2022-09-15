@@ -29,7 +29,7 @@ public class RegistryTests
     [Fact]
     public void Should_Remove_Observer()
     {
-        registry.Remove(observer);
+        registry.Remove(observerId);
         Assert.Empty(registry.Observers);
     }
 
@@ -51,6 +51,5 @@ public class RegistryTests
     public void Should_Throw_If_Null()
     {
         Assert.Throws<ArgumentNullException>(() => registry.Add(null));
-        Assert.Throws<ArgumentNullException>(() => registry.Remove(null));
     }
 }

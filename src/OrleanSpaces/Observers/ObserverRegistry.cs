@@ -10,7 +10,13 @@ internal sealed class ObserverRegistry
 
     public Guid Add(ISpaceObserver observer)
     {
-        SpaceObserver _observer = Compose(observer);
+        if (observer == null)
+        {
+            throw new ArgumentNullException(nameof(observer));
+        }
+
+        SpaceObserver _observer = observer is SpaceObserver spaceObserver ?
+            spaceObserver : new ObserverDecorator(observer);
 
         if (!observers.TryGetValue(_observer, out _))
         {
@@ -20,12 +26,14 @@ internal sealed class ObserverRegistry
         return observers[_observer];
     }
 
-    public void Remove(ISpaceObserver observer)
-        => observers.TryRemove(Compose(observer), out _);
-
-    private static SpaceObserver Compose(ISpaceObserver observer) =>
-        observer is SpaceObserver spaceObserver ?
-        spaceObserver : new ObserverDecorator(observer);
+    public void Remove(Guid id)
+    {
+        SpaceObserver key = observers.SingleOrDefault(x => x.Value == id).Key;
+        if (key != null)
+        {
+            observers.TryRemove(key, out _);
+        }
+    }
 
     private class ObserverDecorator : SpaceObserver
     {
