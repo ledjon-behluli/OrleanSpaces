@@ -27,9 +27,9 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(ISiloBuilder siloBuilder)
         {
-            siloBuilder.AddSimpleMessageStreamProvider(StreamNames.PubSubProvider);
-            siloBuilder.AddMemoryGrainStorage(StreamNames.PubSubStore);
-            siloBuilder.AddMemoryGrainStorage(StorageNames.TupleSpaceStore);
+            siloBuilder.AddSimpleMessageStreamProvider(Constants.PubSubProvider);
+            siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
+            siloBuilder.AddMemoryGrainStorage(Constants.PersistenceStore);
             siloBuilder.AddTupleSpace();
         }
     }
@@ -38,7 +38,7 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
         {
-            clientBuilder.AddSimpleMessageStreamProvider(StreamNames.PubSubProvider);
+            clientBuilder.AddSimpleMessageStreamProvider(Constants.PubSubProvider);
             clientBuilder.AddTupleSpace();
         }
     }

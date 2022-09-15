@@ -6,7 +6,7 @@ using Orleans.Hosting;
 
 var client = new ClientBuilder()
     .UseLocalhostClustering()
-    .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+    .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
     .AddTupleSpace()
     .Build();
 

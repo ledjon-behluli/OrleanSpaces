@@ -25,8 +25,8 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task InitializeAsync()
     {
         streamId = await grain.ListenAsync();
-        var provider = client.GetStreamProvider(StreamNames.PubSubProvider);
-        stream = provider.GetStream<ITuple>(streamId, StreamNamespaces.Tuple);
+        var provider = client.GetStreamProvider(Constants.PubSubProvider);
+        stream = provider.GetStream<ITuple>(streamId, Constants.StreamNamespace);
         await stream.SubscribeAsync(observer);
     }
 

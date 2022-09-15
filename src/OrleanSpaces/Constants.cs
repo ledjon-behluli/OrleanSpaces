@@ -1,17 +1,9 @@
 ﻿namespace OrleanSpaces;
 
-public static class StorageNames
+public static class Constants
 {
-    public const string TupleSpaceStore = "TupleSpaceStore";
-}
-
-public static class StreamNames
-{
+    public const string PersistenceStore = "TupleSpace";
+    public const string StreamNamespace = "TupleStream";
     public const string PubSubProvider = "PubSubProvider";
     public const string PubSubStore = "PubSubStore";
-}
-
-internal static class StreamNamespaces
-{
-    public const string Tuple = "Tuple";
 }

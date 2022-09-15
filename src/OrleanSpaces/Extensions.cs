@@ -31,7 +31,7 @@ public static class Extensions
         static IClusterClient BuildDefaultClient() =>
             new ClientBuilder()
                 .UseLocalhostClustering()
-                .AddSimpleMessageStreamProvider(StreamNames.PubSubProvider)
+                .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
                 .Build();
     }
 

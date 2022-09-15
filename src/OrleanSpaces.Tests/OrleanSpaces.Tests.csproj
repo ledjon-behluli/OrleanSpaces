@@ -29,4 +29,8 @@
     <Orleans_CodeGenInputs Remove="Primitives\TypeCheckerTests.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Orleans_CodeGenInputs Remove="ConstantsTests.cs" />
+  </ItemGroup>
+
 </Project>
