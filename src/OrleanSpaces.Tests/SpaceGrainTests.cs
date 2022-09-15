@@ -19,14 +19,14 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         observer = new();
         client = fixture.Client;
-        grain = fixture.Client.GetGrain<ISpaceGrain>(Guid.Empty);
+        grain = fixture.Client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
     }
 
     public async Task InitializeAsync()
     {
         streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<ITuple>(streamId, Constants.StreamNamespace);
+        stream = provider.GetStream<ITuple>(streamId, Constants.TupleStream);
         await stream.SubscribeAsync(observer);
     }
 

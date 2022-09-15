@@ -8,7 +8,7 @@ var host = new SiloHostBuilder()
     .UseLocalhostClustering()
     .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
     .AddMemoryGrainStorage(Constants.PubSubStore)
-    .AddMemoryGrainStorage(Constants.PersistenceStore)
+    .AddMemoryGrainStorage(Constants.TupleSpaceStore)
     .AddTupleSpace()
     .ConfigureLogging(builder => builder.AddConsole())
     .Build();

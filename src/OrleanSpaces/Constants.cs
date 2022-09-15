@@ -2,8 +2,10 @@
 
 public static class Constants
 {
-    public const string PersistenceStore = "TupleSpace";
-    public const string StreamNamespace = "TupleStream";
+    public const string TupleSpaceStore = "TupleSpaceStore";
     public const string PubSubProvider = "PubSubProvider";
     public const string PubSubStore = "PubSubStore";
+
+    internal const string TupleStream = "TupleStream";
+    internal static readonly Guid SpaceGrainId = Guid.Empty;
 }

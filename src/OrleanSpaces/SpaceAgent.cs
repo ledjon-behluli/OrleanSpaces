@@ -96,11 +96,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
             await client.Connect();
         }
 
-        grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
+        grain = client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
 
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<ITuple>(streamId, Constants.StreamNamespace);
+        var stream = provider.GetStream<ITuple>(streamId, Constants.TupleStream);
 
         await stream.SubscribeAsync(this);
     }

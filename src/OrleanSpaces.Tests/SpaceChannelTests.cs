@@ -51,10 +51,10 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
     {
         _ = await OpenChannelAndGetAgentConcurrently();
 
-        var grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
+        var grain = client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
         var streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<ITuple>(streamId, Constants.StreamNamespace);
+        var stream = provider.GetStream<ITuple>(streamId, Constants.TupleStream);
 
         var subscriptions = await stream.GetAllSubscriptionHandles();
         Assert.Equal(1, subscriptions.Count);
