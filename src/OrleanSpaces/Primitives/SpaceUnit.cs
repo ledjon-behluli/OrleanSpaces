@@ -11,7 +11,7 @@ public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<Sp
     public static ref readonly SpaceUnit Null => ref @null;
 
     int ITuple.Length => 1;
-    object ITuple.this[int index] => Null;
+    object ITuple.this[int index] => index == 0 ? Null : throw new IndexOutOfRangeException();
 
     public bool Equals(SpaceUnit other) => true;
     public override bool Equals(object? obj) => obj is SpaceUnit;

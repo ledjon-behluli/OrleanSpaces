@@ -182,7 +182,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Sort_By_Length_Ascending()
+    public void Should_Sort()
     {
         List<SpaceTuple> actual = new()
         {

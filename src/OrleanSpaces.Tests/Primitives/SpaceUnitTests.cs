@@ -47,13 +47,19 @@ public class SpaceUnitTests
         Assert.Equal(1, ((ITuple)SpaceUnit.Null).Length);
     }
 
+    [Fact]
+    public void Should_Return_Itself_On_Zero_Index()
+    {
+        Assert.Equal(SpaceUnit.Null, ((ITuple)SpaceUnit.Null)[0]);
+    }
+
     [Theory]
-    [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
-    public void Should_Return_Itself_On_Any_Index(int index)
+    [InlineData(3)]
+    public void Should_Throw_On_Non_Zero_Index(int index)
     {
-        Assert.Equal(SpaceUnit.Null, ((ITuple)SpaceUnit.Null)[index]);
+        Assert.Throws<IndexOutOfRangeException>(() => ((ITuple)SpaceUnit.Null)[index]);
     }
 
     [Fact]
