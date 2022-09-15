@@ -6,6 +6,12 @@ namespace OrleanSpaces.Tests.Primitives;
 public class SpaceTemplateTests
 {
     [Fact]
+    public void Should_Be_An_ITuple()
+    {
+        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTemplate)));
+    }
+
+    [Fact]
     public void Should_Be_Created_On_Tuple()
     {
         SpaceTemplate template = new((1, "a", 1.5f));
@@ -132,12 +138,6 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Assignable_From_Tuple()
-    {
-        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTemplate)));
-    }
-
-    [Fact]
     public void Should_Be_Equal()
     {
         SpaceTemplate template1 = new((1, "a", 1.5f, SpaceUnit.Null));
@@ -199,6 +199,38 @@ public class SpaceTemplateTests
         Assert.True(template1 != template2);
     }
 
+    [Theory]
+    [MemberData(nameof(CompareData))]
+    public void Should_Be_Compareable(SpaceTemplate value, int compareValue)
+    {
+        SpaceTemplate template = new(("a", "b"));
+        Assert.Equal(compareValue, template.CompareTo(value));
+    }
+
+    [Fact]
+    public void Should_Sort_By_Length_Ascending()
+    {
+        List<SpaceTemplate> actual = new()
+        {
+            new((1, 1)),
+            new(1),
+            new((1, 1, 1, 1)),
+            new((1, 1, 1))
+        };
+
+        List<SpaceTemplate> expected = new()
+        {
+            new(1),
+            new((1, 1)),
+            new((1, 1, 1)),
+            new((1, 1, 1, 1)),
+        };
+
+        actual.Sort();
+
+        Assert.StrictEqual(expected, actual);
+    }
+
     [Fact]
     public void Should_ToString()
     {
@@ -210,6 +242,17 @@ public class SpaceTemplateTests
         Assert.Equal("(1, a, 1.5, b, {NULL})", new SpaceTemplate((1, "a", 1.5f, 'b', SpaceUnit.Null)).ToString());
         Assert.Equal("(1, a, 1.5, b, {NULL}, System.Int32)", new SpaceTemplate((1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int))).ToString());
     }
+
+    public static object[][] CompareData() =>
+       new[]
+       {
+            new object[] { new SpaceTemplate(1), 1 },
+            new object[] { new SpaceTemplate(2), 1 },
+            new object[] { new SpaceTemplate((1, "a")), 0 },
+            new object[] { new SpaceTemplate((SpaceUnit.Null, 1)), 0 },
+            new object[] { new SpaceTemplate((1, "a", SpaceUnit.Null)), -1 },
+            new object[] { new SpaceTemplate(("a", SpaceUnit.Null, 1.8f)), -1 },
+       };
 }
 
 public class StatisfactionTests

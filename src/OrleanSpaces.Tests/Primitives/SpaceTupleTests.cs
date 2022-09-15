@@ -6,6 +6,12 @@ namespace OrleanSpaces.Tests.Primitives;
 public class SpaceTupleTests
 {
     [Fact]
+    public void Should_Be_An_ITuple()
+    {
+        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTuple)));
+    }
+
+    [Fact]
     public void Should_Be_Created_On_Tuple()
     {
         SpaceTuple tuple = new((1, "a", 1.5f, TestEnum.A));
@@ -106,12 +112,6 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Assignable_From_Tuple()
-    {
-        Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Equal()
     {
         SpaceTuple tuple1 = new((1, "a", 1.5f));
@@ -173,6 +173,38 @@ public class SpaceTupleTests
         Assert.True(tuple1 != tuple2);
     }
 
+    [Theory]
+    [MemberData(nameof(CompareData))]
+    public void Should_Be_Compareable(SpaceTuple value, int compareValue)
+    {
+        SpaceTuple tuple = new(("a", "b"));
+        Assert.Equal(compareValue, tuple.CompareTo(value));
+    }
+
+    [Fact]
+    public void Should_Sort_By_Length_Ascending()
+    {
+        List<SpaceTuple> actual = new()
+        {
+            new((1, 1)),
+            new(1),
+            new((1, 1, 1, 1)),
+            new((1, 1, 1))
+        };
+
+        List<SpaceTuple> expected = new()
+        {
+            new(1),
+            new((1, 1)),
+            new((1, 1, 1)),
+            new((1, 1, 1, 1)),
+        };
+
+        actual.Sort();
+
+        Assert.StrictEqual(expected, actual);
+    }
+
     [Fact]
     public void Should_ToString()
     {
@@ -182,4 +214,15 @@ public class SpaceTupleTests
         Assert.Equal("(1, a, 1.5)", new SpaceTuple((1, "a", 1.5f)).ToString());
         Assert.Equal("(1, a, 1.5, b)", new SpaceTuple((1, "a", 1.5f, 'b')).ToString());
     }
+
+    public static object[][] CompareData() =>
+        new[]
+        {
+            new object[] { new SpaceTuple(1), 1 },
+            new object[] { new SpaceTuple(2), 1 },
+            new object[] { new SpaceTuple((1, "a")), 0 },
+            new object[] { new SpaceTuple(("a", 1)), 0 },
+            new object[] { new SpaceTuple((1, "a", 1.5f)), -1 },
+            new object[] { new SpaceTuple(("a", 1, 1.8f)), -1 },
+        };
 }

@@ -6,57 +6,25 @@ namespace OrleanSpaces.Tests.Primitives;
 public class SpaceUnitTests
 {
     [Fact]
-    public void Should_Be_Equal_To_Each_Other()
-    {
-        var unit1 = SpaceUnit.Null;
-        var unit2 = SpaceUnit.Null;
-
-        Assert.Equal(unit1, unit2);
-        Assert.True(unit1 == unit2);
-        Assert.False(unit1 != unit2);
-    }
-
-    [Fact]
-    public void Should_Be_Equatable()
-    {
-        Dictionary<SpaceUnit, string> dictionary = new()
-        {
-            { new SpaceUnit(), "value" },
-        };
-
-        Assert.Equal("value", dictionary[default]);
-    }
-
-    [Fact]
-    public void Should_Be_Assignable_From_Tuple()
+    public void Should_Be_An_ITuple()
     {
         Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceUnit)));
     }
 
-    [Fact]
-    public void Should_Have_Length_Of_One()
-    {
-        Assert.Equal(1, SpaceUnit.Null.Length);
-    }
+    //[Fact]
+    //public void Should_Be_Equatable()
+    //{
+    //    Dictionary<SpaceUnit, string> dictionary = new()
+    //    {
+    //        { new SpaceUnit(), "value" },
+    //    };
+
+    //    Assert.Equal("value", dictionary[default]);
+    //}
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    public void Should_Return_Itself_On_Any_Index(int index)
-    {
-        Assert.Equal(SpaceUnit.Null, SpaceUnit.Null[index]);
-    }
-
-    [Fact]
-    public void Should_ToString()
-    {
-        Assert.Equal("{NULL}", SpaceUnit.Null.ToString());
-    }
-
-    [Theory]
-    [MemberData(nameof(InlineData))]
-    public void Should_Be_Equal(object value, bool isEqual)
+    [MemberData(nameof(Data))]
+    public void Should_Be_Equatable(object value, bool isEqual)
     {
         var unit = SpaceUnit.Null;
 
@@ -66,7 +34,43 @@ public class SpaceUnitTests
             Assert.False(unit.Equals(value));
     }
 
-    public static object[][] InlineData() =>
+    [Theory]
+    [MemberData(nameof(CompareData))]
+    public void Should_Be_Compareable(SpaceUnit unit)
+    {
+        Assert.Equal(0, SpaceUnit.Null.CompareTo(unit));
+    }
+
+    [Fact]
+    public void Should_Have_Length_Of_One()
+    {
+        Assert.Equal(1, ((ITuple)SpaceUnit.Null).Length);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Should_Return_Itself_On_Any_Index(int index)
+    {
+        Assert.Equal(SpaceUnit.Null, ((ITuple)SpaceUnit.Null)[index]);
+    }
+
+    [Fact]
+    public void Should_ToString()
+    {
+        Assert.Equal("{NULL}", SpaceUnit.Null.ToString());
+    }
+
+    public static object[][] CompareData() =>
+        new[]
+        {
+            new object[] { SpaceUnit.Null },
+            new object[] { new SpaceUnit() },
+            new object[] { default(SpaceUnit) },
+        };
+
+    public static object[][] Data() =>
         new[]
         {
             new object[] { new object(), false },

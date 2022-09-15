@@ -5,7 +5,7 @@ namespace OrleanSpaces.Primitives;
 
 [Immutable]
 [Serializable]
-public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
+public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
     private readonly ITuple tuple;
 
@@ -65,8 +65,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
-    public override bool Equals(object obj) =>
-        obj is SpaceTuple tuple && Equals(tuple);
+    public override bool Equals(object obj) => obj is SpaceTuple tuple && Equals(tuple);
 
     public bool Equals(SpaceTuple other)
     {
@@ -85,6 +84,8 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>
 
         return true;
     }
+
+    public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => tuple.GetHashCode();
 
