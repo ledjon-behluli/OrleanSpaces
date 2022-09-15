@@ -25,7 +25,7 @@ internal sealed class ObserverProcessor : BackgroundService
         {
             List<Task> tasks = new();
 
-            foreach (var observer in registry.Observers)
+            foreach (SpaceObserver observer in registry.Observers)
             {
                 tasks.Add(NotifyAsync(observer, tuple, cancellationToken));
             }
@@ -38,7 +38,7 @@ internal sealed class ObserverProcessor : BackgroundService
     {
         try
         {
-            await observer.HandleAsync(tuple, cancellationToken);
+            await observer.NotifyAsync(tuple, cancellationToken);
         }
         catch
         {

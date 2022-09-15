@@ -9,13 +9,13 @@ public partial class ObserverTests
     private static readonly SpaceTemplate template = new(1);
 
     private static Func<SpaceObserver, Task> Expansion =>
-        async (observer) => await observer.HandleAsync(tuple, default);
+        async (observer) => await observer.NotifyAsync(tuple, default);
 
     private static Func<SpaceObserver, Task> Contraction =>
-        async (observer) => await observer.HandleAsync(template, default);
+        async (observer) => await observer.NotifyAsync(template, default);
 
     private static Func<SpaceObserver, Task> Flattening =>
-        async (observer) => await observer.HandleAsync(SpaceUnit.Null, default);
+        async (observer) => await observer.NotifyAsync(SpaceUnit.Null, default);
 
     private static Func<SpaceObserver, Task> Everything =>
         async (observer) =>

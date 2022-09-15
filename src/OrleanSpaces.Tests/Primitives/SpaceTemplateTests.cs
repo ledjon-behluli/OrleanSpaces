@@ -208,7 +208,7 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Sort()
+    public void Should_Sort_By_Length_Asc()
     {
         List<SpaceTemplate> actual = new()
         {
@@ -228,7 +228,7 @@ public class SpaceTemplateTests
 
         actual.Sort();
 
-        Assert.StrictEqual(expected, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

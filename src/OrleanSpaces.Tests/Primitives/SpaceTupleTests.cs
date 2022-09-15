@@ -182,7 +182,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Sort()
+    public void Should_Sort_By_Length_Asc()
     {
         List<SpaceTuple> actual = new()
         {
@@ -191,7 +191,6 @@ public class SpaceTupleTests
             new((1, 1, 1, 1)),
             new((1, 1, 1))
         };
-
         List<SpaceTuple> expected = new()
         {
             new(1),
@@ -202,7 +201,7 @@ public class SpaceTupleTests
 
         actual.Sort();
 
-        Assert.StrictEqual(expected, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]

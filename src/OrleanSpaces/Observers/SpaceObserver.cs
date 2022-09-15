@@ -16,7 +16,7 @@ public abstract class SpaceObserver : ISpaceObserver
 
     protected void ListenTo(ObservationType type) => this.type = type;
 
-    internal async ValueTask HandleAsync(ITuple tuple, CancellationToken cancellationToken)
+    internal async ValueTask NotifyAsync(ITuple tuple, CancellationToken cancellationToken)
     {
         if (tuple is SpaceTuple spaceTuple && type.HasFlag(Expansions))
         {
