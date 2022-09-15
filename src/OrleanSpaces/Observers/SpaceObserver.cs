@@ -12,22 +12,6 @@ public interface ISpaceObserver
 
 public abstract class SpaceObserver : ISpaceObserver
 {
-    [Flags]
-    protected enum ObservationType
-    {
-        Nothing = 1 << 0,
-        Expansions = 1 << 1,
-        Contractions = 1 << 2,
-        Flattenings = 1 << 3,
-        Everything = Expansions | Contractions | Flattenings
-    }
-
-    protected static readonly ObservationType Nothing = ObservationType.Nothing;
-    protected static readonly ObservationType Expansions = ObservationType.Expansions;
-    protected static readonly ObservationType Contractions = ObservationType.Contractions;
-    protected static readonly ObservationType Flattenings = ObservationType.Flattenings;
-    protected static readonly ObservationType Everything = ObservationType.Everything;
-
     private ObservationType type = ObservationType.Nothing;
 
     protected void ListenTo(ObservationType type) => this.type = type;
@@ -56,4 +40,20 @@ public abstract class SpaceObserver : ISpaceObserver
     public virtual Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) => Task.CompletedTask;
     public virtual Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken) => Task.CompletedTask;
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    [Flags]
+    protected enum ObservationType
+    {
+        Nothing = 1 << 0,
+        Expansions = 1 << 1,
+        Contractions = 1 << 2,
+        Flattenings = 1 << 3,
+        Everything = Expansions | Contractions | Flattenings
+    }
+
+    protected static readonly ObservationType Nothing = ObservationType.Nothing;
+    protected static readonly ObservationType Expansions = ObservationType.Expansions;
+    protected static readonly ObservationType Contractions = ObservationType.Contractions;
+    protected static readonly ObservationType Flattenings = ObservationType.Flattenings;
+    protected static readonly ObservationType Everything = ObservationType.Everything;
 }
