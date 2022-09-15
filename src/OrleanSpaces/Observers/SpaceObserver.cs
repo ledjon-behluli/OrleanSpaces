@@ -44,10 +44,10 @@ public abstract class SpaceObserver : ISpaceObserver
     [Flags]
     protected enum ObservationType
     {
-        Nothing = 1 << 0,
-        Expansions = 1 << 1,
-        Contractions = 1 << 2,
-        Flattenings = 1 << 3,
+        Nothing = 0,
+        Expansions = 1,
+        Contractions = 2,
+        Flattenings = 4,
         Everything = Expansions | Contractions | Flattenings
     }
 
