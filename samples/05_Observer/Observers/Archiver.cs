@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+using System;
 using System.Text;
 
 // Example of a class that "has" to inherit from another class, at the same time being a space observer.
@@ -9,24 +10,24 @@ public class Archiver : Encoder, ISpaceObserver
 {
     public Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        var data = Encode(tuple.ToString());
-        Console.WriteLine($"ARCHIVER: Archived tuple '{data}'");
-
+        Console.WriteLine($"ARCHIVER: Archived tuple '{Encode(tuple.ToString())}'");
         return Task.CompletedTask;
     }
 
     public Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
     {
-        var data = Encode(template.ToString());
-        Console.WriteLine($"ARCHIVER: Archived template '{data}'");
-
+        Console.WriteLine($"ARCHIVER: Archived template '{Encode(template.ToString())}'");
         return Task.CompletedTask;
     }
 
-    public Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task OnFlatteningAsync(CancellationToken cancellationToken)
+    {
+        Console.WriteLine("ARCHIVER: I don't care about Flattening's, yet since I inhert from 'Encoder' I need to use the interface instead.");
+        return Task.CompletedTask;
+    }
 }
 
 public class Encoder
 {
-    public byte[] Encode(string value) => Encoding.UTF8.GetBytes(value);
+    public string Encode(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
 }
