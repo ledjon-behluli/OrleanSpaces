@@ -12,8 +12,8 @@ namespace OrleanSpaces;
 
 public interface ISpaceAgent
 {
-    ObserverRef Subscribe(ISpaceObserver observer);
-    void Unsubscribe(ObserverRef @ref);
+    Guid Subscribe(ISpaceObserver observer);
+    void Unsubscribe(Guid id);
 
     /// <summary>
     /// <para>Used to write a tuple _in the tuple space.</para>
@@ -147,11 +147,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     #region ISpaceAgent
 
-    public ObserverRef Subscribe(ISpaceObserver observer)
-        => new(observerRegistry.Add(observer), observer);
+    public Guid Subscribe(ISpaceObserver observer)
+        => observerRegistry.Add(observer);
 
-    public void Unsubscribe(ObserverRef @ref)
-        => observerRegistry.Remove(@ref.Id);
+    public void Unsubscribe(Guid id)
+        => observerRegistry.Remove(id);
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);

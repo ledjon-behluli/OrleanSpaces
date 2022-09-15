@@ -27,7 +27,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
         scope.AddObserver(new TestObserver());
 
-        // Add
+        // Expand
         SpaceTuple tuple = new((1, "a"));
         await channel.Writer.WriteAsync(tuple);
 
@@ -36,7 +36,7 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         }
 
-        // Remove
+        // Contract
         SpaceTemplate template = tuple;
         await channel.Writer.WriteAsync(template);
 

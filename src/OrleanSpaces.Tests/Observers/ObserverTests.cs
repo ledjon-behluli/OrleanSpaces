@@ -3,7 +3,7 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Observers;
 
-public partial class ObserverTests 
+public class ObserverTests 
 {
     private static readonly SpaceTuple tuple = new(1);
     private static readonly SpaceTemplate template = new(1);

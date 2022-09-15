@@ -38,22 +38,19 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         TestObserver observer = new();
 
         // Subscribe
-        ObserverRef @ref = agent.Subscribe(observer);
+        Guid id = agent.Subscribe(observer);
 
-        Assert.NotNull(@ref);
-        Assert.NotNull(@ref.Observer);
-        Assert.NotEqual(Guid.Empty, @ref.Id);
-        Assert.Equal(observer, @ref.Observer);
+        Assert.NotEqual(Guid.Empty, id);
         Assert.Equal(1, observerRegistry.Observers.Count(x => x.Equals(observer)));
 
         // Re-subscribe
-        ObserverRef newRef = agent.Subscribe(observer);
+        Guid newId = agent.Subscribe(observer);
 
-        Assert.Equal(@ref, newRef);
+        Assert.Equal(id, newId);
         Assert.Equal(1, observerRegistry.Observers.Count(x => x.Equals(observer)));
 
         // Unsubscribe
-        agent.Unsubscribe(@ref);
+        agent.Unsubscribe(id);
         Assert.Equal(0, observerRegistry.Observers.Count(x => x.Equals(observer)));
     }
 
