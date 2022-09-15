@@ -9,7 +9,7 @@ public class Ponger : SpaceObserver
 
     public Ponger(ISpaceChannel channel)
     {
-        Show(Interest.InExpansions);
+        ListenTo(ObservationType.Expansions);
 
         this.channel = channel;
         template = new(("Ping", SpaceUnit.Null));

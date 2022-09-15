@@ -6,7 +6,7 @@ public class Auditor : SpaceObserver
 {
     public Auditor()
     {
-        Show(Interest.InExpansions | Interest.InContractions);
+        ListenTo(Expansions | Contractions);
     }
 
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)

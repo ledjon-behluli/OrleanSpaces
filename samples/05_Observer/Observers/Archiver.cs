@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
+
 // Example of a class that HAS to inherit from another class, at the same time being a space observer.
 // This class wouldn't be able to observe the space by inheriting from the SpaceObserver. 
 public class Archiver : Encoder, ISpaceObserver

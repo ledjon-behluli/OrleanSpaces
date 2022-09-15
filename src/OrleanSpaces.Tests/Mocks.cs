@@ -27,7 +27,7 @@ public class TestObserver : SpaceObserver
     public SpaceTemplate LastTemplate { get; private set; } = new();
     public bool LastFlattening { get; private set; }
 
-    public TestObserver() => Show(Interest.InEverything);
+    public TestObserver() => ListenTo(Contractions | Expansions);
 
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {

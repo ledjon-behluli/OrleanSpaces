@@ -27,7 +27,7 @@ public partial class ObserverTests
 
 
     [Fact]
-    public async Task Should_Invoke_All_For_EverythingObserver()
+    public async Task Should_Invoke_Everything()
     {
         EverythingObserver observer = new();
 
@@ -39,7 +39,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnExpansion_For_ExpansionsObserver()
+    public async Task Should_Invoke_OnExpansion()
     {
         ExpansionsObserver observer = new();
 
@@ -51,7 +51,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnContraction_For_ContractionsObserver()
+    public async Task Should_Invoke_OnContraction()
     {
         ContractionsObserver observer = new();
 
@@ -63,7 +63,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Invoke_OnExpansion_And_OnContraction_For_CombinedObserver()
+    public async Task Should_Invoke_OnExpansion_And_OnContraction()
     {
         CombinedObserver observer = new();
 
@@ -75,7 +75,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Invoke_Only_OnFlattening_For_FlatteningsObserver()
+    public async Task Should_Invoke_OnFlattening()
     {
         FlatteningsObserver observer = new();
 
@@ -87,7 +87,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Invoke_Nothing_For_NothingObserver()
+    public async Task Should_Invoke_Nothing()
     {
         NothingObserver observer = new();
         await Everything(observer);
@@ -98,7 +98,7 @@ public partial class ObserverTests
     }
 
     [Fact]
-    public async Task Should_Be_Able_To_Change_Interests_During_Runtime()
+    public async Task Should_Be_Dynamic()
     {
         DynamicObserver observer = new();
 
@@ -127,37 +127,37 @@ public partial class ObserverTests
 
     private class EverythingObserver : BaseObserver
     {
-        public EverythingObserver() => Show(Interest.InEverything);
+        public EverythingObserver() => ListenTo(Everything);
     }
 
     private class ExpansionsObserver : BaseObserver
     {
-        public ExpansionsObserver() => Show(Interest.InExpansions);
+        public ExpansionsObserver() => ListenTo(Expansions);
     }
 
     private class ContractionsObserver : BaseObserver
     {
-        public ContractionsObserver() => Show(Interest.InContractions);
+        public ContractionsObserver() => ListenTo(Contractions);
     }
 
     private class CombinedObserver : BaseObserver
     {
-        public CombinedObserver() => Show(Interest.InExpansions | Interest.InContractions);
+        public CombinedObserver() => ListenTo(Expansions | Contractions);
     }
 
     private class FlatteningsObserver : BaseObserver
     {
-        public FlatteningsObserver() => Show(Interest.InFlattening);
+        public FlatteningsObserver() => ListenTo(Flattenings);
     }
 
     private class NothingObserver : BaseObserver
     {
-        public NothingObserver() => Show(Interest.InNothing);
+        public NothingObserver() => ListenTo(Nothing);
     }
 
     private class DynamicObserver : BaseObserver
     {
-        public DynamicObserver() => Show(Interest.InExpansions);
+        public DynamicObserver() => ListenTo(Expansions);
 
         public void Reset()
         {
@@ -169,7 +169,7 @@ public partial class ObserverTests
         public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
         {
             base.OnExpansionAsync(tuple, cancellationToken);
-            Show(Interest.InContractions);
+            ListenTo(Contractions);
 
             return Task.CompletedTask;
         }
@@ -177,7 +177,7 @@ public partial class ObserverTests
         public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
         {
             base.OnContractionAsync(template, cancellationToken);
-            Show(Interest.InFlattening);
+            ListenTo(Flattenings);
 
             return Task.CompletedTask;
         }
@@ -185,7 +185,7 @@ public partial class ObserverTests
         public override Task OnFlatteningAsync(CancellationToken cancellationToken)
         {
             base.OnFlatteningAsync(cancellationToken);
-            Show(Interest.InNothing);
+            ListenTo(Nothing);
 
             return Task.CompletedTask;
         }

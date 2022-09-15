@@ -4,7 +4,7 @@ public class Completer : SpaceObserver
 {
     public Completer()
     {
-        Show(Interest.InFlattening);
+        ListenTo(Flattenings);
     }
 
     public override async Task OnFlatteningAsync(CancellationToken cancellationToken)
