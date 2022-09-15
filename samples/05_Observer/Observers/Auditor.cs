@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
-using System.Text;
 
 public class Auditor : SpaceObserver
 {
@@ -20,9 +19,4 @@ public class Auditor : SpaceObserver
         Console.WriteLine($"AUDITOR: Space contracted via template '{template}'.");
         return Task.CompletedTask;
     }
-}
-
-public class Encoder
-{
-    public byte[] Encode(string value) => Encoding.UTF8.GetBytes(value);
 }
