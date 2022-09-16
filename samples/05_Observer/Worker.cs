@@ -29,7 +29,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceAgent agent = await channel.GetAsync();
+        ISpaceAgent agent = await channel.OpenAsync();
 
         Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");

@@ -21,7 +21,7 @@ public class Ponger : SpaceObserver
         {
             Console.WriteLine("PONG-er: Got it");
 
-            var agent = await channel.GetAsync();
+            var agent = await channel.OpenAsync();
             await agent.WriteAsync(new(("Pong", DateTime.Now)));
         }
     }

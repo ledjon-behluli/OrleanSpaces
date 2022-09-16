@@ -42,6 +42,12 @@
         "SpaceHost": {},
         "PingPong": {}
       }
+    },
+    "PasswordSearch": {
+      "Projects": {
+        "SpaceHost": {},
+        "PasswordSearch": {}
+      }
     }
   }
 }

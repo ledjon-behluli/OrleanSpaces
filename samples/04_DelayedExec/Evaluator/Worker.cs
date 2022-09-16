@@ -17,7 +17,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceAgent agent = await channel.GetAsync();
+        ISpaceAgent agent = await channel.OpenAsync();
 
         const string EXCHANGE_KEY = "sensor-data";
         bool evalExecuted = false;

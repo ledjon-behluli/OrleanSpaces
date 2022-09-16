@@ -19,14 +19,14 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Get_Agent()
     {
-        Assert.NotNull(await spaceChannel.GetAsync());
+        Assert.NotNull(await spaceChannel.OpenAsync());
     }
 
     [Fact]
     public async Task Should_Get_Same_Agent_When_Called_Multiple_Times()
     {
-        ISpaceAgent agent1 = await spaceChannel.GetAsync();
-        ISpaceAgent agent2 = await spaceChannel.GetAsync();
+        ISpaceAgent agent1 = await spaceChannel.OpenAsync();
+        ISpaceAgent agent2 = await spaceChannel.OpenAsync();
 
         Assert.Equal(agent1, agent2);
         Assert.True(agent1 == agent2);
@@ -42,14 +42,14 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Not_Throw_When_Channel_Gets_Opened_Concurrently()
     {
-        var expection = await Record.ExceptionAsync(async () => _ = await OpenChannelAndGetAgentConcurrently());
+        var expection = await Record.ExceptionAsync(async () => _ = await OpenChannelConcurrently());
         Assert.Null(expection);
     }
 
     [Fact]
     public async Task Should_Subscribe_Once_When_Channel_Gets_Opened_Concurrently()
     {
-        _ = await OpenChannelAndGetAgentConcurrently();
+        _ = await OpenChannelConcurrently();
 
         var grain = client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
         var streamId = await grain.ListenAsync();
@@ -60,7 +60,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         Assert.Equal(1, subscriptions.Count);
     }
 
-    private async Task<ISpaceAgent> OpenChannelAndGetAgentConcurrently()
+    private async Task<ISpaceAgent> OpenChannelConcurrently()
     {
         ISpaceAgent agent = null;
         var tasks = new Task[100];
@@ -69,7 +69,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         {
             tasks[i] = Task.Run(async () =>
             {
-                agent = await spaceChannel.GetAsync();
+                agent = await spaceChannel.OpenAsync();
             });
         }
 

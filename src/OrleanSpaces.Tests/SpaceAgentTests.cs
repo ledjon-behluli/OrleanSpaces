@@ -27,7 +27,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
     }
 
-    public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
+    public async Task InitializeAsync() => agent = await spaceChannel.OpenAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
     #region Subscriptions

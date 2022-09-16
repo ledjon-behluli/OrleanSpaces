@@ -3,7 +3,7 @@
 public interface ISpaceChannel
 {
     /// <remarks>Method is thread-safe.</remarks>
-    Task<ISpaceAgent> GetAsync();
+    Task<ISpaceAgent> OpenAsync();
 }
 
 internal sealed class SpaceChannel : ISpaceChannel
@@ -18,7 +18,7 @@ internal sealed class SpaceChannel : ISpaceChannel
         this.agent = agent;
     }
 
-    public async Task<ISpaceAgent> GetAsync()
+    public async Task<ISpaceAgent> OpenAsync()
     {
         await semaphore.WaitAsync();
 
