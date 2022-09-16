@@ -23,8 +23,12 @@ public class Master : SpaceObserver
         while (take > 0)
         {
             string randomHash = hashes[rand.Next(hashes.Count)];
-            HashPasswordPairs.Add(randomHash, string.Empty);
-            take--;
+
+            if (!HashPasswordPairs.ContainsKey(randomHash))
+            {
+                HashPasswordPairs.Add(randomHash, string.Empty);
+                take--;
+            }
         }
     }
 
@@ -36,20 +40,22 @@ public class Master : SpaceObserver
         }
     }
 
-    public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (template.IsSatisfiedBy(tuple))
         {
+            Console.WriteLine($"MASTER: Received solution {tuple}");
+
             string hash = (string)tuple[1];
             string password = (string)tuple[2];
 
             HashPasswordPairs[hash] = password;
-            await agent.PopAsync(tuple);
-
             if (HashPasswordPairs.All(x => x.Value.Length > 0))
             {
                 IsDone = true;
             }
         }
+
+        return Task.CompletedTask;
     }
 }

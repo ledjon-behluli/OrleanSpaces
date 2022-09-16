@@ -23,7 +23,6 @@ public class Slave : SpaceObserver
     {
         if (template.IsSatisfiedBy(tuple))
         {
-            Thread.Sleep(500); // Simulating some complex hash-pw search process.
             string hash = (string)tuple[1];
 
 #nullable disable
@@ -32,8 +31,13 @@ public class Slave : SpaceObserver
             {
                 Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
 
-                await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
-                await agent.PopAsync(tuple);
+                await Task.Factory.StartNew(async () =>
+                {
+                    await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
+                    await agent.PopAsync(tuple);
+
+                    await Task.Delay(100, cancellationToken); // Simulating some complex hash-pw search process.
+                });
             }
         }
     }

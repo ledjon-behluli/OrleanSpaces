@@ -22,14 +22,21 @@ public class Worker : BackgroundService
         Console.WriteLine("-------- Password Searching Example -------------");
         Console.WriteLine("-------------------------------------------------\n");
 
-        int noOfPasswords = 0;
+
+        string json = File.ReadAllText("data.json");
+        var hashPasswordPairs = JsonSerializer.Deserialize<Dictionary<string, string>>(json) 
+            ?? throw new InvalidOperationException("Make sure 'data.json' is in the current directory.");
+
+        bool isMultiSlave = false;
+        int numOfPasswords = 0;
+        int numOfPairs = hashPasswordPairs.Count;
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            Console.Write("Choose number of password to search for: ");
+            Console.Write($"Choose number of password to search for (max == {numOfPairs}): ");
             var message = Console.ReadLine();
 
-            if (!uint.TryParse(message, out uint count))
+            if (!int.TryParse(message, out int count))
             {
                 Console.WriteLine("Enter a positive number.");
                 continue;
@@ -41,25 +48,22 @@ public class Worker : BackgroundService
                 continue;
             }
 
-            noOfPasswords = (int)count;
+            if (count > numOfPairs)
+            {
+                Console.WriteLine($"Max number of passwords is {numOfPairs}");
+            }
+
+            numOfPasswords = count;
             break;
         }
 
         ISpaceAgent agent = await channel.OpenAsync();
 
-        string json = File.ReadAllText("data.json");
-        var hashPasswordPairs = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-
-        if (hashPasswordPairs == null)
-        {
-            throw new InvalidOperationException("Make sure 'data.json' is in the current directory.");
-        }
-
-        Master master = new(agent, noOfPasswords, hashPasswordPairs.Keys.ToList());
+        Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
         _ = agent.Subscribe(master);
 
-        int size = Math.DivRem(hashPasswordPairs.Count, noOfPasswords, out int remainder);
-        int rounds = noOfPasswords + (remainder > 0 ? 1 : 0);
+        int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
+        int rounds = numOfPasswords + (remainder > 0 ? 1 : 0);
 
         //Slave[] slaves = new Slave[rounds];
 
@@ -83,7 +87,7 @@ public class Worker : BackgroundService
         sw.Start();
 
         await master.StartAsync();
-        while (!master.IsDone || !cancellationToken.IsCancellationRequested) { }
+        while (!master.IsDone) { }
 
         sw.Stop();
 
