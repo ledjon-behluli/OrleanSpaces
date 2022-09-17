@@ -32,7 +32,7 @@ public class Master : SpaceObserver
         }
     }
 
-    public async Task StartAsync()
+    public async Task RunAsync()
     {
         foreach (var hash in HashPasswordPairs.Keys)
         {

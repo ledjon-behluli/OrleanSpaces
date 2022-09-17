@@ -18,20 +18,19 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine("-------------------------------------------------");
-        Console.WriteLine("-------- Password Searching Example -------------");
-        Console.WriteLine("-------------------------------------------------\n");
-
+        Console.WriteLine("-----------------------------------------------------");
+        Console.WriteLine("--------- Master / Slave Password Search ------------");
+        Console.WriteLine("-----------------------------------------------------\n");
 
         string json = File.ReadAllText("data.json");
-        var hashPasswordPairs = JsonSerializer.Deserialize<Dictionary<string, string>>(json) 
+        var hashPasswordPairs = JsonSerializer.Deserialize<Dictionary<string, string>>(json)
             ?? throw new InvalidOperationException("Make sure 'data.json' is in the current directory.");
 
-        bool isMultiSlave = false;
+        bool isMultiSlaveMode = false;
         int numOfPasswords = 0;
         int numOfPairs = hashPasswordPairs.Count;
 
-        while (!cancellationToken.IsCancellationRequested)
+        while (true)
         {
             Console.Write($"Choose number of password to search for (max == {numOfPairs}): ");
             var message = Console.ReadLine();
@@ -53,46 +52,75 @@ public class Worker : BackgroundService
                 Console.WriteLine($"Max number of passwords is {numOfPairs}");
             }
 
+            Console.Write($"Run in multi-slave mode (y/n): ");
+            message = Console.ReadLine();
+
+            if (message == "Y" || message == "y")
+            {
+                isMultiSlaveMode = true;
+            }
+
+            Console.WriteLine($"\nMulti-slave mode is {(isMultiSlaveMode ? "ON" : "OFF")}\n");
+
             numOfPasswords = count;
             break;
         }
 
         ISpaceAgent agent = await channel.OpenAsync();
-
+        
         Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
         _ = agent.Subscribe(master);
 
-        int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
-        int rounds = numOfPasswords + (remainder > 0 ? 1 : 0);
+        List<Task> tasks = new();
+        CancellationTokenSource cts = new();
 
-        //Slave[] slaves = new Slave[rounds];
+        if (isMultiSlaveMode)
+        {
+            int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
+            int rounds = numOfPasswords + (remainder > 0 ? 1 : 0);
 
-        //for (int i = 0; i < rounds; i++)
-        //{
-        //    var partition = hashPasswordPairs
-        //        .Skip(i * size)
-        //        .Take(size)
-        //        .ToDictionary(pair => pair.Key, pair => pair.Value);
+            for (int i = 0; i < rounds; i++)
+            {
+                var partition = hashPasswordPairs
+                    .Skip(i * size)
+                    .Take(size)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-        //    Slave slave = new(i, agent, partition);
-        //    _ = agent.Subscribe(slave);
-
-        //    slaves[i] = slave;
-        //}
-
-        Slave slave = new(0, agent, hashPasswordPairs);
-        _ = agent.Subscribe(slave);
+                Slave slave = new(i, agent, partition);
+                tasks.Add(Task.Run(async () => await slave.RunAsync(cts.Token), cts.Token));
+            }
+        }
+        else
+        {
+            Slave slave = new(0, agent, hashPasswordPairs);
+            tasks.Add(Task.Run(async () => await slave.RunAsync(cts.Token), cts.Token));
+        }
 
         Stopwatch sw = new();
-        sw.Start();
 
-        await master.StartAsync();
-        while (!master.IsDone) { }
+        try
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                while (!master.IsDone) { }
+                cts.Cancel();
+            }, cancellationToken));
+
+           
+            sw.Start();
+
+            await master.RunAsync();
+            await Task.WhenAll(tasks);
+        }
+        catch (OperationCanceledException)
+        {
+
+        }
 
         sw.Stop();
 
-        Console.WriteLine("\n-------------------------------------------------\n");
-        Console.WriteLine($"Results (total time: {sw.ElapsedMilliseconds})\n");
+        Console.WriteLine("\n-----------------------------------------------------\n");
+        Console.WriteLine($"Results (total time: {sw.ElapsedMilliseconds}ms)\n");
 
         foreach (var pair in master.HashPasswordPairs)
         {

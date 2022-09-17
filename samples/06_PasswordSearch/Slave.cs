@@ -1,8 +1,7 @@
 ﻿using OrleanSpaces;
-using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
 
-public class Slave : SpaceObserver
+public class Slave
 {
     private readonly int id; 
     private readonly ISpaceAgent agent;
@@ -11,34 +10,30 @@ public class Slave : SpaceObserver
 
     public Slave(int id, ISpaceAgent agent, Dictionary<string, string> hashPasswordPairs)
     {
-        ListenTo(Expansions);
-
         this.id = id;
         this.agent = agent;
         this.template = new((ExchangeKeys.PASSWORD_SEARCH, typeof(string)));
         this.hashPasswordPairs = hashPasswordPairs;
     }
 
-    public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
-        if (template.IsSatisfiedBy(tuple))
+        while (!cancellationToken.IsCancellationRequested)
         {
-            string hash = (string)tuple[1];
+            await agent.PopAsync(template, async tuple =>
+            {
+                string hash = (string)tuple[1];
 
 #nullable disable
-            if (hashPasswordPairs.TryGetValue(hash, out string password))
+                if (hashPasswordPairs.TryGetValue(hash, out string password))
 #nullable enable
-            {
-                Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
-
-                await Task.Factory.StartNew(async () =>
                 {
+                    Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
                     await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
-                    await agent.PopAsync(tuple);
+                }
+            });
 
-                    await Task.Delay(100, cancellationToken); // Simulating some complex hash-pw search process.
-                });
-            }
+            await Task.Delay(1000, cancellationToken);  // Simulate some complex work from the slave.
         }
     }
 }
