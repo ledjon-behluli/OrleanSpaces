@@ -1,8 +1,6 @@
 ﻿using OrleanSpaces;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
-using System.Diagnostics;
-using System.Reflection;
 
 public class Worker : BackgroundService
 {
@@ -27,7 +25,6 @@ public class Worker : BackgroundService
         var hashPasswordPairs = JsonSerializer.Deserialize<Dictionary<string, string>>(json)
             ?? throw new InvalidOperationException("Make sure 'data.json' is in the current directory.");
 
-        bool isMultiSlaveMode = false;
         int numOfPasswords = 0;
         int numOfPairs = hashPasswordPairs.Count;
 
@@ -53,16 +50,6 @@ public class Worker : BackgroundService
                 Console.WriteLine($"Max number of passwords is {numOfPairs}");
             }
 
-            Console.Write($"Run in multi-slave mode (y/n): ");
-            message = Console.ReadLine();
-
-            if (message == "Y" || message == "y")
-            {
-                isMultiSlaveMode = true;
-            }
-
-            Console.WriteLine($"Multi-slave mode is {(isMultiSlaveMode ? "ON" : "OFF")}");
-
             numOfPasswords = count;
             break;
         }
@@ -70,30 +57,28 @@ public class Worker : BackgroundService
         ISpaceAgent agent = await channel.OpenAsync();
         
         List<Slave> slaves = new();
+        int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
+        int slaveCount = numOfPasswords + (remainder > 0 ? 1 : 0);
 
-        if (!isMultiSlaveMode)
+        for (int i = 0; i < slaveCount; i++)
         {
-            slaves.Add(new(0, agent, hashPasswordPairs));
-        }
-        else
-        {
-            int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
-            int slaveCount = numOfPasswords + (remainder > 0 ? 1 : 0);
-            
-            //if (slaveCount > Environment.ProcessorCount)
-            //{
-            //    slaveCount = Environment.ProcessorCount;
-            //}
+            Dictionary<string, string> partition;
 
-            for (int i = 0; i < slaveCount; i++)
+            if (i < slaveCount - 1)
             {
-                var partition = hashPasswordPairs
+                partition = hashPasswordPairs
                     .Skip(i * size)
                     .Take(size)
                     .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-                slaves.Add(new(i, agent, partition));
             }
+            else
+            {
+                partition = hashPasswordPairs
+                    .Skip(i * size)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+            }
+
+            slaves.Add(new(i, agent, partition));
         }
 
         Console.WriteLine($"Total number of {slaves.Count} slaves has been picked.");
@@ -102,17 +87,16 @@ public class Worker : BackgroundService
         Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
         _ = agent.Subscribe(master);
 
-        Stopwatch sw = new();
-        sw.Start();
-
         await master.RunAsync();
-
         await Parallel.ForEachAsync(slaves, async (slave, ct) => await slave.RunAsync());
 
-        sw.Stop();
+        while(!master.IsDone)
+        {
 
-        Console.WriteLine("\n-----------------------------------------------------");
-        Console.WriteLine($"Results (total time: {sw.ElapsedMilliseconds}ms)\n");
+        }
+
+        Console.WriteLine("\n-------------------------------------------------------");
+        Console.WriteLine("----------------------- Results -----------------------\n");
 
         foreach (var pair in master.HashPasswordPairs)
         {

@@ -26,5 +26,4 @@ public static class ExchangeKeys
 {
     public const string PASSWORD_SEARCH = "PASSWORD_SEARCH";
     public const string PASSWORD_FOUND = "PASSWORD_FOUND";
-    public const string TERMINATE = "TERMINATE";
 }

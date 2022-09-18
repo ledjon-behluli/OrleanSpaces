@@ -21,14 +21,22 @@ public class Slave
         IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(template);
         foreach (var tuple in tuples)
         {
-            await Task.Delay(500);  // Simulate some complex searching.
             string hash = (string)tuple[1];
+            string? password = await SearchPasswordAsync(hash);
 
-            if (hashPasswordPairs.TryGetValue(hash, out string? password))
+            if (!string.IsNullOrEmpty(password))
             {
                 Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
+
+                await agent.PopAsync(tuple);
                 await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
             }
+        }
+
+        async Task<string?> SearchPasswordAsync(string hash)
+        {
+            await Task.Delay(10);   // Simulate some time to search.
+            return hashPasswordPairs.GetValueOrDefault(hash);
         }
     }
 }

@@ -6,9 +6,10 @@ public class Master : SpaceObserver
 {
     private readonly ISpaceAgent agent;
     private readonly SpaceTemplate template;
-
+    private readonly Dictionary<string, string> hashPasswordPairs;
+    
     public bool IsDone { get; private set; }
-    public Dictionary<string, string> HashPasswordPairs { get; private set; }
+    public IReadOnlyDictionary<string, string> HashPasswordPairs => hashPasswordPairs;
 
     public Master(ISpaceAgent agent, int take, List<string> hashes)
     {
@@ -16,17 +17,16 @@ public class Master : SpaceObserver
 
         this.agent = agent;
         this.template = new((ExchangeKeys.PASSWORD_FOUND, typeof(string), typeof(string)));
-        this.HashPasswordPairs = new();
+        this.hashPasswordPairs = new();
 
         Random rand = new();
-
         while (take > 0)
         {
             string randomHash = hashes[rand.Next(hashes.Count)];
 
-            if (!HashPasswordPairs.ContainsKey(randomHash))
+            if (!hashPasswordPairs.ContainsKey(randomHash))
             {
-                HashPasswordPairs.Add(randomHash, string.Empty);
+                hashPasswordPairs.Add(randomHash, string.Empty);
                 take--;
             }
         }
@@ -34,28 +34,27 @@ public class Master : SpaceObserver
 
     public async Task RunAsync()
     {
-        foreach (var hash in HashPasswordPairs.Keys)
+        foreach (var hash in hashPasswordPairs.Keys)
         {
             await agent.WriteAsync(new((ExchangeKeys.PASSWORD_SEARCH, hash)));
         }
     }
 
-    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (template.IsSatisfiedBy(tuple))
         {
-            Console.WriteLine($"MASTER: Received solution {tuple}");
+            Console.WriteLine($"MASTER: Received solution to Hash = {tuple[1]}");
+            await agent.PopAsync(tuple);
 
             string hash = (string)tuple[1];
             string password = (string)tuple[2];
 
-            HashPasswordPairs[hash] = password;
-            if (HashPasswordPairs.All(x => x.Value.Length > 0))
+            hashPasswordPairs[hash] = password;
+            if (hashPasswordPairs.All(x => x.Value.Length > 0))
             {
                 IsDone = true;
             }
         }
-
-        return Task.CompletedTask;
     }
 }
