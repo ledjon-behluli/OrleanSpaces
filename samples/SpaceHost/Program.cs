@@ -8,7 +8,12 @@ var host = new SiloHostBuilder()
     .UseLocalhostClustering()
     .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
     .AddMemoryGrainStorage(Constants.PubSubStore)
-    .AddMemoryGrainStorage(Constants.TupleSpaceStore)
+    .AddAzureBlobGrainStorage(name: Constants.TupleSpaceStore, configureOptions: o =>
+    {
+        o.UseJson = true;
+        //o.ContainerName = Constants.TupleSpaceStore;
+        o.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
+    })
     .AddTupleSpace()
     .ConfigureLogging(builder => builder.AddConsole())
     .Build();

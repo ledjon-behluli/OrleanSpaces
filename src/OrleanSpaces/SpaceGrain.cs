@@ -1,5 +1,7 @@
 ﻿using Orleans;
+using Orleans.CodeGeneration;
 using Orleans.Runtime;
+using Orleans.Serialization;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using System.Diagnostics.CodeAnalysis;
@@ -20,11 +22,11 @@ internal interface ISpaceGrain : IGrainWithGuidKey
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
-    private readonly IPersistentState<SpaceState> space;
+    private readonly IPersistentState<TupleSpace> space;
 
     [AllowNull] private IAsyncStream<ITuple> stream;
 
-    public SpaceGrain([PersistentState("TupleSpace", Constants.TupleSpaceStore)] IPersistentState<SpaceState> space)
+    public SpaceGrain([PersistentState("TupleSpace", Constants.TupleSpaceStore)] IPersistentState<TupleSpace> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
@@ -54,7 +56,9 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples
+            .Where(x => x.Length == template.Length)
+            .Select(x => (SpaceTuple)x);
 
         foreach (var tuple in tuples)
         {
@@ -69,7 +73,9 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples
+            .Where(x => x.Length == template.Length)
+            .Select(x => (SpaceTuple)x);
 
         foreach (var tuple in tuples)
         {
@@ -95,7 +101,10 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
         List<SpaceTuple> results = new();
-        IEnumerable<SpaceTuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+
+        IEnumerable<SpaceTuple> tuples = space.State.Tuples
+            .Where(x => x.Length == template.Length)
+            .Select(x => (SpaceTuple)x);
 
         foreach (var tuple in tuples)
         {
@@ -117,10 +126,34 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
         return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).IsSatisfiedBy(tuple)));
     }
+}
 
-    [Serializable]
-    internal sealed class SpaceState
+[Serializable]
+internal sealed class TupleSpace
+{
+    public List<SpaceTupleDto> Tuples { get; set; } = new();
+
+
+    public class SpaceTupleDto
     {
-        public List<SpaceTuple> Tuples { get; set; } = new();
+        public List<object> Fields { get; set; } = new();
+        public int Length => Fields.Count;
+
+        public static implicit operator SpaceTupleDto(SpaceTuple tuple)
+        {
+            SpaceTupleDto dto = new();
+
+            for (int i = 0; i < tuple.Length; i++)
+            {
+                dto.Fields.Add(tuple[i]);
+            }
+
+            return dto;
+        }
+
+        public static implicit operator SpaceTuple(SpaceTupleDto dto)
+        {
+            new SpaceTuple(dto.Fields.ast)
+        }
     }
 }
