@@ -61,7 +61,7 @@ public class Worker : BackgroundService
                 isMultiSlaveMode = true;
             }
 
-            Console.WriteLine($"\nMulti-slave mode is {(isMultiSlaveMode ? "ON" : "OFF")}\n");
+            Console.WriteLine($"Multi-slave mode is {(isMultiSlaveMode ? "ON" : "OFF")}");
 
             numOfPasswords = count;
             break;
@@ -78,9 +78,14 @@ public class Worker : BackgroundService
         else
         {
             int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
-            int rounds = numOfPasswords + (remainder > 0 ? 1 : 0);
+            int slaveCount = numOfPasswords + (remainder > 0 ? 1 : 0);
+            
+            //if (slaveCount > Environment.ProcessorCount)
+            //{
+            //    slaveCount = Environment.ProcessorCount;
+            //}
 
-            for (int i = 0; i < rounds; i++)
+            for (int i = 0; i < slaveCount; i++)
             {
                 var partition = hashPasswordPairs
                     .Skip(i * size)
@@ -91,6 +96,9 @@ public class Worker : BackgroundService
             }
         }
 
+        Console.WriteLine($"Total number of {slaves.Count} slaves has been picked.");
+        Console.WriteLine("-----------------------------------------------------\n");
+
         Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
         _ = agent.Subscribe(master);
 
@@ -98,11 +106,12 @@ public class Worker : BackgroundService
         sw.Start();
 
         await master.RunAsync();
+
         await Parallel.ForEachAsync(slaves, async (slave, ct) => await slave.RunAsync());
 
         sw.Stop();
 
-        Console.WriteLine("\n-----------------------------------------------------\n");
+        Console.WriteLine("\n-----------------------------------------------------");
         Console.WriteLine($"Results (total time: {sw.ElapsedMilliseconds}ms)\n");
 
         foreach (var pair in master.HashPasswordPairs)

@@ -21,7 +21,7 @@ public class Slave
         IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(template);
         foreach (var tuple in tuples)
         {
-            await Task.Delay(100);  // Simulate some complex searching.
+            await Task.Delay(500);  // Simulate some complex searching.
             string hash = (string)tuple[1];
 
             if (hashPasswordPairs.TryGetValue(hash, out string? password))
