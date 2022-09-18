@@ -4,21 +4,26 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Primitives;
 
 [Immutable]
-[Serializable]
 public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
-    private readonly ITuple tuple;
+    private readonly object[] fields;
 
-    public object this[int index] => tuple[index];
-    public int Length => tuple.Length;
+    public object this[int index] => fields[index];
+    public int Length => fields.Length;
 
     private static readonly SpaceTuple passive = new();
     public static ref readonly SpaceTuple Passive => ref passive;
+
     public bool IsPassive => Equals(Passive);
+
+    internal SpaceTuple(object[] fields)
+    {
+        this.fields = fields;
+    }
 
     public SpaceTuple()
     {
-        tuple = SpaceUnit.Null;
+        fields = new object[1] { SpaceUnit.Null };
     }
 
     public SpaceTuple(string value)
@@ -27,8 +32,8 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
         {
             throw new ArgumentNullException(nameof(value));
         }
-     
-        tuple = new ValueTuple<string>(value);
+
+        fields = new object[1] { value };
     }
 
     public SpaceTuple(ValueType valueType)
@@ -40,17 +45,17 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
 
         if (valueType is ITuple _tuple)
         {
+            fields = new object[_tuple.Length];
             for (int i = 0; i < _tuple.Length; i++)
             {
                 ThrowOnNotSupported(_tuple[i], i);
+                fields[i] = _tuple[i];
             }
-
-            tuple = _tuple;
         }
         else
         {
             ThrowOnNotSupported(valueType);
-            tuple = new ValueTuple<ValueType>(valueType);
+            fields = new object[1] { valueType };
         }
 
         static void ThrowOnNotSupported(object obj, int index = 0)
@@ -87,7 +92,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
 
     public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
-    public override int GetHashCode() => tuple.GetHashCode();
+    public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => Length == 1 ? $"({tuple[0]})" : tuple.ToString();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 }

@@ -11,7 +11,6 @@ var host = new SiloHostBuilder()
     .AddAzureBlobGrainStorage(name: Constants.TupleSpaceStore, configureOptions: o =>
     {
         o.UseJson = true;
-        //o.ContainerName = Constants.TupleSpaceStore;
         o.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
     })
     .AddTupleSpace()

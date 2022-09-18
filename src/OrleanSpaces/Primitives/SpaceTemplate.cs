@@ -4,17 +4,16 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Primitives;
 
 [Immutable]
-[Serializable]
 public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
 {
-    private readonly ITuple tuple;
+    private readonly object[] fields;
 
-    public object this[int index] => tuple[index];
-    public int Length => tuple.Length;
+    public object this[int index] => fields[index];
+    public int Length => fields.Length;
 
     public SpaceTemplate()
     {
-        tuple = SpaceUnit.Null;
+        fields = new object[1] { SpaceUnit.Null };
     }
 
     public SpaceTemplate(string value)
@@ -24,7 +23,7 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
             throw new ArgumentNullException(nameof(value));
         }
 
-        tuple = new ValueTuple<string>(value);
+        fields = new object[1] { value };
     }
 
     public SpaceTemplate(Type type)
@@ -34,7 +33,7 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
             throw new ArgumentNullException(nameof(type));
         }
 
-        tuple = new ValueTuple<Type>(type);
+        fields = new object[1] { type };
     }
 
     public SpaceTemplate(ValueType valueType)
@@ -46,17 +45,17 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 
         if (valueType is ITuple _tuple)
         {
+            fields = new object[_tuple.Length];
             for (int i = 0; i < _tuple.Length; i++)
             {
                 ThrowIfNotSupported(_tuple[i], i);
+                fields[i] = _tuple[i];
             }
-
-            tuple = _tuple;
         }
         else
         {
             ThrowIfNotSupported(valueType);
-            tuple = new ValueTuple<ValueType>(valueType);
+            fields = new object[1] { valueType };
         }
 
         static void ThrowIfNotSupported(object obj, int index = 0)
@@ -128,7 +127,7 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
 
     public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
 
-    public override int GetHashCode() => tuple.GetHashCode();
+    public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => Length == 1 ? $"({tuple[0]})" : tuple.ToString();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 }

@@ -1,7 +1,5 @@
 ﻿using Orleans;
-using Orleans.CodeGeneration;
 using Orleans.Runtime;
-using Orleans.Serialization;
 using Orleans.Streams;
 using OrleanSpaces.Primitives;
 using System.Diagnostics.CodeAnalysis;
@@ -73,15 +71,15 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        IEnumerable<SpaceTuple> tuples = space.State.Tuples
-            .Where(x => x.Length == template.Length)
-            .Select(x => (SpaceTuple)x);
+        var tupleDtos = space.State.Tuples.Where(x => x.Length == template.Length);
 
-        foreach (var tuple in tuples)
+        foreach (var dto in tupleDtos)
         {
+            SpaceTuple tuple = dto;
+
             if (template.IsSatisfiedBy(tuple))
             {
-                space.State.Tuples.Remove(tuple);
+                space.State.Tuples.Remove(dto);
 
                 await space.WriteStateAsync();
                 await stream.OnNextAsync(template);
@@ -133,7 +131,7 @@ internal sealed class TupleSpace
 {
     public List<SpaceTupleDto> Tuples { get; set; } = new();
 
-
+    [Serializable]
     public class SpaceTupleDto
     {
         public List<object> Fields { get; set; } = new();
@@ -151,9 +149,7 @@ internal sealed class TupleSpace
             return dto;
         }
 
-        public static implicit operator SpaceTuple(SpaceTupleDto dto)
-        {
-            new SpaceTuple(dto.Fields.ast)
-        }
+        public static implicit operator SpaceTuple(SpaceTupleDto dto) =>
+            new(dto.Fields.ToArray());
     }
 }
