@@ -58,13 +58,13 @@ public class Worker : BackgroundService
             if (message == "-r")
                 break;
 
-            await agent.WriteAsync(new((message, DateTime.Now)));
+            await agent.WriteAsync(new(message, DateTime.Now));
         }
 
         Console.WriteLine("----------------------\n");
         Console.WriteLine("Total tuples in space:\n");
 
-        SpaceTemplate template = new((SpaceUnit.Null, SpaceUnit.Null));
+        SpaceTemplate template = new(SpaceUnit.Null, SpaceUnit.Null);
 
         foreach (var tuple in await agent.ScanAsync(template))
         {

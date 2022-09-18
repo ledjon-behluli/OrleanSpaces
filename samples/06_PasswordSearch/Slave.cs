@@ -12,7 +12,7 @@ public class Slave
     {
         this.id = id;
         this.agent = agent;
-        this.template = new((ExchangeKeys.PASSWORD_SEARCH, typeof(string)));
+        this.template = new(ExchangeKeys.PASSWORD_SEARCH, typeof(string));
         this.hashPasswordPairs = hashPasswordPairs;
     }
 
@@ -29,7 +29,7 @@ public class Slave
                 Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
 
                 await agent.PopAsync(tuple);
-                await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
+                await agent.WriteAsync(new(ExchangeKeys.PASSWORD_FOUND, hash, password));
             }
         }
 

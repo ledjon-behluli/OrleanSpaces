@@ -20,11 +20,11 @@ internal interface ISpaceGrain : IGrainWithGuidKey
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
-    private readonly IPersistentState<TupleSpace> space;
+    private readonly IPersistentState<TupleSpaceState> space;
 
     [AllowNull] private IAsyncStream<ITuple> stream;
 
-    public SpaceGrain([PersistentState("TupleSpace", Constants.TupleSpaceStore)] IPersistentState<TupleSpace> space)
+    public SpaceGrain([PersistentState(Constants.TupleSpaceState, Constants.TupleSpaceStore)] IPersistentState<TupleSpaceState> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
@@ -43,7 +43,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     {
         if (tuple.IsPassive)
         {
-            throw new ArgumentException("Passive tuples are not allowed to be writen _in the tuple space.");
+            throw new ArgumentException("Passive tuples are not allowed to be writen in the tuple space.");
         }
 
         space.State.Tuples.Add(tuple);
@@ -126,20 +126,18 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     }
 }
 
-[Serializable]
-internal sealed class TupleSpace
+internal sealed class TupleSpaceState
 {
-    public List<SpaceTupleDto> Tuples { get; set; } = new();
+    public List<SpaceTupleState> Tuples { get; set; } = new();
 
-    [Serializable]
-    public class SpaceTupleDto
+    public class SpaceTupleState
     {
         public List<object> Fields { get; set; } = new();
         public int Length => Fields.Count;
 
-        public static implicit operator SpaceTupleDto(SpaceTuple tuple)
+        public static implicit operator SpaceTupleState(SpaceTuple tuple)
         {
-            SpaceTupleDto dto = new();
+            SpaceTupleState dto = new();
 
             for (int i = 0; i < tuple.Length; i++)
             {
@@ -149,7 +147,7 @@ internal sealed class TupleSpace
             return dto;
         }
 
-        public static implicit operator SpaceTuple(SpaceTupleDto dto) =>
+        public static implicit operator SpaceTuple(SpaceTupleState dto) =>
             new(dto.Fields.ToArray());
     }
 }

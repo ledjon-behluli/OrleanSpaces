@@ -18,13 +18,13 @@ public class SpaceTemplateBenchmarks
         for (int i = 0; i < iterations; i++)
         {
             _ = new SpaceTemplate(SpaceUnit.Null);
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-            _ = new SpaceTemplate((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
         }
     }
 
@@ -49,9 +49,9 @@ public class SpaceTemplateBenchmarks
     #region Equality
 
     private readonly static SpaceTemplate baseTemplate = new(1);
-    private readonly static SpaceTemplate shortTemplate = new((1, "a"));
-    private readonly static SpaceTemplate mediumTemplate = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
-    private readonly static SpaceTemplate longTemplate = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
+    private readonly static SpaceTemplate shortTemplate = new(1, "a");
+    private readonly static SpaceTemplate mediumTemplate = new(1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d);
+    private readonly static SpaceTemplate longTemplate = new(1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d);
 
     [BenchmarkCategory("Equality", "Short"), Benchmark]
     public void ShortSameLength()
@@ -99,11 +99,11 @@ public class SpaceTemplateBenchmarks
 
     #region Satisfaction
 
-    private readonly static SpaceTuple tuple = new((1, "a", 1.5f));
-    private readonly static SpaceTemplate template1 = new((1, "a", 1.5f));
-    private readonly static SpaceTemplate template2 = new((1, SpaceUnit.Null, 1.5f));
-    private readonly static SpaceTemplate template3 = new((1, "a", 2.5f));
-    private readonly static SpaceTemplate template4 = new((1, "a"));
+    private readonly static SpaceTuple tuple = new(1, "a", 1.5f);
+    private readonly static SpaceTemplate template1 = new(1, "a", 1.5f);
+    private readonly static SpaceTemplate template2 = new(1, SpaceUnit.Null, 1.5f);
+    private readonly static SpaceTemplate template3 = new(1, "a", 2.5f);
+    private readonly static SpaceTemplate template4 = new(1, "a");
 
     [BenchmarkCategory("Satisfaction"), Benchmark]
     public void FullMatch()
@@ -139,13 +139,13 @@ public class SpaceTemplateBenchmarks
 public readonly partial struct SpaceTemplateCachedFactory
 {
     private static readonly SpaceTemplate singlet = new(SpaceUnit.Null);
-    private static readonly SpaceTemplate pair = new((SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate triple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate quadruple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate quintuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate sextuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate septuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
-    private static readonly SpaceTemplate octuple = new((SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null));
+    private static readonly SpaceTemplate pair = new(SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate triple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate quadruple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate quintuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate sextuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate septuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate octuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
 
     public static ref readonly SpaceTemplate Singlet => ref singlet;
     public static ref readonly SpaceTemplate Pair => ref pair;

@@ -43,7 +43,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Notify_Observer_On_Flattening()
     {
         SpaceTuple tuple1 = new(1);
-        SpaceTuple tuple2 = new((1, "a"));
+        SpaceTuple tuple2 = new(1, "a");
 
         await grain.WriteAsync(tuple1);
         await grain.WriteAsync(tuple2);
@@ -110,6 +110,32 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         {
             LastTuple = SpaceTuple.Passive;
             LastFlattening = false;
+        }
+    }
+}
+
+public class StateTests
+{
+    [Fact]
+    public void Should_Implicitly_Convert_To_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3);
+        SpaceTuple @implicit = new TupleSpaceState.SpaceTupleState() { Fields = new List<object> { 1, 2, 3 } };
+
+        Assert.Equal(tuple, @implicit);
+    }
+
+    [Fact]
+    public void Should_Implicitly_Convert_From_SpaceTuple()
+    {
+        TupleSpaceState.SpaceTupleState state = new() { Fields = new List<object> { 1, 2, 3 } };
+        TupleSpaceState.SpaceTupleState @implicit = new SpaceTuple(1, 2, 3);
+
+        Assert.Equal(state.Length, @implicit.Length);
+
+        for (int i = 0; i < state.Length; i++)
+        {
+            Assert.Equal(state.Fields.ElementAt(i), @implicit.Fields.ElementAt(i));
         }
     }
 }

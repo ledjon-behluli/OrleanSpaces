@@ -16,7 +16,7 @@ public class Master : SpaceObserver
         ListenTo(Expansions);
 
         this.agent = agent;
-        this.template = new((ExchangeKeys.PASSWORD_FOUND, typeof(string), typeof(string)));
+        this.template = new(ExchangeKeys.PASSWORD_FOUND, typeof(string), typeof(string));
         this.hashPasswordPairs = new();
 
         Random rand = new();
@@ -36,7 +36,7 @@ public class Master : SpaceObserver
     {
         foreach (var hash in hashPasswordPairs.Keys)
         {
-            await agent.WriteAsync(new((ExchangeKeys.PASSWORD_SEARCH, hash)));
+            await agent.WriteAsync(new(ExchangeKeys.PASSWORD_SEARCH, hash));
         }
     }
 

@@ -1,26 +1,22 @@
 using OrleanSpaces.Primitives;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceUnitTests
 {
     [Fact]
+    public void Should_Be_Smaller_Or_Equal_To_IntPtr_Size()
+    {
+        Assert.True(Marshal.SizeOf(typeof(SpaceUnit)) <= IntPtr.Size);
+    }
+
+    [Fact]
     public void Should_Be_An_ITuple()
     {
         Assert.True(typeof(ITuple).IsAssignableFrom(typeof(SpaceUnit)));
     }
-
-    //[Fact]
-    //public void Should_Be_Equatable()
-    //{
-    //    Dictionary<SpaceUnit, string> dictionary = new()
-    //    {
-    //        { new SpaceUnit(), "value" },
-    //    };
-
-    //    Assert.Equal("value", dictionary[default]);
-    //}
 
     [Theory]
     [MemberData(nameof(Data))]

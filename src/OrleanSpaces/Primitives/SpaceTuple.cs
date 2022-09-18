@@ -16,53 +16,36 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
 
     public bool IsPassive => Equals(Passive);
 
-    internal SpaceTuple(object[] fields)
+    public SpaceTuple() : this(new object[0])
     {
-        this.fields = fields;
+        
     }
 
-    public SpaceTuple()
+    public SpaceTuple(params object[] fields)
     {
-        fields = new object[1] { SpaceUnit.Null };
-    }
-
-    public SpaceTuple(string value)
-    {
-        if (value is null)
+        if (fields == null)
         {
-            throw new ArgumentNullException(nameof(value));
+            throw new ArgumentNullException(nameof(fields));
         }
 
-        fields = new object[1] { value };
-    }
-
-    public SpaceTuple(ValueType valueType)
-    {
-        if (valueType is null)
+        if (fields.Length == 0)
         {
-            throw new ArgumentNullException(nameof(valueType));
-        }
-
-        if (valueType is ITuple _tuple)
-        {
-            fields = new object[_tuple.Length];
-            for (int i = 0; i < _tuple.Length; i++)
-            {
-                ThrowOnNotSupported(_tuple[i], i);
-                fields[i] = _tuple[i];
-            }
+            this.fields = new object[1] { SpaceUnit.Null };
         }
         else
         {
-            ThrowOnNotSupported(valueType);
-            fields = new object[1] { valueType };
-        }
+            this.fields = new object[fields.Length];
 
-        static void ThrowOnNotSupported(object obj, int index = 0)
-        {
-            if (!TypeChecker.IsSimpleType(obj.GetType()))
+            for (int i = 0; i < fields.Length; i++)
             {
-                throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives and enums.");
+                object obj = fields[i];
+
+                if (!TypeChecker.IsSimpleType(obj.GetType()))
+                {
+                    throw new ArgumentException($"The field at position = {i}, is not a valid type. Allowed types are: strings, primitives and enums.");
+                }
+
+                this.fields[i] = obj;
             }
         }
     }

@@ -34,9 +34,9 @@ public class SpaceTupleBenchmarks
     #region Equality
 
     private readonly static SpaceTuple baseTuple = new(1);
-    private readonly static SpaceTuple shortTuple = new((1, "a"));
-    private readonly static SpaceTuple mediumTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
-    private readonly static SpaceTuple longTuple = new((1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d));
+    private readonly static SpaceTuple shortTuple = new(1, "a");
+    private readonly static SpaceTuple mediumTuple = new(1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d);
+    private readonly static SpaceTuple longTuple = new(1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d, 1, "a", 1.5f, 'b', 1.2m, 2, 0x00, -3, 2.4d);
 
     [BenchmarkCategory("Equality", "Short"), Benchmark]
     public void ShortSameLength()

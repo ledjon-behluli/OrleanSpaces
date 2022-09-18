@@ -36,14 +36,14 @@ public class ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Forward_Templates_When_Tuple_Matches_Them_In_Registry()
     {
-        registry.Add(new((1, "a")), new(tuple => Task.CompletedTask, true));
-        registry.Add(new((1, "a")), new(tuple => Task.CompletedTask, false));
-        registry.Add(new((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
-        registry.Add(new((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, false));
-        registry.Add(new((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
-        registry.Add(new((1, "a", 1.5F)), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, false));
+        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, false));
+        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, "a", 1.5F), new(tuple => Task.CompletedTask, true));
 
-        SpaceTuple tuple = new((1, "a"));
+        SpaceTuple tuple = new(1, "a");
         await callbackChannel.Writer.WriteAsync(tuple);
 
         int rounds = 0;
@@ -68,11 +68,11 @@ public class ProcessorTests : IClassFixture<Fixture>
     [Fact]
     public async Task Should_Stop_Host_If_Callback_Throws()
     {
-        registry.Add(new((1, "a")), new(tuple => Task.CompletedTask, true));
-        registry.Add(new((1, SpaceUnit.Null)), new(tuple => Task.CompletedTask, true));
-        registry.Add(new((1, "a")), new(tuple => throw new Exception("Test"), true));
+        registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, "a"), new(tuple => throw new Exception("Test"), true));
 
-        SpaceTuple tuple = new((1, "a"));
+        SpaceTuple tuple = new(1, "a");
         await callbackChannel.Writer.WriteAsync(tuple);
 
         int rounds = 0;

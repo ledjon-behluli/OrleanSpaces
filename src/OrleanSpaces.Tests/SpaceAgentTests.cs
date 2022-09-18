@@ -326,8 +326,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(
-            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
 
         Assert.Equal(3, tuples.Count());
     }
@@ -346,8 +345,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             await agent.WriteAsync(tuple);
         }
 
-        int matchingCount = await agent.CountAsync(
-            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
 
         Assert.Equal(3, matchingCount);
     }
@@ -363,8 +361,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         }
 
         int totalCount = await agent.CountAsync();
-        int matchingCount = await agent.CountAsync(
-            new((key, 1, typeof(string), typeof(float), SpaceUnit.Null)));
+        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
 
         Assert.True(totalCount > matchingCount);
     }
@@ -373,12 +370,12 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
     private static IEnumerable<SpaceTuple> TupleData(string key)
     {
-        yield return new((key, 1, "a", 1.0f, 1.0m));
-        yield return new((key, 1, "b", 1.2f, "d"));
-        yield return new((key, 1, "c", 1.5f, 'e'));
-        yield return new((key, 1, 1.5f, "c", 'e'));
-        yield return new((key, 1, "f", 1.7f, 'g', "f"));
-        yield return new((key, 2, "f", 1.7f, 'g'));
-        yield return new((key, 2, "f", 1.7f, 'g', "f"));
+        yield return new(key, 1, "a", 1.0f, 1.0m);
+        yield return new(key, 1, "b", 1.2f, "d");
+        yield return new(key, 1, "c", 1.5f, 'e');
+        yield return new(key, 1, 1.5f, "c", 'e');
+        yield return new(key, 1, "f", 1.7f, 'g', "f");
+        yield return new(key, 2, "f", 1.7f, 'g');
+        yield return new(key, 2, "f", 1.7f, 'g', "f");
     }
 }

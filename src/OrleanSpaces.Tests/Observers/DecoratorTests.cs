@@ -5,7 +5,7 @@ namespace OrleanSpaces.Tests.Observers;
 
 public class DecoratorTests
 {
-    private readonly TestObserver observer = new();
+    private readonly MutedTestObserver observer = new();
 
     [Fact]
     public async Task Should_Forward_Expansions()
@@ -37,5 +37,10 @@ public class DecoratorTests
         await decorator.OnFlatteningAsync(default);
 
         Assert.True(observer.LastFlattening);
+    }
+
+    private class MutedTestObserver : TestObserver
+    {
+        public MutedTestObserver() => ListenTo(Nothing);
     }
 }

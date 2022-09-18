@@ -6,6 +6,7 @@ public static class Constants
     public const string PubSubProvider = "PubSubProvider";
     public const string PubSubStore = "PubSubStore";
 
+    internal const string TupleSpaceState = "TupleSpaceState";
     internal const string TupleStream = "TupleStream";
     internal static readonly Guid SpaceGrainId = Guid.Empty;
 }

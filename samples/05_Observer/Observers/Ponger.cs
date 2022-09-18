@@ -12,7 +12,7 @@ public class Ponger : SpaceObserver
         ListenTo(ObservationType.Expansions);
 
         this.channel = channel;
-        template = new(("Ping", SpaceUnit.Null));
+        template = new("Ping", SpaceUnit.Null);
     }
 
     public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public class Ponger : SpaceObserver
             Console.WriteLine("PONG-er: Got it");
 
             var agent = await channel.OpenAsync();
-            await agent.WriteAsync(new(("Pong", DateTime.Now)));
+            await agent.WriteAsync(new("Pong", DateTime.Now));
         }
     }
 }

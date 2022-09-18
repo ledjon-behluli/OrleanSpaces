@@ -16,8 +16,8 @@ public interface ISpaceAgent
     void Unsubscribe(Guid id);
 
     /// <summary>
-    /// <para>Used to write a tuple _in the tuple space.</para>
-    /// <para><i>Analogous to the "OUT" primitive _in the tuple space model.</i></para>
+    /// <para>Used to write a tuple in the tuple space.</para>
+    /// <para><i>Analogous to the "OUT" primitive in the tuple space model.</i></para>
     /// </summary>
     Task WriteAsync(SpaceTuple tuple);
 
@@ -30,25 +30,25 @@ public interface ISpaceAgent
 
     /// <summary>
     /// <para>Used to read a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "RD" primitive _in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "RD" primitive in the tuple space model.</i></para>
     /// </summary>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "RDP" primitive _in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "RDP" primitive in the tuple space model.</i></para>
     /// </summary>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
     /// <summary>
     /// <para>Used to read and remove a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "IN" primitive _in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "IN" primitive in the tuple space model.</i></para>
     /// </summary>
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
     /// <summary>
     /// <para>Used to read and remove a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "INP" primitive _in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "INP" primitive in the tuple space model.</i></para>
     /// </summary>
     Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 

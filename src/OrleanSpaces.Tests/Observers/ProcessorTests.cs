@@ -28,7 +28,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         scope.AddObserver(new TestObserver());
 
         // Expand
-        SpaceTuple tuple = new((1, "a"));
+        SpaceTuple tuple = new(1, "a");
         await channel.Writer.WriteAsync(tuple);
 
         while (scope.TotalInvoked(observer => !observer.LastTuple.IsPassive) < 3)

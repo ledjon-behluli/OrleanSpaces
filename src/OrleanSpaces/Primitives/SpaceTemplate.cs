@@ -11,60 +11,37 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public object this[int index] => fields[index];
     public int Length => fields.Length;
 
-    public SpaceTemplate()
+    public SpaceTemplate() : this(new object[0])
     {
-        fields = new object[1] { SpaceUnit.Null };
+
     }
 
-    public SpaceTemplate(string value)
+    public SpaceTemplate(params object[] fields)
     {
-        if (value is null) 
+        if (fields == null)
         {
-            throw new ArgumentNullException(nameof(value));
+            throw new ArgumentNullException(nameof(fields));
         }
 
-        fields = new object[1] { value };
-    }
-
-    public SpaceTemplate(Type type)
-    {
-        if (type is null) 
+        if (fields.Length == 0)
         {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        fields = new object[1] { type };
-    }
-
-    public SpaceTemplate(ValueType valueType)
-    {
-        if (valueType is null) 
-        {
-            throw new ArgumentNullException(nameof(valueType));
-        }
-
-        if (valueType is ITuple _tuple)
-        {
-            fields = new object[_tuple.Length];
-            for (int i = 0; i < _tuple.Length; i++)
-            {
-                ThrowIfNotSupported(_tuple[i], i);
-                fields[i] = _tuple[i];
-            }
+            this.fields = new object[1] { SpaceUnit.Null };
         }
         else
         {
-            ThrowIfNotSupported(valueType);
-            fields = new object[1] { valueType };
-        }
+            this.fields = new object[fields.Length];
 
-        static void ThrowIfNotSupported(object obj, int index = 0)
-        {
-            Type type = obj.GetType();
-
-            if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+            for (int i = 0; i < fields.Length; i++)
             {
-                throw new ArgumentException($"The field at position = {index}, is not a valid type. Allowed types include: strings, primitives, enums and '{nameof(SpaceUnit)}'.");
+                object obj = fields[i];
+                Type type = obj.GetType();
+
+                if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+                {
+                    throw new ArgumentException($"The field at position = {i}, is not a valid type. Allowed types are: strings, primitives, enums and '{nameof(SpaceUnit)}'.");
+                }
+
+                this.fields[i] = obj;
             }
         }
     }
@@ -100,7 +77,17 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return true;
     }
 
-    public static implicit operator SpaceTemplate(SpaceTuple tuple) => new(tuple);
+    public static implicit operator SpaceTemplate(SpaceTuple tuple)
+    {
+        object[] fields = new object[tuple.Length];
+
+        for (int i = 0; i < tuple.Length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
+        return new(fields);
+    }
 
     public static bool operator ==(SpaceTemplate left, SpaceTemplate right) => left.Equals(right);
     public static bool operator !=(SpaceTemplate left, SpaceTemplate right) => !(left == right);

@@ -1,10 +1,17 @@
 ﻿using OrleanSpaces.Primitives;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tests.Primitives;
 
 public class SpaceTupleTests
 {
+    [Fact]
+    public void Should_Be_Smaller_Or_Equal_To_IntPtr_Size()
+    {
+        Assert.True(Marshal.SizeOf(typeof(SpaceTuple)) <= IntPtr.Size);
+    }
+
     [Fact]
     public void Should_Be_An_ITuple()
     {
@@ -12,9 +19,9 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_Tuple()
+    public void Should_Be_Created_On_Object_Array()
     {
-        SpaceTuple tuple = new((1, "a", 1.5f, TestEnum.A));
+        SpaceTuple tuple = new(1, "a", 1.5f, TestEnum.A);
 
         Assert.Equal(4, tuple.Length);
         Assert.Equal(1, tuple[0]);
@@ -24,7 +31,7 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_ValueType()
+    public void Should_Be_Created_On_Value_Type()
     {
         SpaceTuple tuple = new(1);
 
@@ -44,9 +51,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((string)null));
-        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((ValueType)null));
-        Assert.Throws<ArgumentNullException>(() => new SpaceTuple((string)null));
+        Assert.Throws<ArgumentNullException>(() => new SpaceTuple(null));
     }
 
     [Fact]
@@ -58,25 +63,25 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_If_Tuple_Contains_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", SpaceUnit.Null)));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, "a", SpaceUnit.Null));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Types()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, typeof(int), "a")));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, typeof(int), "a"));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Class_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", new TestClass())));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, "a", new TestClass()));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Struct_Type_Field()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple((1, "a", new TestStruct())));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, "a", new TestStruct()));
     }
 
     [Fact]
@@ -114,8 +119,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Equal()
     {
-        SpaceTuple tuple1 = new((1, "a", 1.5f));
-        SpaceTuple tuple2 = new((1, "a", 1.5f));
+        SpaceTuple tuple1 = new(1, "a", 1.5f);
+        SpaceTuple tuple2 = new(1, "a", 1.5f);
 
         Assert.Equal(tuple1, tuple2);
         Assert.True(tuple1 == tuple2);
@@ -136,8 +141,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Be_Equal_On_Object()
     {
-        SpaceTuple tuple = new((1, "a", 1.5f));
-        object obj = new SpaceTuple((1, "a", 1.5f));
+        SpaceTuple tuple = new(1, "a", 1.5f);
+        object obj = new SpaceTuple(1, "a", 1.5f);
 
         Assert.True(tuple.Equals(obj));
     }
@@ -145,8 +150,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_On_Object()
     {
-        SpaceTuple tuple = new((1, "a", 1.5f));
-        object obj = new SpaceTuple((1, "a"));
+        SpaceTuple tuple = new(1, "a", 1.5f);
+        object obj = new SpaceTuple(1, "a");
 
         Assert.False(tuple.Equals(obj));
     }
@@ -154,8 +159,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_For_Same_Lengths()
     {
-        SpaceTuple tuple1 = new((1, "a", 1.5f));
-        SpaceTuple tuple2 = new((1, "b", 1.5f));
+        SpaceTuple tuple1 = new(1, "a", 1.5f);
+        SpaceTuple tuple2 = new(1, "b", 1.5f);
 
         Assert.NotEqual(tuple1, tuple2);
         Assert.False(tuple1 == tuple2);
@@ -165,8 +170,8 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Not_Be_Equal_For_Different_Lengths()
     {
-        SpaceTuple tuple1 = new((1, "a", 1.5f));
-        SpaceTuple tuple2 = new((1, "a"));
+        SpaceTuple tuple1 = new(1, "a", 1.5f);
+        SpaceTuple tuple2 = new(1, "a");
 
         Assert.NotEqual(tuple1, tuple2);
         Assert.False(tuple1 == tuple2);
@@ -177,7 +182,7 @@ public class SpaceTupleTests
     [MemberData(nameof(CompareData))]
     public void Should_Be_Compareable(SpaceTuple value, int compareValue)
     {
-        SpaceTuple tuple = new(("a", "b"));
+        SpaceTuple tuple = new("a", "b");
         Assert.Equal(compareValue, tuple.CompareTo(value));
     }
 
@@ -186,17 +191,17 @@ public class SpaceTupleTests
     {
         List<SpaceTuple> actual = new()
         {
-            new((1, 1)),
+            new(1, 1),
             new(1),
-            new((1, 1, 1, 1)),
-            new((1, 1, 1))
+            new(1, 1, 1, 1),
+            new(1, 1, 1)
         };
         List<SpaceTuple> expected = new()
         {
             new(1),
-            new((1, 1)),
-            new((1, 1, 1)),
-            new((1, 1, 1, 1)),
+            new(1, 1),
+            new(1, 1, 1),
+            new(1, 1, 1, 1)
         };
 
         actual.Sort();
@@ -209,9 +214,9 @@ public class SpaceTupleTests
     {
         Assert.Equal($"({SpaceUnit.Null})", new SpaceTuple().ToString());
         Assert.Equal("(1)", new SpaceTuple(1).ToString());
-        Assert.Equal("(1, a)", new SpaceTuple((1, "a")).ToString());
-        Assert.Equal("(1, a, 1.5)", new SpaceTuple((1, "a", 1.5f)).ToString());
-        Assert.Equal("(1, a, 1.5, b)", new SpaceTuple((1, "a", 1.5f, 'b')).ToString());
+        Assert.Equal("(1, a)", new SpaceTuple(1, "a").ToString());
+        Assert.Equal("(1, a, 1.5)", new SpaceTuple(1, "a", 1.5f).ToString());
+        Assert.Equal("(1, a, 1.5, b)", new SpaceTuple(1, "a", 1.5f, 'b').ToString());
     }
 
     public static object[][] CompareData() =>
@@ -219,9 +224,9 @@ public class SpaceTupleTests
         {
             new object[] { new SpaceTuple(1), 1 },
             new object[] { new SpaceTuple(2), 1 },
-            new object[] { new SpaceTuple((1, "a")), 0 },
-            new object[] { new SpaceTuple(("a", 1)), 0 },
-            new object[] { new SpaceTuple((1, "a", 1.5f)), -1 },
-            new object[] { new SpaceTuple(("a", 1, 1.8f)), -1 },
+            new object[] { new SpaceTuple(1, "a"), 0 },
+            new object[] { new SpaceTuple("a", 1), 0 },
+            new object[] { new SpaceTuple(1, "a", 1.5f), -1 },
+            new object[] { new SpaceTuple("a", 1, 1.8f), -1 },
         };
 }
