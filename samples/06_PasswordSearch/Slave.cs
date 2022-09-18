@@ -16,24 +16,19 @@ public class Slave
         this.hashPasswordPairs = hashPasswordPairs;
     }
 
-    public async Task RunAsync(CancellationToken cancellationToken)
+    public async Task RunAsync()
     {
-        while (!cancellationToken.IsCancellationRequested)
+        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(template);
+        foreach (var tuple in tuples)
         {
-            await agent.PopAsync(template, async tuple =>
+            await Task.Delay(100);  // Simulate some complex searching.
+            string hash = (string)tuple[1];
+
+            if (hashPasswordPairs.TryGetValue(hash, out string? password))
             {
-                string hash = (string)tuple[1];
-
-#nullable disable
-                if (hashPasswordPairs.TryGetValue(hash, out string password))
-#nullable enable
-                {
-                    Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
-                    await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
-                }
-            });
-
-            await Task.Delay(1000, cancellationToken);  // Simulate some complex work from the slave.
+                Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
+                await agent.WriteAsync(new((ExchangeKeys.PASSWORD_FOUND, hash, password)));
+            }
         }
     }
 }

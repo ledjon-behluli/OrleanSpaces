@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 using System.Diagnostics;
+using System.Reflection;
 
 public class Worker : BackgroundService
 {
@@ -68,13 +69,13 @@ public class Worker : BackgroundService
 
         ISpaceAgent agent = await channel.OpenAsync();
         
-        Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
-        _ = agent.Subscribe(master);
+        List<Slave> slaves = new();
 
-        List<Task> tasks = new();
-        CancellationTokenSource cts = new();
-
-        if (isMultiSlaveMode)
+        if (!isMultiSlaveMode)
+        {
+            slaves.Add(new(0, agent, hashPasswordPairs));
+        }
+        else
         {
             int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
             int rounds = numOfPasswords + (remainder > 0 ? 1 : 0);
@@ -86,36 +87,18 @@ public class Worker : BackgroundService
                     .Take(size)
                     .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-                Slave slave = new(i, agent, partition);
-                tasks.Add(Task.Run(async () => await slave.RunAsync(cts.Token), cts.Token));
+                slaves.Add(new(i, agent, partition));
             }
         }
-        else
-        {
-            Slave slave = new(0, agent, hashPasswordPairs);
-            tasks.Add(Task.Run(async () => await slave.RunAsync(cts.Token), cts.Token));
-        }
+
+        Master master = new(agent, numOfPasswords, hashPasswordPairs.Keys.ToList());
+        _ = agent.Subscribe(master);
 
         Stopwatch sw = new();
+        sw.Start();
 
-        try
-        {
-            tasks.Add(Task.Run(() =>
-            {
-                while (!master.IsDone) { }
-                cts.Cancel();
-            }, cancellationToken));
-
-           
-            sw.Start();
-
-            await master.RunAsync();
-            await Task.WhenAll(tasks);
-        }
-        catch (OperationCanceledException)
-        {
-
-        }
+        await master.RunAsync();
+        await Parallel.ForEachAsync(slaves, async (slave, ct) => await slave.RunAsync());
 
         sw.Stop();
 
