@@ -4,7 +4,6 @@ using OrleanSpaces.Primitives;
 
 [MemoryDiagnoser]
 [CategoriesColumn]
-[ShortRunJob]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class SpaceTemplateBenchmarks
 {
@@ -13,7 +12,7 @@ public class SpaceTemplateBenchmarks
     #region Instantiation
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateNullWithNew()
+    public void InstantiateByCtor()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -29,18 +28,18 @@ public class SpaceTemplateBenchmarks
     }
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateNullWithRef()
+    public void InstantiateByRefReturn()
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = SpaceTemplateCachedFactory.Singlet;
-            _ = SpaceTemplateCachedFactory.Pair;
-            _ = SpaceTemplateCachedFactory.Triple;
-            _ = SpaceTemplateCachedFactory.Quadruple;
-            _ = SpaceTemplateCachedFactory.Quintuple;
-            _ = SpaceTemplateCachedFactory.Sextuple;
-            _ = SpaceTemplateCachedFactory.Septuple;
-            _ = SpaceTemplateCachedFactory.Octuple;
+            _ = SpaceTemplateCache.Singlet;
+            _ = SpaceTemplateCache.Pair;
+            _ = SpaceTemplateCache.Triple;
+            _ = SpaceTemplateCache.Quadruple;
+            _ = SpaceTemplateCache.Quintuple;
+            _ = SpaceTemplateCache.Sextuple;
+            _ = SpaceTemplateCache.Septuple;
+            _ = SpaceTemplateCache.Octuple;
         }
     }
 
@@ -136,7 +135,7 @@ public class SpaceTemplateBenchmarks
     #endregion
 }
 
-public readonly partial struct SpaceTemplateCachedFactory
+public readonly struct SpaceTemplateCache
 {
     private static readonly SpaceTemplate singlet = new(SpaceUnit.Null);
     private static readonly SpaceTemplate pair = new(SpaceUnit.Null, SpaceUnit.Null);

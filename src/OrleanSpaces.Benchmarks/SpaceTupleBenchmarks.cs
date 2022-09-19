@@ -12,7 +12,7 @@ public class SpaceTupleBenchmarks
     #region Instantiation
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateNullWithNew()
+    public void InstantiateByCtor()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -21,7 +21,7 @@ public class SpaceTupleBenchmarks
     }
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateNullWithRef()
+    public void InstantiateByRefReturn()
     {
         for (int i = 0; i < iterations; i++)
         {

@@ -8,12 +8,13 @@ using System.Collections.Concurrent;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class TypeCheckerBenchmarks
 {
+    private const int iterations = 100_000;
     private static readonly ConcurrentDictionary<Type, bool> cache = new();
 
     [Benchmark(Baseline = true)]
     public void IsSimpleType()
     {
-        for (int i = 0; i < 100_000; i++)
+        for (int i = 0; i < iterations; i++)
         {
             TypeChecker.IsSimpleType(typeof(bool));
             TypeChecker.IsSimpleType(typeof(byte));
@@ -41,7 +42,7 @@ public class TypeCheckerBenchmarks
     [Benchmark]
     public void IsSimpleTypeCached()
     {
-        for (int i = 0; i < 100_000; i++)
+        for (int i = 0; i < iterations; i++)
         {
             CheckCached(typeof(bool));
             CheckCached(typeof(byte));
