@@ -40,7 +40,7 @@ public class Worker : BackgroundService
         while (!evalExecuted)
         {
             Console.WriteLine("WORKER: Doing some other stuff.");
-            await Task.Delay(500);
+            await Task.Delay(500, cancellationToken);
         }
 
         Console.WriteLine($"WORKER: Result from evaluation: {await agent.PeekAsync(new(EXCHANGE_KEY, typeof(double)))}");

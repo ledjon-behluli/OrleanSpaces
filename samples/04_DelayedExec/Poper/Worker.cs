@@ -23,13 +23,13 @@ public class Worker : BackgroundService
         bool callbackExecuted = false;
 
         SpaceTemplate template = new(EXCHANGE_KEY, typeof(double));
-        Console.WriteLine($"WORKER: Pop-ing a tuple that matches template {template} in a 'blocking' fashion...");
+        Console.WriteLine($"WORKER: Pop-ing a tuple that matches template {template} in a callback fashion...");
 
         await agent.PopAsync(template, async tuple =>
         {
             Console.WriteLine($"CALLBACK: Got back response for template {template} in form of this tuple '{tuple}'. Doing some heavy work...");
 
-            await Task.Delay(1000);
+            await Task.Delay(1000, cancellationToken);
 
             Console.WriteLine("CALLBACK: Done with my work.");
             callbackExecuted = true;
@@ -45,7 +45,7 @@ public class Worker : BackgroundService
         while (!callbackExecuted)
         {
             Console.WriteLine("WORKER: Doing some other stuff.");
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
         }
 
         Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await agent.PeekAsync(template)).IsPassive}");

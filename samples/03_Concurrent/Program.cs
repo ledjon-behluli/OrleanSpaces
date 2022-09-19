@@ -16,10 +16,10 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 ISpaceChannel channel = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
 
-//Normally you would call: "var agent = await channel.OpenAsync();" somewhere here, but I want to showcase the thread-safety of the method.
+//Normally you would call "var agent = await channel.OpenAsync();" somewhere here.
+//But I want to showcase the thread-safety of the method.
 
 const string EXCHANGE_KEY = "exchange-key";
-
 
 await Task.WhenAll(CreateTasks(10, async index =>
 {
