@@ -12,44 +12,91 @@ namespace OrleanSpaces;
 
 public interface ISpaceAgent
 {
+    /// <summary>
+    /// Enables the <paramref name="observer"/> to subscribe to events that happen in the tuple space.
+    /// </summary>
+    /// <param name="observer">Any space observer.</param>
+    /// <remarks><i>Method is idempotant.</i></remarks>
+    /// <returns>An ID that can be used to <see cref="Unsubscribe"/>.</returns>
     Guid Subscribe(ISpaceObserver observer);
-    void Unsubscribe(Guid id);
 
     /// <summary>
-    /// <para>Used to write a tuple in the tuple space.</para>
-    /// <para><i>Analogous to the "OUT" primitive in the tuple space model.</i></para>
+    /// Removes the observer with the corresponding <paramref name="observerId"/>.
     /// </summary>
+    /// <param name="observerId">The ID obtained from calling <see cref="Subscribe"/>.</param>
+    /// <remarks><i>Method is idempotant.</i></remarks>
+    void Unsubscribe(Guid observerId);
+
+    /// <summary>
+    /// Directly writes the <paramref name="tuple"/> in the space.
+    /// </summary>
+    /// <param name="tuple">The tuple to be written.</param>
+    /// <remarks><i>Analogous to the "OUT" operation in the tuple space model.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
 
     /// <summary>
-    /// Evaluate
+    /// Indirectly writes a <see cref="SpaceTuple"/> in the space.
+    /// <list type="number">
+    /// <item><description>Executes the <paramref name="evaluation"/> function.</description></item>
+    /// <item><description>Proceeds to write the resulting <see cref="SpaceTuple"/> in the space.</description></item>
+    /// </list>
     /// </summary>
-    /// <param name="evaluation"></param>
-    /// <returns></returns>
+    /// <param name="evaluation">Any function that returns a <see cref="SpaceTuple"/>.</param>
+    /// <remarks><i>Analogous to the "EVAL" operation in the tuple space model.</i></remarks>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
     /// <summary>
-    /// <para>Used to read a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "RD" primitive in the tuple space model.</i></para>
+    /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
+    /// <list type="bullet">
+    /// <item><description>If one such tuple exists, then <u>a copy</u> is returned thereby keeping the original in the space.</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple.Passive"/> is returned to indicate a "no-match".</description></item>
+    /// </list>
     /// </summary>
+    /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
+    /// <remarks><i>Analogous to the "RDP" operation in the tuple space model.</i></remarks>
+    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
     /// <summary>
-    /// <para>Used to read a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "RDP" primitive in the tuple space model.</i></para>
+    /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
+    /// <list type="bullet">
+    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately which returns the matching <see cref="SpaceTuple"/>.</description></item>
+    /// <item><description>Otherwise the operation is remembered and the <paramref name="callback"/> will eventually be invoked as soon as a matching <see cref="SpaceTuple"/> is written in the space.</description></item>
+    /// </list>
     /// </summary>
+    /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
+    /// <param name="callback">TODO: Fill me!</param>
+    /// <remarks>
+    /// <para><i>Same as <see cref="PeekAsync"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Analogous to the "RD" operation in the tuple space model.</i></para>
+    /// </remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
     /// <summary>
-    /// <para>Used to read and remove a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "IN" primitive in the tuple space model.</i></para>
+    /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
+    /// <list type="bullet">
+    /// <item><description>If one such tuple exists, then <u>the original</u> is returned thereby removing it from the space.</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple.Passive"/> is returned to indicate a "no-match".</description></item>
+    /// </list>
     /// </summary>
+    /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
+    /// <remarks><i>Analogous to the "INP" operation in the tuple space model.</i></remarks>
+    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
     /// <summary>
-    /// <para>Used to read and remove a tuple from the tuple space.</para>
-    /// <para><i>Analogous to the "INP" primitive in the tuple space model.</i></para>
+    /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
+    /// <list type="bullet">
+    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately which returns the matching <see cref="SpaceTuple"/>.</description></item>
+    /// <item><description>Otherwise the operation is remembered and the <paramref name="callback"/> will eventually be invoked as soon as a matching <see cref="SpaceTuple"/> is written in the space.</description></item>
+    /// </list>
     /// </summary>
+    /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
+    /// <param name="callback">TODO: Fill me!</param>
+    /// <remarks>
+    /// <para><i>Same as <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Analogous to the "IN" operation in the tuple space model.</i></para>
+    /// </remarks>
     Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
@@ -150,8 +197,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
     public Guid Subscribe(ISpaceObserver observer)
         => observerRegistry.Add(observer);
 
-    public void Unsubscribe(Guid id)
-        => observerRegistry.Remove(id);
+    public void Unsubscribe(Guid observerId)
+        => observerRegistry.Remove(observerId);
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);

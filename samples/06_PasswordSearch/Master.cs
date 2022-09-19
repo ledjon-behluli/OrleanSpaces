@@ -42,7 +42,7 @@ public class Master : SpaceObserver
 
     public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        if (template.IsSatisfiedBy(tuple))
+        if (template.Matches(tuple))
         {
             Console.WriteLine($"MASTER: Received solution to Hash = {tuple[1]}");
             await agent.PopAsync(tuple);

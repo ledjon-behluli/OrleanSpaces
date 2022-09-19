@@ -2,7 +2,11 @@
 
 public interface ISpaceChannel
 {
-    /// <remarks>Method is thread-safe.</remarks>
+    /// <summary>
+    /// Opens a channel between the client and the tuple space.
+    /// </summary>
+    /// <returns>An instance of <see cref="ISpaceAgent"/> that is used to interact with the tuple space.</returns>
+    /// <remarks><i>Method is thread-safe.</i></remarks>
     Task<ISpaceAgent> OpenAsync();
 }
 

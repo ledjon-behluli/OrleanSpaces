@@ -40,7 +40,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTemplate template = tuple;
         await channel.Writer.WriteAsync(template);
 
-        while (scope.TotalInvoked(observer => observer.LastTemplate.IsSatisfiedBy(tuple)) < 3)
+        while (scope.TotalInvoked(observer => observer.LastTemplate.Matches(tuple)) < 3)
         {
 
         }

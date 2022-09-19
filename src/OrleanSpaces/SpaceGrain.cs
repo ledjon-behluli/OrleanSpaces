@@ -60,7 +60,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
         foreach (var tuple in tuples)
         {
-            if (template.IsSatisfiedBy(tuple))
+            if (template.Matches(tuple))
             {
                 return new(tuple);
             }
@@ -77,7 +77,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         {
             SpaceTuple tuple = dto;
 
-            if (template.IsSatisfiedBy(tuple))
+            if (template.Matches(tuple))
             {
                 space.State.Tuples.Remove(dto);
 
@@ -106,7 +106,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
         foreach (var tuple in tuples)
         {
-            if (template.IsSatisfiedBy(tuple))
+            if (template.Matches(tuple))
             {
                 results.Add(tuple);
             }
@@ -122,7 +122,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             return new(space.State.Tuples.Count);
         }
 
-        return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).IsSatisfiedBy(tuple)));
+        return new(space.State.Tuples.Count(tuple => ((SpaceTemplate)template).Matches(tuple)));
     }
 }
 

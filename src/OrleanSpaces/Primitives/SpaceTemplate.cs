@@ -46,7 +46,7 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         }
     }
 
-    public bool IsSatisfiedBy(SpaceTuple tuple)
+    public bool Matches(SpaceTuple tuple)
     {
         if (tuple.Length != Length)
         {

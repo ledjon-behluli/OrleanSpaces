@@ -8,19 +8,39 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
+/// <summary>
+/// Extension methods for neccessary service registrations.
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Configures the tuple space on the silo.
+    /// </summary>
     public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
+    /// <summary>
+    /// Configures the tuple space on the silo.
+    /// </summary>
     public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
         builder.ConfigureApplicationParts(parts =>
             parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
 
+    /// <summary>
+    /// Configures the tuple space on the client.
+    /// </summary>
     public static IClientBuilder AddTupleSpace(this IClientBuilder builder) =>
         builder.ConfigureServices(services => services.AddClientServices());
 
+    /// <summary>
+    /// Configures the tuple space services.
+    /// </summary>
+    /// <param name="clusterClientFactory">
+    /// An optional delegate that returns an <see cref="IClusterClient"/> to be used.
+    /// <para><i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></para>
+    /// </param>
+    /// <returns></returns>
     public static IServiceCollection AddTupleSpace(this IServiceCollection services, Func<IClusterClient>? clusterClientFactory = null)
     {
         services.AddSingleton(clusterClientFactory?.Invoke() ?? BuildDefaultClient());

@@ -265,11 +265,11 @@ public class SpaceTemplateTests
        };
 }
 
-public class StatisfactionTests
+public class MatchingTests
 {
     private readonly SpaceTuple tuple;
 
-    public StatisfactionTests()
+    public MatchingTests()
     {
         tuple = new(1, "a", 1.5f);
     }
@@ -278,26 +278,26 @@ public class StatisfactionTests
     public void Should_Be_False_If_Lengths_Are_Not_Equal()
     {
         SpaceTemplate template = new(1, "a");
-        Assert.False(template.IsSatisfiedBy(tuple));
+        Assert.False(template.Matches(tuple));
     }
 
     [Fact]
-    public void Shoud_Be_Statisfied_By_Various_Tuples()
+    public void Shoud_Match_Various_Tuples()
     {
-        Assert.True(new SpaceTemplate(1).IsSatisfiedBy(new(1)));
-        Assert.True(new SpaceTemplate(1, "a").IsSatisfiedBy(new(1, "a")));
-        Assert.True(new SpaceTemplate(1, "a", 1.5f).IsSatisfiedBy(new(1, "a", 1.5f)));
-        Assert.True(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).IsSatisfiedBy(new(1, "a", 1.5f, 1.1m)));
-        Assert.True(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).IsSatisfiedBy(new(1, "a", 1.5f, 1.1m)));
+        Assert.True(new SpaceTemplate(1).Matches(new(1)));
+        Assert.True(new SpaceTemplate(1, "a").Matches(new(1, "a")));
+        Assert.True(new SpaceTemplate(1, "a", 1.5f).Matches(new(1, "a", 1.5f)));
+        Assert.True(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).Matches(new(1, "a", 1.5f, 1.1m)));
+        Assert.True(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).Matches(new(1, "a", 1.5f, 1.1m)));
     }
 
     [Fact]
-    public void Shoud_Not_Be_Statisfied_By_Various_Tuples()
+    public void Shoud_Not_Match_Various_Tuples()
     {
-        Assert.False(new SpaceTemplate(1, "a").IsSatisfiedBy(new(1)));
-        Assert.False(new SpaceTemplate(1, "a", 1.5f).IsSatisfiedBy(new(1, "a", 2.5f)));
-        Assert.False(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).IsSatisfiedBy(new(1, "b", 1.5f, 1.1m)));
-        Assert.False(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).IsSatisfiedBy(new(1, "a", 2.5f, 1.1m)));
+        Assert.False(new SpaceTemplate(1, "a").Matches(new(1)));
+        Assert.False(new SpaceTemplate(1, "a", 1.5f).Matches(new(1, "a", 2.5f)));
+        Assert.False(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).Matches(new(1, "b", 1.5f, 1.1m)));
+        Assert.False(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).Matches(new(1, "a", 2.5f, 1.1m)));
     }
 
     #region Values
@@ -309,16 +309,16 @@ public class StatisfactionTests
         SpaceTemplate template2 = new(1, "b", 1.5f);
         SpaceTemplate template3 = new(1, "a", 1.6f);
 
-        Assert.False(template1.IsSatisfiedBy(tuple));
-        Assert.False(template2.IsSatisfiedBy(tuple));
-        Assert.False(template3.IsSatisfiedBy(tuple));
+        Assert.False(template1.Matches(tuple));
+        Assert.False(template2.Matches(tuple));
+        Assert.False(template3.Matches(tuple));
     }
 
     [Fact]
     public void Should_Be_True_If_All_Items_Match_OnValues()
     {
         SpaceTemplate template = tuple;
-        Assert.True(template.IsSatisfiedBy(tuple));
+        Assert.True(template.Matches(tuple));
     }
 
     [Fact]
@@ -328,9 +328,9 @@ public class StatisfactionTests
         SpaceTemplate template2 = new(1, 1.5f, "a");
         SpaceTemplate template3 = new(1.5f, "a", 1);
 
-        Assert.False(template1.IsSatisfiedBy(tuple));
-        Assert.False(template2.IsSatisfiedBy(tuple));
-        Assert.False(template3.IsSatisfiedBy(tuple));
+        Assert.False(template1.Matches(tuple));
+        Assert.False(template2.Matches(tuple));
+        Assert.False(template3.Matches(tuple));
     }
 
     [Fact]
@@ -343,12 +343,12 @@ public class StatisfactionTests
         SpaceTemplate template5 = new(SpaceUnit.Null, SpaceUnit.Null, 1.5f);
         SpaceTemplate template6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
 
-        Assert.True(template1.IsSatisfiedBy(tuple));
-        Assert.True(template2.IsSatisfiedBy(tuple));
-        Assert.True(template3.IsSatisfiedBy(tuple));
-        Assert.True(template4.IsSatisfiedBy(tuple));
-        Assert.True(template5.IsSatisfiedBy(tuple));
-        Assert.True(template6.IsSatisfiedBy(tuple));
+        Assert.True(template1.Matches(tuple));
+        Assert.True(template2.Matches(tuple));
+        Assert.True(template3.Matches(tuple));
+        Assert.True(template4.Matches(tuple));
+        Assert.True(template5.Matches(tuple));
+        Assert.True(template6.Matches(tuple));
     }
 
     #endregion
@@ -362,16 +362,16 @@ public class StatisfactionTests
         SpaceTemplate template2 = new(typeof(int), typeof(double), typeof(float));
         SpaceTemplate template3 = new(typeof(double), typeof(string), typeof(float));
 
-        Assert.False(template1.IsSatisfiedBy(tuple));
-        Assert.False(template2.IsSatisfiedBy(tuple));
-        Assert.False(template3.IsSatisfiedBy(tuple));
+        Assert.False(template1.Matches(tuple));
+        Assert.False(template2.Matches(tuple));
+        Assert.False(template3.Matches(tuple));
     }
 
     [Fact]
     public void Should_Be_True_If_All_Items_Match_OnTypes()
     {
         SpaceTemplate template = new(typeof(int), typeof(string), typeof(float));
-        Assert.True(template.IsSatisfiedBy(tuple));
+        Assert.True(template.Matches(tuple));
     }
 
     [Fact]
@@ -381,9 +381,9 @@ public class StatisfactionTests
         SpaceTemplate template2 = new(typeof(string), typeof(string), typeof(float));
         SpaceTemplate template3 = new(typeof(string), typeof(string), typeof(float));
 
-        Assert.False(template1.IsSatisfiedBy(tuple));
-        Assert.False(template2.IsSatisfiedBy(tuple));
-        Assert.False(template3.IsSatisfiedBy(tuple));
+        Assert.False(template1.Matches(tuple));
+        Assert.False(template2.Matches(tuple));
+        Assert.False(template3.Matches(tuple));
     }
 
     [Fact]
@@ -396,12 +396,12 @@ public class StatisfactionTests
         SpaceTemplate template5 = new(SpaceUnit.Null, SpaceUnit.Null, typeof(float));
         SpaceTemplate template6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
 
-        Assert.True(template1.IsSatisfiedBy(tuple));
-        Assert.True(template2.IsSatisfiedBy(tuple));
-        Assert.True(template3.IsSatisfiedBy(tuple));
-        Assert.True(template4.IsSatisfiedBy(tuple));
-        Assert.True(template5.IsSatisfiedBy(tuple));
-        Assert.True(template6.IsSatisfiedBy(tuple));
+        Assert.True(template1.Matches(tuple));
+        Assert.True(template2.Matches(tuple));
+        Assert.True(template3.Matches(tuple));
+        Assert.True(template4.Matches(tuple));
+        Assert.True(template5.Matches(tuple));
+        Assert.True(template6.Matches(tuple));
     }
 
     #endregion
@@ -415,9 +415,9 @@ public class StatisfactionTests
         SpaceTemplate template2 = new(1, typeof(int), 1.5f);
         SpaceTemplate template3 = new(1, "a", typeof(double));
 
-        Assert.False(template1.IsSatisfiedBy(tuple));
-        Assert.False(template2.IsSatisfiedBy(tuple));
-        Assert.False(template3.IsSatisfiedBy(tuple));
+        Assert.False(template1.Matches(tuple));
+        Assert.False(template2.Matches(tuple));
+        Assert.False(template3.Matches(tuple));
     }
 
     [Fact]
@@ -430,12 +430,12 @@ public class StatisfactionTests
         SpaceTemplate template5 = new(typeof(int), typeof(string), 1.5f);
         SpaceTemplate template6 = new(typeof(int), typeof(string), typeof(float));
 
-        Assert.True(template1.IsSatisfiedBy(tuple));
-        Assert.True(template2.IsSatisfiedBy(tuple));
-        Assert.True(template3.IsSatisfiedBy(tuple));
-        Assert.True(template4.IsSatisfiedBy(tuple));
-        Assert.True(template5.IsSatisfiedBy(tuple));
-        Assert.True(template6.IsSatisfiedBy(tuple));
+        Assert.True(template1.Matches(tuple));
+        Assert.True(template2.Matches(tuple));
+        Assert.True(template3.Matches(tuple));
+        Assert.True(template4.Matches(tuple));
+        Assert.True(template5.Matches(tuple));
+        Assert.True(template6.Matches(tuple));
     }
 
     [Fact]
@@ -447,11 +447,11 @@ public class StatisfactionTests
         SpaceTemplate template4 = new(SpaceUnit.Null, typeof(string), 1.5f);
         SpaceTemplate template5 = new(SpaceUnit.Null, "a", typeof(float));
 
-        Assert.True(template1.IsSatisfiedBy(tuple));
-        Assert.True(template2.IsSatisfiedBy(tuple));
-        Assert.True(template3.IsSatisfiedBy(tuple));
-        Assert.True(template4.IsSatisfiedBy(tuple));
-        Assert.True(template5.IsSatisfiedBy(tuple));
+        Assert.True(template1.Matches(tuple));
+        Assert.True(template2.Matches(tuple));
+        Assert.True(template3.Matches(tuple));
+        Assert.True(template4.Matches(tuple));
+        Assert.True(template5.Matches(tuple));
     }
 
     #endregion

@@ -26,7 +26,7 @@ internal sealed class CallbackRegistry
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
-            if(pair.Key.IsSatisfiedBy(tuple))
+            if(pair.Key.Matches(tuple))
             {
                 foreach (var entry in entries[pair.Key])
                 {

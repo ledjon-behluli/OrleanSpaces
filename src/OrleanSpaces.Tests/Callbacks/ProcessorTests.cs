@@ -52,7 +52,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         {
             Assert.NotNull(result);
             Assert.True(result is SpaceTemplate);
-            Assert.True(((SpaceTemplate)result).IsSatisfiedBy(tuple));
+            Assert.True(((SpaceTemplate)result).Matches(tuple));
 
             rounds++;
 
@@ -81,7 +81,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         {
             Assert.NotNull(result);
             Assert.True(result is SpaceTemplate);
-            Assert.True(((SpaceTemplate)result).IsSatisfiedBy(tuple));
+            Assert.True(((SpaceTemplate)result).Matches(tuple));
 
             rounds++;
 

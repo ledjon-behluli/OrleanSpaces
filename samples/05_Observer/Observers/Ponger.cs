@@ -17,7 +17,7 @@ public class Ponger : SpaceObserver
 
     public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        if (template.IsSatisfiedBy(tuple))
+        if (template.Matches(tuple))
         {
             Console.WriteLine("PONG-er: Got it");
 

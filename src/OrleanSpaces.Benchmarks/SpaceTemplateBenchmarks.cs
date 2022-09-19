@@ -96,7 +96,7 @@ public class SpaceTemplateBenchmarks
 
     #endregion
 
-    #region Satisfaction
+    #region Matching
 
     private readonly static SpaceTuple tuple = new(1, "a", 1.5f);
     private readonly static SpaceTemplate template1 = new(1, "a", 1.5f);
@@ -104,32 +104,32 @@ public class SpaceTemplateBenchmarks
     private readonly static SpaceTemplate template3 = new(1, "a", 2.5f);
     private readonly static SpaceTemplate template4 = new(1, "a");
 
-    [BenchmarkCategory("Satisfaction"), Benchmark]
+    [BenchmarkCategory("Matching"), Benchmark]
     public void FullMatch()
     {
         for (int i = 0; i < iterations; i++)
-            template1.IsSatisfiedBy(tuple);
+            template1.Matches(tuple);
     }
 
-    [BenchmarkCategory("Satisfaction"), Benchmark]
+    [BenchmarkCategory("Matching"), Benchmark]
     public void PartialMatch()
     {
         for (int i = 0; i < iterations; i++)
-            template2.IsSatisfiedBy(tuple);
+            template2.Matches(tuple);
     }
 
-    [BenchmarkCategory("Satisfaction"), Benchmark]
+    [BenchmarkCategory("Matching"), Benchmark]
     public void NoMatchSameLengths()
     {
         for (int i = 0; i < iterations; i++)
-            template3.IsSatisfiedBy(tuple);
+            template3.Matches(tuple);
     }
 
-    [BenchmarkCategory("Satisfaction"), Benchmark]
+    [BenchmarkCategory("Matching"), Benchmark]
     public void NoMatchDiffLengths()
     {
         for (int i = 0; i < iterations; i++)
-            template4.IsSatisfiedBy(tuple);
+            template4.Matches(tuple);
     }
 
     #endregion
