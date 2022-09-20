@@ -48,7 +48,7 @@ public class TestObserver : SpaceObserver
     }
 }
 
-public class ThrowingTestObserver : TestObserver
+public class ThrowingObserver : TestObserver
 {
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {

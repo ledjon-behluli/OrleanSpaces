@@ -31,14 +31,14 @@ public interface ISpaceObserver
 /// </summary>
 public abstract class SpaceObserver : ISpaceObserver
 {
-    private ObservationType type = ObservationType.Nothing;
+    private ObservableType type = ObservableType.Nothing;
 
     /// <summary>
-    /// Configures the derived class to listen to specific observations.
+    /// Configures the derived class to listen to specific observable.
     /// </summary>
-    /// <param name="type">The observation type interested in.</param>
-    /// <remarks><i>Combinations are possible via bit-wise operations on <see cref="ObservationType"/>.</i></remarks>
-    protected void ListenTo(ObservationType type) => this.type = type;
+    /// <param name="type">The observable type interested in.</param>
+    /// <remarks><i>Combinations are possible via bit-wise operations on <see cref="ObservableType"/>.</i></remarks>
+    protected void ListenTo(ObservableType type) => this.type = type;
 
     internal async ValueTask NotifyAsync(ITuple tuple, CancellationToken cancellationToken)
     {
@@ -61,28 +61,53 @@ public abstract class SpaceObserver : ISpaceObserver
         }
     }
 
-    /// <inheritdoc />
     public virtual Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) => Task.CompletedTask;
-    
-    /// <inheritdoc />
     public virtual Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken) => Task.CompletedTask;
-
-    /// <inheritdoc />
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
-    protected enum ObservationType
+    protected enum ObservableType
     {
+        /// <summary>
+        /// Specifies that the observer is not interested on any kind of observables.
+        /// </summary>
         Nothing = 0,
+        /// <summary>
+        /// Specifies that the observer is interested on space expansions.
+        /// </summary>
         Expansions = 1,
+        /// <summary>
+        /// Specifies that the observer is interested on space contractions.
+        /// </summary>
         Contractions = 2,
+        /// <summary>
+        /// Specifies that the observer is interested on space flattenings.
+        /// </summary>
         Flattenings = 4,
+        /// <summary>
+        /// Specifies that the observer is interested in all kinds of observables.
+        /// </summary>
         Everything = Expansions | Contractions | Flattenings
     }
 
-    protected static readonly ObservationType Nothing = ObservationType.Nothing;
-    protected static readonly ObservationType Expansions = ObservationType.Expansions;
-    protected static readonly ObservationType Contractions = ObservationType.Contractions;
-    protected static readonly ObservationType Flattenings = ObservationType.Flattenings;
-    protected static readonly ObservationType Everything = ObservationType.Everything;
+    /// <summary>
+    /// Specifies that the observer is not interested on any kind of observables.
+    /// </summary>
+    protected static readonly ObservableType Nothing = ObservableType.Nothing;   
+    /// <summary>
+    /// Specifies that the observer is interested on space expansions.
+    /// </summary>
+    protected static readonly ObservableType Expansions = ObservableType.Expansions;
+    /// <summary>
+    /// Specifies that the observer is interested on space contractions.
+    /// </summary>
+    protected static readonly ObservableType Contractions = ObservableType.Contractions;
+    /// <summary>
+    /// Specifies that the observer is interested on space flattenings.
+    /// </summary>
+    protected static readonly ObservableType Flattenings = ObservableType.Flattenings;
+    /// <summary>
+    /// Specifies that the observer is interested in all kinds of observables.
+    /// </summary>
+    protected static readonly ObservableType Everything = ObservableType.Everything;
 }

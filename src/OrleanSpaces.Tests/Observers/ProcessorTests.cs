@@ -78,7 +78,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         using var scope = fixture.StartScope();
 
         scope.AddObserver(new TestObserver());
-        scope.AddObserver(new ThrowingTestObserver());
+        scope.AddObserver(new ThrowingObserver());
         scope.AddObserver(new TestObserver());
 
         SpaceTuple tuple = new(1);
@@ -91,7 +91,7 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         Assert.All(scope.Observers, observer =>
         {
-            if (observer is ThrowingTestObserver)
+            if (observer is ThrowingObserver)
             {
                 Assert.Equal(new(), observer.LastTuple);
             }

@@ -30,7 +30,7 @@ public interface ISpaceAgent
     /// <summary>
     /// Directly writes the <paramref name="tuple"/> in the space.
     /// </summary>
-    /// <param name="tuple">The tuple to be written, which must not be a <see cref="SpaceTuple.Passive"/>.</param>
+    /// <param name="tuple">Any non-<see cref="SpaceTuple.Passive"/>.</param>
     /// <remarks><i>Analogous to the "OUT" operation in the tuple space model.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
 
@@ -41,7 +41,7 @@ public interface ISpaceAgent
     /// <item><description>Proceeds to write the resulting <see cref="SpaceTuple"/> in the space.</description></item>
     /// </list>
     /// </summary>
-    /// <param name="evaluation">Any function that returns a <see cref="SpaceTuple"/>, which must not be a <see cref="SpaceTuple.Passive"/>..</param>
+    /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Passive"/>.</param>
     /// <remarks><i>Analogous to the "EVAL" operation in the tuple space model.</i></remarks>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
@@ -60,14 +60,14 @@ public interface ISpaceAgent
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
-    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately which returns the matching <see cref="SpaceTuple"/>.</description></item>
+    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately.</description></item>
     /// <item><description>Otherwise the operation is remembered and the <paramref name="callback"/> will eventually be invoked as soon as a matching <see cref="SpaceTuple"/> is written in the space.</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <param name="callback">TODO: Fill me!</param>
+    /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
-    /// <para><i>Same as <see cref="PeekAsync"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Same as with <see cref="PeekAsync"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
     /// <para><i>Analogous to the "RD" operation in the tuple space model.</i></para>
     /// </remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
@@ -87,14 +87,14 @@ public interface ISpaceAgent
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
-    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately which returns the matching <see cref="SpaceTuple"/>.</description></item>
+    /// <item><description>If one such tuple exists, the <paramref name="callback"/> is invoked immediately.</description></item>
     /// <item><description>Otherwise the operation is remembered and the <paramref name="callback"/> will eventually be invoked as soon as a matching <see cref="SpaceTuple"/> is written in the space.</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <param name="callback">TODO: Fill me!</param>
+    /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
-    /// <para><i>Same as <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Same as with <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
     /// <para><i>Analogous to the "IN" operation in the tuple space model.</i></para>
     /// </remarks>
     Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
@@ -103,8 +103,7 @@ public interface ISpaceAgent
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
-    /// <remarks><i>Same as <see cref="PeekAsync"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
-    /// <returns>Collection of <see cref="SpaceTuple"/>'s</returns>
+    /// <remarks><i>Same as with <see cref="PeekAsync"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
 
     /// <summary>

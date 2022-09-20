@@ -9,7 +9,7 @@ public class Ponger : SpaceObserver
 
     public Ponger(ISpaceAgentProvider provider)
     {
-        ListenTo(ObservationType.Expansions);
+        ListenTo(ObservableType.Expansions);
 
         this.provider = provider;
         template = new("Ping", SpaceUnit.Null);
