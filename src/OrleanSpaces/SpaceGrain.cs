@@ -13,7 +13,7 @@ internal interface ISpaceGrain : IGrainWithGuidKey
 
     Task WriteAsync(SpaceTuple tuple);
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
-    Task<SpaceTuple> PopAsync(SpaceTemplate template);
+    ValueTask<SpaceTuple> PopAsync(SpaceTemplate template);
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
     ValueTask<int> CountAsync(SpaceTemplate? template);
 }
@@ -69,7 +69,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         return new(SpaceTuple.Null);
     }
 
-    public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
+    public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
         var tupleDtos = space.State.Tuples.Where(x => x.Length == template.Length);
 

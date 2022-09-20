@@ -79,7 +79,7 @@ public interface ISpaceAgent
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
-    Task<SpaceTuple> PopAsync(SpaceTemplate template);
+    ValueTask<SpaceTuple> PopAsync(SpaceTemplate template);
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -93,7 +93,7 @@ public interface ISpaceAgent
     /// <para><i>Same as with <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
     /// <para><i>Analogous to the "IN" operation in the tuple space paradigm.</i></para>
     /// </remarks>
-    Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
+    ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
     /// <summary>
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
@@ -243,10 +243,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         }
     }
 
-    public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
+    public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
             => await grain.PopAsync(template);
 
-    public async Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
+    public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null)
         {
