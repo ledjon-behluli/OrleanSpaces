@@ -1,28 +1,27 @@
 ﻿namespace OrleanSpaces;
 
-public interface ISpaceChannel
+public interface ISpaceAgentProvider
 {
     /// <summary>
-    /// Opens a channel between the client and the tuple space.
+    /// Returns an <see cref="ISpaceAgent"/> that is used to interact with the tuple space.
     /// </summary>
-    /// <returns>An instance of <see cref="ISpaceAgent"/> that is used to interact with the tuple space.</returns>
-    /// <remarks><i>Method is thread-safe.</i></remarks>
-    Task<ISpaceAgent> OpenAsync();
+    /// <remarks><i>Method is idempotant.<br/>Method is thread-safe.</i></remarks>
+    Task<ISpaceAgent> GetAsync();
 }
 
-internal sealed class SpaceChannel : ISpaceChannel
+internal sealed class SpaceAgentProvider : ISpaceAgentProvider
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
     private readonly SpaceAgent agent;
     private bool initialized;
 
-    public SpaceChannel(SpaceAgent agent)
+    public SpaceAgentProvider(SpaceAgent agent)
     {
         this.agent = agent;
     }
 
-    public async Task<ISpaceAgent> OpenAsync()
+    public async Task<ISpaceAgent> GetAsync()
     {
         await semaphore.WaitAsync();
 

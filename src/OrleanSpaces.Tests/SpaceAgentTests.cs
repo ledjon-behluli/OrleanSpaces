@@ -10,7 +10,7 @@ namespace OrleanSpaces.Tests;
 
 public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
-    private readonly ISpaceChannel spaceChannel;
+    private readonly ISpaceAgentProvider spaceChannel;
     private readonly ITupleRouter router;
     private readonly EvaluationChannel evaluationChannel;
     private readonly ObserverRegistry observerRegistry;
@@ -20,14 +20,14 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
     
     public SpaceAgentTests(ClusterFixture fixture)
     {
-        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
         router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
     }
 
-    public async Task InitializeAsync() => agent = await spaceChannel.OpenAsync();
+    public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
     #region Subscriptions

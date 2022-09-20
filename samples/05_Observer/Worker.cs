@@ -8,7 +8,7 @@ public class Worker : BackgroundService
     private readonly Auditor auditor;
     private readonly Completer completer;
     private readonly Archiver archiver;
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceAgentProvider provider;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
@@ -16,20 +16,20 @@ public class Worker : BackgroundService
         Auditor auditor,
         Completer completer,
         Archiver archiver,
-        ISpaceChannel channel,
+        ISpaceAgentProvider provider,
         IHostApplicationLifetime lifetime)
     {
         this.ponger = ponger;
         this.auditor = auditor;
         this.completer = completer;
         this.archiver = archiver;
-        this.channel = channel;
+        this.provider = provider;
         this.lifetime = lifetime;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        ISpaceAgent agent = await channel.OpenAsync();
+        ISpaceAgent agent = await provider.GetAsync();
 
         Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");

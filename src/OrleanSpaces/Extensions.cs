@@ -36,11 +36,8 @@ public static class Extensions
     /// <summary>
     /// Configures the tuple space services.
     /// </summary>
-    /// <param name="clusterClientFactory">
-    /// An optional delegate that returns an <see cref="IClusterClient"/> to be used.
-    /// <para><i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></para>
-    /// </param>
-    /// <returns></returns>
+    /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
+    /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
     public static IServiceCollection AddTupleSpace(this IServiceCollection services, Func<IClusterClient>? clusterClientFactory = null)
     {
         services.AddSingleton(clusterClientFactory?.Invoke() ?? BuildDefaultClient());
@@ -67,7 +64,7 @@ public static class Extensions
 
         services.AddSingleton<SpaceAgent>();
         services.AddSingleton<ITupleRouter>(sp => sp.GetRequiredService<SpaceAgent>());
-        services.AddSingleton<ISpaceChannel, SpaceChannel>();
+        services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
 
         services.AddHostedService<CallbackProcessor>();
         services.AddHostedService<EvaluationProcessor>();

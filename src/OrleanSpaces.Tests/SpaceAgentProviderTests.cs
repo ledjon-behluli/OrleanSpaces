@@ -1,32 +1,31 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orleans;
-using OrleanSpaces.Primitives;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
-public class SpaceChannelTests : IClassFixture<ClusterFixture>
+public class SpaceAgentProviderTests : IClassFixture<ClusterFixture>
 {
     private readonly IClusterClient client;
-    private readonly ISpaceChannel spaceChannel;
+    private readonly ISpaceAgentProvider spaceChannel;
 
-    public SpaceChannelTests(ClusterFixture fixture)
+    public SpaceAgentProviderTests(ClusterFixture fixture)
     {
         client = fixture.Client;
-        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceChannel>();
+        spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
     }
 
     [Fact]
     public async Task Should_Get_Agent()
     {
-        Assert.NotNull(await spaceChannel.OpenAsync());
+        Assert.NotNull(await spaceChannel.GetAsync());
     }
 
     [Fact]
     public async Task Should_Get_Same_Agent_When_Called_Multiple_Times()
     {
-        ISpaceAgent agent1 = await spaceChannel.OpenAsync();
-        ISpaceAgent agent2 = await spaceChannel.OpenAsync();
+        ISpaceAgent agent1 = await spaceChannel.GetAsync();
+        ISpaceAgent agent2 = await spaceChannel.GetAsync();
 
         Assert.Equal(agent1, agent2);
         Assert.True(agent1 == agent2);
@@ -40,16 +39,16 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Not_Throw_When_Channel_Gets_Opened_Concurrently()
+    public async Task Should_Not_Throw_When_Invoked_Concurrently()
     {
-        var expection = await Record.ExceptionAsync(async () => _ = await OpenChannelConcurrently());
+        var expection = await Record.ExceptionAsync(async () => _ = await GetAgentConcurrently());
         Assert.Null(expection);
     }
 
     [Fact]
-    public async Task Should_Subscribe_Once_When_Channel_Gets_Opened_Concurrently()
+    public async Task Should_Subscribe_Once_When_Invoked_Concurrently()
     {
-        _ = await OpenChannelConcurrently();
+        _ = await GetAgentConcurrently();
 
         var grain = client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
         var streamId = await grain.ListenAsync();
@@ -60,7 +59,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         Assert.Equal(1, subscriptions.Count);
     }
 
-    private async Task<ISpaceAgent> OpenChannelConcurrently()
+    private async Task<ISpaceAgent> GetAgentConcurrently()
     {
         ISpaceAgent agent = null;
         var tasks = new Task[100];
@@ -69,7 +68,7 @@ public class SpaceChannelTests : IClassFixture<ClusterFixture>
         {
             tasks[i] = Task.Run(async () =>
             {
-                agent = await spaceChannel.OpenAsync();
+                agent = await spaceChannel.GetAsync();
             });
         }
 

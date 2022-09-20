@@ -5,13 +5,13 @@ using OrleanSpaces.Primitives;
 public class Ponger : SpaceObserver
 {
     private readonly SpaceTemplate template;
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceAgentProvider provider;
 
-    public Ponger(ISpaceChannel channel)
+    public Ponger(ISpaceAgentProvider provider)
     {
         ListenTo(ObservationType.Expansions);
 
-        this.channel = channel;
+        this.provider = provider;
         template = new("Ping", SpaceUnit.Null);
     }
 
@@ -21,7 +21,7 @@ public class Ponger : SpaceObserver
         {
             Console.WriteLine("PONG-er: Got it");
 
-            var agent = await channel.OpenAsync();
+            var agent = await provider.GetAsync();
             await agent.WriteAsync(new("Pong", DateTime.Now));
         }
     }

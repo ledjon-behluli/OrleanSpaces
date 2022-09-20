@@ -14,8 +14,8 @@ await client.Connect();   // If not called explicitly, it is handle by the libra
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-var channel = client.ServiceProvider.GetRequiredService<ISpaceChannel>();
-var agent = await channel.OpenAsync();
+ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
+ISpaceAgent agent = await provider.GetAsync();
 
 const string EXCHANGE_KEY = "exchange-key";
 

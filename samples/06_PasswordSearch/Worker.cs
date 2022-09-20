@@ -4,14 +4,14 @@ using System.Text.Json;
 
 public class Worker : BackgroundService
 {
-    private readonly ISpaceChannel channel;
+    private readonly ISpaceAgentProvider provider;
     private readonly IHostApplicationLifetime lifetime;
 
     public Worker(
-        ISpaceChannel channel,
+        ISpaceAgentProvider provider,
         IHostApplicationLifetime lifetime)
     {
-        this.channel = channel;
+        this.provider = provider;
         this.lifetime = lifetime;
     }
 
@@ -54,7 +54,7 @@ public class Worker : BackgroundService
             break;
         }
 
-        ISpaceAgent agent = await channel.OpenAsync();
+        ISpaceAgent agent = await provider.GetAsync();
         
         List<Slave> slaves = new();
         int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);
