@@ -31,14 +31,14 @@ public interface ISpaceObserver
 /// </summary>
 public abstract class SpaceObserver : ISpaceObserver
 {
-    private ObservableType type = ObservableType.Nothing;
+    private EventType type = EventType.Nothing;
 
     /// <summary>
-    /// Configures the derived class to listen to specific observable.
+    /// Configures the derived class to listen to specific events.
     /// </summary>
-    /// <param name="type">The observable type interested in.</param>
-    /// <remarks><i>Combinations are possible via bit-wise operations on <see cref="ObservableType"/>.</i></remarks>
-    protected void ListenTo(ObservableType type) => this.type = type;
+    /// <param name="type">The event type interested in.</param>
+    /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
+    protected void ListenTo(EventType type) => this.type = type;
 
     internal async ValueTask NotifyAsync(ITuple tuple, CancellationToken cancellationToken)
     {
@@ -66,48 +66,38 @@ public abstract class SpaceObserver : ISpaceObserver
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
-    protected enum ObservableType
+    protected enum EventType
     {
         /// <summary>
-        /// Specifies that the observer is not interested on any kind of observables.
+        /// Specifies that the observer is not interested in any kind of events.
         /// </summary>
         Nothing = 0,
         /// <summary>
-        /// Specifies that the observer is interested on space expansions.
+        /// Specifies that the observer is interested in space expansion events.
         /// </summary>
         Expansions = 1,
         /// <summary>
-        /// Specifies that the observer is interested on space contractions.
+        /// Specifies that the observer is interested in space contraction events.
         /// </summary>
         Contractions = 2,
         /// <summary>
-        /// Specifies that the observer is interested on space flattenings.
+        /// Specifies that the observer is interested in space flattening events.
         /// </summary>
         Flattenings = 4,
         /// <summary>
-        /// Specifies that the observer is interested in all kinds of observables.
+        /// Specifies that the observer is interested in all kinds of events.
         /// </summary>
         Everything = Expansions | Contractions | Flattenings
     }
 
-    /// <summary>
-    /// Specifies that the observer is not interested on any kind of observables.
-    /// </summary>
-    protected static readonly ObservableType Nothing = ObservableType.Nothing;   
-    /// <summary>
-    /// Specifies that the observer is interested on space expansions.
-    /// </summary>
-    protected static readonly ObservableType Expansions = ObservableType.Expansions;
-    /// <summary>
-    /// Specifies that the observer is interested on space contractions.
-    /// </summary>
-    protected static readonly ObservableType Contractions = ObservableType.Contractions;
-    /// <summary>
-    /// Specifies that the observer is interested on space flattenings.
-    /// </summary>
-    protected static readonly ObservableType Flattenings = ObservableType.Flattenings;
-    /// <summary>
-    /// Specifies that the observer is interested in all kinds of observables.
-    /// </summary>
-    protected static readonly ObservableType Everything = ObservableType.Everything;
+    /// <returns><see cref="EventType.Nothing"/></returns>
+    protected static readonly EventType Nothing = EventType.Nothing;
+    /// <returns><see cref="EventType.Expansions"/></returns>
+    protected static readonly EventType Expansions = EventType.Expansions;
+    /// <returns><see cref="EventType.Contractions"/></returns>
+    protected static readonly EventType Contractions = EventType.Contractions;
+    /// <returns><see cref="EventType.Flattenings"/></returns>
+    protected static readonly EventType Flattenings = EventType.Flattenings;
+    /// <returns><see cref="EventType.Everything"/></returns>
+    protected static readonly EventType Everything = EventType.Everything;
 }

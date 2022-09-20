@@ -1,4 +1,6 @@
-﻿using Orleans.Concurrency;
+﻿using Newtonsoft.Json.Linq;
+using Orleans.Concurrency;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
@@ -13,7 +15,7 @@ public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<Sp
     /// <summary>
     /// Default and only value of this type.
     /// </summary>
-    /// <remarks><i>Should be used instead of the default constructor, to avoid unneccessary memory allocations.</i></remarks>
+    /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
     public static ref readonly SpaceUnit Null => ref @null;
 
     /// <summary>

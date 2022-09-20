@@ -19,7 +19,6 @@ public interface ISpaceAgent
     /// <remarks><i>Method is idempotant.</i></remarks>
     /// <returns>An ID that can be used to <see cref="Unsubscribe"/>.</returns>
     Guid Subscribe(ISpaceObserver observer);
-
     /// <summary>
     /// Removes the observer with the corresponding <paramref name="observerId"/>.
     /// </summary>
@@ -33,7 +32,6 @@ public interface ISpaceAgent
     /// <param name="tuple">Any non-<see cref="SpaceTuple.Null"/>.</param>
     /// <remarks><i>Analogous to the "OUT" operation in the tuple space paradigm.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
-
     /// <summary>
     /// Indirectly writes a <see cref="SpaceTuple"/> in the space.
     /// <list type="number">
@@ -56,7 +54,6 @@ public interface ISpaceAgent
     /// <remarks><i>Analogous to the "RDP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -83,7 +80,6 @@ public interface ISpaceAgent
     /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -110,7 +106,6 @@ public interface ISpaceAgent
     /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
     /// </summary>
     ValueTask<int> CountAsync();
-
     /// <summary>
     /// Returns the total number of <see cref="SpaceTuple"/>'s which are potentially matched by the given <paramref name="template"/>.
     /// </summary>

@@ -8,9 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
-/// <summary>
-/// Extension methods for neccessary service registrations.
-/// </summary>
 public static class Extensions
 {
     /// <summary>
@@ -34,7 +31,7 @@ public static class Extensions
         builder.ConfigureServices(services => services.AddClientServices());
 
     /// <summary>
-    /// Configures the tuple space services.
+    /// Configures the tuple space on the service collection.
     /// </summary>
     /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
     /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
