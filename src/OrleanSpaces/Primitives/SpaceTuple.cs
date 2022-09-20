@@ -72,16 +72,16 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
     /// <summary>
-    /// Determines whether the specified <see cref="object" /> is equal to this instance.
+    /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
     /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns><see langword="true"/> if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? obj) => obj is SpaceTuple tuple && Equals(tuple);
     /// <summary>
     /// Determines whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns><see langword="true"/> if all the fields of <see langword="this"/> match <paramref name="other"/> on the type, value and index; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of fields, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTuple other)
     {
         if (Length != other.Length)
@@ -104,7 +104,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// Compares the current object with another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns>Whatever is the result of comparison between the Length's of <see langword="this"/> and <paramref name="other"/>.</returns>
+    /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
     public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();//TODO: Test hashcode with SpaceUnit.Null

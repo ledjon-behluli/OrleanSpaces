@@ -29,10 +29,10 @@ public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<Sp
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;
 
     /// <summary>
-    /// Determines whether the specified <see cref="object" /> is equal to this instance.
+    /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
     /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns><see langword="true"/> if <paramref name="obj"/> is of type <see cref="SpaceUnit"/>; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceUnit"/>; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? obj) => obj is SpaceUnit;
     /// <summary>
     /// Determines whether the current object is equal to another object of the same type.

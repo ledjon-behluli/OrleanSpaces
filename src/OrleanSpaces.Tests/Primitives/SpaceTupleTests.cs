@@ -49,9 +49,9 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Throw_On_Null()
+    public void Should_Create_Null_Tuple_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => new SpaceTuple(null));
+        Assert.Equal(SpaceTuple.Null, new SpaceTuple(null));
     }
 
     [Fact]

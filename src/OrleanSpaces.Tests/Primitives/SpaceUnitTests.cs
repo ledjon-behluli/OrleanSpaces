@@ -22,12 +22,26 @@ public class SpaceUnitTests
     [MemberData(nameof(Data))]
     public void Should_Be_Equatable(object value, bool isEqual)
     {
-        var unit = SpaceUnit.Null;
+        SpaceUnit unit = SpaceUnit.Null;
 
         if (isEqual)
+        {
             Assert.True(unit.Equals(value));
+        }
         else
+        {
             Assert.False(unit.Equals(value));
+        }
+    }
+
+    [Fact]
+    public void Should_Be_Equatable_By_Operator()
+    {
+        SpaceUnit unit1 = SpaceUnit.Null;
+        SpaceUnit unit2 = new();
+
+        Assert.True(unit1 == unit2);
+        Assert.False(unit1 != unit2);
     }
 
     [Theory]

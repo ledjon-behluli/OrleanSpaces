@@ -86,9 +86,9 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Throw_On_Null()
+    public void Should_Create_Template_With_Single_Unit_Field_On_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => new SpaceTemplate(null));
+        Assert.Equal(new SpaceTemplate(SpaceUnit.Null), new SpaceTemplate(null));
     }
 
     [Fact]
@@ -265,11 +265,11 @@ public class SpaceTemplateTests
        };
 }
 
-public class MatchingTests
+public class MatchTests
 {
     private readonly SpaceTuple tuple;
 
-    public MatchingTests()
+    public MatchTests()
     {
         tuple = new(1, "a", 1.5f);
     }
