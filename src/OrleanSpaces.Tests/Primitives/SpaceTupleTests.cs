@@ -103,10 +103,10 @@ public class SpaceTupleTests
     }
 
     [Fact]
-    public void Should_Be_Considered_As_Passive_On_Default_Constructor()
+    public void Should_Be_Considered_As_Null_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
-        Assert.True(tuple.IsPassive);
+        Assert.True(tuple.IsNull);
     }
 
     [Fact]

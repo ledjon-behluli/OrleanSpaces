@@ -31,7 +31,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1, "a");
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastTuple.IsPassive) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastTuple.IsNull) < 3)
         {
 
         }
@@ -84,7 +84,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while (scope.TotalInvoked(observer => !observer.LastTuple.IsPassive) < 2)
+        while (scope.TotalInvoked(observer => !observer.LastTuple.IsNull) < 2)
         {
 
         }

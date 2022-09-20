@@ -41,9 +41,9 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
-        if (tuple.IsPassive)
+        if (tuple.IsNull)
         {
-            throw new ArgumentException("Passive tuples are not allowed to be writen in the tuple space.");
+            throw new ArgumentException("Null tuple is not allowed to be writen in the tuple space.");
         }
 
         space.State.Tuples.Add(tuple);
@@ -66,7 +66,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return new(SpaceTuple.Passive);
+        return new(SpaceTuple.Null);
     }
 
     public async Task<SpaceTuple> PopAsync(SpaceTemplate template)
@@ -93,7 +93,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             }
         }
 
-        return SpaceTuple.Passive;
+        return SpaceTuple.Null;
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)

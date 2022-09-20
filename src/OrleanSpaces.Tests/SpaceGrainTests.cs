@@ -108,7 +108,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         public void Reset()
         {
-            LastTuple = SpaceTuple.Passive;
+            LastTuple = SpaceTuple.Null;
             LastFlattening = false;
         }
     }

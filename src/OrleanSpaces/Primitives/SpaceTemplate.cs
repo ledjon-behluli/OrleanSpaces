@@ -4,8 +4,11 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
 
+/// <summary>
+/// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
+/// </summary>
 [Immutable]
-public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
+public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
 {
     private readonly object[] fields;
 
@@ -103,8 +106,17 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public static bool operator ==(SpaceTemplate left, SpaceTemplate right) => left.Equals(right);
     public static bool operator !=(SpaceTemplate left, SpaceTemplate right) => !(left == right);
 
-    public override bool Equals(object obj) => obj is SpaceTemplate template && Equals(template);
-
+    /// <summary>
+    /// Determines whether the specified <see cref="object" /> is equal to this instance.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns><see langword="true"/> if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
+    public override bool Equals(object? obj) => obj is SpaceTemplate template && Equals(template);
+    /// <summary>
+    /// Determines whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><see langword="true"/> if all the fields of <see langword="this"/> match <paramref name="other"/> on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTemplate other)
     {
         if (Length != other.Length)
@@ -123,6 +135,11 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
         return true;
     }
 
+    /// <summary>
+    /// Compares the current object with another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>Whatever is the result of comparison between the Length's of <see langword="this"/> and <paramref name="other"/>.</returns>
     public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();

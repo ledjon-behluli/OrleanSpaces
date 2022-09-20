@@ -30,7 +30,7 @@ public interface ISpaceAgent
     /// <summary>
     /// Directly writes the <paramref name="tuple"/> in the space.
     /// </summary>
-    /// <param name="tuple">Any non-<see cref="SpaceTuple.Passive"/>.</param>
+    /// <param name="tuple">Any non-<see cref="SpaceTuple.Null"/>.</param>
     /// <remarks><i>Analogous to the "OUT" operation in the tuple space paradigm.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
 
@@ -41,7 +41,7 @@ public interface ISpaceAgent
     /// <item><description>Proceeds to write the resulting <see cref="SpaceTuple"/> in the space.</description></item>
     /// </list>
     /// </summary>
-    /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Passive"/>.</param>
+    /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Null"/>.</param>
     /// <remarks><i>Analogous to the "EVAL" operation in the tuple space paradigm.</i></remarks>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
@@ -49,12 +49,12 @@ public interface ISpaceAgent
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
     /// <item><description>If one such tuple exists, then a <u>copy</u> is returned thereby keeping the original in the space.</description></item>
-    /// <item><description>Otherwise a <see cref="SpaceTuple.Passive"/> is returned to indicate a "no-match".</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple.Null"/> is returned to indicate a "no-match".</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <remarks><i>Analogous to the "RDP" operation in the tuple space paradigm.</i></remarks>
-    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
+    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
     /// <summary>
@@ -76,12 +76,12 @@ public interface ISpaceAgent
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
     /// <item><description>If one such tuple exists, then the <u>original</u> is returned thereby removing it from the space.</description></item>
-    /// <item><description>Otherwise a <see cref="SpaceTuple.Passive"/> is returned to indicate a "no-match".</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple.Null"/> is returned to indicate a "no-match".</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
-    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
+    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
     /// <summary>
@@ -238,7 +238,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
         SpaceTuple tuple = await grain.PeekAsync(template);
 
-        if (!tuple.IsPassive)
+        if (!tuple.IsNull)
         {
             await callback(tuple);
         }
@@ -260,7 +260,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
         SpaceTuple tuple = await grain.PopAsync(template);
 
-        if (!tuple.IsPassive)
+        if (!tuple.IsNull)
         {
             await callback(tuple);
         }

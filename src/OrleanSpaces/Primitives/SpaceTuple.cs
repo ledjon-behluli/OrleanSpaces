@@ -15,26 +15,26 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     public object this[int index] => fields[index];
     public int Length => fields.Length;
 
-    private static readonly SpaceTuple passive = new();
+    private static readonly SpaceTuple @null = new();
     /// <summary>
     /// Represents a <see cref="SpaceTuple"/> with a single field of type <see cref="SpaceUnit"/>.
     /// </summary>
     /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
-    public static ref readonly SpaceTuple Passive => ref passive;
+    public static ref readonly SpaceTuple Null => ref @null;
+    
+    /// <summary>
+    /// Checks wether this instance is a <see cref="Null"/>.
+    /// </summary>
+    public bool IsNull => Equals(Null);
 
     /// <summary>
-    /// Checks wether this instance is a <see cref="Passive"/>.
+    /// Default constructor which always instantiates a <see cref="Null"/>. 
     /// </summary>
-    public bool IsPassive => Equals(Passive);
-
-    /// <summary>
-    /// Default constructor which always instantiates a <see cref="Passive"/>. 
-    /// </summary>
-    /// <remarks><i>Use <see cref="Passive"/> over this to avoid unneccessary memory allocations.</i></remarks>
+    /// <remarks><i>Use <see cref="Null"/> over this to avoid unneccessary memory allocations.</i></remarks>
     public SpaceTuple() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-<see cref="Passive"/>, when all <paramref name="fields"/> are of valid type.
+    /// Main constructor which instantiates a non-<see cref="Null"/>, when all <paramref name="fields"/> are of valid type.
     /// </summary>
     /// <param name="fields">The fields of this tuple.</param>
     /// <remarks><i>Tuple fields can have types of: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
@@ -71,8 +71,17 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
-    public override bool Equals(object obj) => obj is SpaceTuple tuple && Equals(tuple);
-
+    /// <summary>
+    /// Determines whether the specified <see cref="object" /> is equal to this instance.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns><see langword="true"/> if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
+    public override bool Equals(object? obj) => obj is SpaceTuple tuple && Equals(tuple);
+    /// <summary>
+    /// Determines whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><see langword="true"/> if all the fields of <see langword="this"/> match <paramref name="other"/> on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTuple other)
     {
         if (Length != other.Length)
@@ -91,9 +100,14 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
         return true;
     }
 
+    /// <summary>
+    /// Compares the current object with another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>Whatever is the result of comparison between the Length's of <see langword="this"/> and <paramref name="other"/>.</returns>
     public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields.GetHashCode();//TODO: Test hashcode with SpaceUnit.Null
 
     public override string ToString() => $"({string.Join(", ", fields)})";
 }

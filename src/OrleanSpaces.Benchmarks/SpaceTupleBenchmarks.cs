@@ -25,7 +25,7 @@ public class SpaceTupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = SpaceTuple.Passive;
+            _ = SpaceTuple.Null;
         }
     }
 

@@ -67,7 +67,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple);
 
-        Assert.False(peekedTuple.IsPassive);
+        Assert.False(peekedTuple.IsNull);
         Assert.Equal(routingTuple, peekedTuple);
     }
 
@@ -80,7 +80,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         SpaceTuple peekedTuple = await agent.PeekAsync(template);
 
-        Assert.True(peekedTuple.IsPassive);
+        Assert.True(peekedTuple.IsNull);
         Assert.NotEqual(routingTuple, peekedTuple);
     }
 
@@ -106,9 +106,9 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
     }
 
     [Fact]
-    public async Task Should_Throw_On_WriteAsync_If_Passive_Tuple()
+    public async Task Should_Throw_On_WriteAsync_If_Null_Tuple()
     {
-        await Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(SpaceTuple.Passive));
+        await Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(SpaceTuple.Null));
         await Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(new()));
     }
 
@@ -149,12 +149,12 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Return_Passive_Tuple_On_PeekAsync(SpaceTuple tuple)
+    public async Task Should_Return_Null_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
         SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
 
-        Assert.True(peekedTuple.IsPassive);
+        Assert.True(peekedTuple.IsNull);
     }
 
     [Theory]
@@ -171,7 +171,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             return Task.CompletedTask;
         });
 
-        Assert.False(peekedTuple.IsPassive);
+        Assert.False(peekedTuple.IsNull);
         Assert.Equal(tuple, peekedTuple);
 
     }
@@ -191,7 +191,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         }
 
-        Assert.True(peekedTuple.IsPassive);
+        Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
     }
 
@@ -206,7 +206,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
         {
             SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
 
-            Assert.False(peekedTuple.IsPassive);
+            Assert.False(peekedTuple.IsNull);
             Assert.Equal(tuple, peekedTuple);
         }
     }
@@ -233,12 +233,12 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
     [Theory]
     [ClassData(typeof(TupleGenerator))]
-    public async Task Should_Return_Passive_Tuple_On_PopAsync(SpaceTuple tuple)
+    public async Task Should_Return_Null_Tuple_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
         SpaceTuple popedTuple = await agent.PopAsync(new(0));
 
-        Assert.True(popedTuple.IsPassive);
+        Assert.True(popedTuple.IsNull);
     }
 
     [Theory]
@@ -255,7 +255,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
             return Task.CompletedTask;
         });
 
-        Assert.False(popedTuple.IsPassive);
+        Assert.False(popedTuple.IsNull);
         Assert.Equal(tuple, popedTuple);
 
     }
@@ -275,7 +275,7 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
         }
 
-        Assert.True(peekedTuple.IsPassive);
+        Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
     }
 
@@ -293,12 +293,12 @@ public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixt
 
             if (firstIteration)
             {
-                Assert.False(popedTuple.IsPassive);
+                Assert.False(popedTuple.IsNull);
                 Assert.Equal(tuple, popedTuple);
             }
             else
             {
-                Assert.True(popedTuple.IsPassive);
+                Assert.True(popedTuple.IsNull);
                 Assert.NotEqual(tuple, popedTuple);
             }
 
