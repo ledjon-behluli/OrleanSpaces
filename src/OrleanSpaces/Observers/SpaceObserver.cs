@@ -26,10 +26,18 @@ public interface ISpaceObserver
     Task OnFlatteningAsync(CancellationToken cancellationToken = default);
 }
 
+/// <summary>
+/// A base class which provides dynamic observation capabilities.
+/// </summary>
 public abstract class SpaceObserver : ISpaceObserver
 {
     private ObservationType type = ObservationType.Nothing;
 
+    /// <summary>
+    /// Configures the derived class to listen to specific observations.
+    /// </summary>
+    /// <param name="type">The observation type interested in.</param>
+    /// <remarks><i>Combinations are possible via bit-wise operations on <see cref="ObservationType"/>.</i></remarks>
     protected void ListenTo(ObservationType type) => this.type = type;
 
     internal async ValueTask NotifyAsync(ITuple tuple, CancellationToken cancellationToken)
@@ -53,8 +61,13 @@ public abstract class SpaceObserver : ISpaceObserver
         }
     }
 
+    /// <inheritdoc />
     public virtual Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    
+    /// <inheritdoc />
     public virtual Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken) => Task.CompletedTask;
+
+    /// <inheritdoc />
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
