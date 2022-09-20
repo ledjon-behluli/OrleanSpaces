@@ -107,7 +107,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
     public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
-    public override int GetHashCode() => fields.GetHashCode();//TODO: Test hashcode with SpaceUnit.Null
+    public override int GetHashCode() => fields.GetHashCode();
 
     public override string ToString() => $"({string.Join(", ", fields)})";
 }

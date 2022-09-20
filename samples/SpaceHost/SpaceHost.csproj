@@ -10,9 +10,9 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="3.6.0" />
-		<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="3.6.0" />
-		<PackageReference Include="Microsoft.Orleans.Server" Version="3.6.0" />
+		<PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="3.6.5" />
+		<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="3.6.5" />
+		<PackageReference Include="Microsoft.Orleans.Server" Version="3.6.5" />
 		<PackageReference Include="Npgsql" Version="6.0.7" />
 	</ItemGroup>
 
