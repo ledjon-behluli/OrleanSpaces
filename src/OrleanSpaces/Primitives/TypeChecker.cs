@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-namespace OrleanSpaces.Primitives;
+﻿namespace OrleanSpaces.Primitives;
 
 internal static class TypeChecker
 {

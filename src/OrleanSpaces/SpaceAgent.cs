@@ -1,11 +1,11 @@
-﻿using Orleans.Streams;
-using Orleans;
+﻿using Orleans;
+using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Primitives;
-using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Continuations;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
@@ -31,7 +31,7 @@ public interface ISpaceAgent
     /// Directly writes the <paramref name="tuple"/> in the space.
     /// </summary>
     /// <param name="tuple">Any non-<see cref="SpaceTuple.Passive"/>.</param>
-    /// <remarks><i>Analogous to the "OUT" operation in the tuple space model.</i></remarks>
+    /// <remarks><i>Analogous to the "OUT" operation in the tuple space paradigm.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
 
     /// <summary>
@@ -42,7 +42,7 @@ public interface ISpaceAgent
     /// </list>
     /// </summary>
     /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Passive"/>.</param>
-    /// <remarks><i>Analogous to the "EVAL" operation in the tuple space model.</i></remarks>
+    /// <remarks><i>Analogous to the "EVAL" operation in the tuple space paradigm.</i></remarks>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
 
     /// <summary>
@@ -53,7 +53,7 @@ public interface ISpaceAgent
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <remarks><i>Analogous to the "RDP" operation in the tuple space model.</i></remarks>
+    /// <remarks><i>Analogous to the "RDP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
 
@@ -68,7 +68,7 @@ public interface ISpaceAgent
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
     /// <para><i>Same as with <see cref="PeekAsync"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
-    /// <para><i>Analogous to the "RD" operation in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "RD" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
@@ -80,7 +80,7 @@ public interface ISpaceAgent
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <remarks><i>Analogous to the "INP" operation in the tuple space model.</i></remarks>
+    /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Passive"/>.</returns>
     Task<SpaceTuple> PopAsync(SpaceTemplate template);
 
@@ -95,7 +95,7 @@ public interface ISpaceAgent
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
     /// <para><i>Same as with <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
-    /// <para><i>Analogous to the "IN" operation in the tuple space model.</i></para>
+    /// <para><i>Analogous to the "IN" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     Task PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 

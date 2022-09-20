@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Primitives;
@@ -11,19 +12,24 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
     public object this[int index] => fields[index];
     public int Length => fields.Length;
 
-    public SpaceTemplate() : this(new object[0])
+    /// <summary>
+    /// Default constructor which always instantiates a <see cref="SpaceTemplate"/> with a single field of type <see cref="SpaceUnit"/>.
+    /// </summary>
+    public SpaceTemplate() : this(null)
     {
-
+        
     }
 
-    public SpaceTemplate(params object[] fields)
+    /// <summary>
+    /// Main constructor which instantiates a <see cref="SpaceTemplate"/>, when all <paramref name="fields"/> are of valid type.
+    /// </summary>
+    /// <param name="fields">The fields of this template.</param>
+    /// <remarks><i>Template fields can have types of: <see cref="SpaceUnit"/>, <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
+    /// <see cref="decimal"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
+    /// <exception cref="ArgumentException"/>
+    public SpaceTemplate([AllowNull] params object[] fields)
     {
-        if (fields == null)
-        {
-            throw new ArgumentNullException(nameof(fields));
-        }
-
-        if (fields.Length == 0)
+        if (fields == null || fields.Length == 0)
         {
             this.fields = new object[1] { SpaceUnit.Null };
         }
@@ -34,11 +40,16 @@ public readonly partial struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>
             for (int i = 0; i < fields.Length; i++)
             {
                 object obj = fields[i];
+                if (obj is null)
+                {
+                    throw new ArgumentException($"The field at position = {i} can not be null.");
+                }
+
                 Type type = obj.GetType();
 
                 if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
                 {
-                    throw new ArgumentException($"The field at position = {i}, is not a valid type. Allowed types are: strings, primitives, enums and '{nameof(SpaceUnit)}'.");
+                    throw new ArgumentException($"The field at position = {i} is not a valid type.");
                 }
 
                 this.fields[i] = obj;
