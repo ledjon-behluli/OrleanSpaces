@@ -6,7 +6,7 @@ public interface ISpaceAgentProvider
     /// Returns an <see cref="ISpaceAgent"/> that is used to interact with the tuple space.
     /// </summary>
     /// <remarks><i>Method is idempotant.<br/>Method is thread-safe.</i></remarks>
-    Task<ISpaceAgent> GetAsync();
+    ValueTask<ISpaceAgent> GetAsync();
 }
 
 internal sealed class SpaceAgentProvider : ISpaceAgentProvider
@@ -21,7 +21,7 @@ internal sealed class SpaceAgentProvider : ISpaceAgentProvider
         this.agent = agent;
     }
 
-    public async Task<ISpaceAgent> GetAsync()
+    public async ValueTask<ISpaceAgent> GetAsync()
     {
         await semaphore.WaitAsync();
 
