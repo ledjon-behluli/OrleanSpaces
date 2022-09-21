@@ -3,10 +3,25 @@
   <PropertyGroup>
      <TargetFramework>netstandard2.1</TargetFramework>
 	 <LangVersion>10</LangVersion>
+	 <ImplicitUsings>enable</ImplicitUsings>
 	 <Nullable>enable</Nullable>
 	 <WarningsAsErrors>Nullable</WarningsAsErrors>
-	 <ImplicitUsings>enable</ImplicitUsings>
+	 
   </PropertyGroup>
+
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<PackageId>OrleanSpaces</PackageId>
+		<Authors>Ledjon Behluli</Authors>
+		<Description>Tuple-space implementation backed by Orleans.</Description>
+		<Copyright>Copyright (c) Ledjon Behluli.</Copyright>
+		<PackageTags>orleans;tuple-space;</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/ledjon-behluli/OrleanSpaces</RepositoryUrl>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
@@ -21,6 +36,7 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Benchmarks</_Parameter1>
 		</AssemblyAttribute>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
 </Project>
