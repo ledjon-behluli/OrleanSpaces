@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test w/ coverage
-      run: dotnet test src/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj -p:ParallelizeTestCollections=false --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Upload coverage
       uses: coverallsapp/github-action@master
       with:
