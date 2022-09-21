@@ -22,7 +22,7 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: dotnet test --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
-    - name: Upload coverage
+    - name: Coverage
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
