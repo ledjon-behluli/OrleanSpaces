@@ -22,11 +22,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build -c Release --no-restore
+      run: dotnet build --configuration Release --no-restore
     - name: Test w/ coverage
-      run: dotnet test OrleanSpaces/src/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test src/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Upload coverage
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: OrleanSpaces/src/OrleanSpaces.Tests/TestResults/coverage.info
+        path-to-lcov: ./src/OrleanSpaces.Tests/TestResults/coverage.info
