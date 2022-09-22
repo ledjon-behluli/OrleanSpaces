@@ -43,7 +43,7 @@ internal sealed class CallbackProcessor : BackgroundService
         try
         {
             await entry.Callback(tuple);
-            if (entry.IsDestructive)
+            if (entry.IsContinuable)
             {
                 await continuationChannel.Writer.WriteAsync((SpaceTemplate)tuple, cancellationToken);
             }
