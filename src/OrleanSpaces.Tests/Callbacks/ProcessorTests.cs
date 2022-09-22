@@ -11,15 +11,11 @@ public class ProcessorTests : IClassFixture<Fixture>
     private readonly CallbackChannel callbackChannel;
     private readonly ContinuationChannel continuationChannel;
 
-    private bool hostStopped;
-
     public ProcessorTests(Fixture fixture)
     {
         registry = fixture.Registry;
         callbackChannel = fixture.CallbackChannel;
         continuationChannel = fixture.ContinuationChannel;
-
-        fixture.Lifetime.ApplicationStopped.Register(() => hostStopped = true);
     }
 
     [Fact]
@@ -30,7 +26,7 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         continuationChannel.Reader.TryRead(out ITuple result);
 
-        Assert.NotNull(result);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -46,52 +42,18 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1, "a");
         await callbackChannel.Writer.WriteAsync(tuple);
 
-        int rounds = 0;
+        int rounds = 3;
 
-        await foreach (ITuple result in continuationChannel.Reader.ReadAllAsync(default))
+        while (rounds > 0)
         {
-            Assert.NotNull(result);
-            Assert.True(result is SpaceTemplate);
-            Assert.True(((SpaceTemplate)result).Matches(tuple));
-
-            rounds++;
-
-            if (continuationChannel.Reader.Count == 0)
+            if (continuationChannel.Reader.TryRead(out ITuple result))
             {
-                break;
+                Assert.NotNull(result);
+                Assert.True(result is SpaceTemplate);
+                Assert.True(((SpaceTemplate)result).Matches(tuple));
+
+                rounds--;
             }
         }
-
-        Assert.Equal(3, rounds);
-    }
-
-    [Fact]
-    public async Task Should_Stop_Host_If_Callback_Throws()
-    {
-        registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, true));
-        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
-        registry.Add(new(1, "a"), new(tuple => throw new Exception("Test"), true));
-
-        SpaceTuple tuple = new(1, "a");
-        await callbackChannel.Writer.WriteAsync(tuple);
-
-        int rounds = 0;
-
-        await foreach (ITuple result in continuationChannel.Reader.ReadAllAsync(default))
-        {
-            Assert.NotNull(result);
-            Assert.True(result is SpaceTemplate);
-            Assert.True(((SpaceTemplate)result).Matches(tuple));
-
-            rounds++;
-
-            if (continuationChannel.Reader.Count == 0)
-            {
-                break;
-            }
-        }
-
-        Assert.Equal(2, rounds);
-        Assert.True(hostStopped);
     }
 }

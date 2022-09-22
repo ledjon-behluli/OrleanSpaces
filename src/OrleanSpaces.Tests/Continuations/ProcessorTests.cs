@@ -3,13 +3,12 @@ using OrleanSpaces.Primitives;
 
 namespace OrleanSpaces.Tests.Continuations;
 
-[Collection("continuations")]
-public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
+public class ProcessorTests : IClassFixture<Fixture>
 {
     private readonly ContinuationChannel channel;
     private readonly TestTupleRouter router;
 
-    public TupleRouting_ProcessorTests(Fixture fixture)
+    public ProcessorTests(Fixture fixture)
     {
         channel = fixture.Channel;
         router = fixture.Router;
@@ -21,25 +20,14 @@ public class TupleRouting_ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await channel.Writer.WriteAsync(tuple);
 
-        while(router.Tuple == null)
+        while (router.Tuple == null)
         {
 
         }
 
         Assert.Equal(tuple, router.Tuple);
-    }
-}
 
-[Collection("continuations")]
-public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
-{
-    private readonly ContinuationChannel channel;
-    private readonly TestTupleRouter router;
-
-    public TemplateRouting_ProcessorTests(Fixture fixture)
-    {
-        channel = fixture.Channel;
-        router = fixture.Router;
+        router.Tuple = null;
     }
 
     [Fact]
@@ -54,5 +42,7 @@ public class TemplateRouting_ProcessorTests : IClassFixture<Fixture>
         }
 
         Assert.Equal(template, router.Tuple);
+
+        router.Tuple = null;
     }
 }

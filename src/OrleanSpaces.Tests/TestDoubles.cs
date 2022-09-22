@@ -12,7 +12,7 @@ public enum TestEnum { A }
 
 public class TestTupleRouter : ITupleRouter
 {
-    public ITuple Tuple { get; private set; }
+    public ITuple Tuple { get; set; }
 
     public Task RouteAsync(ITuple tuple)
     {

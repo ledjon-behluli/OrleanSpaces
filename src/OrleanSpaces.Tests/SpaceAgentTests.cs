@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace OrleanSpaces.Tests;
 
-public partial class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
+public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly ISpaceAgentProvider spaceChannel;
     private readonly ITupleRouter router;
