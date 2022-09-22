@@ -10,7 +10,7 @@ internal sealed class CallbackRegistry
     private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
 
     public ReadOnlyDictionary<SpaceTemplate, ReadOnlyCollection<CallbackEntry>> Entries =>
-      new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
+        new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
 
     public void Add(SpaceTemplate template, CallbackEntry entry)
     {
@@ -26,7 +26,7 @@ internal sealed class CallbackRegistry
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
-            if(pair.Key.Matches(tuple))
+            if (pair.Key.Matches(tuple))
             {
                 foreach (var entry in entries[pair.Key])
                 {

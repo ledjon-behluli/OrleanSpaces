@@ -11,7 +11,7 @@ public class Fixture : IAsyncLifetime
     internal IHostApplicationLifetime Lifetime;
     internal CallbackChannel CallbackChannel { get; }
     internal ContinuationChannel ContinuationChannel { get; }
-    internal CallbackRegistry Registry { get; }
+    internal CallbackRegistry Registry { get; private set; }
 
     public Fixture()
     {

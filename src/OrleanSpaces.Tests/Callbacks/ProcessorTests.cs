@@ -30,12 +30,14 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         continuationChannel.Reader.TryRead(out ITuple result);
 
-        Assert.Null(result);
+        Assert.NotNull(result);
     }
 
     [Fact]
     public async Task Should_Forward_Templates_When_Tuple_Matches_Them_In_Registry()
     {
+        //TODO: Check here if for tuples as opposed to rounds!!!
+
         registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, true));
         registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, false));
         registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
