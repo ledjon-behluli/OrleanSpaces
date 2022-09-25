@@ -22,7 +22,7 @@ internal sealed class EvaluationProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        evaluationChannel.HasActiveConsumer = true;
+        evaluationChannel.IsBeingConsumed = true;
 
         await foreach (var evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
@@ -37,6 +37,6 @@ internal sealed class EvaluationProcessor : BackgroundService
             }
         }
 
-        evaluationChannel.HasActiveConsumer = false;
+        evaluationChannel.IsBeingConsumed = false;
     }
 }

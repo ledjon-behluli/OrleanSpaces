@@ -12,35 +12,28 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly ISpaceAgentProvider spaceChannel;
     private readonly ITupleRouter router;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly CallbackChannel callbackChannel;
-    private readonly ObserverChannel observerChannel;
-    private readonly ContinuationChannel continuationChannel;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
-    
+    private readonly EvaluationChannel evaluationChannel;
+    private readonly CallbackChannel callbackChannel;
+
     private ISpaceAgent agent;
     
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
         router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter>();
-        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
+        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
+        callbackChannel = fixture.Client.ServiceProvider.GetRequiredService<CallbackChannel>();
     }
 
-    public async Task InitializeAsync()
-    {
-        evaluationChannel.HasActiveConsumer = true;
-        callbackChannel.HasActiveConsumer = true;
-        observerChannel.HasActiveConsumer = true;
-        continuationChannel.HasActiveConsumer = true;
-
-        agent = await spaceChannel.GetAsync();
-    }
-
+    public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
+
+    private static void ToggleChannelConsumerState(IConsumable channel) =>
+        channel.IsBeingConsumed = !channel.IsBeingConsumed;
 
     #region Subscriptions
 
@@ -145,6 +138,17 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.EvaluateAsync(null));
     }
 
+    [Fact]
+    public async Task Should_Throw_On_EvaluateAsync_If_Unconsumed_Channel()
+    {
+        ToggleChannelConsumerState(evaluationChannel);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await agent.EvaluateAsync(() => Task.FromResult(new SpaceTuple(1))));
+
+        ToggleChannelConsumerState(evaluationChannel);
+    }
+
     #endregion
 
     #region PeekAsync
@@ -227,6 +231,17 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Throw_On_PeekAsync_If_Null()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null));
+    }
+
+    [Fact]
+    public async Task Should_Throw_On_PeekAsync_If_Unconsumed_Channel()
+    {
+        ToggleChannelConsumerState(callbackChannel);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await agent.PeekAsync(new(0), tuple => Task.FromResult(_ = tuple)));
+
+        ToggleChannelConsumerState(callbackChannel);
     }
 
     #endregion
@@ -322,6 +337,17 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_Throw_On_PopAsync_If_Null()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null));
+    }
+
+    [Fact]
+    public async Task Should_Throw_On_PopAsync_If_Unconsumed_Channel()
+    {
+        ToggleChannelConsumerState(callbackChannel);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await agent.PopAsync(new(0), tuple => Task.FromResult(_ = tuple)));
+
+        ToggleChannelConsumerState(callbackChannel);
     }
 
     #endregion

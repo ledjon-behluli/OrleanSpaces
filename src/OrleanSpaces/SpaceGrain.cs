@@ -7,17 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
 
-internal interface ISpaceGrain : IGrainWithGuidKey
-{
-    ValueTask<Guid> ListenAsync();
-
-    Task WriteAsync(SpaceTuple tuple);
-    ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
-    ValueTask<SpaceTuple> PopAsync(SpaceTemplate template);
-    ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
-    ValueTask<int> CountAsync(SpaceTemplate? template);
-}
-
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<TupleSpaceState> space;

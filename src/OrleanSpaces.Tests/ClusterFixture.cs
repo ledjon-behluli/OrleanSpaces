@@ -2,6 +2,11 @@
 using Orleans;
 using Orleans.Hosting;
 using Orleans.TestingHost;
+using OrleanSpaces.Callbacks;
+using OrleanSpaces.Continuations;
+using OrleanSpaces.Evaluations;
+using OrleanSpaces.Observers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces.Tests;
 
@@ -15,10 +20,16 @@ public class ClusterFixture : IDisposable
         cluster = new TestClusterBuilder()
             .AddSiloBuilderConfigurator<TestSiloConfigurator>()
             .AddClientBuilderConfigurator<TestClientConfigurator>()
-            .Build();
+        .Build();
 
         cluster.Deploy();
+
         Client = cluster.Client;
+
+        Client.ServiceProvider.GetRequiredService<EvaluationChannel>().IsBeingConsumed = true;
+        Client.ServiceProvider.GetRequiredService<CallbackChannel>().IsBeingConsumed = true;
+        Client.ServiceProvider.GetRequiredService<ContinuationChannel>().IsBeingConsumed = true;
+        Client.ServiceProvider.GetRequiredService<ObserverChannel>().IsBeingConsumed = true;
     }
 
     public void Dispose() => cluster.StopAllSilos();

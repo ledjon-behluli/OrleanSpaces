@@ -3,12 +3,12 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
-internal sealed class ObserverChannel : ISpaceChannel
+internal sealed class ObserverChannel : IConsumable
 {
     private readonly Channel<ITuple> channel = 
         Channel.CreateUnbounded<ITuple>(new() { SingleReader = true });
 
-    public bool HasActiveConsumer { get; set; }
+    public bool IsBeingConsumed { get; set; }
 
     public ChannelReader<ITuple> Reader => channel.Reader;
     public ChannelWriter<ITuple> Writer => channel.Writer;
