@@ -6,15 +6,15 @@
 	 <ImplicitUsings>enable</ImplicitUsings>
 	 <Nullable>enable</Nullable>
 	 <WarningsAsErrors>Nullable</WarningsAsErrors>
-	 
+	  <IsPackable>true</IsPackable>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
 		<PackageId>OrleanSpaces</PackageId>
 		<Authors>Ledjon Behluli</Authors>
 		<Description>A virtual, fully-asynchronous, Tuple Space implementation backed by Orleans.</Description>
-		<Copyright>Copyright (c) Ledjon Behluli.</Copyright>
-		<PackageTags>orleans;tuple-space;</PackageTags>
+		<Copyright>Copyright (c) Ledjon Behluli</Copyright>
+		<PackageTags>dotnet;orleans;tuplespace;distributed-computing;concurrent-programming</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
