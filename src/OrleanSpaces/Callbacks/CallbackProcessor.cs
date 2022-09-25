@@ -25,6 +25,8 @@ internal sealed class CallbackProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        callbackChannel.HasActiveConsumer = true;
+
         await foreach (SpaceTuple tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
@@ -36,6 +38,8 @@ internal sealed class CallbackProcessor : BackgroundService
 
             await Task.WhenAll(tasks);
         }
+
+        callbackChannel.HasActiveConsumer = false;
     }
 
     private async Task CallbackAsync(CallbackEntry entry, SpaceTuple tuple, CancellationToken cancellationToken)

@@ -18,7 +18,13 @@ internal sealed class ContinuationProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        channel.HasActiveConsumer = true;
+
         await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+        {
             await router.RouteAsync(tuple);
+        }
+
+        channel.HasActiveConsumer = false;
     }
 }

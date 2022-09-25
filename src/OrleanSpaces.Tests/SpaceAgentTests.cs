@@ -13,6 +13,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly ISpaceAgentProvider spaceChannel;
     private readonly ITupleRouter router;
     private readonly EvaluationChannel evaluationChannel;
+    private readonly CallbackChannel callbackChannel;
+    private readonly ObserverChannel observerChannel;
+    private readonly ContinuationChannel continuationChannel;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
     
@@ -27,7 +30,16 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
     }
 
-    public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
+    public async Task InitializeAsync()
+    {
+        evaluationChannel.HasActiveConsumer = true;
+        callbackChannel.HasActiveConsumer = true;
+        observerChannel.HasActiveConsumer = true;
+        continuationChannel.HasActiveConsumer = true;
+
+        agent = await spaceChannel.GetAsync();
+    }
+
     public Task DisposeAsync() => Task.CompletedTask;
 
     #region Subscriptions

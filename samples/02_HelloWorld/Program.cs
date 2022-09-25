@@ -17,6 +17,34 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 ISpaceAgent agent = await provider.GetAsync();
 
+try
+{
+    await agent.EvaluateAsync(async () => new SpaceTuple(1));
+}
+catch (InvalidOperationException e)
+{
+    Console.WriteLine(e.Message);
+}
+
+try
+{
+    await agent.PeekAsync(new(1), async tuple => { });
+}
+catch (InvalidOperationException e)
+{
+    Console.WriteLine(e.Message);
+}
+
+try
+{
+    await agent.PopAsync(new(1), async tuple => { });
+}
+catch (InvalidOperationException e)
+{
+    Console.WriteLine(e.Message);
+}
+
+
 const string EXCHANGE_KEY = "exchange-key";
 
 var task1 = Task.Run(async () =>

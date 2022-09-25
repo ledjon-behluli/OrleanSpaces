@@ -22,6 +22,8 @@ internal sealed class EvaluationProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        evaluationChannel.HasActiveConsumer = true;
+
         await foreach (var evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
@@ -34,5 +36,7 @@ internal sealed class EvaluationProcessor : BackgroundService
                 lifetime.StopApplication();
             }
         }
+
+        evaluationChannel.HasActiveConsumer = false;
     }
 }

@@ -163,11 +163,18 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
     #region IAsyncObserver
 
     public async Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
-    {   
-        await observerChannel.Writer.WriteAsync(tuple);
+    {
+        if (observerChannel.HasActiveConsumer)
+        {
+            await observerChannel.Writer.WriteAsync(tuple);
+        }
+
         if (tuple is SpaceTuple spaceTuple)
         {
-            await callbackChannel.Writer.WriteAsync(spaceTuple);
+            if (callbackChannel.HasActiveConsumer)
+            {
+                await callbackChannel.Writer.WriteAsync(spaceTuple);
+            }
         }
     }
 
@@ -213,6 +220,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     public async ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
+        ThrowOnConsumerlessChannel(evaluationChannel);
+
         if (evaluation == null)
         {
             throw new ArgumentNullException(nameof(evaluation));
@@ -226,6 +235,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
+        ThrowOnConsumerlessChannel(callbackChannel);
+
         if (callback == null)
         {
             throw new ArgumentNullException(nameof(callback));
@@ -248,6 +259,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
+        ThrowOnConsumerlessChannel(callbackChannel);
+
         if (callback == null)
         {
             throw new ArgumentNullException(nameof(callback));
@@ -273,6 +286,16 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     public async ValueTask<int> CountAsync(SpaceTemplate template)
             => await grain.CountAsync(template);
+
+    private static void ThrowOnConsumerlessChannel(ISpaceChannel channel, [CallerMemberName] string? methodName = null)
+    {
+        if (!channel.HasActiveConsumer)
+        {
+            throw new InvalidOperationException(
+                $"The method '{methodName}' is not available due to '{channel.GetType().Name}' not having an active consumer. " +
+                "This due to the client application not having started the generic host.");
+        }
+    }
 
     #endregion
 }

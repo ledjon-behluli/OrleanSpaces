@@ -21,6 +21,8 @@ internal sealed class ObserverProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        channel.HasActiveConsumer = true;
+
         await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
@@ -32,6 +34,8 @@ internal sealed class ObserverProcessor : BackgroundService
             
             await Task.WhenAll(tasks);
         }
+
+        channel.HasActiveConsumer = false;
     }
 
     private async Task NotifyAsync(SpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
