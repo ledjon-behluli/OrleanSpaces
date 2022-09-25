@@ -99,10 +99,16 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
     #region ISpaceAgent
 
     public Guid Subscribe(ISpaceObserver observer)
-        => observerRegistry.Add(observer);
+    {
+        ThrowIfNotBeingConsumed(observerChannel);
+        return observerRegistry.Add(observer);
+    }
 
     public void Unsubscribe(Guid observerId)
-        => observerRegistry.Remove(observerId);
+    {
+        ThrowIfNotBeingConsumed(observerChannel);
+        observerRegistry.Remove(observerId);
+    }
 
     public async Task WriteAsync(SpaceTuple tuple)
         => await grain.WriteAsync(tuple);

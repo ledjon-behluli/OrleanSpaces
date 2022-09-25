@@ -14,6 +14,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly ITupleRouter router;
     private readonly ObserverRegistry observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
+    private readonly ObserverChannel observerChannel;
     private readonly EvaluationChannel evaluationChannel;
     private readonly CallbackChannel callbackChannel;
 
@@ -25,6 +26,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
+        observerChannel = fixture.Client.ServiceProvider.GetRequiredService<ObserverChannel>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
         callbackChannel = fixture.Client.ServiceProvider.GetRequiredService<CallbackChannel>();
     }
@@ -57,6 +59,17 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         // Unsubscribe
         agent.Unsubscribe(id);
         Assert.Equal(0, observerRegistry.Observers.Count(x => x.Equals(observer)));
+    }
+
+    [Fact]
+    public void Should_Throw_On_Observer_Subscriptions_If_Unconsumed_Channel()
+    {
+        ToggleChannelConsumerState(observerChannel);
+
+        Assert.Throws<InvalidOperationException>(() => agent.Subscribe(new TestObserver()));
+        Assert.Throws<InvalidOperationException>(() => agent.Unsubscribe(Guid.NewGuid()));
+
+        ToggleChannelConsumerState(observerChannel);
     }
 
     #endregion
