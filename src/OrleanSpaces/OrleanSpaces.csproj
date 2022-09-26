@@ -15,7 +15,7 @@
 		<Title>A virtual, fully-asynchronous, Tuple Space implementation backed by Orleans.</Title>
 		<Description>A virtual, fully-asynchronous, Tuple Space implementation backed by Orleans.</Description>
 		<Copyright>Copyright (c) Ledjon Behluli</Copyright>
-		<PackageTags>dotnet;orleans;tuplespace;distributed-computing;concurrent-programming</PackageTags>
+		<PackageTags>dotnet;orleans;tuple-space;distributed-computing;concurrent-programming</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageIconUrl>https://raw.githubusercontent.com/ledjon-behluli/OrleanSpaces/master/OrleansLogo.png</PackageIconUrl>
 		<IncludeSymbols>true</IncludeSymbols>
