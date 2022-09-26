@@ -57,7 +57,7 @@ public interface ISpaceAgent
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
-    /// <para><i>Same as with <see cref="PeekAsync"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
     /// <para><i>Analogous to the "RD" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
@@ -83,7 +83,7 @@ public interface ISpaceAgent
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks>
-    /// <para><i>Same as with <see cref="PopAsync"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
+    /// <para><i>Same as with <see cref="PopAsync(SpaceTemplate)"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
     /// <para><i>Analogous to the "IN" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
@@ -92,7 +92,7 @@ public interface ISpaceAgent
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
+    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
 
     /// <summary>

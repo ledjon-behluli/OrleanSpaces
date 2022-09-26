@@ -117,7 +117,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, ICompa
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
     /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTemplate)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? obj) => obj is SpaceTemplate template && Equals(template);
     /// <summary>
     /// Determines whether the current object is equal to another object of the same type.

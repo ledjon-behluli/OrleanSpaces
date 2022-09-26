@@ -7,6 +7,7 @@
 	 <Nullable>enable</Nullable>
 	 <WarningsAsErrors>Nullable</WarningsAsErrors>
 	 <IsPackable>true</IsPackable>
+	 <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -18,6 +19,7 @@
 		<PackageTags>dotnet;orleans;tuple-space;distributed-computing;concurrent-programming</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageIconUrl>https://raw.githubusercontent.com/ledjon-behluli/OrleanSpaces/master/OrleansLogo.png</PackageIconUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
