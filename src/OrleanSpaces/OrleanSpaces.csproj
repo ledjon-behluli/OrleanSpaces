@@ -17,7 +17,7 @@
 		<Copyright>Copyright (c) Ledjon Behluli</Copyright>
 		<PackageTags>dotnet;orleans;tuplespace;distributed-computing;concurrent-programming</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageIcon>..\..\OrleansLogo.png</PackageIcon>
+		<PackageIconUrl>https://raw.githubusercontent.com/ledjon-behluli/OrleanSpaces/master/OrleansLogo.png</PackageIconUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
