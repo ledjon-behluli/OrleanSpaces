@@ -4,8 +4,8 @@
 </p>
 
 [![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/OrleanSpaces.svg)](https://www.nuget.org/packages/OrleanSpaces)
-[![License](https://img.shields.io/github/license/ledjon-behluli/OrleanSpaces.svg)](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/LICENSE)
+[![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces)
+[![License](https://img.shields.io/github/license/ledjon-behluli/OrleanSpaces.svg)](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/LICENSE.txt)
 [![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master)
 
 [Tuple space](https://en.wikipedia.org/wiki/Tuple_space) is an implementation of the associative memory paradigm for distributed computing. It provides a repository of tuples that can be accessed concurrently.
