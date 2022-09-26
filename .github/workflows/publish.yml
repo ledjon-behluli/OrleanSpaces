@@ -31,16 +31,3 @@ jobs:
       working-directory: src/OrleanSpaces/bin/Release
       run: |
         dotnet nuget push OrleanSpaces.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
-    - name: Create Release
-      uses: actions/github-script@v5
-      with:
-        script: |
-          github.rest.repos.createRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag_name: context.ref,              
-            name: context.ref,
-            draft: false,
-            prerelease: false,
-            generate_release_notes: true
-          })
