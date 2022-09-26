@@ -34,6 +34,7 @@ public class Worker : BackgroundService
         Console.WriteLine("----------------------");
         Console.WriteLine("Type -u to unsubscribe.");
         Console.WriteLine("Type -r to see results.");
+        Console.WriteLine("Type [Ping] to get back [Pong]");
         Console.WriteLine("----------------------\n");
 
         Guid pongerId = agent.Subscribe(ponger);
