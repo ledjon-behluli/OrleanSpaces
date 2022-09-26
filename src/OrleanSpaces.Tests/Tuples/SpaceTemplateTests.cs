@@ -1,7 +1,7 @@
-﻿using OrleanSpaces.Primitives;
+﻿using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Tests.Primitives;
+namespace OrleanSpaces.Tests.Tuples;
 
 public class SpaceTemplateTests
 {

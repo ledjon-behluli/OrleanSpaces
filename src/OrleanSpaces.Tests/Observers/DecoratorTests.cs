@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces.Observers;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Observers;
 

@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Primitives;
+﻿using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Observers;

@@ -3,7 +3,7 @@ using Orleans.Concurrency;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Primitives;
+namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
@@ -42,7 +42,7 @@ public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<Sp
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>Always <see langword="true"/>, which means that this object is equal to any other instance of <see cref="SpaceUnit"/>.</returns>
     public bool Equals(SpaceUnit other) => true;
-    
+
     /// <summary>
     /// Compares the current object with another object of the same type.
     /// </summary>

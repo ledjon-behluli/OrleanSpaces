@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Primitives;
+namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents a tuple in the tuple space paradigm.
@@ -21,7 +21,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// </summary>
     /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
     public static ref readonly SpaceTuple Null => ref @null;
-    
+
     /// <summary>
     /// Checks wether this instance is a <see cref="Null"/>.
     /// </summary>

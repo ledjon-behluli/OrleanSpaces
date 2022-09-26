@@ -3,7 +3,7 @@ using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Collections.ObjectModel;
 
 namespace OrleanSpaces.Tests;

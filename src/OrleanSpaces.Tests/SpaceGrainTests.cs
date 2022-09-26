@@ -1,6 +1,6 @@
 ﻿using Orleans;
 using Orleans.Streams;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;

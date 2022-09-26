@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 public class Slave
 {

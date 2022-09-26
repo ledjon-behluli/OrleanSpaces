@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces.Primitives;
+namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
@@ -20,7 +20,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, ICompa
     /// </summary>
     public SpaceTemplate() : this(null)
     {
-        
+
     }
 
     /// <summary>

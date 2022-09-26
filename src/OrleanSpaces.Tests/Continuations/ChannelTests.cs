@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces.Continuations;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Continuations;
@@ -7,6 +7,12 @@ namespace OrleanSpaces.Tests.Continuations;
 public class ChannelTests
 {
     private readonly ContinuationChannel channel = new();
+
+    [Fact]
+    public void Should_Be_An_IConsumable()
+    {
+        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(ContinuationChannel)));
+    }
 
     [Fact]
     public async Task Should_Read_Tuple_If_Tuple_Was_Writen()

@@ -1,11 +1,17 @@
 ﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
 public class ChannelTests
 {
     private readonly CallbackChannel channel = new();
+
+    [Fact]
+    public void Should_Be_An_IConsumable()
+    {
+        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(CallbackChannel)));
+    }
 
     [Fact]
     public async Task Should_Read_What_Was_Writen()

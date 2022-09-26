@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Primitives;
+﻿using OrleanSpaces.Tuples;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data;

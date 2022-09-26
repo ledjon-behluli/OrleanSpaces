@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Callbacks;

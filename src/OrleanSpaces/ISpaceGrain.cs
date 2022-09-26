@@ -1,5 +1,5 @@
 ﻿using Orleans;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 

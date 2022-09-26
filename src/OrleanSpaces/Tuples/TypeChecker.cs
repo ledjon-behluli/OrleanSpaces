@@ -1,10 +1,10 @@
-﻿namespace OrleanSpaces.Primitives;
+﻿namespace OrleanSpaces.Tuples;
 
 internal static class TypeChecker
 {
     public static bool IsSimpleType(Type type)
     {
-        return 
+        return
             type.IsPrimitive ||
             type.IsEnum ||
             type == typeof(string) ||

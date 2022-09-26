@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Callbacks;
 

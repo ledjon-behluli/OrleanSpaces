@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces;
 using OrleanSpaces.Observers;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 
 public class Ponger : SpaceObserver
 {

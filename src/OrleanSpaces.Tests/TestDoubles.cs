@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;

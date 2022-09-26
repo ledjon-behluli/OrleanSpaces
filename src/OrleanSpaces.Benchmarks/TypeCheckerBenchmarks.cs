@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using OrleanSpaces.Primitives;
+using OrleanSpaces.Tuples;
 using System.Collections.Concurrent;
 
 [MemoryDiagnoser]
