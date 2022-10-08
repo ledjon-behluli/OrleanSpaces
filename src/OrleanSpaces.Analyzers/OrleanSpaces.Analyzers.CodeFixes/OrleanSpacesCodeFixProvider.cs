@@ -15,14 +15,14 @@ using System.Threading.Tasks;
 
 namespace OrleanSpaces.Analyzers
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(OrleanSpacesCodeFixProvider)), Shared]
-    public class OrleanSpacesCodeFixProvider : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultSpaceTupleCtorCodeFixProvider)), Shared]
+    public class DefaultSpaceTupleCtorCodeFixProvider : CodeFixProvider
     {
         private const string Title = "Make uppercase";
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(OrleanSpacesAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(DefaultSpaceTupleCtorAnalyzer.DiagnosticId); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()

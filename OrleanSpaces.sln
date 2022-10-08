@@ -43,15 +43,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06_PasswordSearch", "06_Pas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasswordSearch", "samples\06_PasswordSearch\PasswordSearch.csproj", "{0AD51A36-4BF9-4BB6-BF92-F8F8077BB088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Analyzers", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj", "{C0246550-6E0A-461E-977D-728CC9ACFEA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Analyzers", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj", "{C0246550-6E0A-461E-977D-728CC9ACFEA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Analyzers.CodeFixes", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.CodeFixes\OrleanSpaces.Analyzers.CodeFixes.csproj", "{921503BF-E588-4246-AF08-681D0EFF3699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Analyzers.CodeFixes", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.CodeFixes\OrleanSpaces.Analyzers.CodeFixes.csproj", "{921503BF-E588-4246-AF08-681D0EFF3699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Analyzers.Package", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Package\OrleanSpaces.Analyzers.Package.csproj", "{D2ACF8D9-1161-4FA0-A238-DE7DDF48144A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Analyzers.Package", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Package\OrleanSpaces.Analyzers.Package.csproj", "{D2ACF8D9-1161-4FA0-A238-DE7DDF48144A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Analyzers.Test", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Test\OrleanSpaces.Analyzers.Test.csproj", "{4B8CC85F-1B98-4519-A425-290833C3CB66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Analyzers.Tests", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Test\OrleanSpaces.Analyzers.Tests.csproj", "{4B8CC85F-1B98-4519-A425-290833C3CB66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleanSpaces.Analyzers.Vsix", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Vsix\OrleanSpaces.Analyzers.Vsix.csproj", "{9EDAF42B-F4C8-4867-BC8E-56C8731EA6BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Analyzers.Vsix", "src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.Vsix\OrleanSpaces.Analyzers.Vsix.csproj", "{9EDAF42B-F4C8-4867-BC8E-56C8731EA6BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{8E4E25A5-006C-4D95-82E6-55853485017F}"
 EndProject
