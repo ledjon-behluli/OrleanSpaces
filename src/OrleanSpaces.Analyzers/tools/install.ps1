@@ -1,9 +1,10 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
 
 if($project.Object.SupportsPackageDependencyResolution)
 {
     if($project.Object.SupportsPackageDependencyResolution())
     {
+        # Do not install analyzers via install.ps1, instead let the project system handle it.
         return
     }
 }
@@ -14,16 +15,18 @@ foreach($analyzersPath in $analyzersPaths)
 {
     if (Test-Path $analyzersPath)
     {
+        # Install the language agnostic analyzers.
         foreach ($analyzerFilePath in Get-ChildItem -Path "$analyzersPath\*.dll" -Exclude *.resources.dll)
         {
             if($project.Object.AnalyzerReferences)
             {
-                $project.Object.AnalyzerReferences.Remove($analyzerFilePath.FullName)
+                $project.Object.AnalyzerReferences.Add($analyzerFilePath.FullName)
             }
         }
     }
 }
 
+# $project.Type gives the language name like (C# or VB.NET)
 $languageFolder = ""
 if($project.Type -eq "C#")
 {
@@ -40,6 +43,7 @@ if($languageFolder -eq "")
 
 foreach($analyzersPath in $analyzersPaths)
 {
+    # Install language specific analyzers.
     $languageAnalyzersPath = join-path $analyzersPath $languageFolder
     if (Test-Path $languageAnalyzersPath)
     {
@@ -47,14 +51,7 @@ foreach($analyzersPath in $analyzersPaths)
         {
             if($project.Object.AnalyzerReferences)
             {
-                try
-                {
-                    $project.Object.AnalyzerReferences.Remove($analyzerFilePath.FullName)
-                }
-                catch
-                {
-
-                }
+                $project.Object.AnalyzerReferences.Add($analyzerFilePath.FullName)
             }
         }
     }

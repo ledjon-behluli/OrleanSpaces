@@ -9,8 +9,16 @@ namespace OrleanSpaces.Analyzers.SpaceTuple;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class DefaultCtorAnalyzer : DiagnosticAnalyzer
 {
-    public static string DiagnosticId => Rule.Id;
-    public static readonly DiagnosticDescriptor Rule = DiagnosticDescriptors.SpaceTuple_DefaultCtorDiagnostic;
+    public const string DiagnosticId = "OSA001";
+
+    public static readonly DiagnosticDescriptor Rule = new(
+        id: DiagnosticId,
+        category: DiagnosticCategory.Performance,
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        title: "Avoid using default constructor.",
+        messageFormat: "To avoid unneccessary memory allocations, do not use the default constructor.");
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
     public override void Initialize(AnalysisContext context)
@@ -32,7 +40,7 @@ internal sealed class DefaultCtorAnalyzer : DiagnosticAnalyzer
     private bool IsSpaceTupleType(SyntaxNodeAnalysisContext context, TypeSyntax type)
     {
         SymbolInfo currentSymbolInfo = context.SemanticModel.GetSymbolInfo(type);
-        INamedTypeSymbol targetSymbol = context.SemanticModel.Compilation.GetTypeByMetadataName("");
+        INamedTypeSymbol targetSymbol = context.SemanticModel.Compilation.GetTypeByMetadataName("OrleanSpaces.Tuples.SpaceTuple");
 
         return SymbolEqualityComparer.Default.Equals(currentSymbolInfo.Symbol, targetSymbol);
     }
