@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrleanSpaces.Analyzers.CodeFixes\OrleanSpaces.Analyzers.CodeFixes.csproj" />
     <ProjectReference Include="..\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" />
   </ItemGroup>
 

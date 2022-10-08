@@ -4,12 +4,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Analyzers;
+namespace OrleanSpaces.Analyzers.SpaceTuple;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class DefaultSpaceTupleCtorAnalyzer : DiagnosticAnalyzer
+internal sealed class DefaultCtorAnalyzer : DiagnosticAnalyzer
 {
-    public static readonly DiagnosticDescriptor Rule = DiagnosticDescriptors.DefaultSpaceTupleCtorDiagnostic;
+    public static string DiagnosticId => Rule.Id;
+    public static readonly DiagnosticDescriptor Rule = DiagnosticDescriptors.SpaceTuple_DefaultCtorDiagnostic;
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
     public override void Initialize(AnalysisContext context)

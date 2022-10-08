@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VerifyCS = OrleanSpaces.Analyzers.Test.CSharpCodeFixVerifier<
-    OrleanSpaces.Analyzers.DefaultSpaceTupleCtorAnalyzer, 
-    OrleanSpaces.Analyzers.DefaultSpaceTupleCtorCodeFixProvider>;
+    OrleanSpaces.Analyzers.SpaceTuple.DefaultCtorAnalyzer,
+    OrleanSpaces.Analyzers.SpaceTuple.DefaultCtorCodeFixProvider>;
 
-namespace OrleanSpaces.Analyzers.Test;
+namespace OrleanSpaces.Analyzers.Tests.SpaceTuple;
 
 [TestClass]
-public class DefaultSpaceTupleCtorAnalyzerTests
+public class DefaultCtorAnalyzerTests
 {
     [TestMethod]
     public async Task TestMethod1()
