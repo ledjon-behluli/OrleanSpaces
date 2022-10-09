@@ -9,19 +9,18 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
+[Defaultable]
 public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
 {
     private static readonly SpaceUnit @null = new();
     /// <summary>
     /// Default and only value of this type.
     /// </summary>
-    /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
     public static ref readonly SpaceUnit Null => ref @null;
 
     /// <summary>
     /// Default constructor which always instantiates a <see cref="Null"/>. 
     /// </summary>
-    /// <remarks><i>Use <see cref="Null"/> over this to avoid unneccessary memory allocations.</i></remarks>
     public SpaceUnit() { }
 
     int ITuple.Length => 1;

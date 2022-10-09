@@ -8,6 +8,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [Immutable]
+[Defaultable]
 public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
     private readonly object[] fields;
