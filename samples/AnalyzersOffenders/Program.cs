@@ -1,9 +1,6 @@
 ﻿using OrleanSpaces.Tuples;
 
-SpaceTuple tuple = default;
-SpaceTuple tuple2 = new();
-SpaceTuple tuple3 = new SpaceTuple();
-
-SpaceTemplate template = default;
-SpaceTemplate template2 = new();
-SpaceTemplate template3 = new SpaceTemplate();
+//SpaceTuple tuple1 = default;
+//SpaceTuple tuple2 = default(SpaceTuple);
+//SpaceTuple tuple3 = new();
+SpaceTuple tuple4 = new SpaceTuple();

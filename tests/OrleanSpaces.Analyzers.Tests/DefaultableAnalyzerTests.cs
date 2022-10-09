@@ -1,7 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VerifyCS = OrleanSpaces.Analyzers.Test.CSharpCodeFixVerifier<
+﻿using VerifyCS = OrleanSpaces.Analyzers.Test.CSharpCodeFixVerifier<
     OrleanSpaces.Analyzers.DefaultableAnalyzer,
-    OrleanSpaces.Analyzers.DefaultableFixer>;
+    OrleanSpaces.Analyzers.DefaultableCodeFixProvider>;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
