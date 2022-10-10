@@ -5,7 +5,8 @@
 	<LangVersion>10</LangVersion>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
+	<WarningsAsErrors>Nullable</WarningsAsErrors>
+	<IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
