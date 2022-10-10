@@ -4,7 +4,7 @@
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-public class DefaultableAnalyzerTests
+public class DefaultableTests
 {
     [Fact]
     public async Task TestMethod1()
