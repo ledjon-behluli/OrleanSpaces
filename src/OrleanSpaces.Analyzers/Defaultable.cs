@@ -86,8 +86,8 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
             {
                 var newNode = MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("SpaceTuple"),
-                    IdentifierName("Null"));
+                        IdentifierName("SpaceTuple"),
+                            IdentifierName("Null"));
 
                 var newRoot = root?.ReplaceNode(node, newNode);
 
