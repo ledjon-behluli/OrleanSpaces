@@ -4,11 +4,11 @@ using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-internal static class FixProviderDiscovery
+public static class ProviderDiscovery
 {
     private static readonly Lazy<IExportProviderFactory> factory;
 
-    static FixProviderDiscovery()
+    static ProviderDiscovery()
     {
         factory = new Lazy<IExportProviderFactory>(
             () =>

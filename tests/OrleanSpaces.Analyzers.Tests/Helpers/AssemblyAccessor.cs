@@ -2,13 +2,13 @@ using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-internal static class AnalyzerHelper
+public static class AssemblyAccessor
 {
-    internal static ReferenceAssemblies Assemblies { get; }
+    public static ReferenceAssemblies Instace { get; }
 
-    static AnalyzerHelper()
+    static AssemblyAccessor()
     {
-        Assemblies = ReferenceAssemblies.Net.Net60.AddAssemblies(
+        Instace = ReferenceAssemblies.Net.Net60.AddAssemblies(
             ImmutableArray.Create(typeof(Constants).Assembly.Location.Replace(".dll", string.Empty)));
     }
 }

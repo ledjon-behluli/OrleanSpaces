@@ -38,14 +38,14 @@ public static class Verifier<TAnalyzer> where TAnalyzer : DiagnosticAnalyzer, ne
     {
         public Test()
         {
-            ReferenceAssemblies = AnalyzerHelper.Assemblies;
+            ReferenceAssemblies = AssemblyAccessor.Instace;
             TestBehaviors |= TestBehaviors.SkipGeneratedCodeCheck;
         }
 
         protected override IEnumerable<CodeFixProvider> GetCodeFixProviders()
         {
             var analyzer = new TAnalyzer();
-            foreach (var provider in FixProviderDiscovery.GetCodeFixProviders(Language))
+            foreach (var provider in ProviderDiscovery.GetCodeFixProviders(Language))
             {
                 if (analyzer.SupportedDiagnostics.Any(diagnostic => provider.FixableDiagnosticIds.Contains(diagnostic.Id)))
                 {
