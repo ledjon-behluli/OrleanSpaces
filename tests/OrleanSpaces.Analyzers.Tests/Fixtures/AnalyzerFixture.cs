@@ -10,6 +10,7 @@ public class AnalyzerFixture : AnalyzerTestFixture
 
     protected sealed override string LanguageName => LanguageNames.CSharp;
     protected sealed override DiagnosticAnalyzer CreateAnalyzer() => analyzer;
+
     protected sealed override IReadOnlyCollection<MetadataReference> References =>
         new[] { ReferenceSource.FromAssembly(typeof(Constants).Assembly) };
 

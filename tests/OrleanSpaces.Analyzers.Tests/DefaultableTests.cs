@@ -1,13 +1,25 @@
-﻿using OrleanSpaces.Analyzers.Tests.Fixtures;
+﻿using Microsoft.CodeAnalysis;
+using OrleanSpaces.Analyzers.Tests.Fixtures;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-public class DefaultableTests : AnalyzerFixture
+public class DefaultableAnalyzerTests : AnalyzerFixture
 {
-    public DefaultableTests() 
-        : base(new DefaultableAnalyzer(), DefaultableAnalyzer.DiagnosticId) 
+    public DefaultableAnalyzerTests() 
+        : base(new DefaultableAnalyzer(), DefaultableAnalyzer.Diagnostic.Id) 
     {
     
+    }
+
+    [Fact]
+    public void Should_Create_Diagnostic()
+    {
+        Assert.Equal("OSA001", DefaultableAnalyzer.Diagnostic.Id);
+        Assert.Equal(DiagnosticCategory.Performance, DefaultableAnalyzer.Diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Info, DefaultableAnalyzer.Diagnostic.DefaultSeverity);
+        Assert.Equal("Avoid instantiation by default constructor or expression.", DefaultableAnalyzer.Diagnostic.Title);
+        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", DefaultableAnalyzer.Diagnostic.MessageFormat);
+        Assert.True(DefaultableAnalyzer.Diagnostic.IsEnabledByDefault);
     }
     
     private static string ComposeSource(string code) => @$"
@@ -66,6 +78,36 @@ class T
     [Fact]
     public void Should_Report_On_Implicit_Default_SpaceTuple_Expression() =>
         HasDiagnostic(ComposeSource("SpaceTuple tuple = default;"));
+
+    #endregion
+}
+
+public class DefaultableCodeFixTests : CodeFixFixture
+{
+    public DefaultableCodeFixTests()
+        : base(new DefaultableAnalyzer(), new DefaultableCodeFixProvider(), DefaultableAnalyzer.Diagnostic.Id)
+    {
+
+    }
+
+    private static string ComposeSource(string code) => @$"
+using OrleanSpaces.Tuples;
+
+class T 
+{{
+    void M() 
+    {{
+        {code}
+    }} 
+}}";
+
+    #region SpaceUnit
+
+    [Fact]
+    public void Should_Fix_On_Default_SpaceUnit_Constructor() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceTuple tuple = [|new SpaceTuple()|];"),
+            fixedSource: ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
 
     #endregion
 }

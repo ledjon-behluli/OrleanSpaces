@@ -16,17 +16,15 @@ namespace OrleanSpaces.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
 {
-    public const string DiagnosticId = "OSA001";
-
-    private static readonly DiagnosticDescriptor Rule = new(
-        id: DiagnosticId,
+    public static readonly DiagnosticDescriptor Diagnostic = new(
+        id: "OSA001",
         category: DiagnosticCategory.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
         messageFormat: "Avoid instantiation of '{0}' by default constructor or expression.");
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -40,20 +38,20 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
         var operation = (IObjectCreationOperation)context.Operation;
-        TryReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
+        ReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
     }
 
     private void AnalyzeDefaultValue(OperationAnalysisContext context)
     {
         var operation = (IDefaultValueOperation)context.Operation;
-        TryReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
+        ReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
     }
 
-    private static void TryReportDiagnostic(SyntaxNode syntax, ITypeSymbol? type, Action<Diagnostic> action)
+    private static void ReportDiagnostic(SyntaxNode syntax, ITypeSymbol? type, Action<Diagnostic> action)
     {
         if (type?.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == "DefaultableAttribute") != null)
         {
-            action(Diagnostic.Create(Rule, syntax.GetLocation(), type.Name));
+            action(Microsoft.CodeAnalysis.Diagnostic.Create(Diagnostic, syntax.GetLocation(), type.Name));
         }
     }
 }
@@ -66,7 +64,7 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
     private const string title = "Use 'SpaceTuple.Null'";
 
-    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.DiagnosticId);
+    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.Diagnostic.Id);
     public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -82,7 +80,7 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: title,
-            equivalenceKey: DefaultableAnalyzer.DiagnosticId,
+            equivalenceKey: DefaultableAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(
