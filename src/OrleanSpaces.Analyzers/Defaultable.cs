@@ -51,7 +51,11 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
     {
         if (type?.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == "DefaultableAttribute") != null)
         {
-            action(Microsoft.CodeAnalysis.Diagnostic.Create(Diagnostic, syntax.GetLocation(), type.Name));
+            action(Microsoft.CodeAnalysis.Diagnostic.Create(
+                descriptor: Diagnostic,
+                location: syntax.GetLocation(),
+                messageArgs: type.Name,
+                properties: ImmutableDictionary<string, string?>.Empty.Add("typeName", type.Name)));
         }
     }
 }
@@ -62,29 +66,33 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultableCodeFixProvider)), Shared]
 internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
-    private const string title = "Use 'SpaceTuple.Null'";
-
     public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        var node = root?.FindNode(context.Span);
 
+        var node = root?.FindNode(context.Span);
         if (node == null)
         {
             return;
         }
 
+        string? typeName = context.Diagnostics.First().Properties.GetValueOrDefault("typeName");
+        if (typeName == null)
+        {
+            return;
+        }
+
         CodeAction action = CodeAction.Create(
-            title: title,
+            title: $"Use '{typeName}.Null'",
             equivalenceKey: DefaultableAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("SpaceTuple"),
+                    IdentifierName(typeName),
                     IdentifierName("Null"));
 
                 var newRoot = root?.ReplaceNode(node, newNode);

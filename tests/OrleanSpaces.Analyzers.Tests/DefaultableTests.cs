@@ -3,12 +3,12 @@ using OrleanSpaces.Analyzers.Tests.Fixtures;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-public class DefaultableAnalyzerTests : AnalyzerFixture
+public class DefaultableTests : CodeFixFixture
 {
-    public DefaultableAnalyzerTests() 
-        : base(new DefaultableAnalyzer(), DefaultableAnalyzer.Diagnostic.Id) 
+    public DefaultableTests()
+        : base(new DefaultableAnalyzer(), new DefaultableCodeFixProvider(), DefaultableAnalyzer.Diagnostic.Id)
     {
-    
+
     }
 
     [Fact]
@@ -20,74 +20,6 @@ public class DefaultableAnalyzerTests : AnalyzerFixture
         Assert.Equal("Avoid instantiation by default constructor or expression.", DefaultableAnalyzer.Diagnostic.Title);
         Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", DefaultableAnalyzer.Diagnostic.MessageFormat);
         Assert.True(DefaultableAnalyzer.Diagnostic.IsEnabledByDefault);
-    }
-    
-    private static string ComposeSource(string code) => @$"
-using OrleanSpaces.Tuples;
-
-class T 
-{{
-    void M() 
-    {{
-        [|{code}|]
-    }} 
-}}";
-
-    #region SpaceUnit
-
-    [Fact]
-    public void Should_Not_Report_On_SpaceUnit_Ref_Instance() =>
-        NoDiagnostic(ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
-
-    [Fact]
-    public void Should_Report_On_Default_SpaceUnit_Constructor() =>
-        HasDiagnostic(ComposeSource("SpaceUnit unit = new SpaceUnit();"));
-
-    [Fact]
-    public void Should_Report_On_Implicit_Default_SpaceUnit_Constructor() =>
-        HasDiagnostic(ComposeSource("SpaceUnit unit = new();"));
-
-    [Fact]
-    public void Should_Report_On_Default_SpaceUnit_Expression() =>
-        HasDiagnostic(ComposeSource("SpaceUnit unit = default(SpaceUnit);"));
-
-    [Fact]
-    public void Should_Report_On_Implicit_Default_SpaceUnit_Expression() =>
-        HasDiagnostic(ComposeSource("SpaceUnit unit = default;"));
-
-    #endregion
-
-    #region SpaceTuple
-
-    [Fact]
-    public void Should_Not_Report_On_SpaceTuple_Ref_Instance() =>
-        NoDiagnostic(ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
-
-    [Fact]
-    public void Should_Report_On_Default_SpaceTuple_Constructor() =>
-        HasDiagnostic(ComposeSource("SpaceTuple tuple = new SpaceTuple();"));
-
-    [Fact]
-    public void Should_Report_On_Implicit_Default_SpaceTuple_Constructor() =>
-        HasDiagnostic(ComposeSource("SpaceTuple tuple = new();"));
-
-    [Fact]
-    public void Should_Report_On_Default_SpaceTuple_Expression() =>
-        HasDiagnostic(ComposeSource("SpaceTuple tuple = default(SpaceTuple);"));
-
-    [Fact]
-    public void Should_Report_On_Implicit_Default_SpaceTuple_Expression() =>
-        HasDiagnostic(ComposeSource("SpaceTuple tuple = default;"));
-
-    #endregion
-}
-
-public class DefaultableCodeFixTests : CodeFixFixture
-{
-    public DefaultableCodeFixTests()
-        : base(new DefaultableAnalyzer(), new DefaultableCodeFixProvider(), DefaultableAnalyzer.Diagnostic.Id)
-    {
-
     }
 
     private static string ComposeSource(string code) => @$"
@@ -104,9 +36,55 @@ class T
     #region SpaceUnit
 
     [Fact]
-    public void Should_Fix_On_Default_SpaceUnit_Constructor() =>
+    public void SpaceUnit_DefaultConstructor() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceUnit unit = [|new SpaceUnit()|];"),
+            fixedSource: ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
+
+    [Fact]
+    public void SpaceUnit_DefaultImplicitConstructor() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceUnit unit = [|new()|];"),
+            fixedSource: ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
+
+    [Fact]
+    public void SpaceUnit_DefaultExpression() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceUnit unit = [|default(SpaceUnit)|];"),
+            fixedSource: ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
+
+    [Fact]
+    public void SpaceUnit_DefaultImplicitExpression() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceUnit unit = [|default|];"),
+            fixedSource: ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
+
+    #endregion
+
+    #region SpaceTuple
+
+    [Fact]
+    public void SpaceTuple_DefaultConstructor() =>
         TestCodeFix(
             source: ComposeSource("SpaceTuple tuple = [|new SpaceTuple()|];"),
+            fixedSource: ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
+
+    [Fact]
+    public void SpaceTuple_DefaultImplicitConstructor() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceTuple tuple = [|new()|];"),
+            fixedSource: ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
+
+    [Fact]
+    public void SpaceTuple_DefaultExpression() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceTuple tuple = [|default(SpaceTuple)|];"),
+            fixedSource: ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
+
+    [Fact]
+    public void SpaceTuple_DefaultImplicitExpression() =>
+        TestCodeFix(
+            source: ComposeSource("SpaceTuple tuple = [|default|];"),
             fixedSource: ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
 
     #endregion
