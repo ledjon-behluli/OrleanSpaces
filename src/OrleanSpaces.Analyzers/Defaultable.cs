@@ -14,17 +14,17 @@ namespace OrleanSpaces.Analyzers;
 /// Checks wether a type marked with a 'DefaultableAttribute' is being created via its default value.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class Defaultable : DiagnosticAnalyzer
+internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
 {
     public const string DiagnosticId = "OSA001";
 
-    public static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor Rule = new(
         id: DiagnosticId,
         category: DiagnosticCategory.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
-        messageFormat: "Avoid instantiation of {0} by default constructor or expression.");
+        messageFormat: "Avoid instantiation of '{0}' by default constructor or expression.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -59,18 +59,19 @@ internal sealed class Defaultable : DiagnosticAnalyzer
 }
 
 /// <summary>
-/// Code fix provider for <see cref="Defaultable"/>.
+/// Code fix provider for <see cref="DefaultableAnalyzer"/>.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultableCodeFixProvider)), Shared]
 internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
     private const string title = "Use 'SpaceTuple.Null'";
 
-    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Defaultable.DiagnosticId);
+    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.DiagnosticId);
     public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
+
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var node = root?.FindNode(context.Span);
 
@@ -81,7 +82,7 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: title,
-            equivalenceKey: Defaultable.DiagnosticId,
+            equivalenceKey: DefaultableAnalyzer.DiagnosticId,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(

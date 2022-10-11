@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" />
+    <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
   </ItemGroup>
 
 </Project>
