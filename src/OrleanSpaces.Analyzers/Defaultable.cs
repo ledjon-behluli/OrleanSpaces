@@ -64,12 +64,11 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
     private const string title = "Use 'SpaceTuple.Null'";
 
-    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.Diagnostic.Id);
-    public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.Diagnostic.Id);
+    public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-    public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+    public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
         var node = root?.FindNode(context.Span);
 
@@ -93,5 +92,7 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
                 return Task.FromResult(newRoot == null ? context.Document :
                     context.Document.WithSyntaxRoot(newRoot));
             });
+
+        context.RegisterCodeFix(action, context.Diagnostics);
     }
 }
