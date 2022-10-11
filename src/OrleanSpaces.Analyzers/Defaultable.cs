@@ -14,7 +14,7 @@ namespace OrleanSpaces.Analyzers;
 /// Checks wether a type marked with a 'DefaultableAttribute' is being created via its default value.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
+internal sealed class Defaultable : DiagnosticAnalyzer
 {
     public const string DiagnosticId = "OSA001";
 
@@ -59,14 +59,14 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
 }
 
 /// <summary>
-/// Code fix provider for <see cref="DefaultableAnalyzer"/>.
+/// Code fix provider for <see cref="Defaultable"/>.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultableCodeFixProvider)), Shared]
 internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
     private const string title = "Use 'SpaceTuple.Null'";
 
-    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.DiagnosticId);
+    public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Defaultable.DiagnosticId);
     public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -81,13 +81,13 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: title,
-            equivalenceKey: DefaultableAnalyzer.DiagnosticId,
+            equivalenceKey: Defaultable.DiagnosticId,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("SpaceTuple"),
-                            IdentifierName("Null"));
+                    IdentifierName("SpaceTuple"),
+                    IdentifierName("Null"));
 
                 var newRoot = root?.ReplaceNode(node, newNode);
 
