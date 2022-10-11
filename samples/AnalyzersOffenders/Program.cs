@@ -1,3 +1,3 @@
 ﻿using OrleanSpaces.Tuples;
 
-SpaceTuple tuple = new();
+SpaceTuple _ = new SpaceTuple();

@@ -1,116 +1,71 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using OrleanSpaces.Analyzers.Tests.Fixtures;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-public class DefaultableTests
+public class DefaultableTests : AnalyzerFixture
 {
-    private static DiagnosticResult ComposeDiagnosticResult(string type, int line, int count) =>
-        new DiagnosticResult("OSA001", DiagnosticSeverity.Info)
-            .WithMessage($"Avoid instantiation of '{type}' by default constructor or expression.")
-            .WithLocation(line, count);
-
-    private static DiagnosticResult ComposeCompilerWarning(string arg, int startLine, int startColumn, int endLine, int endColumn) =>
-        DiagnosticResult
-            .CompilerWarning("CS0219")
-            .WithSpan(startLine, startColumn, endLine, endColumn)
-            .WithArguments(arg);
-
+    public DefaultableTests() 
+        : base(new DefaultableAnalyzer(), DefaultableAnalyzer.DiagnosticId) 
+    {
+    
+    }
+    
     private static string ComposeSource(string code) => @$"
 using OrleanSpaces.Tuples;
 
-class TestClass 
+class T 
 {{
-    void TestMethod() 
+    void M() 
     {{
-        {code}
+        [|{code}|]
     }} 
 }}";
 
     #region SpaceUnit
 
     [Fact]
-    public async Task Should_Report_On_Default_SpaceUnit_Constructor()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceUnit unit = new SpaceUnit();"),
-            diagnostics: ComposeDiagnosticResult("SpaceUnit", 8, 26));
-    }
+    public void Should_Not_Report_On_SpaceUnit_Ref_Instance() =>
+        NoDiagnostic(ComposeSource("SpaceUnit unit = SpaceUnit.Null;"));
 
     [Fact]
-    public async Task Should_Report_On_Implicit_Default_SpaceUnit_Constructor()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceUnit unit = new();"),
-            diagnostics: ComposeDiagnosticResult("SpaceUnit", 8, 26));
-    }
+    public void Should_Report_On_Default_SpaceUnit_Constructor() =>
+        HasDiagnostic(ComposeSource("SpaceUnit unit = new SpaceUnit();"));
 
     [Fact]
-    public async Task Should_Report_On_Default_SpaceUnit_Expression()
-    {   
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceUnit unit = default(SpaceUnit);"),
-            diagnostics: new[] 
-            {
-                ComposeDiagnosticResult("SpaceUnit", 8, 26),
-                ComposeCompilerWarning("unit", 8, 19, 8, 23)
-            });
-    }
+    public void Should_Report_On_Implicit_Default_SpaceUnit_Constructor() =>
+        HasDiagnostic(ComposeSource("SpaceUnit unit = new();"));
 
     [Fact]
-    public async Task Should_Report_On_Implicit_Default_SpaceUnit_Expression()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceUnit unit = default;"),
-            diagnostics: new[]
-            {
-                ComposeDiagnosticResult("SpaceUnit", 8, 26),
-                ComposeCompilerWarning("unit", 8, 19, 8, 23)
-            });
-    }
+    public void Should_Report_On_Default_SpaceUnit_Expression() =>
+        HasDiagnostic(ComposeSource("SpaceUnit unit = default(SpaceUnit);"));
+
+    [Fact]
+    public void Should_Report_On_Implicit_Default_SpaceUnit_Expression() =>
+        HasDiagnostic(ComposeSource("SpaceUnit unit = default;"));
 
     #endregion
 
     #region SpaceTuple
 
     [Fact]
-    public async Task Should_Report_On_Default_SpaceTuple_Constructor()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceTuple tuple = new SpaceTuple();"),
-            diagnostics: ComposeDiagnosticResult("SpaceTuple", 8, 28));
-    }
+    public void Should_Not_Report_On_SpaceTuple_Ref_Instance() =>
+        NoDiagnostic(ComposeSource("SpaceTuple tuple = SpaceTuple.Null;"));
 
     [Fact]
-    public async Task Should_Report_On_Implicit_Default_SpaceTuple_Constructor()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceTuple tuple = new();"),
-            diagnostics: ComposeDiagnosticResult("SpaceTuple", 8, 28));
-    }
+    public void Should_Report_On_Default_SpaceTuple_Constructor() =>
+        HasDiagnostic(ComposeSource("SpaceTuple tuple = new SpaceTuple();"));
 
     [Fact]
-    public async Task Should_Report_On_Default_SpaceTuple_Expression()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceTuple tuple = default(SpaceTuple);"),
-            diagnostics: new[]
-            {
-                ComposeDiagnosticResult("SpaceTuple", 8, 28),
-                ComposeCompilerWarning("tuple", 8, 20, 8, 25)
-            });
-    }
+    public void Should_Report_On_Implicit_Default_SpaceTuple_Constructor() =>
+        HasDiagnostic(ComposeSource("SpaceTuple tuple = new();"));
 
     [Fact]
-    public async Task Should_Report_On_Implicit_Default_SpaceTuple_Expression()
-    {
-        await Verifier<DefaultableAnalyzer>.VerifyAnalyzerAsync(
-            source: ComposeSource("SpaceTuple tuple = default;"),
-            diagnostics: new[]
-            {
-                ComposeDiagnosticResult("SpaceTuple", 8, 28),
-                ComposeCompilerWarning("tuple", 8, 20, 8, 25)
-            });
-    }
+    public void Should_Report_On_Default_SpaceTuple_Expression() =>
+        HasDiagnostic(ComposeSource("SpaceTuple tuple = default(SpaceTuple);"));
+
+    [Fact]
+    public void Should_Report_On_Implicit_Default_SpaceTuple_Expression() =>
+        HasDiagnostic(ComposeSource("SpaceTuple tuple = default;"));
 
     #endregion
 }
