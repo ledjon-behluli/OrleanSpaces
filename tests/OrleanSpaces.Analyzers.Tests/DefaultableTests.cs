@@ -1,10 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using OrleanSpaces.Analyzers.Tests.Fixtures;
+using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
 public class DefaultableTests : CodeFixFixture
 {
+    private const string diagnosticId = "OSA001";
+
     public DefaultableTests()
         : base(new DefaultableAnalyzer(), new DefaultableCodeFixProvider(), DefaultableAnalyzer.Diagnostic.Id)
     {
@@ -12,9 +15,10 @@ public class DefaultableTests : CodeFixFixture
     }
 
     [Fact]
-    public void Should_Create_Diagnostic()
+    public void Equals_Diagnostic()
     {
-        Assert.Equal("OSA001", DefaultableAnalyzer.Diagnostic.Id);
+        Assert.Equal(diagnosticId, DefaultableAnalyzer.Diagnostic.Id);
+        Assert.Equal(diagnosticId, provider.FixableDiagnosticIds.Single());
         Assert.Equal(DiagnosticCategory.Performance, DefaultableAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, DefaultableAnalyzer.Diagnostic.DefaultSeverity);
         Assert.Equal("Avoid instantiation by default constructor or expression.", DefaultableAnalyzer.Diagnostic.Title);

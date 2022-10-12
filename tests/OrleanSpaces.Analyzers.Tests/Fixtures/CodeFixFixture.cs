@@ -7,8 +7,9 @@ namespace OrleanSpaces.Analyzers.Tests.Fixtures;
 public class CodeFixFixture : CodeFixTestFixture
 {
     private readonly string diagnosticId;
-    private readonly DiagnosticAnalyzer analyzer;
-    private readonly CodeFixProvider provider;
+
+    protected readonly DiagnosticAnalyzer analyzer;
+    protected readonly CodeFixProvider provider;
 
     protected sealed override string LanguageName => LanguageNames.CSharp;
     protected sealed override CodeFixProvider CreateProvider() => provider;
