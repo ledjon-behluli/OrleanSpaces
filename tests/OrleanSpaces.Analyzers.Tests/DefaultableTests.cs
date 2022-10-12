@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using OrleanSpaces.Analyzers.Tests.Fixtures;
-using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
