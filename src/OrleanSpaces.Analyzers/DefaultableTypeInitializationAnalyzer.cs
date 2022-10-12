@@ -14,7 +14,7 @@ namespace OrleanSpaces.Analyzers;
 /// Checks wether a type marked with a 'DefaultableAttribute' is being created via its default value.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
+internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
@@ -47,13 +47,13 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
         ReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
     }
 
-    private static void ReportDiagnostic(SyntaxNode syntax, ITypeSymbol? type, Action<Diagnostic> action)
+    private static void ReportDiagnostic(SyntaxNode node, ITypeSymbol? type, Action<Diagnostic> action)
     {
         if (type?.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == "DefaultableAttribute") != null)
         {
             action(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
-                location: syntax.GetLocation(),
+                location: node.GetLocation(),
                 messageArgs: type.Name,
                 properties: ImmutableDictionary<string, string?>.Empty.Add("typeName", type.Name)));
         }
@@ -61,12 +61,12 @@ internal sealed class DefaultableAnalyzer : DiagnosticAnalyzer
 }
 
 /// <summary>
-/// Code fix provider for <see cref="DefaultableAnalyzer"/>.
+/// Code fix provider for <see cref="DefaultableTypeInitializationAnalyzer"/>.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultableCodeFixProvider)), Shared]
 internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableTypeInitializationAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -87,7 +87,7 @@ internal sealed class DefaultableCodeFixProvider : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: $"Use '{typeName}.Null'",
-            equivalenceKey: DefaultableAnalyzer.Diagnostic.Id,
+            equivalenceKey: DefaultableTypeInitializationAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(

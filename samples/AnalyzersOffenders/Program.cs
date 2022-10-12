@@ -13,3 +13,17 @@ SpaceTuple tuple3 = default(SpaceTuple);
 SpaceTuple tuple4 = default;
 
 #endregion
+
+#region OSA002
+
+if (tuple1.Equals(tuple2))
+{
+   
+}
+
+if (tuple1 == tuple2)
+{
+
+}
+
+#endregion
