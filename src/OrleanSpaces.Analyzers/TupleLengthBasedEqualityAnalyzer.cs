@@ -19,7 +19,7 @@ internal sealed class AlwaysFalseTupleEqualityAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         title: "The result of the expression is always 'false'.",
-        messageFormat: "The result of the expression is always 'false' due to different 'Length' properties.");
+        messageFormat: "The result of the expression is always 'false' due to different 'Length' values.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
