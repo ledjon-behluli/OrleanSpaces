@@ -1,30 +1,21 @@
-﻿
+﻿using OrleanSpaces.Analyzers.Analyzers;
 
 namespace OrleanSpaces.Analyzers.Tests.Analyzers;
 
-//public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
-//{
-//    public NotSupportedTupleFieldTypeAnalyzerTests() : base(
-//        new NotSupportedTupleFieldTypeAnalyzer(), 
-//        NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id)
-//    {
+public class NotSupportedTupleFieldTypeAnalyzerTests : Fixture
+{
+    public NotSupportedTupleFieldTypeAnalyzerTests() : base(
+        new NotSupportedTupleFieldTypeAnalyzer(),
+        NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id)
+    {
 
-//    }
+    }
 
-//    private static string ComposeMarkup(string code) => @$"
-//using OrleanSpaces.Tuples;
+    private static string ComposeMarkup(string code) => @$"using OrleanSpaces.Tuples;{code}";
 
-//class T 
-//{{
-//    void M() 
-//    {{
-//        {code}
-//    }} 
-//}}";
-
-//    [Fact]
-//    public void Test1()
-//    {
-//        HasDiagnostic(ComposeMarkup("SpaceTuple tuple = [|new(1)|];"));
-//    }
-//}
+    [Fact]
+    public void Test1()
+    {
+        HasDiagnostic(ComposeMarkup("SpaceTuple tuple = [|new(1)|];"));
+    }
+}

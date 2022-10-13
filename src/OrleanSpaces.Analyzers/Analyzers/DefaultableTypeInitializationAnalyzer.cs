@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.Analyzers;
 
 /// <summary>
-/// Checks wether a type marked with a 'DefaultableAttribute' is being created via its default value.
+/// Checks wether a type marked with a 'DefaultableAttributeName' is being created via its default value.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
@@ -47,7 +47,7 @@ internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
 
     private static void ReportDiagnostic(SyntaxNode node, ITypeSymbol? type, Action<Diagnostic> action)
     {
-        if (type?.GetAttributes().SingleOrDefault(a => a.AttributeClass?.Name == Constants.Defaultable_Attribute_Name) != null)
+        if (type?.GetAttributes().SingleOrDefault(a => a.AttributeClass?.Name == Constants.DefaultableAttributeName) != null)
         {
             action(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
