@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-[AttributeUsage(AttributeTargets.Struct)]
+[AttributeUsage(AttributeTargets.Struct, AllowMultiple = false)]
 internal sealed class DefaultableAttribute : Attribute
 {
 

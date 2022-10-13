@@ -16,14 +16,6 @@ SpaceTuple tuple4 = default;
 
 #region OSA002
 
-if (tuple1.Equals(tuple2))
-{
-   
-}
-
-if (tuple1 == tuple2)
-{
-
-}
+SpaceTuple tuple5 = new SpaceTuple(1, typeof(int), SpaceUnit.Null);
 
 #endregion

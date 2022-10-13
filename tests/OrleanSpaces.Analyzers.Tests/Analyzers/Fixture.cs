@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 
-namespace OrleanSpaces.Analyzers.Tests.Fixtures;
+namespace OrleanSpaces.Analyzers.Tests.Analyzers;
 
-public class AnalyzerFixture : AnalyzerTestFixture
+public class Fixture : AnalyzerTestFixture
 {
     private readonly string diagnosticId;
     private readonly DiagnosticAnalyzer analyzer;
@@ -12,9 +12,9 @@ public class AnalyzerFixture : AnalyzerTestFixture
     protected sealed override DiagnosticAnalyzer CreateAnalyzer() => analyzer;
 
     protected sealed override IReadOnlyCollection<MetadataReference> References =>
-        new[] { ReferenceSource.FromAssembly(typeof(Constants).Assembly) };
+        new[] { ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly) };
 
-    public AnalyzerFixture(DiagnosticAnalyzer analyzer, string diagnosticId)
+    public Fixture(DiagnosticAnalyzer analyzer, string diagnosticId)
     {
         this.analyzer = analyzer;
         this.diagnosticId = diagnosticId;

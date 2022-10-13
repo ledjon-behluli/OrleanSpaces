@@ -2,9 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 
-namespace OrleanSpaces.Analyzers.Tests.Fixtures;
+namespace OrleanSpaces.Analyzers.Tests.Fixers;
 
-public class CodeFixFixture : CodeFixTestFixture
+public class Fixture : CodeFixTestFixture
 {
     private readonly string diagnosticId;
 
@@ -16,9 +16,9 @@ public class CodeFixFixture : CodeFixTestFixture
 
     protected sealed override IReadOnlyCollection<DiagnosticAnalyzer> CreateAdditionalAnalyzers() => new[] { analyzer };
     protected sealed override IReadOnlyCollection<MetadataReference> References =>
-        new[] { ReferenceSource.FromAssembly(typeof(Constants).Assembly) };
+        new[] { ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly) };
 
-    public CodeFixFixture(DiagnosticAnalyzer analyzer, CodeFixProvider provider, string diagnosticId)
+    public Fixture(DiagnosticAnalyzer analyzer, CodeFixProvider provider, string diagnosticId)
     {
         this.analyzer = analyzer;
         this.provider = provider;
