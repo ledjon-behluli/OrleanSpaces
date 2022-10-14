@@ -22,20 +22,20 @@ public class TypeCheckerTests
     public static object[][] SimpleTypes() =>
         new[]
         {
+            // Primitives
             new object[] { typeof(bool) },
             new object[] { typeof(byte) },
             new object[] { typeof(sbyte) },
             new object[] { typeof(char) },
             new object[] { typeof(double) },
             new object[] { typeof(float) },
-            new object[] { typeof(int) },
-            new object[] { typeof(uint) },
-            new object[] { typeof(nint) },
-            new object[] { typeof(nuint) },
-            new object[] { typeof(long) },
-            new object[] { typeof(ulong) },
             new object[] { typeof(short) },
             new object[] { typeof(ushort) },
+            new object[] { typeof(int) },
+            new object[] { typeof(uint) },
+            new object[] { typeof(long) },
+            new object[] { typeof(ulong) },
+            // Others
             new object[] { typeof(TestEnum) },
             new object[] { typeof(string) },
             new object[] { typeof(decimal) },

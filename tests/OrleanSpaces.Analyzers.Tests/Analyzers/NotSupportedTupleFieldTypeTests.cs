@@ -16,6 +16,22 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : Fixture
     [Fact]
     public void Test1()
     {
-        HasDiagnostic(ComposeMarkup("SpaceTuple tuple = [|new(1)|];"));
+        NoDiagnostic(ComposeMarkup("SpaceTuple tuple = [|new(1, 1.5f, 1.3d, \"a\", 'a', true)|];"));
+    }
+
+    [Fact]
+    public void Test2()
+    {
+        HasDiagnostic(ComposeMarkup("SpaceTuple tuple = [|new(typeof(int), SpaceUnit.Null)|];"));
+    }
+
+    [Fact]
+    public void Test3()
+    {
+        HasDiagnostic(@"
+using OrleanSpaces.Tuples;
+
+int a = 1;
+SpaceTuple tuple = new[|(a)|];");
     }
 }
