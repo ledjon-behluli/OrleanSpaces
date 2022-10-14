@@ -44,6 +44,8 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
                 {
                     var type = operation.SemanticModel?.GetTypeInfo(argument, context.CancellationToken).Type;
 
+                    var symbol = operation.SemanticModel?.GetSymbolInfo(argument, context.CancellationToken).Symbol;
+
                     //if (!IsSimpleExpression(argument.Expression))
                     //{
                     //    context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
