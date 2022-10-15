@@ -3,11 +3,11 @@ using OrleanSpaces.Analyzers.Analyzers;
 
 namespace OrleanSpaces.Analyzers.Tests.Analyzers;
 
-public class DefaultableTypeInitializationAnalyzerTests : Fixture
+public class SuggestTupleRefOverInitAnalyzerTests : Fixture
 {
-    public DefaultableTypeInitializationAnalyzerTests() : base(
-        new DefaultableTypeInitializationAnalyzer(), 
-        DefaultableTypeInitializationAnalyzer.Diagnostic.Id)
+    public SuggestTupleRefOverInitAnalyzerTests() : base(
+        new SuggestTupleRefOverInitAnalyzer(), 
+        SuggestTupleRefOverInitAnalyzer.Diagnostic.Id)
     {
 
     }
@@ -15,12 +15,12 @@ public class DefaultableTypeInitializationAnalyzerTests : Fixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA001", DefaultableTypeInitializationAnalyzer.Diagnostic.Id);
-        Assert.Equal(Categories.Performance, DefaultableTypeInitializationAnalyzer.Diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, DefaultableTypeInitializationAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid instantiation by default constructor or expression.", DefaultableTypeInitializationAnalyzer.Diagnostic.Title);
-        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", DefaultableTypeInitializationAnalyzer.Diagnostic.MessageFormat);
-        Assert.True(DefaultableTypeInitializationAnalyzer.Diagnostic.IsEnabledByDefault);
+        Assert.Equal("OSA001", SuggestTupleRefOverInitAnalyzer.Diagnostic.Id);
+        Assert.Equal(Categories.Performance, SuggestTupleRefOverInitAnalyzer.Diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Info, SuggestTupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
+        Assert.Equal("Avoid instantiation by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.Title);
+        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.MessageFormat);
+        Assert.True(SuggestTupleRefOverInitAnalyzer.Diagnostic.IsEnabledByDefault);
     }
 
     [Theory]

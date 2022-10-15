@@ -6,10 +6,10 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.Analyzers;
 
 /// <summary>
-/// Checks wether a type marked with a 'DefaultableAttributeName' is being created via its default value.
+/// Suggests to use existing reference value over initialization of a new one.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
+internal sealed class SuggestTupleRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
@@ -26,8 +26,15 @@ internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.EnableConcurrentExecution();
 
-        context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);
         context.RegisterOperationAction(AnalyzeDefaultValue, OperationKind.DefaultValue);
+        context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);
+        
+    }
+
+    private void AnalyzeDefaultValue(OperationAnalysisContext context)
+    {
+        var operation = (IDefaultValueOperation)context.Operation;
+        ReportDiagnostic(ref context, operation);
     }
 
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
@@ -35,25 +42,23 @@ internal sealed class DefaultableTypeInitializationAnalyzer : DiagnosticAnalyzer
         var operation = (IObjectCreationOperation)context.Operation;
         if (operation.Arguments.Length == 0)
         {
-            ReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
+            ReportDiagnostic(ref context, operation);
         }
     }
 
-    private void AnalyzeDefaultValue(OperationAnalysisContext context)
+    private static void ReportDiagnostic(ref OperationAnalysisContext context, IOperation operation)
     {
-        var operation = (IDefaultValueOperation)context.Operation;
-        ReportDiagnostic(operation.Syntax, operation.Type, context.ReportDiagnostic);
-    }
-
-    private static void ReportDiagnostic(SyntaxNode node, ITypeSymbol? type, Action<Diagnostic> action)
-    {
-        if (type?.GetAttributes().SingleOrDefault(a => a.AttributeClass?.Name == Constants.DefaultableAttributeName) != null)
+        if (AnalysisHelpers.IsAnyOfType(operation.Type, new List<ITypeSymbol?>()
         {
-            action(Microsoft.CodeAnalysis.Diagnostic.Create(
+            context.Compilation.GetTypeByMetadataName(Constants.SpaceUnitFullName),
+            context.Compilation.GetTypeByMetadataName(Constants.SpaceTupleFullName)
+        }))
+        {
+            context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
-                location: node.GetLocation(),
-                messageArgs: type.Name,
-                properties: ImmutableDictionary<string, string?>.Empty.Add("typeName", type.Name)));
+                location: operation.Syntax.GetLocation(),
+                messageArgs: operation.Type?.Name,
+                properties: ImmutableDictionary<string, string?>.Empty.Add("typeName", operation.Type?.Name)));
         }
     }
 }

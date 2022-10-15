@@ -4,8 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Xml.Linq;
 
 namespace OrleanSpaces.Analyzers.Analyzers;
 
@@ -34,7 +32,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
     {
         var operation = (IObjectCreationOperation)context.Operation;
 
-        if (IsOfType(operation.Type, context.Compilation.GetTypeByMetadataName(Constants.SpaceTupleFullName)))
+        if (AnalysisHelpers.IsOfType(operation.Type, context.Compilation.GetTypeByMetadataName(Constants.SpaceTupleFullName)))
         {
             var argumentOperation = operation.Arguments.SingleOrDefault();
             if (argumentOperation != null)

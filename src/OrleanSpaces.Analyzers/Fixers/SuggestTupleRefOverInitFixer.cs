@@ -10,12 +10,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace OrleanSpaces.Analyzers.Fixers;
 
 /// <summary>
-/// Code fix provider for <see cref="DefaultableTypeInitializationAnalyzer"/>.
+/// Code fix provider for <see cref="SuggestTupleRefOverInitAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DefaultableTypeInitializationFixer)), Shared]
-internal sealed class DefaultableTypeInitializationFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SuggestTupleRefOverInitFixer)), Shared]
+internal sealed class SuggestTupleRefOverInitFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DefaultableTypeInitializationAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SuggestTupleRefOverInitAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -36,7 +36,7 @@ internal sealed class DefaultableTypeInitializationFixer : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: $"Use '{typeName}.Null'",
-            equivalenceKey: DefaultableTypeInitializationAnalyzer.Diagnostic.Id,
+            equivalenceKey: SuggestTupleRefOverInitAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(

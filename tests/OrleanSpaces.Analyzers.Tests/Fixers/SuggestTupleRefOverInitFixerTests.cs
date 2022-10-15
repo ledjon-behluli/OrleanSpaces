@@ -3,12 +3,12 @@ using OrleanSpaces.Analyzers.Fixers;
 
 namespace OrleanSpaces.Analyzers.Tests.Fixers;
 
-public class DefaultableTypeInitializationFixerTests : Fixture
+public class SuggestTupleRefOverInitFixerTests : Fixture
 {
-    public DefaultableTypeInitializationFixerTests() : base(
-        new DefaultableTypeInitializationAnalyzer(),
-        new DefaultableTypeInitializationFixer(),
-        DefaultableTypeInitializationAnalyzer.Diagnostic.Id)
+    public SuggestTupleRefOverInitFixerTests() : base(
+        new SuggestTupleRefOverInitAnalyzer(),
+        new SuggestTupleRefOverInitFixer(),
+        SuggestTupleRefOverInitAnalyzer.Diagnostic.Id)
     {
 
     }
