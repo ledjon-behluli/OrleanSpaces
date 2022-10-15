@@ -9,7 +9,7 @@ namespace OrleanSpaces.Analyzers.OSA001;
 /// Suggests to use existing reference value over initialization of a new one.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class SuggestTupleRefOverInitAnalyzer : DiagnosticAnalyzer
+internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",

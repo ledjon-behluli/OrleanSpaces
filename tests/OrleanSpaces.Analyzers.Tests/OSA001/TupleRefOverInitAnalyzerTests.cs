@@ -3,11 +3,11 @@ using OrleanSpaces.Analyzers.OSA001;
 
 namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class SuggestTupleRefOverInitAnalyzerTests : AnalyzerFixture
+public class TupleRefOverInitAnalyzerTests : AnalyzerFixture
 {
-    public SuggestTupleRefOverInitAnalyzerTests() : base(
-        new SuggestTupleRefOverInitAnalyzer(),
-        SuggestTupleRefOverInitAnalyzer.Diagnostic.Id)
+    public TupleRefOverInitAnalyzerTests() : base(
+        new TupleRefOverInitAnalyzer(),
+        TupleRefOverInitAnalyzer.Diagnostic.Id)
     {
 
     }
@@ -15,12 +15,12 @@ public class SuggestTupleRefOverInitAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA001", SuggestTupleRefOverInitAnalyzer.Diagnostic.Id);
-        Assert.Equal(DiagnosticCategories.Performance, SuggestTupleRefOverInitAnalyzer.Diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, SuggestTupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid instantiation by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.Title);
-        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.MessageFormat);
-        Assert.True(SuggestTupleRefOverInitAnalyzer.Diagnostic.IsEnabledByDefault);
+        Assert.Equal("OSA001", TupleRefOverInitAnalyzer.Diagnostic.Id);
+        Assert.Equal(DiagnosticCategories.Performance, TupleRefOverInitAnalyzer.Diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Info, TupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
+        Assert.Equal("Avoid instantiation by default constructor or expression.", TupleRefOverInitAnalyzer.Diagnostic.Title);
+        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", TupleRefOverInitAnalyzer.Diagnostic.MessageFormat);
+        Assert.True(TupleRefOverInitAnalyzer.Diagnostic.IsEnabledByDefault);
     }
 
     [Theory]

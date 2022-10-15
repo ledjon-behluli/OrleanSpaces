@@ -9,12 +9,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Code fix provider for <see cref="SuggestTupleRefOverInitAnalyzer"/>.
+/// Code fix provider for <see cref="TupleRefOverInitAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SuggestTupleRefOverInitFixer)), Shared]
-internal sealed class SuggestTupleRefOverInitFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TupleRefOverInitFixer)), Shared]
+internal sealed class TupleRefOverInitFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SuggestTupleRefOverInitAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(TupleRefOverInitAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -35,7 +35,7 @@ internal sealed class SuggestTupleRefOverInitFixer : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: $"Use '{typeName}.Null'",
-            equivalenceKey: SuggestTupleRefOverInitAnalyzer.Diagnostic.Id,
+            equivalenceKey: TupleRefOverInitAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {
                 var newNode = MemberAccessExpression(
