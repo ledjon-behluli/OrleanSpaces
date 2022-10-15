@@ -1,9 +1,8 @@
-﻿using OrleanSpaces.Analyzers.Analyzers;
-using OrleanSpaces.Analyzers.Fixers;
+﻿using OrleanSpaces.Analyzers.OSA001;
 
-namespace OrleanSpaces.Analyzers.Tests.Fixers;
+namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class SuggestTupleRefOverInitFixerTests : Fixture
+public class SuggestTupleRefOverInitFixerTests : CodeFixFixture
 {
     public SuggestTupleRefOverInitFixerTests() : base(
         new SuggestTupleRefOverInitAnalyzer(),

@@ -1,8 +1,8 @@
-﻿using OrleanSpaces.Analyzers.Analyzers;
+﻿using OrleanSpaces.Analyzers.OSA002;
 
-namespace OrleanSpaces.Analyzers.Tests.Analyzers;
+namespace OrleanSpaces.Analyzers.Tests.OSA002;
 
-public class NotSupportedTupleFieldTypeAnalyzerTests : Fixture
+public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
 {
     public NotSupportedTupleFieldTypeAnalyzerTests() : base(
         new NotSupportedTupleFieldTypeAnalyzer(),

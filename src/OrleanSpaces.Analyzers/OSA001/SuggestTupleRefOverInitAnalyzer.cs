@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Analyzers.Analyzers;
+namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
 /// Suggests to use existing reference value over initialization of a new one.
@@ -13,7 +13,7 @@ internal sealed class SuggestTupleRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
-        category: Categories.Performance,
+        category: DiagnosticCategories.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
@@ -28,7 +28,7 @@ internal sealed class SuggestTupleRefOverInitAnalyzer : DiagnosticAnalyzer
 
         context.RegisterOperationAction(AnalyzeDefaultValue, OperationKind.DefaultValue);
         context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);
-        
+
     }
 
     private void AnalyzeDefaultValue(OperationAnalysisContext context)
@@ -50,8 +50,8 @@ internal sealed class SuggestTupleRefOverInitAnalyzer : DiagnosticAnalyzer
     {
         if (AnalysisHelpers.IsAnyOfType(operation.Type, new List<ITypeSymbol?>()
         {
-            context.Compilation.GetTypeByMetadataName(Constants.SpaceUnitFullName),
-            context.Compilation.GetTypeByMetadataName(Constants.SpaceTupleFullName)
+            context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit),
+            context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)
         }))
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(

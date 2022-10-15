@@ -2,12 +2,11 @@
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using OrleanSpaces.Analyzers.Analyzers;
 using System.Collections.Immutable;
 using System.Composition;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace OrleanSpaces.Analyzers.Fixers;
+namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
 /// Code fix provider for <see cref="SuggestTupleRefOverInitAnalyzer"/>.

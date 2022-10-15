@@ -1,12 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
-using OrleanSpaces.Analyzers.Analyzers;
+using OrleanSpaces.Analyzers.OSA001;
 
-namespace OrleanSpaces.Analyzers.Tests.Analyzers;
+namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class SuggestTupleRefOverInitAnalyzerTests : Fixture
+public class SuggestTupleRefOverInitAnalyzerTests : AnalyzerFixture
 {
     public SuggestTupleRefOverInitAnalyzerTests() : base(
-        new SuggestTupleRefOverInitAnalyzer(), 
+        new SuggestTupleRefOverInitAnalyzer(),
         SuggestTupleRefOverInitAnalyzer.Diagnostic.Id)
     {
 
@@ -16,7 +16,7 @@ public class SuggestTupleRefOverInitAnalyzerTests : Fixture
     public void Should_Equal()
     {
         Assert.Equal("OSA001", SuggestTupleRefOverInitAnalyzer.Diagnostic.Id);
-        Assert.Equal(Categories.Performance, SuggestTupleRefOverInitAnalyzer.Diagnostic.Category);
+        Assert.Equal(DiagnosticCategories.Performance, SuggestTupleRefOverInitAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, SuggestTupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
         Assert.Equal("Avoid instantiation by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.Title);
         Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", SuggestTupleRefOverInitAnalyzer.Diagnostic.MessageFormat);

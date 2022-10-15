@@ -5,14 +5,14 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Analyzers.Analyzers;
+namespace OrleanSpaces.Analyzers.OSA002;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA002",
-        category: Categories.Usage,
+        category: DiagnosticCategories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         title: "The supplied argument is not of a supported type.",
@@ -32,7 +32,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
     {
         var operation = (IObjectCreationOperation)context.Operation;
 
-        if (AnalysisHelpers.IsOfType(operation.Type, context.Compilation.GetTypeByMetadataName(Constants.SpaceTupleFullName)))
+        if (AnalysisHelpers.IsOfType(operation.Type, context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
             var argumentOperation = operation.Arguments.SingleOrDefault();
             if (argumentOperation != null)
@@ -76,12 +76,12 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
             or SpecialType.System_Char
             or SpecialType.System_Double
             or SpecialType.System_Single
-            or SpecialType.System_Int16 
+            or SpecialType.System_Int16
             or SpecialType.System_UInt16
-            or SpecialType.System_Int32 
+            or SpecialType.System_Int32
             or SpecialType.System_UInt32
             or SpecialType.System_Int64
-            or SpecialType.System_UInt64 
+            or SpecialType.System_UInt64
             or SpecialType.System_Enum
             or SpecialType.System_String
             or SpecialType.System_DateTime
