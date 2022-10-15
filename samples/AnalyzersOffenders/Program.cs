@@ -17,10 +17,8 @@
 #region OSA002
 
 int b = 1;
-DateTime dateTime;
-DateTimeOffset dateTimeOffset;
 
-SpaceTuple _ = new(1, 1.5f, 1.3d, "a", 'a', true, typeof(int), SpaceUnit.Null, b);
+SpaceTuple _ = new(1, 1.5f, 1.3d, "a", 'a', true, typeof(int), SpaceUnit.Null, b, Guid.Empty);
 
 
 #endregion

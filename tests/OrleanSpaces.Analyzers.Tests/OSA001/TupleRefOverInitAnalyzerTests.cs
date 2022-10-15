@@ -16,7 +16,7 @@ public class TupleRefOverInitAnalyzerTests : AnalyzerFixture
     public void Should_Equal()
     {
         Assert.Equal("OSA001", TupleRefOverInitAnalyzer.Diagnostic.Id);
-        Assert.Equal(DiagnosticCategories.Performance, TupleRefOverInitAnalyzer.Diagnostic.Category);
+        Assert.Equal(Categories.Performance, TupleRefOverInitAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, TupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
         Assert.Equal("Avoid instantiation by default constructor or expression.", TupleRefOverInitAnalyzer.Diagnostic.Title);
         Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", TupleRefOverInitAnalyzer.Diagnostic.MessageFormat);

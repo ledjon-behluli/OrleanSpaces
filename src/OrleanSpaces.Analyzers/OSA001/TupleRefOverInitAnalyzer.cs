@@ -13,7 +13,7 @@ internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
-        category: DiagnosticCategories.Performance,
+        category: Categories.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
@@ -48,7 +48,7 @@ internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
 
     private static void ReportDiagnostic(ref OperationAnalysisContext context, IOperation operation)
     {
-        if (AnalysisHelpers.IsAnyOfType(operation.Type, new List<ITypeSymbol?>()
+        if (operation.Type.IsOfAnyType(new List<ITypeSymbol?>()
         {
             context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit),
             context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)
