@@ -49,6 +49,19 @@ internal static class TypeSymbolExtensions
             return false;
         }
 
-        return candidateTypes.Any(type => symbol.OriginalDefinition.Equals(compilation.GetTypeByMetadataName(type.FullName), SymbolEqualityComparer.Default));
+        return candidateTypes.Any(type =>
+        {
+            var clrTypeSymbol = compilation.GetTypeByMetadataName(type.FullName);
+            if (type == typeof(Enum))
+            {
+                var baseType = symbol.OriginalDefinition.BaseType;
+                if (baseType != null)
+                {
+                    return baseType.Equals(clrTypeSymbol, SymbolEqualityComparer.Default);
+                }
+            }
+
+            return symbol.OriginalDefinition.Equals(clrTypeSymbol, SymbolEqualityComparer.Default);
+        });
     }
 }

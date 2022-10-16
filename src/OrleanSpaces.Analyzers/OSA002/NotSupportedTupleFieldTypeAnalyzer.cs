@@ -34,6 +34,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         typeof(long),
         typeof(ulong),
         // Others
+        typeof(Enum),
         typeof(string),
         typeof(decimal),
         typeof(DateTime),
@@ -75,25 +76,17 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         // SpaceTemplate
         if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
-            var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate);
+            var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
 
             foreach (var argument in GetArguments(operation))
             {
                 var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
-                if (type.IsOfAnyClrType(simpleTypes, context.Compilation))
+                if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
+                    type.IsOfClrType(typeof(Type), context.Compilation) ||
+                    type.IsOfType(spaceUnitSymbol))
                 {
                     continue;
-                }
-
-                if (type.IsOfClrType(typeof(Type), context.Compilation))
-                {
-                    continue;
-                }
-
-                if (type.IsOfType(spaceUnitSymbol))
-                {
-                    return;
                 }
 
                 ReportDiagnosticFor("SpaceTemplate", context, argument);
