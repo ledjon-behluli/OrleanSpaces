@@ -29,6 +29,7 @@ public class CodeFixFixture : CodeFixTestFixture
     protected void TestCodeFix(string code, string fixedCode, params Namespace[] namespaces)
     {
         string newCode = code;
+        string newFixedCode = fixedCode;
 
         if (namespaces.Length > 0)
         {
@@ -39,10 +40,19 @@ public class CodeFixFixture : CodeFixTestFixture
                 builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
             }
 
-            builder.Append(code);
-            newCode = builder.ToString();
+            StringBuilder codeBuilder = new();
+            StringBuilder fixedCodeBuilder = new();
+
+            codeBuilder.Append(builder);
+            codeBuilder.Append(code);
+
+            fixedCodeBuilder.Append(builder);
+            fixedCodeBuilder.Append(fixedCode);
+
+            newCode = codeBuilder.ToString();
+            newFixedCode = fixedCodeBuilder.ToString();
         }
 
-        TestCodeFix(newCode, fixedCode, diagnosticId);
+        TestCodeFix(newCode, newFixedCode, diagnosticId);
     }
 }

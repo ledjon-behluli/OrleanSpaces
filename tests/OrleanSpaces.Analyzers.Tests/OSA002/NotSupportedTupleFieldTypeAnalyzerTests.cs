@@ -72,18 +72,8 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
-    [InlineData("")]
+    [InlineData("SpaceTuple tuple = [|new(new TestClass())|]; class TestClass {}")]
+    [InlineData("SpaceTuple tuple = [|new(new TestStruct())|]; struct TestStruct {}")]
     public void Should_Diagnose_SpaceTemplate(string code) =>
         HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
@@ -118,10 +108,14 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = [|new(TimeSpan.Zero)|];")]
     [InlineData("SpaceTemplate template = [|new(Guid.Empty)|];")]
 
-    [InlineData("SpaceTemplate template = [|new(TestEnum.A)|]; enum TestEnum { A }")]
-
+    [InlineData("SpaceTemplate template = [|new(typeof(string))|];")]
+    [InlineData("SpaceTemplate template = [|new(typeof(char))|];")]
+    [InlineData("SpaceTemplate template = [|new(typeof(int))|];")]
+    [InlineData("SpaceTemplate template = [|new(typeof(decimal))|];")]
     [InlineData("SpaceTemplate template = [|new(new SpaceUnit())|];")]
     [InlineData("SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
+
+    [InlineData("SpaceTemplate template = [|new(TestEnum.A)|]; enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTemplate(string code) =>
       NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }
