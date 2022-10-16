@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Text;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
@@ -25,5 +26,23 @@ public class CodeFixFixture : CodeFixTestFixture
         this.diagnosticId = diagnosticId;
     }
 
-    protected void TestCodeFix(string source, string fixedSource) => TestCodeFix(source, fixedSource, diagnosticId);
+    protected void TestCodeFix(string code, string fixedCode, params Namespace[] namespaces)
+    {
+        string newCode = code;
+
+        if (namespaces.Length > 0)
+        {
+            StringBuilder builder = new();
+
+            foreach (var @namespace in namespaces)
+            {
+                builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
+            }
+
+            builder.Append(code);
+            newCode = builder.ToString();
+        }
+
+        TestCodeFix(newCode, fixedCode, diagnosticId);
+    }
 }

@@ -23,16 +23,14 @@ public class TupleRefOverInitFixerTests : CodeFixFixture
     [InlineData("SpaceUnit unit = [|new()|];")]
     [InlineData("SpaceUnit unit = [|default(SpaceUnit)|];")]
     [InlineData("SpaceUnit unit = [|default|];")]
-    public void Should_Fix_SpaceUnit(string source) =>
-        TestCodeFix(ComposeMarkup(source), ComposeMarkup("SpaceUnit unit = SpaceUnit.Null;"));
+    public void Should_Fix_SpaceUnit(string code) =>
+        TestCodeFix(code, "SpaceUnit unit = SpaceUnit.Null;", Namespace.OrleanSpaces_Tuples);
 
     [Theory]
     [InlineData("SpaceTuple tuple = [|new SpaceTuple()|];")]
     [InlineData("SpaceTuple tuple = [|new()|];")]
     [InlineData("SpaceTuple tuple = [|default(SpaceTuple)|];")]
     [InlineData("SpaceTuple tuple = [|default|];")]
-    public void Should_Fix_SpaceTuple(string source) =>
-        TestCodeFix(ComposeMarkup(source), ComposeMarkup("SpaceTuple tuple = SpaceTuple.Null;"));
-
-    private static string ComposeMarkup(string code) => @$"using OrleanSpaces.Tuples;{code}";
+    public void Should_Fix_SpaceTuple(string code) =>
+        TestCodeFix(code, "SpaceTuple tuple = SpaceTuple.Null;", Namespace.OrleanSpaces_Tuples);
 }

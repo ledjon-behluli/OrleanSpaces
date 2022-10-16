@@ -35,7 +35,7 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = [|new(new TestClass())|]; class TestClass {}")]
     [InlineData("SpaceTuple tuple = [|new(new TestStruct())|]; struct TestStruct {}")]
     public void Should_Diagnose_SpaceTuple(string code) =>
-        HasDiagnostic(ComposeMarkup(code));
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
 
@@ -69,26 +69,59 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
 
     [InlineData("SpaceTuple tuple = [|new(TestEnum.A)|]; enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTuple(string code) =>
-       NoDiagnostic(ComposeMarkup(code));
+       NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
-    //[Theory]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //[InlineData("")]
-    //public void Should_Diagnose_SpaceTemplate(string code) =>
-    //    HasDiagnostic(ComposeMarkup(code));
+    [Theory]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    [InlineData("")]
+    public void Should_Diagnose_SpaceTemplate(string code) =>
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
-    //public void Should_Not_Diagnose_SpaceTemplate(string code) =>
-    //  HasDiagnostic(ComposeMarkup(code));
 
-    private static string ComposeMarkup(string code) => @$"using OrleanSpaces.Tuples;{code}";
+    [Theory]
+
+    [InlineData("SpaceTemplate template = [|new('a')|];")]
+    [InlineData("SpaceTemplate template = [|new(\"a\")|];")]
+
+    [InlineData("SpaceTemplate template = [|new(true)|]")]
+    [InlineData("SpaceTemplate template = [|new(false)|]")]
+
+    [InlineData("SpaceTemplate template = [|new((byte)1)|]")]
+    [InlineData("SpaceTemplate template = [|new((sbyte)1)|]")]
+
+    [InlineData("SpaceTemplate template = [|new((short)1)|]")]
+    [InlineData("SpaceTemplate template = [|new((ushort)1)|]")]
+
+    [InlineData("SpaceTemplate template = [|new((int)1)|]")]
+    [InlineData("SpaceTemplate template = [|new((uint)1)|]")]
+
+    [InlineData("SpaceTemplate template = [|new((long)1)|];")]
+    [InlineData("SpaceTemplate template = [|new((ulong)1)|];")]
+
+    [InlineData("SpaceTemplate template = [|new((float)1)|];")]
+    [InlineData("SpaceTemplate template = [|new((double)1)|];")]
+    [InlineData("SpaceTemplate template = [|new((decimal)1)|];")]
+
+
+    [InlineData("SpaceTemplate template = [|new(DateTime.MinValue)|];")]
+    [InlineData("SpaceTemplate template = [|new(DateTimeOffset.MinValue)|];")]
+    [InlineData("SpaceTemplate template = [|new(TimeSpan.Zero)|];")]
+    [InlineData("SpaceTemplate template = [|new(Guid.Empty)|];")]
+
+    [InlineData("SpaceTemplate template = [|new(TestEnum.A)|]; enum TestEnum { A }")]
+
+    [InlineData("SpaceTemplate template = [|new(new SpaceUnit())|];")]
+    [InlineData("SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
+    public void Should_Not_Diagnose_SpaceTemplate(string code) =>
+      NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }

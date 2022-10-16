@@ -29,7 +29,7 @@ public class TupleRefOverInitAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceUnit unit = [|default(SpaceUnit)|];")]
     [InlineData("SpaceUnit unit = [|default|];")]
     public void Should_Diagnose_SpaceUnit(string code) =>
-        HasDiagnostic(ComposeMarkup(code));
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
     [InlineData("SpaceTuple tuple = [|new SpaceTuple()|];")]
@@ -37,14 +37,12 @@ public class TupleRefOverInitAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = [|default(SpaceTuple)|];")]
     [InlineData("SpaceTuple tuple = [|default|];")]
     public void Should_Diagnose_SpaceTuple(string code) =>
-        HasDiagnostic(ComposeMarkup(code));
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
     [InlineData("SpaceTuple tuple = new(1)")]
     [InlineData("SpaceTuple tuple = new(1, \"a\")")]
     [InlineData("SpaceTuple tuple = new(1, \"a\", 1.5f)")]
     public void Should_Not_Diagnose_SpaceTuple(string code) =>
-        NoDiagnostic(ComposeMarkup(code));
-
-    private static string ComposeMarkup(string code) => @$"using OrleanSpaces.Tuples;{code}";
+        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
+using System.Text;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
@@ -20,6 +21,33 @@ public class AnalyzerFixture : AnalyzerTestFixture
         this.diagnosticId = diagnosticId;
     }
 
-    protected void NoDiagnostic(string source) => NoDiagnostic(source, diagnosticId);
-    protected void HasDiagnostic(string source) => HasDiagnostic(source, diagnosticId);
+    protected void NoDiagnostic(string code, params Namespace[] namespaces)
+    {
+        string newCode = BuildCode(code, namespaces);
+        NoDiagnostic(newCode, diagnosticId);
+    }
+
+    protected void HasDiagnostic(string code, params Namespace[] namespaces)
+    {
+        string newCode = BuildCode(code, namespaces);
+        HasDiagnostic(newCode, diagnosticId);
+    }
+
+    private static string BuildCode(string code, params Namespace[] namespaces)
+    {
+        if (namespaces.Length == 0)
+        {
+            return code;
+        }
+
+        StringBuilder builder = new();
+
+        foreach (var @namespace in namespaces)
+        {
+            builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
+        }
+
+        builder.Append(code);
+        return builder.ToString();
+    }
 }
