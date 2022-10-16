@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class TupleRefOverInitFixerTests : CodeFixFixture
+public class TupleRefOverInitFixerTests : FixerFixture
 {
     public TupleRefOverInitFixerTests() : base(
         new TupleRefOverInitAnalyzer(),

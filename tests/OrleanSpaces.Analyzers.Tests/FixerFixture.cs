@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
-public class CodeFixFixture : CodeFixTestFixture
+public class FixerFixture : CodeFixTestFixture
 {
     private readonly string diagnosticId;
 
@@ -19,7 +19,7 @@ public class CodeFixFixture : CodeFixTestFixture
     protected sealed override IReadOnlyCollection<MetadataReference> References =>
         new[] { ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly) };
 
-    public CodeFixFixture(DiagnosticAnalyzer analyzer, CodeFixProvider provider, string diagnosticId)
+    public FixerFixture(DiagnosticAnalyzer analyzer, CodeFixProvider provider, string diagnosticId)
     {
         this.analyzer = analyzer;
         this.provider = provider;

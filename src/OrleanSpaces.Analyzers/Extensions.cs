@@ -24,7 +24,7 @@ internal static class TypeSymbolExtensions
             return false;
         }
 
-        return candidateSymbols.Any(candidate => candidate != null && SymbolEqualityComparer.Default.Equals(candidate, symbol));
+        return candidateSymbols.Any(candidate => candidate != null && symbol.Equals(candidate, SymbolEqualityComparer.Default));
     }
 
     /// <summary>
