@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OrleanSpaces.Analyzers.Tests;
 
@@ -55,4 +56,16 @@ public class FixerFixture : CodeFixTestFixture
 
         TestCodeFix(newCode, newFixedCode, diagnosticId);
     }
+
+    private const string startTag = "[|";
+    private const string endTag = "|]";
+    private static readonly Regex regex = new(string.Format("{0}(.*?){1}", Regex.Escape(startTag), Regex.Escape(endTag)), RegexOptions.RightToLeft);
+
+    /// <summary>
+    /// Removes all text within the strings: '[|' and '|]'
+    /// <i>
+    /// <para>BEFORE: Test t = new Test([|1|]);</para>
+    /// <para>AFTER: Test t = new Test();</para></i>
+    /// </summary>
+    protected static string RemoveTextWithinDiagnosticSpan(string code) => regex.Replace(code, "");
 }

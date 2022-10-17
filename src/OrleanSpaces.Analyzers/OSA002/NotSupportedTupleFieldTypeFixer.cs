@@ -27,7 +27,7 @@ internal sealed class NotSupportedTupleFieldTypeFixer : CodeFixProvider
         }
 
         CodeAction action = CodeAction.Create(
-            title: "Remove unsupported argument.",
+            title: "Remove argument.",
             equivalenceKey: NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id,
             createChangedDocument: ct =>
             {

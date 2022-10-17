@@ -15,7 +15,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         category: Categories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        title: "The supplied argument is not a supported type.",
+        title: "The supplied argument type is not supported.",
         messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.");
 
     private static readonly List<Type> simpleTypes = new()

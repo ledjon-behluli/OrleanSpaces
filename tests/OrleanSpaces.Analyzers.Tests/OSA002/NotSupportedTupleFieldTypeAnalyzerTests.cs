@@ -18,7 +18,7 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
         Assert.Equal("OSA002", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id);
         Assert.Equal(Categories.Usage, NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Warning, NotSupportedTupleFieldTypeAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("The supplied argument is not a supported type.", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Title);
+        Assert.Equal("The supplied argument type is not supported.", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Title);
         Assert.Equal("The supplied argument '{0}' is not a supported '{1}' type.", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.MessageFormat);
         Assert.True(NotSupportedTupleFieldTypeAnalyzer.Diagnostic.IsEnabledByDefault);
     }
