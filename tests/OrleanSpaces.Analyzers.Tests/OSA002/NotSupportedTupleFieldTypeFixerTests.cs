@@ -31,20 +31,22 @@ public class NotSupportedTupleFieldTypeFixerTests : FixerFixture
 
     [InlineData("TestClass c = new(); SpaceTuple tuple = new([|c|]); class TestClass {}")]
     [InlineData("TestStruct s = new(); SpaceTuple tuple = new([|s|]); class TestStruct {}")]
-
-    [InlineData("SpaceTuple tuple = new([|typeof(int), SpaceUnit.Null|]);")]
-    [InlineData("SpaceTuple tuple = new([|typeof(int), typeof(string), SpaceUnit.Null|]);")]
     public void Should_Fix_All_Arguments_SpaceTuple(string code) =>
         TestCodeFix(code, RemoveTextWithinDiagnosticSpan(code), Namespace.OrleanSpaces_Tuples);
 
-    // TODO: Fix me!
-    [Fact]
-    public void Should_Fix_Only_Unsupported_Arguments_SpaceTuple()
-    {
-        //const string code = "SpaceTuple tuple = new([|1, typeof(int), 'a', SpaceUnit.Null, 1.5f|]);";
-        const string code = "SpaceTuple tuple = new(1, [|typeof(int)|], 'a', [|SpaceUnit.Null|], 1.5f);";
-        const string fixedCode = "SpaceTuple tuple = new(1, 'a', 1.5f);";
+    [Theory]
+    [InlineData("SpaceTuple tuple = new(1 [|, typeof(string)|], 'a');")]
+    [InlineData("SpaceTuple tuple = new(1 [|, typeof(char)|], 'a');")]
+    [InlineData("SpaceTuple tuple = new(1 [|, typeof(int)|], 'a');")]
+    [InlineData("SpaceTuple tuple = new(1 [|, typeof(decimal)|], 'a');")]
+    [InlineData("SpaceTuple tuple = new(1 [|, new SpaceUnit()|], 'a');")]
+    [InlineData("SpaceTuple tuple = new(1 [|, SpaceUnit.Null|], 'a');")]
 
-        TestCodeFix(code, fixedCode, Namespace.OrleanSpaces_Tuples);
-    }
+    [InlineData("SpaceTuple tuple = new(1 [|, new TestClass()|], 'a'); class TestClass {}")]
+    [InlineData("SpaceTuple tuple = new(1 [|, new TestStruct()|], 'a'); struct TestStruct {}")]
+
+    [InlineData("TestClass c = new(); SpaceTuple tuple = new(1 [|, c|], 'a'); class TestClass {}")]
+    [InlineData("TestStruct s = new(); SpaceTuple tuple = new(1 [|, s|], 'a'); class TestStruct {}")]
+    public void Should_Fix_Only_Unsupported_Arguments_SpaceTuple(string code) =>
+        TestCodeFix(code, RemoveTextWithinDiagnosticSpan(code), Namespace.OrleanSpaces_Tuples);
 }
