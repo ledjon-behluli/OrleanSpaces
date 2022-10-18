@@ -49,4 +49,23 @@ public class NotSupportedTupleFieldTypeFixerTests : FixerFixture
     [InlineData("TestStruct s = new(); SpaceTuple tuple = new(1 [|, s|], 'a'); class TestStruct {}")]
     public void Should_Fix_Only_Unsupported_Arguments_SpaceTuple(string code) =>
         TestCodeFix(code, RemoveTextWithinDiagnosticSpan(code), Namespace.OrleanSpaces_Tuples);
+
+
+    [Theory]
+    [InlineData("SpaceTemplate template = new([|new TestClass()|]); class TestClass {}")]
+    [InlineData("SpaceTemplate template = new([|new TestStruct()|]); struct TestStruct {}")]
+
+    [InlineData("TestClass c = new(); SpaceTemplate template = new([|c|]); class TestClass {}")]
+    [InlineData("TestStruct s = new(); SpaceTemplate template = new([|s|]); class TestStruct {}")]
+    public void Should_Fix_All_Arguments_SpaceTemplate(string code) =>
+        TestCodeFix(code, RemoveTextWithinDiagnosticSpan(code), Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    [InlineData("SpaceTemplate template = new(1 [|, new TestClass()|], 'a'); class TestClass {}")]
+    [InlineData("SpaceTemplate template = new(1 [|, new TestStruct()|], 'a'); struct TestStruct {}")]
+
+    [InlineData("TestClass c = new(); SpaceTemplate template = new(1 [|, c|], 'a'); class TestClass {}")]
+    [InlineData("TestStruct s = new(); SpaceTemplate template = new(1 [|, s|], 'a'); class TestStruct {}")]
+    public void Should_Fix_Only_Unsupported_Arguments_SpaceTemplate(string code) =>
+        TestCodeFix(code, RemoveTextWithinDiagnosticSpan(code), Namespace.OrleanSpaces_Tuples);
 }
