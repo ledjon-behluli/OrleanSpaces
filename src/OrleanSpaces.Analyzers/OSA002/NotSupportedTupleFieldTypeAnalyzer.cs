@@ -1,12 +1,13 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
+/// <summary>
+/// Warns that some of the arguments passed are not supported types.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
 {
@@ -60,7 +61,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         // SpaceTuple
         if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
-            foreach (var argument in GetArguments(operation))
+            foreach (var argument in operation.GetArguments())
             {
                 var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
@@ -78,7 +79,7 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         {
             var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
 
-            foreach (var argument in GetArguments(operation))
+            foreach (var argument in operation.GetArguments())
             {
                 var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
@@ -99,19 +100,6 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
                 descriptor: Diagnostic,
                 location: argument.GetLocation(),
                 messageArgs: new[] { argument.ToString(), targetTypeName }));
-        }
-    }
-
-    private static IEnumerable<ArgumentSyntax> GetArguments(IObjectCreationOperation operation)
-    {
-        var argumentOperation = operation.Arguments.SingleOrDefault();
-        if (argumentOperation != null)
-        {
-            var arguments = argumentOperation.Syntax.DescendantNodes().OfType<ArgumentSyntax>();
-            foreach (var argument in arguments)
-            {
-                yield return argument;
-            }
         }
     }
 }

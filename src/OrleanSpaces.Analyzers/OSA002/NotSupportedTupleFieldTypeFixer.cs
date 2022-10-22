@@ -1,14 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
+﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using OrleanSpaces.Analyzers.OSA001;
 using System.Collections.Immutable;
 using System.Composition;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
-/// Code fix provider for <see cref="TupleRefOverInitAnalyzer"/>.
+/// Code fix provider for <see cref="NotSupportedTupleFieldTypeAnalyzer"/>.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NotSupportedTupleFieldTypeFixer)), Shared]
 internal sealed class NotSupportedTupleFieldTypeFixer : CodeFixProvider

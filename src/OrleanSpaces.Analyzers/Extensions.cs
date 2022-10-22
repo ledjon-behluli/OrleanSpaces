@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace OrleanSpaces.Analyzers;
 
@@ -63,5 +65,24 @@ internal static class TypeSymbolExtensions
 
             return symbol.OriginalDefinition.Equals(clrTypeSymbol, SymbolEqualityComparer.Default);
         });
+    }
+}
+
+internal static class OperationExtensions
+{
+    /// <summary>
+    /// Returns all <see cref="ArgumentSyntax"/> found in <paramref name="operation"/>
+    /// </summary>
+    public static IEnumerable<ArgumentSyntax> GetArguments(this IObjectCreationOperation operation)
+    {
+        var argumentOperation = operation.Arguments.SingleOrDefault();
+        if (argumentOperation != null)
+        {
+            var arguments = argumentOperation.Syntax.DescendantNodes().OfType<ArgumentSyntax>();
+            foreach (var argument in arguments)
+            {
+                yield return argument;
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using OrleanSpaces.Analyzers.OSA002;
+﻿using OrleanSpaces.Analyzers.OSA002;
 
 namespace OrleanSpaces.Analyzers.Tests.OSA002;
 
