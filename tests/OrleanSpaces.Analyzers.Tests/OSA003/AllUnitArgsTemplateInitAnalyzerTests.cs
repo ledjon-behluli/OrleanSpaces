@@ -17,8 +17,8 @@ public class AllUnitArgsTemplateInitAnalyzerTests : AnalyzerFixture
         Assert.Equal("OSA003", AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id);
         Assert.Equal(Categories.Performance, AllUnitArgsTemplateInitAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, AllUnitArgsTemplateInitAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid instantiation of all 'SpaceUnit' type arguments.", AllUnitArgsTemplateInitAnalyzer.Diagnostic.Title);
-        Assert.Equal("Avoid instantiation of all 'SpaceUnit' type arguments.", AllUnitArgsTemplateInitAnalyzer.Diagnostic.MessageFormat);
+        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", AllUnitArgsTemplateInitAnalyzer.Diagnostic.Title);
+        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", AllUnitArgsTemplateInitAnalyzer.Diagnostic.MessageFormat);
         Assert.True(AllUnitArgsTemplateInitAnalyzer.Diagnostic.IsEnabledByDefault);
     }
 

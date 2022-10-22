@@ -32,14 +32,14 @@ public class SpaceTemplateBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = SpaceTemplateCache.Singlet;
-            _ = SpaceTemplateCache.Pair;
-            _ = SpaceTemplateCache.Triple;
-            _ = SpaceTemplateCache.Quadruple;
-            _ = SpaceTemplateCache.Quintuple;
-            _ = SpaceTemplateCache.Sextuple;
-            _ = SpaceTemplateCache.Septuple;
-            _ = SpaceTemplateCache.Octuple;
+            _ = SpaceTemplateFactory.Singlet;
+            _ = SpaceTemplateFactory.Pair;
+            _ = SpaceTemplateFactory.Triple;
+            _ = SpaceTemplateFactory.Quadruple;
+            _ = SpaceTemplateFactory.Quintuple;
+            _ = SpaceTemplateFactory.Sextuple;
+            _ = SpaceTemplateFactory.Septuple;
+            _ = SpaceTemplateFactory.Octuple;
         }
     }
 
@@ -135,7 +135,7 @@ public class SpaceTemplateBenchmarks
     #endregion
 }
 
-public readonly struct SpaceTemplateCache
+public readonly struct SpaceTemplateFactory
 {
     private static readonly SpaceTemplate singlet = new(SpaceUnit.Null);
     private static readonly SpaceTemplate pair = new(SpaceUnit.Null, SpaceUnit.Null);

@@ -13,10 +13,8 @@ public class TupleRefOverInitFixerTests : FixerFixture
     }
 
     [Fact]
-    public void Should_Equal()
-    {
+    public void Should_Equal() =>
         Assert.Equal("OSA001", provider.FixableDiagnosticIds.Single());
-    }
 
     [Theory]
     [InlineData("SpaceUnit unit = [|new SpaceUnit()|];")]

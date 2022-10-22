@@ -15,8 +15,8 @@ internal sealed class AllUnitArgsTemplateInitAnalyzer : DiagnosticAnalyzer
         category: Categories.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        title: "Avoid instantiation of all 'SpaceUnit' type arguments.",
-        messageFormat: "Avoid instantiation of all 'SpaceUnit' type arguments.");
+        title: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.",
+        messageFormat: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
