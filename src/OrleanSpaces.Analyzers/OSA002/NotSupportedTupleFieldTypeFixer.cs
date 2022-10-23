@@ -17,8 +17,12 @@ internal sealed class NotSupportedTupleFieldTypeFixer : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        if (root == null)
+        {
+            return;
+        }
 
-        var node = root?.FindNode(context.Span);
+        var node = root.FindNode(context.Span);
         if (node == null)
         {
             return;
@@ -27,9 +31,9 @@ internal sealed class NotSupportedTupleFieldTypeFixer : CodeFixProvider
         CodeAction action = CodeAction.Create(
             title: "Remove argument.",
             equivalenceKey: NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id,
-            createChangedDocument: ct =>
+            createChangedDocument: _ =>
             {
-                var newRoot = root?.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
+                var newRoot = root.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
                 return Task.FromResult(newRoot == null ? context.Document :
                     context.Document.WithSyntaxRoot(newRoot));

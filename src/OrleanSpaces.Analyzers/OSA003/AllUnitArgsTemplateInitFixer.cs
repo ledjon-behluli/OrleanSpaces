@@ -1,11 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
+﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Xml.Linq;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
@@ -21,16 +18,18 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        if (root == null)
+        {
+            return;
+        }
 
-        var node = root?.FindNode(context.Span);
+        var node = root.FindNode(context.Span);
         if (node == null)
         {
             return;
         }
 
-        if (int.TryParse(
-            context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"),
-            out int numOfSpaceUnits))
+        if (int.TryParse(context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"), out int numOfSpaceUnits))
         {
             if (numOfSpaceUnits > 0)
             {
@@ -44,10 +43,10 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                             IdentifierName("SpaceTemplateFactory"),
                             IdentifierName($"Tuple_{numOfSpaceUnits}"));
 
-                        var newRoot = root?.ReplaceNode(node, newNode);
+                        var newRoot = root.ReplaceNode(node, newNode);
                         var factoryNode = GenerateSpaceTemplateFactory(numOfSpaceUnits);
 
-                        newRoot?.InsertNodesBefore(newNode, new SyntaxNode[] { factoryNode });
+                        newRoot?.InsertNodesAfter(root, new SyntaxNode[] { factoryNode });
                     
                         return Task.FromResult(newRoot == null ? context.Document :
                             context.Document.WithSyntaxRoot(newRoot));

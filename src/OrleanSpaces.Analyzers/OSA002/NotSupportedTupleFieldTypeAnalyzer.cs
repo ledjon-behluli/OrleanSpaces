@@ -58,7 +58,6 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
     {
         var operation = (IObjectCreationOperation)context.Operation;
 
-        // SpaceTuple
         if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
             foreach (var argument in operation.GetArguments())
@@ -74,7 +73,6 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        // SpaceTemplate
         if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
             var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);

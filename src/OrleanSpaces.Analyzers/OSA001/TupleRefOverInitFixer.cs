@@ -17,8 +17,12 @@ internal sealed class TupleRefOverInitFixer : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
+        if (root == null)
+        {
+            return;
+        }
 
-        var node = root?.FindNode(context.Span);
+        var node = root.FindNode(context.Span);
         if (node == null)
         {
             return;
@@ -33,14 +37,14 @@ internal sealed class TupleRefOverInitFixer : CodeFixProvider
         CodeAction action = CodeAction.Create(
             title: $"Use '{typeName}.Null'",
             equivalenceKey: TupleRefOverInitAnalyzer.Diagnostic.Id,
-            createChangedDocument: ct =>
+            createChangedDocument: _ =>
             {
                 var newNode = MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
                     IdentifierName(typeName),
                     IdentifierName("Null"));
 
-                var newRoot = root?.ReplaceNode(node, newNode);
+                var newRoot = root.ReplaceNode(node, newNode);
 
                 return Task.FromResult(newRoot == null ? context.Document :
                     context.Document.WithSyntaxRoot(newRoot));
