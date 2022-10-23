@@ -36,7 +36,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 CodeAction action = CodeAction.Create(
                     title: $"Create factory which exposes a cached '{numOfSpaceUnits}-tuple' reference.",
                     equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
-                    createChangedDocument: ct =>
+                    createChangedDocument: _ =>
                     {
                         var newNode = MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
