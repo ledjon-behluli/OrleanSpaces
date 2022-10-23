@@ -1,24 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-	<IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<IsPackable>false</IsPackable>
+		<NoWarn>NU1608</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-	  <PackageReference Include="xunit" Version="2.4.2" />
-	  <PackageReference Include="xunit.runner.visualstudio" Version="2.4.2">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="SmartAnalyzers.RoslynTestKit" Version="4.6.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="xunit" Version="2.4.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SmartAnalyzers.RoslynTestKit" Version="4.6.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Features" Version="4.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" Version="4.3.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.3.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" />
-    <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" />
+		<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
+	</ItemGroup>
 
 </Project>
