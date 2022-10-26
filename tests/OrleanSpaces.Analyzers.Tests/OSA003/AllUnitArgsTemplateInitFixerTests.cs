@@ -43,8 +43,11 @@ public readonly struct SpaceTemplateFactory
     [Fact]
     public void Should_Fix_SpaceTemplate_3() =>
        TestCodeFix(
-"SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];",
-@"SpaceTemplate template = SpaceTemplate.Tuple_2;
+@"namespace MyNamespace;
+SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];",
+
+@"namespace MyNamespace;
+SpaceTemplate template = SpaceTemplate.Tuple_2;
 
 public readonly struct SpaceTemplateFactory
 {

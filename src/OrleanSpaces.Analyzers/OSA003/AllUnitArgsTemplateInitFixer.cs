@@ -29,32 +29,39 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             return;
         }
 
-        if (int.TryParse(context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"), out int numOfSpaceUnits))
+        if (!int.TryParse(context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"), out int numOfSpaceUnits) ||
+            numOfSpaceUnits < 1)
         {
-            if (numOfSpaceUnits > 0)
-            {
-                CodeAction action = CodeAction.Create(
-                    title: $"Create factory which exposes a cached '{numOfSpaceUnits}-tuple' reference.",
-                    equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
-                    createChangedDocument: _ =>
-                    {
-                        var newNode = MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            IdentifierName("SpaceTemplateFactory"),
-                            IdentifierName($"Tuple_{numOfSpaceUnits}"));
-
-                        var newRoot = root.ReplaceNode(node, newNode);
-                        var factoryNode = GenerateSpaceTemplateFactory(numOfSpaceUnits);
-
-                        newRoot?.InsertNodesAfter(root, new SyntaxNode[] { factoryNode });
-                    
-                        return Task.FromResult(newRoot == null ? context.Document :
-                            context.Document.WithSyntaxRoot(newRoot));
-                    });
-
-                context.RegisterCodeFix(action, context.Diagnostics);
-            }
+            return;
         }
+
+        CodeAction action = CodeAction.Create(
+            title: $"Create factory which exposes a cached '{numOfSpaceUnits}-tuple' reference.",
+            equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+            createChangedDocument: _ =>
+            {
+                var newNode = MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName("SpaceTemplateFactory"),
+                    IdentifierName($"Tuple_{numOfSpaceUnits}"));
+
+                var newRoot = root.ReplaceNode(node, newNode);
+                if (newRoot != null)
+                {
+                    var (namespaceNode, @namespace) = newRoot.GetNamespaceNode(); //node.GetNamespaceNode();
+                    if (namespaceNode != null)
+                    {
+                        var factoryNode = GenerateSpaceTemplateFactory(numOfSpaceUnits);
+                        newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { factoryNode });
+
+                        return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                    }
+                }
+
+                return Task.FromResult(context.Document);
+            });
+
+        context.RegisterCodeFix(action, context.Diagnostics);
     }
 
     private static StructDeclarationSyntax GenerateSpaceTemplateFactory(int argCount)

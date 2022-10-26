@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 
 namespace OrleanSpaces.Analyzers;
@@ -82,6 +81,100 @@ internal static class OperationExtensions
             foreach (var argument in arguments)
             {
                 yield return argument;
+            }
+        }
+    }
+}
+
+internal static class SyntaxExtensions
+{
+    //public static (SyntaxNode?, string) GetNamespaceNode(this SyntaxNode? node)
+    //{
+    //    string @namespace = string.Empty;
+    //    SyntaxNode? namespaceNode = null;
+
+    //    if (node != null)
+    //    {
+    //        SyntaxNode? potentialNamespace = node.Parent;
+
+    //        while (potentialNamespace != null &&
+    //               potentialNamespace is not NamespaceDeclarationSyntax &&
+    //               potentialNamespace is not FileScopedNamespaceDeclarationSyntax)
+    //        {
+    //            potentialNamespace = potentialNamespace.Parent;
+    //        }
+
+    //        if (potentialNamespace is BaseNamespaceDeclarationSyntax namespaceParent)
+    //        {
+    //            @namespace = namespaceParent.Name.ToString();
+    //            namespaceNode = namespaceParent;
+
+    //            while (true)
+    //            {
+    //                if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+    //                {
+    //                    break;
+    //                }
+
+    //                @namespace = $"{namespaceParent.Name}.{@namespace}";  // Add the outer namespace as a prefix to the final namespace
+                    
+    //                namespaceParent = parent;
+    //                namespaceNode = parent;
+    //            }
+    //        }
+    //    }
+
+    //    return (namespaceNode, @namespace);
+    //}
+
+    public static (SyntaxNode?, string) GetNamespaceNode(this SyntaxNode? node)
+    {
+        string @namespace = string.Empty;
+        SyntaxNode? namespaceNode = null;
+
+        if (node is CompilationUnitSyntax compilation)
+        {
+            var potentialNamespace = node.ChildNodes().FirstOrDefault(x => x is NamespaceDeclarationSyntax || x is FileScopedNamespaceDeclarationSyntax);
+            if (potentialNamespace != null)
+            {
+                TrySetResult(potentialNamespace, ref @namespace, ref namespaceNode);
+            }
+        }
+        else
+        {
+            var potentialNamespace = node?.Parent;
+
+            while (potentialNamespace is not null &&
+                   potentialNamespace is not NamespaceDeclarationSyntax &&
+                   potentialNamespace is not FileScopedNamespaceDeclarationSyntax)
+            {
+                potentialNamespace = potentialNamespace.Parent;
+            }
+
+            TrySetResult(potentialNamespace, ref @namespace, ref namespaceNode);
+        }
+
+        return (namespaceNode, @namespace);
+    }
+
+    private static void TrySetResult(SyntaxNode? potentialNamespace, ref string @namespace, ref SyntaxNode? namespaceNode)
+    {
+        if (potentialNamespace is BaseNamespaceDeclarationSyntax namespaceParent)
+        {
+            @namespace = namespaceParent.Name.ToString();
+            namespaceNode = namespaceParent;
+
+            while (true)
+            {
+                if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+                {
+                    break;
+                }
+
+                @namespace = $"{namespaceParent.Name}.{@namespace}";  // Add the outer namespace as a prefix to the final namespace
+
+                namespaceParent = parent;
+                namespaceNode = parent;
             }
         }
     }
