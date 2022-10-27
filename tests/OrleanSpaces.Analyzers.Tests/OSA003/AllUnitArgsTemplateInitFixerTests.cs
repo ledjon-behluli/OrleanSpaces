@@ -20,7 +20,7 @@ public class AllUnitArgsTemplateInitFixerTests : FixerFixture
     public void Should_Fix_SpaceTemplate_1() =>
         TestCodeFix(
 "SpaceTemplate template = [|new()|];",
-@"SpaceTemplate template = SpaceTemplate.Tuple_1;
+@"SpaceTemplate template = SpaceTemplateFactory.Tuple_1;
 
 public readonly struct SpaceTemplateFactory
 {
@@ -32,7 +32,7 @@ public readonly struct SpaceTemplateFactory
     public void Should_Fix_SpaceTemplate_2() =>
        TestCodeFix(
 "SpaceTemplate template = [|new(SpaceUnit.Null)|];",
-@"SpaceTemplate template = SpaceTemplate.Tuple_1;
+@"SpaceTemplate template = SpaceTemplateFactory.Tuple_1;
 
 public readonly struct SpaceTemplateFactory
 {
@@ -47,7 +47,7 @@ public readonly struct SpaceTemplateFactory
 SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];",
 
 @"namespace MyNamespace;
-SpaceTemplate template = SpaceTemplate.Tuple_2;
+SpaceTemplate template = SpaceTemplateFactory.Tuple_2;
 
 public readonly struct SpaceTemplateFactory
 {

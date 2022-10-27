@@ -88,7 +88,7 @@ internal static class OperationExtensions
 
 internal static class SyntaxExtensions
 {
-    //public static (SyntaxNode?, string) GetNamespaceNode(this SyntaxNode? node)
+    //public static (SyntaxNode?, string) GetNamespaceParts(this SyntaxNode? node)
     //{
     //    string @namespace = string.Empty;
     //    SyntaxNode? namespaceNode = null;
@@ -127,7 +127,7 @@ internal static class SyntaxExtensions
     //    return (namespaceNode, @namespace);
     //}
 
-    public static (SyntaxNode?, string) GetNamespaceNode(this SyntaxNode? node)
+    public static (SyntaxNode?, string) GetNamespaceParts(this SyntaxNode? node)
     {
         string @namespace = string.Empty;
         SyntaxNode? namespaceNode = null;

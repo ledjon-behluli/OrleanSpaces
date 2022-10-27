@@ -48,11 +48,14 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 var newRoot = root.ReplaceNode(node, newNode);
                 if (newRoot != null)
                 {
-                    var (namespaceNode, @namespace) = newRoot.GetNamespaceNode(); //node.GetNamespaceNode();
+                    var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                     if (namespaceNode != null)
                     {
                         var factoryNode = GenerateSpaceTemplateFactory(numOfSpaceUnits);
-                        newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { factoryNode });
+                        newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] 
+                        { 
+                            factoryNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                        });
 
                         return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
                     }
