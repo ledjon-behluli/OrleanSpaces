@@ -16,42 +16,28 @@ public class AllUnitArgsTemplateInitFixerTests : FixerFixture
     public void Should_Equal() =>
         Assert.Equal("OSA003", provider.FixableDiagnosticIds.Single());
 
-    [Fact]
-    public void Should_Fix_SpaceTemplate_1() =>
-        TestCodeFix(
-"SpaceTemplate template = [|new()|];",
-@"SpaceTemplate template = SpaceTemplateFactory.Tuple_1;
+    [Theory]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
+    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(3, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    public void Should_Fix_SpaceTemplate(int numOfSpaceUnits, string code) =>
+       TestCodeFix(code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
 
-public readonly struct SpaceTemplateFactory
-{
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-    public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
-}", Namespace.OrleanSpaces_Tuples);
+    private static string GenerateFixedCode(int numOfSpaceUnits)
+    {
+        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
 
-    [Fact]
-    public void Should_Fix_SpaceTemplate_2() =>
-       TestCodeFix(
-"SpaceTemplate template = [|new(SpaceUnit.Null)|];",
-@"SpaceTemplate template = SpaceTemplateFactory.Tuple_1;
+        return
+@$"namespace MyNamespace; SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};
 
-public readonly struct SpaceTemplateFactory
-{
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-    public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
-}", Namespace.OrleanSpaces_Tuples);
+public readonly struct SpaceTemplateCache
+{{
+#pragma warning disable OSA003
+    private static readonly SpaceTemplate tuple_{numOfSpaceUnits} = new({unitArrayArgument});
+#pragma warning restore OSA003
 
-    [Fact]
-    public void Should_Fix_SpaceTemplate_3() =>
-       TestCodeFix(
-@"namespace MyNamespace;
-SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];",
-
-@"namespace MyNamespace;
-SpaceTemplate template = SpaceTemplateFactory.Tuple_2;
-
-public readonly struct SpaceTemplateFactory
-{
-    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
-    public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
-}", Namespace.OrleanSpaces_Tuples);
+    public static ref readonly SpaceTemplate Tuple_{numOfSpaceUnits} => ref tuple_{numOfSpaceUnits};
+}}";
+    }
 }

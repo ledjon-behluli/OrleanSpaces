@@ -32,16 +32,16 @@ internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeDefaultValue(OperationAnalysisContext context)
     {
-        var operation = (IDefaultValueOperation)context.Operation;
-        ReportDiagnostic(ref context, operation);
+        var defaultValueOperation = (IDefaultValueOperation)context.Operation;
+        ReportDiagnostic(ref context, defaultValueOperation);
     }
 
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
-        var operation = (IObjectCreationOperation)context.Operation;
-        if (operation.Arguments.Length == 0)
+        var creationOperation = (IObjectCreationOperation)context.Operation;
+        if (creationOperation.Arguments.Length == 0)
         {
-            ReportDiagnostic(ref context, operation);
+            ReportDiagnostic(ref context, creationOperation);
         }
     }
 

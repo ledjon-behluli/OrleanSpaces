@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Drawing;
+using System.Text;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
@@ -36,13 +38,13 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
         }
 
         CodeAction action = CodeAction.Create(
-            title: $"Create factory which exposes a cached '{numOfSpaceUnits}-tuple' reference.",
+            title: $"Create wrapper around a '{numOfSpaceUnits}-tuple' cached reference.",
             equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
                 var newNode = MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("SpaceTemplateFactory"),
+                    IdentifierName("SpaceTemplateCache"),
                     IdentifierName($"Tuple_{numOfSpaceUnits}"));
 
                 var newRoot = root.ReplaceNode(node, newNode);
@@ -51,10 +53,10 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                     if (namespaceNode != null)
                     {
-                        var factoryNode = GenerateSpaceTemplateFactory(numOfSpaceUnits);
+                        var cacheNode = GenerateSpaceTemplateCache(numOfSpaceUnits);
                         newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] 
-                        { 
-                            factoryNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                        {
+                            cacheNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
                         });
 
                         return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
@@ -67,7 +69,21 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
         context.RegisterCodeFix(action, context.Diagnostics);
     }
 
-    private static StructDeclarationSyntax GenerateSpaceTemplateFactory(int argCount)
+    private static string GenerateSpaceTemplateUnitArrayArgument(int numOfSpaceUnits)
+    {
+        const string spaceUnit = "";
+
+        var builder = new StringBuilder(spaceUnit.Length * numOfSpaceUnits);
+
+        for (var i = 0; i < numOfSpaceUnits; i++)
+        {
+            builder.Append(spaceUnit);
+        }
+
+        return builder.ToString();
+    }
+
+    private static StructDeclarationSyntax GenerateSpaceTemplateCache(int argCount)
     {
         SeparatedSyntaxList<ArgumentSyntax> syntaxList;
 
@@ -90,11 +106,12 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
 
         string fieldName = $"tuple_{argCount}";
         string propertyName = $"Tuple_{argCount}";
+        string diagnosticId = AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id;
 
         return StructDeclaration(
                     Identifier(
                         TriviaList(),
-                        "SpaceTemplateFactory",
+                        "SpaceTemplateCache",
                         TriviaList(
                             CarriageReturnLineFeed)))
                 .WithModifiers(
@@ -157,6 +174,18 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                                     new []{
                                         Token(
                                             TriviaList(
+                                                Trivia(
+                                                    PragmaWarningDirectiveTrivia(
+                                                        Token(SyntaxKind.DisableKeyword),
+                                                        true)
+                                                    .WithErrorCodes(
+                                                        SingletonSeparatedList<ExpressionSyntax>(
+                                                            IdentifierName(diagnosticId)))))
+                                            .NormalizeWhitespace(),
+                                            SyntaxKind.None,
+                                            TriviaList()),
+                                        Token(
+                                            TriviaList(
                                                 Whitespace("    ")),
                                             SyntaxKind.PrivateKeyword,
                                             TriviaList(
@@ -205,6 +234,19 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                             .WithModifiers(
                                 TokenList(
                                     new []{
+                                        Token(
+                                            TriviaList(
+                                                Trivia(
+                                                    PragmaWarningDirectiveTrivia(
+                                                        Token(SyntaxKind.RestoreKeyword),
+                                                        true)
+                                                    .WithErrorCodes(
+                                                        SingletonSeparatedList<ExpressionSyntax>(
+                                                            IdentifierName(diagnosticId)))))
+                                            .NormalizeWhitespace(),
+                                            SyntaxKind.None,
+                                            TriviaList(
+                                                CarriageReturnLineFeed)),
                                         Token(
                                             TriviaList(
                                                 Whitespace("    ")),

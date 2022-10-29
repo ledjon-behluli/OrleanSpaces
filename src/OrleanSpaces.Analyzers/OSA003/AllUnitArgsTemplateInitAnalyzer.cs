@@ -1,11 +1,13 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Suggests to create reference SpaceTemplate over creation of all SpaceUnit type arguments.
+/// Suggests to create reference SpaceTemplate over creation of all SpaceUnit argumentType arguments.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class AllUnitArgsTemplateInitAnalyzer : DiagnosticAnalyzer
@@ -30,33 +32,36 @@ internal sealed class AllUnitArgsTemplateInitAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
-        var operation = (IObjectCreationOperation)context.Operation;
-
-        if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
+        var creationOperation = (IObjectCreationOperation)context.Operation;
+        
+        if (!creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
-            var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
-            var arguments = operation.GetArguments().ToList();
+            return;
+        }
 
-            if (arguments.Count == 0)
+        var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
+        var arguments = creationOperation.GetArguments().ToList();
+
+        if (arguments.Count == 0)
+        {
+            ReportDiagnostic(ref context, creationOperation, 1);
+        }
+
+        int numOfSpaceUnits = 0;
+
+        foreach (var argument in arguments)
+        {
+            var argumentType = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
+            if (argumentType.IsOfType(spaceUnitSymbol))
             {
-                ReportDiagnostic(ref context, operation, 1);
+                var a = argumentType?.OriginalDefinition;
+                numOfSpaceUnits++;
             }
+        }
 
-            int numOfSpaceUnits = 0;
-
-            foreach (var argument in arguments)
-            {
-                var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
-                if (type.IsOfType(spaceUnitSymbol))
-                {
-                    numOfSpaceUnits++;
-                }
-            }
-
-            if (numOfSpaceUnits > 0)
-            {
-                ReportDiagnostic(ref context, operation, numOfSpaceUnits);
-            }
+        if (numOfSpaceUnits > 0)
+        {
+            ReportDiagnostic(ref context, creationOperation, numOfSpaceUnits);
         }
     }
 

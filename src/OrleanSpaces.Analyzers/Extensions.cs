@@ -88,45 +88,6 @@ internal static class OperationExtensions
 
 internal static class SyntaxExtensions
 {
-    //public static (SyntaxNode?, string) GetNamespaceParts(this SyntaxNode? node)
-    //{
-    //    string @namespace = string.Empty;
-    //    SyntaxNode? namespaceNode = null;
-
-    //    if (node != null)
-    //    {
-    //        SyntaxNode? potentialNamespace = node.Parent;
-
-    //        while (potentialNamespace != null &&
-    //               potentialNamespace is not NamespaceDeclarationSyntax &&
-    //               potentialNamespace is not FileScopedNamespaceDeclarationSyntax)
-    //        {
-    //            potentialNamespace = potentialNamespace.Parent;
-    //        }
-
-    //        if (potentialNamespace is BaseNamespaceDeclarationSyntax namespaceParent)
-    //        {
-    //            @namespace = namespaceParent.Name.ToString();
-    //            namespaceNode = namespaceParent;
-
-    //            while (true)
-    //            {
-    //                if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
-    //                {
-    //                    break;
-    //                }
-
-    //                @namespace = $"{namespaceParent.Name}.{@namespace}";  // Add the outer namespace as a prefix to the final namespace
-                    
-    //                namespaceParent = parent;
-    //                namespaceNode = parent;
-    //            }
-    //        }
-    //    }
-
-    //    return (namespaceNode, @namespace);
-    //}
-
     public static (SyntaxNode?, string) GetNamespaceParts(this SyntaxNode? node)
     {
         string @namespace = string.Empty;

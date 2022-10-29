@@ -56,13 +56,13 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
-        var operation = (IObjectCreationOperation)context.Operation;
+        var creationOperation = (IObjectCreationOperation)context.Operation;
 
-        if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
+        if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
-            foreach (var argument in operation.GetArguments())
+            foreach (var argument in creationOperation.GetArguments())
             {
-                var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
+                var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
                 if (type.IsOfAnyClrType(simpleTypes, context.Compilation))
                 {
@@ -73,13 +73,13 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        if (operation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
+        if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
             var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
 
-            foreach (var argument in operation.GetArguments())
+            foreach (var argument in creationOperation.GetArguments())
             {
-                var type = operation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
+                var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
                 if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
                     type.IsOfClrType(typeof(Type), context.Compilation) ||
