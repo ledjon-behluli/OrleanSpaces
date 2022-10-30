@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Xml.Linq;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
@@ -36,9 +37,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
         }
 
         var cacheNode = await GetSpaceTemplateCacheNode(context.Document, context.CancellationToken);
-
-        // SpaceTemplateCache already exists
-        if (cacheNode != null)  
+        if (cacheNode != null)  // SpaceTemplateCache already exists
         {
             SpaceTemplateCachedFieldChecker checker = new(numOfSpaceUnits);
             checker.Visit(cacheNode);
@@ -60,17 +59,47 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
 
                             return Task.FromResult(newRoot == null ? context.Document :
                                 context.Document.WithSyntaxRoot(newRoot));
+
                         }), context.Diagnostics);
 
                 return;
             }
             else
             {
-                // TODO: add appropriate ref field
+                context.RegisterCodeFix(
+                    action: CodeAction.Create(
+                        title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                        equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                        createChangedDocument: _ =>
+                        {
+                            var newNode = MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("SpaceTemplateCache"),
+                                IdentifierName($"Tuple_{numOfSpaceUnits}"));
+
+                            var newRoot = root.ReplaceNode(node, newNode);
+                            if (newRoot != null)
+                            {
+                                var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                                if (namespaceNode != null)
+                                {
+                                    var cacheNode = GenerateSpaceTemplateCache(numOfSpaceUnits);
+                                    newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[]
+                                    {
+                                cacheNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                                    });
+
+                                    return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                                }
+                            }
+
+                            return Task.FromResult(context.Document);
+
+                        }), context.Diagnostics);
             }
         }
 
-        // SpaceTemplateCache doesn't exist - create, and add appropriate ref field
+        // SpaceTemplateCache does not exist - Create & Add appropriate ref field
         context.RegisterCodeFix(
             CodeAction.Create(
                 title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
@@ -99,6 +128,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     }
 
                     return Task.FromResult(context.Document);
+
                 }), context.Diagnostics);
     }
 
@@ -369,6 +399,42 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     }
                 }
             }
+        }
+    }
+
+    private class SpaceTemplateCachedFieldAppender : CSharpSyntaxRewriter
+    {
+        private readonly int numOfSpaceUnits;
+
+        public SpaceTemplateCachedFieldAppender(int numOfSpaceUnits)
+        {
+            this.numOfSpaceUnits = numOfSpaceUnits;
+        }
+
+        public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            var identifierName = node.ChildNodes().OfType<IdentifierNameSyntax>().SingleOrDefault();
+            if (identifierName?.ToString() == "SpaceTemplate")
+            {
+                int count = GetObjectCreationArgumentsCount();
+                //if () // TODO: Continue
+                return null;
+            }
+
+            var qualifiedName = node.ChildNodes().OfType<QualifiedNameSyntax>().SingleOrDefault();
+            if (qualifiedName?.ChildNodes().OfType<IdentifierNameSyntax>().FirstOrDefault().ToString() == "SpaceTemplate")
+            {
+                int count = GetObjectCreationArgumentsCount();
+                return null;
+            }
+
+            return null;
+
+            int GetObjectCreationArgumentsCount() =>
+                node.ChildNodes().OfType<VariableDeclaratorSyntax>().FirstOrDefault()
+                    .ChildNodes().OfType<EqualsValueClauseSyntax>().FirstOrDefault()
+                    .ChildNodes().OfType<BaseObjectCreationExpressionSyntax>().FirstOrDefault()
+                ?.ArgumentList?.Arguments.Count ?? 0;
         }
     }
 }
