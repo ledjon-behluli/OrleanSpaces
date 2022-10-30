@@ -35,37 +35,53 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             return;
         }
 
-        StructDeclarationSyntax? cacheDeclaration = await GetSpaceTemplateCache(context.Document, context.CancellationToken);
-        SpaceTemplateCachedFieldChecker checker = new(numOfSpaceUnits);        
-        CodeAction? action = null;
+        var cacheNode = await GetSpaceTemplateCacheNode(context.Document, context.CancellationToken);
 
-        var newNode = MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("SpaceTemplateCache"),
-                IdentifierName($"Tuple_{numOfSpaceUnits}"));
-
-        checker.Visit(cacheDeclaration);
-
-        if (checker.CachedFieldExists)
+        // SpaceTemplateCache already exists
+        if (cacheNode != null)  
         {
-            action = CodeAction.Create(
-                title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
-                equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
-                createChangedDocument: _ =>
-                {
-                    var newRoot = root.ReplaceNode(node, newNode);
+            SpaceTemplateCachedFieldChecker checker = new(numOfSpaceUnits);
+            checker.Visit(cacheNode);
 
-                    return Task.FromResult(newRoot == null ? context.Document :
-                        context.Document.WithSyntaxRoot(newRoot));
-                });
+            if (checker.CachedFieldExists)   // Appropriate ref field already exists
+            {
+                context.RegisterCodeFix(
+                    action: CodeAction.Create(
+                        title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                        equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                        createChangedDocument: _ =>
+                        {
+                            var newNode = MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("SpaceTemplateCache"),
+                                IdentifierName($"Tuple_{numOfSpaceUnits}"));
+
+                            var newRoot = root.ReplaceNode(node, newNode);
+
+                            return Task.FromResult(newRoot == null ? context.Document :
+                                context.Document.WithSyntaxRoot(newRoot));
+                        }), context.Diagnostics);
+
+                return;
+            }
+            else
+            {
+                // TODO: add appropriate ref field
+            }
         }
-        else
-        {
-            action = CodeAction.Create(
+
+        // SpaceTemplateCache doesn't exist - create, and add appropriate ref field
+        context.RegisterCodeFix(
+            CodeAction.Create(
                 title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
                 equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
+                    var newNode = MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("SpaceTemplateCache"),
+                            IdentifierName($"Tuple_{numOfSpaceUnits}"));
+
                     var newRoot = root.ReplaceNode(node, newNode);
                     if (newRoot != null)
                     {
@@ -83,13 +99,10 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     }
 
                     return Task.FromResult(context.Document);
-                });
-        }
-
-        context.RegisterCodeFix(action, context.Diagnostics);
+                }), context.Diagnostics);
     }
 
-    private static async Task<StructDeclarationSyntax?> GetSpaceTemplateCache(Document document, CancellationToken cancellationToken)
+    private static async Task<StructDeclarationSyntax?> GetSpaceTemplateCacheNode(Document document, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken);
         if (root == null)
