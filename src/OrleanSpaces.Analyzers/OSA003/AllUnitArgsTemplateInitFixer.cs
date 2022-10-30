@@ -3,8 +3,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Drawing;
-using System.Text;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
@@ -37,50 +35,72 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             return;
         }
 
-        CodeAction action = CodeAction.Create(
-            title: $"Create wrapper around a '{numOfSpaceUnits}-tuple' cached reference.",
-            equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
-            createChangedDocument: _ =>
-            {
-                var newNode = MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("SpaceTemplateCache"),
-                    IdentifierName($"Tuple_{numOfSpaceUnits}"));
+        StructDeclarationSyntax? cacheDeclaration = await GetSpaceTemplateCache(context.Document, context.CancellationToken);
+        SpaceTemplateCachedFieldChecker checker = new(numOfSpaceUnits);        
+        CodeAction? action = null;
 
-                var newRoot = root.ReplaceNode(node, newNode);
-                if (newRoot != null)
+        var newNode = MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("SpaceTemplateCache"),
+                IdentifierName($"Tuple_{numOfSpaceUnits}"));
+
+        checker.Visit(cacheDeclaration);
+
+        if (checker.CachedFieldExists)
+        {
+            action = CodeAction.Create(
+                title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                createChangedDocument: _ =>
                 {
-                    var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
-                    if (namespaceNode != null)
+                    var newRoot = root.ReplaceNode(node, newNode);
+
+                    return Task.FromResult(newRoot == null ? context.Document :
+                        context.Document.WithSyntaxRoot(newRoot));
+                });
+        }
+        else
+        {
+            action = CodeAction.Create(
+                title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
+                equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                createChangedDocument: _ =>
+                {
+                    var newRoot = root.ReplaceNode(node, newNode);
+                    if (newRoot != null)
                     {
-                        var cacheNode = GenerateSpaceTemplateCache(numOfSpaceUnits);
-                        newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] 
+                        var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                        if (namespaceNode != null)
                         {
-                            cacheNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
-                        });
+                            var cacheNode = GenerateSpaceTemplateCache(numOfSpaceUnits);
+                            newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[]
+                            {
+                                cacheNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                            });
 
-                        return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                            return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                        }
                     }
-                }
 
-                return Task.FromResult(context.Document);
-            });
+                    return Task.FromResult(context.Document);
+                });
+        }
 
         context.RegisterCodeFix(action, context.Diagnostics);
     }
 
-    private static string GenerateSpaceTemplateUnitArrayArgument(int numOfSpaceUnits)
+    private static async Task<StructDeclarationSyntax?> GetSpaceTemplateCache(Document document, CancellationToken cancellationToken)
     {
-        const string spaceUnit = "";
-
-        var builder = new StringBuilder(spaceUnit.Length * numOfSpaceUnits);
-
-        for (var i = 0; i < numOfSpaceUnits; i++)
+        var root = await document.GetSyntaxRootAsync(cancellationToken);
+        if (root == null)
         {
-            builder.Append(spaceUnit);
+            return null;
         }
 
-        return builder.ToString();
+        var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>()
+            .FirstOrDefault(syntax => syntax.Identifier.ToString() == "SpaceTemplateCache");
+
+        return cacheDeclaration;
     }
 
     private static StructDeclarationSyntax GenerateSpaceTemplateCache(int argCount)
@@ -288,4 +308,54 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 SyntaxKind.SimpleMemberAccessExpression,
                 IdentifierName("SpaceUnit"),
                 IdentifierName("Null")));
+
+    private class SpaceTemplateCachedFieldChecker : CSharpSyntaxWalker
+    {
+        private readonly int numOfSpaceUnits;
+
+        public bool CachedFieldExists { get; private set; }
+
+        public SpaceTemplateCachedFieldChecker(int numOfSpaceUnits)
+        {
+            this.numOfSpaceUnits = numOfSpaceUnits;
+        }
+
+        public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            var identifierName = node.ChildNodes().OfType<IdentifierNameSyntax>().SingleOrDefault();
+            if (identifierName?.ToString() == "SpaceTemplate")
+            {
+                ValidateCachedFieldExistance();
+                return;
+            }
+
+            var qualifiedName = node.ChildNodes().OfType<QualifiedNameSyntax>().SingleOrDefault();
+            if (qualifiedName?.ChildNodes().OfType<IdentifierNameSyntax>().First().ToString() == "SpaceTemplate")
+            {
+                ValidateCachedFieldExistance();
+                return;
+            }
+
+            void ValidateCachedFieldExistance()
+            {
+                var baseObjectCreation = node
+                    .ChildNodes().OfType<VariableDeclaratorSyntax>().First()
+                    .ChildNodes().OfType<EqualsValueClauseSyntax>().First()
+                    .ChildNodes().OfType<BaseObjectCreationExpressionSyntax>().First();
+
+                if (baseObjectCreation != null)
+                {
+                    int? count = baseObjectCreation.ArgumentList?.Arguments.Count;
+                    if (count.HasValue)
+                    {
+                        count = count.Value == 0 ? 1 : count.Value;
+                        if (count == numOfSpaceUnits)
+                        {
+                            CachedFieldExists = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
