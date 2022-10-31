@@ -44,36 +44,6 @@ public readonly struct SpaceTemplateCache
     }
 
     [Fact]
-    public void Should_Fix_0_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
-    {
-        string cacheCode = @"
-public readonly struct SpaceTemplateCache
-{
-#pragma warning disable OSA003
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-#pragma warning restore OSA003
-
-    public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
-}";
-
-        string code =
-@$"namespace MyNamespace; 
-
-SpaceTemplate template = [|new()|];
-
-{cacheCode}";
-
-        string fix =
-@$"namespace MyNamespace; 
-
-SpaceTemplate template = SpaceTemplateCache.Tuple_1;
-
-{cacheCode}";
-
-        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples);
-    }
-
-    [Fact]
     public void Should_Fix_1_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
     {
         string cacheCode = @"
@@ -89,7 +59,7 @@ public readonly struct SpaceTemplateCache
         string code =
 @$"namespace MyNamespace; 
 
-SpaceTemplate template = [|new(SpaceUnit.Null)|];
+SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];
 
 {cacheCode}";
 
