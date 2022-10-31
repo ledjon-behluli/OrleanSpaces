@@ -68,7 +68,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
 
                 if (closestFieldChecker.FieldDeclaration != null)
                 {
-                    var newFieldDeclaration = FieldDeclaration(
+                    var newFieldDeclaration = FieldDeclaration( //TODO: Fix this and also generate property
             VariableDeclaration(
                 IdentifierName("SpaceTemplate"))
             .WithVariables(
@@ -80,12 +80,19 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                             ImplicitObjectCreationExpression()
                             .WithArgumentList(
                                 ArgumentList(
-                                    SingletonSeparatedList<ArgumentSyntax>(
-                                        Argument(
-                                            MemberAccessExpression(
-                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                IdentifierName("SpaceUnit"),
-                                                IdentifierName("Null")))))))))))
+                                    SeparatedList<ArgumentSyntax>(
+                                        new SyntaxNodeOrToken[]{
+                                            Argument(
+                                                MemberAccessExpression(
+                                                    SyntaxKind.SimpleMemberAccessExpression,
+                                                    IdentifierName("SpaceUnit"),
+                                                    IdentifierName("Null"))),
+                                            Token(SyntaxKind.CommaToken),
+                                            Argument(
+                                                MemberAccessExpression(
+                                                    SyntaxKind.SimpleMemberAccessExpression,
+                                                    IdentifierName("SpaceUnit"),
+                                                    IdentifierName("Null")))}))))))))
         .WithModifiers(
             TokenList(
                 new[]{
@@ -94,7 +101,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     Token(SyntaxKind.ReadOnlyKeyword)}))
 .NormalizeWhitespace();
 
-                    
+                    var newCacheNode = cacheNode.InsertNodesAfter(closestFieldChecker.FieldDeclaration, new SyntaxNode[] { newFieldDeclaration });
 
                     context.RegisterCodeFix(
                     action: CodeAction.Create(
@@ -102,12 +109,8 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                         equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
                         createChangedDocument: _ =>
                         {
-                            cacheNode.InsertNodesAfter(closestFieldChecker.FieldDeclaration, new SyntaxNode[]
-                            {
-                                newFieldDeclaration
-                            });
-
-                            var newRoot = root.ReplaceNode(node, newNode);
+                            var newRoot = root.ReplaceNode(cacheNode, newCacheNode);
+                            newRoot = newRoot.ReplaceNode(node, newNode);
 
                             return Task.FromResult(newRoot == null ? context.Document :
                                 context.Document.WithSyntaxRoot(newRoot));
