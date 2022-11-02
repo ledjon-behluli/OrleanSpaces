@@ -46,7 +46,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
         var cacheNode = await GetSpaceTemplateCacheNode(context.Document, context.CancellationToken);
         if (cacheNode != null)  // SpaceTemplateCache already exists
         {
-            SpaceTemplateCachedFieldVisitor visitor = new();
+            SpaceTemplateCacheFieldVisitor visitor = new();
             visitor.Visit(cacheNode);
 
             if (visitor.TuplesPresent.Contains(numOfSpaceUnits))   // Appropriate ref field already exists
@@ -424,7 +424,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 IdentifierName("SpaceUnit"),
                 IdentifierName("Null")));
 
-    private class SpaceTemplateCachedFieldVisitor : CSharpSyntaxWalker
+    private class SpaceTemplateCacheFieldVisitor : CSharpSyntaxWalker
     {
         /// <summary>
         /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(SpaceUnit.Null, ..., SpaceUnit.Null)' are present.
