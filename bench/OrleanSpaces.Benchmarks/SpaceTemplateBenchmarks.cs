@@ -32,14 +32,14 @@ public class SpaceTemplateBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = SpaceTemplateCache.Singlet;
-            _ = SpaceTemplateCache.Pair;
-            _ = SpaceTemplateCache.Triple;
-            _ = SpaceTemplateCache.Quadruple;
-            _ = SpaceTemplateCache.Quintuple;
-            _ = SpaceTemplateCache.Sextuple;
-            _ = SpaceTemplateCache.Septuple;
-            _ = SpaceTemplateCache.Octuple;
+            _ = SpaceTemplateCache.Tuple_1;
+            _ = SpaceTemplateCache.Tuple_2;
+            _ = SpaceTemplateCache.Tuple_3;
+            _ = SpaceTemplateCache.Tuple_4;
+            _ = SpaceTemplateCache.Tuple_5;
+            _ = SpaceTemplateCache.Tuple_6;
+            _ = SpaceTemplateCache.Tuple_7;
+            _ = SpaceTemplateCache.Tuple_8;
         }
     }
 
@@ -137,21 +137,21 @@ public class SpaceTemplateBenchmarks
 
 public readonly struct SpaceTemplateCache
 {
-    private static readonly SpaceTemplate singlet = new(SpaceUnit.Null);
-    private static readonly SpaceTemplate pair = new(SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate triple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate quadruple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate quintuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate sextuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate septuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate octuple = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_4 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_5 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_7 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_8 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
 
-    public static ref readonly SpaceTemplate Singlet => ref singlet;
-    public static ref readonly SpaceTemplate Pair => ref pair;
-    public static ref readonly SpaceTemplate Triple => ref triple;
-    public static ref readonly SpaceTemplate Quadruple => ref quadruple;
-    public static ref readonly SpaceTemplate Quintuple => ref quintuple;
-    public static ref readonly SpaceTemplate Sextuple => ref sextuple;
-    public static ref readonly SpaceTemplate Septuple => ref septuple;
-    public static ref readonly SpaceTemplate Octuple => ref octuple;
+    public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
+    public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
+    public static ref readonly SpaceTemplate Tuple_3 => ref tuple_3;
+    public static ref readonly SpaceTemplate Tuple_4 => ref tuple_4;
+    public static ref readonly SpaceTemplate Tuple_5 => ref tuple_5;
+    public static ref readonly SpaceTemplate Tuple_6 => ref tuple_6;
+    public static ref readonly SpaceTemplate Tuple_7 => ref tuple_7;
+    public static ref readonly SpaceTemplate Tuple_8 => ref tuple_8;
 }

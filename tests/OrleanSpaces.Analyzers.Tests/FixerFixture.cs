@@ -40,6 +40,8 @@ public class FixerFixture : CodeFixTestFixture
                 builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
             }
 
+            builder.AppendLine();
+
             StringBuilder codeBuilder = new();
             StringBuilder fixedCodeBuilder = new();
 

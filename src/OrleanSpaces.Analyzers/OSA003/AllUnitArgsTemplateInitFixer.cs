@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
 
@@ -35,21 +36,23 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             return;
         }
 
+        //TODO: Test without namespace
+
         var newNode = MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("SpaceTemplateCache"),
-                IdentifierName($"Tuple_{numOfSpaceUnits}"));
+            SyntaxKind.SimpleMemberAccessExpression,
+            IdentifierName("SpaceTemplateCache"),
+            IdentifierName($"Tuple_{numOfSpaceUnits}"));
 
         var cacheNode = await GetSpaceTemplateCacheNode(context.Document, context.CancellationToken);
         if (cacheNode != null)  // SpaceTemplateCache already exists
         {
-            SpaceTemplateCachedFieldChecker fieldChecker = new(numOfSpaceUnits);
-            fieldChecker.Visit(cacheNode);
+            SpaceTemplateCachedFieldVisitor visitor = new();
+            visitor.Visit(cacheNode);
 
-            if (fieldChecker.FieldExists)   // Appropriate ref field already exists
+            if (visitor.TuplesPresent.Contains(numOfSpaceUnits))   // Appropriate ref field already exists
             {
                 context.RegisterCodeFix(
-                    action: CodeAction.Create(
+                    CodeAction.Create(
                         title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
                         equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
                         createChangedDocument: _ =>
@@ -63,65 +66,28 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             }
             else   // Add appropriate ref field
             {
-                ClosestSpaceTemplateCachedFieldChecker closestFieldChecker = new(numOfSpaceUnits);
-                closestFieldChecker.Visit(cacheNode);
+                visitor.TuplesPresent.Add(numOfSpaceUnits);     // Add 'numOfSpaceUnits' as its not present. 
+                var newCacheNode = CreateSpaceTemplateCache(visitor.TuplesPresent.ToArray());
 
-                if (closestFieldChecker.FieldDeclaration != null)
-                {
-                    var newFieldDeclaration = FieldDeclaration( //TODO: Fix this and also generate property
-            VariableDeclaration(
-                IdentifierName("SpaceTemplate"))
-            .WithVariables(
-                SingletonSeparatedList<VariableDeclaratorSyntax>(
-                    VariableDeclarator(
-                        Identifier($"tuple_{numOfSpaceUnits}"))
-                    .WithInitializer(
-                        EqualsValueClause(
-                            ImplicitObjectCreationExpression()
-                            .WithArgumentList(
-                                ArgumentList(
-                                    SeparatedList<ArgumentSyntax>(
-                                        new SyntaxNodeOrToken[]{
-                                            Argument(
-                                                MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    IdentifierName("SpaceUnit"),
-                                                    IdentifierName("Null"))),
-                                            Token(SyntaxKind.CommaToken),
-                                            Argument(
-                                                MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    IdentifierName("SpaceUnit"),
-                                                    IdentifierName("Null")))}))))))))
-        .WithModifiers(
-            TokenList(
-                new[]{
-                    Token(SyntaxKind.PrivateKeyword),
-                    Token(SyntaxKind.StaticKeyword),
-                    Token(SyntaxKind.ReadOnlyKeyword)}))
-.NormalizeWhitespace();
-
-                    var newCacheNode = cacheNode.InsertNodesAfter(closestFieldChecker.FieldDeclaration, new SyntaxNode[] { newFieldDeclaration });
-
-                    context.RegisterCodeFix(
-                    action: CodeAction.Create(
+                context.RegisterCodeFix(
+                    CodeAction.Create(
                         title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
                         equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
-                        createChangedDocument: _ =>
+                        createChangedDocument: async ct =>
                         {
-                            var newRoot = root.ReplaceNode(cacheNode, newCacheNode);
-                            newRoot = newRoot.ReplaceNode(node, newNode);
+                            var documentEditor = await DocumentEditor.CreateAsync(context.Document, ct);
 
-                            return Task.FromResult(newRoot == null ? context.Document :
-                                context.Document.WithSyntaxRoot(newRoot));
+                            documentEditor.ReplaceNode(cacheNode, newCacheNode);
+                            documentEditor.ReplaceNode(node, newNode);
+
+                            var newDocument = documentEditor.GetChangedDocument();
+                            return newDocument;
 
                         }), context.Diagnostics);
-                }
             }
         }
         else   // SpaceTemplateCache does not exist - Create & Add appropriate ref field
         {
-            
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
@@ -134,11 +100,8 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                             var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                             if (namespaceNode != null)
                             {
-                                var cacheNode = CreateSpaceTemplateCache(numOfSpaceUnits);
-                                newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[]
-                                {
-                                cacheNode.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
-                                });
+                                var cacheNode = CreateSpaceTemplateCache(new int[] { numOfSpaceUnits });
+                                newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { cacheNode });
 
                                 return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
                             }
@@ -164,30 +127,259 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
         return cacheDeclaration;
     }
 
-    private static StructDeclarationSyntax CreateSpaceTemplateCache(int argCount)
+    private static StructDeclarationSyntax CreateSpaceTemplateCache(int[] args)
     {
-        SeparatedSyntaxList<ArgumentSyntax> syntaxList;
+        args = args.OrderBy(x => x).ToArray();
+        string diagnosticId = AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id;
 
-        if (argCount == 1)
-        {
-            syntaxList = SingletonSeparatedList(CreateSpaceUnitArgumentSyntax());
-        }
-        else
-        {
-            int syntaxNodeOrTokenCount = 2 * argCount - 1;
-            var syntaxNodeOrTokens = new SyntaxNodeOrToken[syntaxNodeOrTokenCount];
+        List<FieldDeclarationSyntax> fieldDeclarations = new();
+        List<PropertyDeclarationSyntax> propertyDeclarations = new();
 
-            for (int i = 0; i < syntaxNodeOrTokenCount; i++)
+        for (int i = 0; i < args.Length; i++)
+        {
+            SeparatedSyntaxList<ArgumentSyntax> syntaxList;
+
+            if (args[i] == 1)
             {
-                syntaxNodeOrTokens[i] = i % 2 == 0 ? CreateSpaceUnitArgumentSyntax() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
+                syntaxList = SingletonSeparatedList(CreateSpaceUnitArgumentSyntax());
+            }
+            else
+            {
+                int syntaxNodeOrTokenCount = 2 * args[i] - 1;
+                var syntaxNodeOrTokens = new SyntaxNodeOrToken[syntaxNodeOrTokenCount];
+
+                for (int j = 0; j < syntaxNodeOrTokenCount; j++)
+                {
+                    syntaxNodeOrTokens[j] = j % 2 == 0 ? CreateSpaceUnitArgumentSyntax() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
+                }
+
+                syntaxList = SeparatedList<ArgumentSyntax>(syntaxNodeOrTokens);
             }
 
-            syntaxList = SeparatedList<ArgumentSyntax>(syntaxNodeOrTokens);
+            string fieldName = $"tuple_{args[i]}";
+            string propertyName = $"Tuple_{args[i]}";
+
+            var fieldDeclaration = FieldDeclaration(
+                VariableDeclaration(
+                    IdentifierName(
+                        Identifier(
+                            TriviaList(),
+                            "SpaceTemplate",
+                            TriviaList(
+                                Space))))
+                .WithVariables(
+                    SingletonSeparatedList(
+                        VariableDeclarator(
+                            Identifier(
+                                TriviaList(),
+                                fieldName,
+                                TriviaList(
+                                    Space)))
+                        .WithInitializer(
+                            EqualsValueClause(
+                                ImplicitObjectCreationExpression()
+                                .WithArgumentList(
+                                    ArgumentList(syntaxList)))
+                            .WithEqualsToken(
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.EqualsToken,
+                                    TriviaList(
+                                        Space)))))));
+
+            var propertyDeclaration = PropertyDeclaration(
+                RefType(
+                    IdentifierName(
+                        Identifier(
+                            TriviaList(),
+                            "SpaceTemplate",
+                            TriviaList(
+                                Space))))
+                .WithRefKeyword(
+                    Token(
+                        TriviaList(),
+                        SyntaxKind.RefKeyword,
+                        TriviaList(
+                            Space)))
+                .WithReadOnlyKeyword(
+                    Token(
+                        TriviaList(),
+                        SyntaxKind.ReadOnlyKeyword,
+                        TriviaList(
+                            Space))),
+                Identifier(
+                    TriviaList(),
+                    propertyName,
+                    TriviaList(
+                        Space)));
+
+            if (i == 0)      // first field declaration
+            {
+                fieldDeclaration = fieldDeclaration
+                    .WithModifiers(
+                        TokenList(
+                            new[]{
+                            Token(
+                                TriviaList(
+                                    Trivia(
+                                        PragmaWarningDirectiveTrivia(
+                                            Token(SyntaxKind.DisableKeyword),
+                                            true)
+                                        .WithErrorCodes(
+                                            SingletonSeparatedList<ExpressionSyntax>(
+                                                IdentifierName(diagnosticId)))))
+                                .NormalizeWhitespace(),
+                                SyntaxKind.None,
+                                TriviaList()),
+                            Token(
+                                TriviaList(
+                                    Whitespace("    ")),
+                                SyntaxKind.PrivateKeyword,
+                                TriviaList(
+                                    Space)),
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.StaticKeyword,
+                                TriviaList(
+                                    Space)),
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.ReadOnlyKeyword,
+                                TriviaList(
+                                    Space))}))
+                    .WithSemicolonToken(
+                        Token(
+                            TriviaList(),
+                            SyntaxKind.SemicolonToken,
+                            TriviaList(
+                                CarriageReturnLineFeed)));
+
+                propertyDeclaration = propertyDeclaration
+                    .WithModifiers(
+                        TokenList(
+                            new[]{
+                                Token(
+                                    TriviaList(
+                                        Trivia(
+                                            PragmaWarningDirectiveTrivia(
+                                                Token(SyntaxKind.RestoreKeyword),
+                                                true)
+                                            .WithErrorCodes(
+                                                SingletonSeparatedList<ExpressionSyntax>(
+                                                    IdentifierName(diagnosticId)))))
+                                    .NormalizeWhitespace(),
+                                    SyntaxKind.None,
+                                    TriviaList(
+                                        CarriageReturnLineFeed)),
+                                Token(
+                                    TriviaList(
+                                        Whitespace("    ")),
+                                    SyntaxKind.PublicKeyword,
+                                    TriviaList(
+                                        Space)),
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.StaticKeyword,
+                                    TriviaList(
+                                        Space))}))
+                    .WithExpressionBody(
+                        ArrowExpressionClause(
+                            RefExpression(
+                                IdentifierName(fieldName))
+                            .WithRefKeyword(
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.RefKeyword,
+                                    TriviaList(
+                                        Space))))
+                        .WithArrowToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.EqualsGreaterThanToken,
+                                TriviaList(
+                                    Space))))
+                    .WithSemicolonToken(
+                        Token(
+                            TriviaList(),
+                            SyntaxKind.SemicolonToken,
+                            TriviaList(
+                                CarriageReturnLineFeed)));
+            }
+            else
+            {
+                fieldDeclaration = fieldDeclaration
+                    .WithModifiers(
+                        TokenList(
+                            new[]{
+                            Token(
+                                TriviaList(
+                                    Whitespace("    ")),
+                                SyntaxKind.PrivateKeyword,
+                                TriviaList(
+                                    Space)),
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.StaticKeyword,
+                                TriviaList(
+                                    Space)),
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.ReadOnlyKeyword,
+                                TriviaList(
+                                    Space))}))
+                    .WithSemicolonToken(
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.SemicolonToken,
+                                    TriviaList(
+                                        CarriageReturnLineFeed)));
+
+                propertyDeclaration = propertyDeclaration
+                    .WithModifiers(
+                        TokenList(
+                            new[]{
+                                Token(
+                                    TriviaList(
+                                        Whitespace("    ")),
+                                    SyntaxKind.PublicKeyword,
+                                    TriviaList(
+                                        Space)),
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.StaticKeyword,
+                                    TriviaList(
+                                        Space))}))
+                    .WithExpressionBody(
+                        ArrowExpressionClause(
+                            RefExpression(
+                                IdentifierName(fieldName))
+                            .WithRefKeyword(
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.RefKeyword,
+                                    TriviaList(
+                                        Space))))
+                        .WithArrowToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.EqualsGreaterThanToken,
+                                TriviaList(
+                                    Space))))
+                    .WithSemicolonToken(
+                        Token(
+                            TriviaList(),
+                            SyntaxKind.SemicolonToken,
+                            TriviaList(
+                                CarriageReturnLineFeed)));
+            }
+
+            fieldDeclarations.Add(fieldDeclaration);
+            propertyDeclarations.Add(propertyDeclaration);
         }
 
-        string fieldName = $"tuple_{argCount}";
-        string propertyName = $"Tuple_{argCount}";
-        string diagnosticId = AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id;
+        IEnumerable<MemberDeclarationSyntax> memberDeclarations = fieldDeclarations
+            .Cast<MemberDeclarationSyntax>()
+            .Concat(propertyDeclarations.Cast<MemberDeclarationSyntax>());
 
         return StructDeclaration(
                     Identifier(
@@ -221,146 +413,8 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                         TriviaList(
                             CarriageReturnLineFeed)))
                 .WithMembers(
-                    List(
-                        new MemberDeclarationSyntax[]{
-                            FieldDeclaration(
-                                VariableDeclaration(
-                                    IdentifierName(
-                                        Identifier(
-                                            TriviaList(),
-                                            "SpaceTemplate",
-                                            TriviaList(
-                                                Space))))
-                                .WithVariables(
-                                    SingletonSeparatedList(
-                                        VariableDeclarator(
-                                            Identifier(
-                                                TriviaList(),
-                                                fieldName,
-                                                TriviaList(
-                                                    Space)))
-                                        .WithInitializer(
-                                            EqualsValueClause(
-                                                ImplicitObjectCreationExpression()
-                                                .WithArgumentList(
-                                                    ArgumentList(syntaxList)))
-                                            .WithEqualsToken(
-                                                Token(
-                                                    TriviaList(),
-                                                    SyntaxKind.EqualsToken,
-                                                    TriviaList(
-                                                        Space)))))))
-                            .WithModifiers(
-                                TokenList(
-                                    new []{
-                                        Token(
-                                            TriviaList(
-                                                Trivia(
-                                                    PragmaWarningDirectiveTrivia(
-                                                        Token(SyntaxKind.DisableKeyword),
-                                                        true)
-                                                    .WithErrorCodes(
-                                                        SingletonSeparatedList<ExpressionSyntax>(
-                                                            IdentifierName(diagnosticId)))))
-                                            .NormalizeWhitespace(),
-                                            SyntaxKind.None,
-                                            TriviaList()),
-                                        Token(
-                                            TriviaList(
-                                                Whitespace("    ")),
-                                            SyntaxKind.PrivateKeyword,
-                                            TriviaList(
-                                                Space)),
-                                        Token(
-                                            TriviaList(),
-                                            SyntaxKind.StaticKeyword,
-                                            TriviaList(
-                                                Space)),
-                                        Token(
-                                            TriviaList(),
-                                            SyntaxKind.ReadOnlyKeyword,
-                                            TriviaList(
-                                                Space))}))
-                            .WithSemicolonToken(
-                                Token(
-                                    TriviaList(),
-                                    SyntaxKind.SemicolonToken,
-                                    TriviaList(
-                                        CarriageReturnLineFeed))),
-                            PropertyDeclaration(
-                                RefType(
-                                    IdentifierName(
-                                        Identifier(
-                                            TriviaList(),
-                                            "SpaceTemplate",
-                                            TriviaList(
-                                                Space))))
-                                .WithRefKeyword(
-                                    Token(
-                                        TriviaList(),
-                                        SyntaxKind.RefKeyword,
-                                        TriviaList(
-                                            Space)))
-                                .WithReadOnlyKeyword(
-                                    Token(
-                                        TriviaList(),
-                                        SyntaxKind.ReadOnlyKeyword,
-                                        TriviaList(
-                                            Space))),
-                                Identifier(
-                                    TriviaList(),
-                                    propertyName,
-                                    TriviaList(
-                                        Space)))
-                            .WithModifiers(
-                                TokenList(
-                                    new []{
-                                        Token(
-                                            TriviaList(
-                                                Trivia(
-                                                    PragmaWarningDirectiveTrivia(
-                                                        Token(SyntaxKind.RestoreKeyword),
-                                                        true)
-                                                    .WithErrorCodes(
-                                                        SingletonSeparatedList<ExpressionSyntax>(
-                                                            IdentifierName(diagnosticId)))))
-                                            .NormalizeWhitespace(),
-                                            SyntaxKind.None,
-                                            TriviaList(
-                                                CarriageReturnLineFeed)),
-                                        Token(
-                                            TriviaList(
-                                                Whitespace("    ")),
-                                            SyntaxKind.PublicKeyword,
-                                            TriviaList(
-                                                Space)),
-                                        Token(
-                                            TriviaList(),
-                                            SyntaxKind.StaticKeyword,
-                                            TriviaList(
-                                                Space))}))
-                            .WithExpressionBody(
-                                ArrowExpressionClause(
-                                    RefExpression(
-                                        IdentifierName(fieldName))
-                                    .WithRefKeyword(
-                                        Token(
-                                            TriviaList(),
-                                            SyntaxKind.RefKeyword,
-                                            TriviaList(
-                                                Space))))
-                                .WithArrowToken(
-                                    Token(
-                                        TriviaList(),
-                                        SyntaxKind.EqualsGreaterThanToken,
-                                        TriviaList(
-                                            Space))))
-                            .WithSemicolonToken(
-                                Token(
-                                    TriviaList(),
-                                    SyntaxKind.SemicolonToken,
-                                    TriviaList(
-                                        CarriageReturnLineFeed)))}));
+                    List(memberDeclarations))
+                .WithLeadingTrivia(ElasticCarriageReturnLineFeed);
     }
 
     private static ArgumentSyntax CreateSpaceUnitArgumentSyntax() =>
@@ -370,16 +424,14 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 IdentifierName("SpaceUnit"),
                 IdentifierName("Null")));
 
-    private class SpaceTemplateCachedFieldChecker : CSharpSyntaxWalker
+    private class SpaceTemplateCachedFieldVisitor : CSharpSyntaxWalker
     {
-        private readonly int numOfSpaceUnits;
+        /// <summary>
+        /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(SpaceUnit.Null, ..., SpaceUnit.Null)' are present.
+        /// </summary>
+        public List<int> TuplesPresent { get; private set; } = new();
 
-        public bool FieldExists { get; private set; }
-
-        public SpaceTemplateCachedFieldChecker(int numOfSpaceUnits)
-        {
-            this.numOfSpaceUnits = numOfSpaceUnits;
-        }
+        public override string ToString() => string.Join(", ", TuplesPresent);
 
         public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
@@ -410,62 +462,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                     if (count.HasValue)
                     {
                         count = count.Value == 0 ? 1 : count.Value;
-                        if (count == numOfSpaceUnits)
-                        {
-                            FieldExists = true;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private class ClosestSpaceTemplateCachedFieldChecker : CSharpSyntaxWalker
-    {
-        private readonly int numOfSpaceUnits;
-
-        public FieldDeclarationSyntax? FieldDeclaration { get; private set; }
-
-        public ClosestSpaceTemplateCachedFieldChecker(int numOfSpaceUnits)
-        {
-            this.numOfSpaceUnits = numOfSpaceUnits;
-        }
-
-        public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
-        {
-            var identifierName = node.ChildNodes().OfType<IdentifierNameSyntax>().SingleOrDefault();
-            if (identifierName?.ToString() == "SpaceTemplate")
-            {
-                ValidateClosestLowerBoundedFieldDeclaration();
-                return;
-            }
-
-            var qualifiedName = node.ChildNodes().OfType<QualifiedNameSyntax>().SingleOrDefault();
-            if (qualifiedName?.ChildNodes().OfType<IdentifierNameSyntax>().FirstOrDefault().ToString() == "SpaceTemplate")
-            {
-                ValidateClosestLowerBoundedFieldDeclaration();
-                return;
-            }
-
-            void ValidateClosestLowerBoundedFieldDeclaration()
-            {
-                var baseObjectCreation = node
-                    .ChildNodes().OfType<VariableDeclaratorSyntax>().FirstOrDefault()
-                    .ChildNodes().OfType<EqualsValueClauseSyntax>().FirstOrDefault()
-                    .ChildNodes().OfType<BaseObjectCreationExpressionSyntax>().FirstOrDefault();
-
-                if (baseObjectCreation != null)
-                {
-                    int? count = baseObjectCreation.ArgumentList?.Arguments.Count;
-                    if (count.HasValue)
-                    {
-                        if (count > 0 && count + 1 == numOfSpaceUnits)
-                        {
-                            if (node.Parent is FieldDeclarationSyntax fieldDeclaration)
-                            {
-                                FieldDeclaration = fieldDeclaration;
-                            }
-                        }
+                        TuplesPresent.Add((int)count);
                     }
                 }
             }
