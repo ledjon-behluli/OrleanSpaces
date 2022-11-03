@@ -2,12 +2,12 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class TupleRefOverInitFixerTests : FixerFixture
+public class SpaceUnitRefOverInitFixerTests : FixerFixture
 {
-    public TupleRefOverInitFixerTests() : base(
-        new TupleRefOverInitAnalyzer(),
-        new TupleRefOverInitFixer(),
-        TupleRefOverInitAnalyzer.Diagnostic.Id)
+    public SpaceUnitRefOverInitFixerTests() : base(
+        new SpaceUnitRefOverInitAnalyzer(),
+        new SpaceUnitRefOverInitFixer(),
+        SpaceUnitRefOverInitAnalyzer.Diagnostic.Id)
     {
 
     }
@@ -31,4 +31,14 @@ public class TupleRefOverInitFixerTests : FixerFixture
     [InlineData("SpaceTuple tuple = [|default|];")]
     public void Should_Fix_SpaceTuple(string code) =>
         TestCodeFix(code, "SpaceTuple tuple = SpaceTuple.Null;", Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    [InlineData(1, "SpaceTemplate template = new([|new SpaceUnit()|]);")]
+    [InlineData(2, "SpaceTemplate template = new([|new SpaceUnit(), SpaceUnit.Null|]);")]
+    [InlineData(3, "SpaceTemplate template = new([|new SpaceUnit(), SpaceUnit.Null, SpaceUnit.Null|]);")]
+    public void Should_Fix_SpaceUnit_As_Argument_Of_SpaceTemplate(int numOfSpaceUnits, string code)
+    {
+        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
+        TestCodeFix(code, $"SpaceTemplate template = new({unitArrayArgument});", Namespace.OrleanSpaces_Tuples);
+    }
 }

@@ -6,10 +6,10 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
-/// Warns that some of the arguments passed are not supported types.
+/// Warns when arguments passed to a 'SpaceTuple' or 'SpaceTemplate', are not supported field types.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
+internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA002",
@@ -17,7 +17,8 @@ internal sealed class NotSupportedTupleFieldTypeAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         title: "The supplied argument type is not supported.",
-        messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.");
+        messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
 
     private static readonly List<Type> simpleTypes = new()
     {

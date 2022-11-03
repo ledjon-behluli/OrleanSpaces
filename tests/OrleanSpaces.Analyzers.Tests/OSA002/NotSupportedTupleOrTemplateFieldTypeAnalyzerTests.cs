@@ -2,11 +2,11 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA002;
 
-public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
+public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
 {
-    public NotSupportedTupleFieldTypeAnalyzerTests() : base(
-        new NotSupportedTupleFieldTypeAnalyzer(),
-        NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id)
+    public NotSupportedTupleOrTemplateFieldTypeAnalyzerTests() : base(
+        new NotSupportedTupleOrTemplateFieldTypeAnalyzer(),
+        NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id)
     {
 
     }
@@ -14,12 +14,12 @@ public class NotSupportedTupleFieldTypeAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA002", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Id);
-        Assert.Equal(Categories.Usage, NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Warning, NotSupportedTupleFieldTypeAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("The supplied argument type is not supported.", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.Title);
-        Assert.Equal("The supplied argument '{0}' is not a supported '{1}' type.", NotSupportedTupleFieldTypeAnalyzer.Diagnostic.MessageFormat);
-        Assert.True(NotSupportedTupleFieldTypeAnalyzer.Diagnostic.IsEnabledByDefault);
+        Assert.Equal("OSA002", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id);
+        Assert.Equal(Categories.Usage, NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Warning, NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.DefaultSeverity);
+        Assert.Equal("The supplied argument type is not supported.", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Title);
+        Assert.Equal("The supplied argument '{0}' is not a supported '{1}' type.", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.MessageFormat);
+        Assert.True(NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.IsEnabledByDefault);
     }
 
     [Theory]

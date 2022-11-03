@@ -92,10 +92,14 @@ internal static class SyntaxExtensions
     {
         string @namespace = string.Empty;
         SyntaxNode? namespaceNode = null;
-
+      
         if (node is CompilationUnitSyntax compilation)
         {
-            var potentialNamespace = node.ChildNodes().FirstOrDefault(x => x is NamespaceDeclarationSyntax || x is FileScopedNamespaceDeclarationSyntax);
+            var potentialNamespace = node.ChildNodes().FirstOrDefault(x => 
+                x is NamespaceDeclarationSyntax || 
+                x is FileScopedNamespaceDeclarationSyntax ||
+                x is GlobalStatementSyntax);
+
             if (potentialNamespace != null)
             {
                 TrySetResult(potentialNamespace, ref @namespace, ref namespaceNode);
@@ -137,6 +141,14 @@ internal static class SyntaxExtensions
                 namespaceParent = parent;
                 namespaceNode = parent;
             }
+
+            return;
+        }
+       
+        if (potentialNamespace is GlobalStatementSyntax globalStatement)
+        {
+            @namespace = string.Empty;
+            namespaceNode = globalStatement;
         }
     }
 }

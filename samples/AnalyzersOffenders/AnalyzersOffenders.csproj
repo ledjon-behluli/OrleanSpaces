@@ -13,4 +13,12 @@
     <ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Code Repositories\OrleanSpaces\OrleanSpaces\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Code Repositories\OrleanSpaces\OrleanSpaces\.editorconfig" />
+  </ItemGroup>
+
 </Project>

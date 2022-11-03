@@ -1,16 +1,14 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Suggests to create reference SpaceTemplate over creation of all SpaceUnit argumentType arguments.
+/// Informs to create or use a 'SpaceTemplateCache' over initialization of 'new SpaceTemplate(...)', where all arguments are 'SpaceUnit's.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class AllUnitArgsTemplateInitAnalyzer : DiagnosticAnalyzer
+internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA003",
@@ -18,7 +16,8 @@ internal sealed class AllUnitArgsTemplateInitAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.",
-        messageFormat: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.");
+        messageFormat: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.",
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 

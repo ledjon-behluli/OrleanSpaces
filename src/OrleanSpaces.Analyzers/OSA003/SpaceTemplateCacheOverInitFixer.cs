@@ -8,12 +8,12 @@ using System.Composition;
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Code fix provider for <see cref="AllUnitArgsTemplateInitAnalyzer"/>.
+/// Code fix provider for <see cref="SpaceTemplateCacheOverInitAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AllUnitArgsTemplateInitFixer)), Shared]
-internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpaceTemplateCacheOverInitFixer)), Shared]
+internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -36,8 +36,6 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             return;
         }
 
-        //TODO: Test without namespace
-
         var newNode = MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
             IdentifierName("SpaceTemplateCache"),
@@ -54,7 +52,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
-                        equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                        equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                         createChangedDocument: _ =>
                         {
                             var newRoot = root.ReplaceNode(node, newNode);
@@ -72,7 +70,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
-                        equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                        equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                         createChangedDocument: async ct =>
                         {
                             var documentEditor = await DocumentEditor.CreateAsync(context.Document, ct);
@@ -91,7 +89,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
-                    equivalenceKey: AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id,
+                    equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                     createChangedDocument: _ =>
                     {
                         var newRoot = root.ReplaceNode(node, newNode);
@@ -130,7 +128,7 @@ internal sealed class AllUnitArgsTemplateInitFixer : CodeFixProvider
     private static StructDeclarationSyntax CreateSpaceTemplateCache(int[] args)
     {
         args = args.OrderBy(x => x).ToArray();
-        string diagnosticId = AllUnitArgsTemplateInitAnalyzer.Diagnostic.Id;
+        string diagnosticId = SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id;
 
         List<FieldDeclarationSyntax> fieldDeclarations = new();
         List<PropertyDeclarationSyntax> propertyDeclarations = new();

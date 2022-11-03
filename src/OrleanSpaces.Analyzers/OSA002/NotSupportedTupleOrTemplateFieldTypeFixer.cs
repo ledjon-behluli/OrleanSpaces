@@ -3,15 +3,15 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using System.Collections.Immutable;
 using System.Composition;
 
-namespace OrleanSpaces.Analyzers.OSA001;
+namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
-/// Code fix provider for <see cref="TupleRefOverInitAnalyzer"/>.
+/// Code fix provider for <see cref="NotSupportedTupleOrTemplateFieldTypeAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TupleRefOverInitFixer)), Shared]
-internal sealed class TupleRefOverInitFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NotSupportedTupleOrTemplateFieldTypeFixer)), Shared]
+internal sealed class NotSupportedTupleOrTemplateFieldTypeFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(TupleRefOverInitAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -28,23 +28,12 @@ internal sealed class TupleRefOverInitFixer : CodeFixProvider
             return;
         }
 
-        string? typeName = context.Diagnostics.First().Properties.GetValueOrDefault("typeName");
-        if (typeName == null)
-        {
-            return;
-        }
-
         CodeAction action = CodeAction.Create(
-            title: $"Use '{typeName}.Null'",
-            equivalenceKey: TupleRefOverInitAnalyzer.Diagnostic.Id,
+            title: "Remove argument.",
+            equivalenceKey: NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
-                var newNode = MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(typeName),
-                    IdentifierName("Null"));
-
-                var newRoot = root.ReplaceNode(node, newNode);
+                var newRoot = root.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
                 return Task.FromResult(newRoot == null ? context.Document :
                     context.Document.WithSyntaxRoot(newRoot));

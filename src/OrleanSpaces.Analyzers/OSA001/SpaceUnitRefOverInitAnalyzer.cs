@@ -5,10 +5,10 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Suggests to use existing reference value over initialization of a new one.
+/// Informs to use the existing 'SpaceUnit.Null' reference, over initialization of 'new SpaceUnit()'.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
+internal sealed class SpaceUnitRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
@@ -16,7 +16,8 @@ internal sealed class TupleRefOverInitAnalyzer : DiagnosticAnalyzer
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
-        messageFormat: "Avoid instantiation of '{0}' by default constructor or expression.");
+        messageFormat: "Avoid instantiation of '{0}' by default constructor or expression.",
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
