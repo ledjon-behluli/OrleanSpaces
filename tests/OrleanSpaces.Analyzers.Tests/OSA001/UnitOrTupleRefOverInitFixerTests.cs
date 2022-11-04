@@ -2,12 +2,12 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA001;
 
-public class SpaceUnitRefOverInitFixerTests : FixerFixture
+public class UnitOrTupleRefOverInitFixerTests : FixerFixture
 {
-    public SpaceUnitRefOverInitFixerTests() : base(
-        new SpaceUnitRefOverInitAnalyzer(),
-        new SpaceUnitRefOverInitFixer(),
-        SpaceUnitRefOverInitAnalyzer.Diagnostic.Id)
+    public UnitOrTupleRefOverInitFixerTests() : base(
+        new UnitOrTupleRefOverInitAnalyzer(),
+        new UnitOrTupleRefOverInitFixer(),
+        UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id)
     {
 
     }

@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Informs to create or use a 'SpaceTemplateCache' over initialization of 'new SpaceTemplate(...)', where all arguments are 'SpaceUnit's.
+/// Informs to create or use a 'SpaceTemplateCache' over initialization via 'new(...)', when all arguments are 'SpaceUnit's.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer

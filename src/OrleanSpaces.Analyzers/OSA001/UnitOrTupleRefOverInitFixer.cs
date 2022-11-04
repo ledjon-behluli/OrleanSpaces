@@ -7,12 +7,12 @@ using System.Composition;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Code fix provider for <see cref="SpaceUnitRefOverInitAnalyzer"/>.
+/// Code fix provider for <see cref="UnitOrTupleRefOverInitAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpaceUnitRefOverInitFixer)), Shared]
-internal sealed class SpaceUnitRefOverInitFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UnitOrTupleRefOverInitFixer)), Shared]
+internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SpaceUnitRefOverInitAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -37,7 +37,7 @@ internal sealed class SpaceUnitRefOverInitFixer : CodeFixProvider
 
         CodeAction action = CodeAction.Create(
             title: $"Use '{typeName}.Null'",
-            equivalenceKey: SpaceUnitRefOverInitAnalyzer.Diagnostic.Id,
+            equivalenceKey: UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
                 SyntaxNode? newRoot = null;

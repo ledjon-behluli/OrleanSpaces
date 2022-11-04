@@ -5,10 +5,10 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Informs to use the existing 'SpaceUnit.Null' reference, over initialization of 'new SpaceUnit()'.
+/// Informs to use the existing 'SpaceUnit.Null' or 'SpaceTuple.Null' references, over initialization via 'new()'.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class SpaceUnitRefOverInitAnalyzer : DiagnosticAnalyzer
+internal sealed class UnitOrTupleRefOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
