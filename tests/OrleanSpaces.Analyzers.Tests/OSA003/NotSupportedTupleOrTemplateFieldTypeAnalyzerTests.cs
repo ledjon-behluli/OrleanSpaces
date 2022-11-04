@@ -1,6 +1,6 @@
-﻿using OrleanSpaces.Analyzers.OSA002;
+﻿using OrleanSpaces.Analyzers.OSA003;
 
-namespace OrleanSpaces.Analyzers.Tests.OSA002;
+namespace OrleanSpaces.Analyzers.Tests.OSA003;
 
 public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
 {
@@ -89,7 +89,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new((ulong)1);")]
     [InlineData("SpaceTemplate template = new((float)1);")]
     [InlineData("SpaceTemplate template = new((double)1);")]
-                        
+
     [InlineData("SpaceTemplate template = new((decimal)1);")]
     [InlineData("SpaceTemplate template = new(DateTime.MinValue);")]
     [InlineData("SpaceTemplate template = new(DateTimeOffset.MinValue);")]

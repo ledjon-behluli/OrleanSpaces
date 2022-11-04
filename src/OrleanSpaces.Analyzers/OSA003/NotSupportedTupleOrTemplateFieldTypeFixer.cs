@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using System.Collections.Immutable;
 using System.Composition;
 
-namespace OrleanSpaces.Analyzers.OSA002;
+namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
 /// Code fix provider for <see cref="NotSupportedTupleOrTemplateFieldTypeAnalyzer"/>.

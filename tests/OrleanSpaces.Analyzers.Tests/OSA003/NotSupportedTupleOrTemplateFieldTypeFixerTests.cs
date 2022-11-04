@@ -1,22 +1,22 @@
-﻿using OrleanSpaces.Analyzers.OSA002;
+﻿using OrleanSpaces.Analyzers.OSA003;
 
-namespace OrleanSpaces.Analyzers.Tests.OSA002;
+namespace OrleanSpaces.Analyzers.Tests.OSA003;
 
 public class NotSupportedTupleOrTemplateFieldTypeFixerTests : FixerFixture
 {
-	public NotSupportedTupleOrTemplateFieldTypeFixerTests() : base(
-		new NotSupportedTupleOrTemplateFieldTypeAnalyzer(),
-		new NotSupportedTupleOrTemplateFieldTypeFixer(),
-		NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id)
-	{
+    public NotSupportedTupleOrTemplateFieldTypeFixerTests() : base(
+        new NotSupportedTupleOrTemplateFieldTypeAnalyzer(),
+        new NotSupportedTupleOrTemplateFieldTypeFixer(),
+        NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id)
+    {
 
-	}
+    }
 
-	[Fact]
-	public void Should_Equal() =>
-		Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
+    [Fact]
+    public void Should_Equal() =>
+        Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
 
-	[Theory]
+    [Theory]
     [InlineData("SpaceTuple tuple = new([|typeof(string)|]);")]
     [InlineData("SpaceTuple tuple = new([|typeof(char)|]);")]
     [InlineData("SpaceTuple tuple = new([|typeof(int)|]);")]

@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Analyzers.OSA003;
+namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
 /// Informs to create or use a 'SpaceTemplateCache' over initialization via 'new(...)', when all arguments are 'SpaceUnit's.
@@ -32,7 +32,7 @@ internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
         var creationOperation = (IObjectCreationOperation)context.Operation;
-        
+
         if (!creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
             return;

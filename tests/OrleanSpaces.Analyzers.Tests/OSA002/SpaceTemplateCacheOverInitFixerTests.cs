@@ -1,6 +1,6 @@
-﻿using OrleanSpaces.Analyzers.OSA003;
+﻿using OrleanSpaces.Analyzers.OSA002;
 
-namespace OrleanSpaces.Analyzers.Tests.OSA003;
+namespace OrleanSpaces.Analyzers.Tests.OSA002;
 
 public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 {
@@ -73,7 +73,7 @@ public readonly struct SpaceTemplateCache
     [Fact]
     public void Should_Fix_1_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
     {
-        string code = 
+        string code =
 @"SpaceTemplate template = [|new(SpaceUnit.Null)|];
 
 public readonly struct SpaceTemplateCache

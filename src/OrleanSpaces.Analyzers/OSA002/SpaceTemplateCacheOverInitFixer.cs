@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
 
-namespace OrleanSpaces.Analyzers.OSA003;
+namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
 /// Code fix provider for <see cref="SpaceTemplateCacheOverInitAnalyzer"/>.

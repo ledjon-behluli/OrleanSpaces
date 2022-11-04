@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Analyzers.OSA002;
+namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
 /// Warns when arguments passed to a 'SpaceTuple' or 'SpaceTemplate', are not supported field types.

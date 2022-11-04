@@ -1,17 +1,17 @@
-﻿using OrleanSpaces.Analyzers.OSA003;
+﻿using OrleanSpaces.Analyzers.OSA002;
 
-namespace OrleanSpaces.Analyzers.Tests.OSA003;
+namespace OrleanSpaces.Analyzers.Tests.OSA002;
 
 public class SpaceTemplateCacheOverInitAnalyzerTests : AnalyzerFixture
 {
-	public SpaceTemplateCacheOverInitAnalyzerTests() : base(
-		new SpaceTemplateCacheOverInitAnalyzer(),
-		SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id)
-	{
+    public SpaceTemplateCacheOverInitAnalyzerTests() : base(
+        new SpaceTemplateCacheOverInitAnalyzer(),
+        SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id)
+    {
 
-	}
+    }
 
-	[Fact]
+    [Fact]
     public void Should_Equal()
     {
         Assert.Equal("OSA003", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id);
