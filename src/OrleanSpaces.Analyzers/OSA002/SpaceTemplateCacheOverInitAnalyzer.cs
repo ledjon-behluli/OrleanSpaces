@@ -17,7 +17,7 @@ internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true,
         title: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.",
         messageFormat: "Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.",
-        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA002.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 

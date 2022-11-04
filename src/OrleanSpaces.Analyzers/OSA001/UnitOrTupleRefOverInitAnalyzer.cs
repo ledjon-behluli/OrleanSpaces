@@ -17,7 +17,7 @@ internal sealed class UnitOrTupleRefOverInitAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true,
         title: "Avoid instantiation by default constructor or expression.",
         messageFormat: "Avoid instantiation of '{0}' by default constructor or expression.",
-        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA001.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 

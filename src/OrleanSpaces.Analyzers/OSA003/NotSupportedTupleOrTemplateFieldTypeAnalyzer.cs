@@ -18,7 +18,7 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
         isEnabledByDefault: true,
         title: "The supplied argument type is not supported.",
         messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
-        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces");
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA003.md");
 
     private static readonly List<Type> simpleTypes = new()
     {
