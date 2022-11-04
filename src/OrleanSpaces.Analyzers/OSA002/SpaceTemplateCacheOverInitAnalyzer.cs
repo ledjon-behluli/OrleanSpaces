@@ -11,7 +11,7 @@ namespace OrleanSpaces.Analyzers.OSA002;
 internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
-        id: "OSA003",
+        id: "OSA002",
         category: Categories.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,

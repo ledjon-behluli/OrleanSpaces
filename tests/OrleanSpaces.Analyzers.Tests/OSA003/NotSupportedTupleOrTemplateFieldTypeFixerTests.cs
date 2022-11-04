@@ -14,7 +14,7 @@ public class NotSupportedTupleOrTemplateFieldTypeFixerTests : FixerFixture
 
     [Fact]
     public void Should_Equal() =>
-        Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
+        Assert.Equal("OSA003", provider.FixableDiagnosticIds.Single());
 
     [Theory]
     [InlineData("SpaceTuple tuple = new([|typeof(string)|]);")]

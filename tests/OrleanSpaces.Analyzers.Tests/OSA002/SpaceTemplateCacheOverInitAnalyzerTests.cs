@@ -14,7 +14,7 @@ public class SpaceTemplateCacheOverInitAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA003", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id);
+        Assert.Equal("OSA002", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id);
         Assert.Equal(Categories.Performance, SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, SpaceTemplateCacheOverInitAnalyzer.Diagnostic.DefaultSeverity);
         Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Title);

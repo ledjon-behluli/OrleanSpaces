@@ -14,7 +14,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA002", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id);
+        Assert.Equal("OSA003", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id);
         Assert.Equal(Categories.Usage, NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Warning, NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.DefaultSeverity);
         Assert.Equal("The supplied argument type is not supported.", NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Title);

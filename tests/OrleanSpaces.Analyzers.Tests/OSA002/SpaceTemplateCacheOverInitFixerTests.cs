@@ -14,7 +14,7 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
     [Fact]
     public void Should_Equal() =>
-        Assert.Equal("OSA003", provider.FixableDiagnosticIds.Single());
+        Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
 
     [Theory]
     [InlineData(1, "SpaceTemplate template = [|new()|];")]
@@ -34,9 +34,9 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
 public readonly struct SpaceTemplateCache
 {{
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_{numOfSpaceUnits} = new({unitArrayArgument});
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_{numOfSpaceUnits} => ref tuple_{numOfSpaceUnits};
 }}";
@@ -61,9 +61,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {{
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_{numOfSpaceUnits} = new({unitArrayArgument});
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_{numOfSpaceUnits} => ref tuple_{numOfSpaceUnits};
 }}";
@@ -78,9 +78,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
 }";
@@ -90,9 +90,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
 }";
@@ -108,9 +108,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
 }";
@@ -120,9 +120,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
 }";
@@ -138,9 +138,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
 }";
@@ -150,9 +150,9 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
 }";
@@ -168,10 +168,10 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
     private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
     public static ref readonly SpaceTemplate Tuple_3 => ref tuple_3;
@@ -182,11 +182,11 @@ public readonly struct SpaceTemplateCache
 
 public readonly struct SpaceTemplateCache
 {
-#pragma warning disable OSA003
+#pragma warning disable OSA002
     private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
     private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
     private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-#pragma warning restore OSA003
+#pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;

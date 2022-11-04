@@ -12,7 +12,7 @@ namespace OrleanSpaces.Analyzers.OSA003;
 internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
-        id: "OSA002",
+        id: "OSA003",
         category: Categories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
