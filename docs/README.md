@@ -3,11 +3,6 @@
   <h1>OrleanSpaces</h1>
 </p>
 
-[![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml)
-[![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces)
-[![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master)
-[![License](https://img.shields.io/github/license/ledjon-behluli/OrleanSpaces.svg)](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/LICENSE.txt)
-
 [Tuple space](https://en.wikipedia.org/wiki/Tuple_space) is an implementation of the associative memory paradigm for distributed computing. It provides a repository of tuples that can be accessed concurrently.
 
 [Orleans](https://dotnet.github.io/orleans/docs/index.html) is a framework that provides a straight-forward approach to building distributed high-scale computing applications, without the need to learn and apply complex concurrency or other scaling patterns. 
@@ -41,10 +36,17 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 
 # Packages
 
-| Package | Description|
-| ------- |------------|
-| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library
-| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Roslyn analyzers for OrleanSpaces
+| Package | Description| Statuses |
+| ------------ | ------------ | ------------ |
+| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. | [![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml) [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) [![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master) [![License](https://img.shields.io/github/license/ledjon-behluli/OrleanSpaces.svg)](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/LICENSE.txt) |
+| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml) [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) [![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master) [![License](https://img.shields.io/github/license/ledjon-behluli/OrleanSpaces.svg)](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/LICENSE.txt) |
+
+---
+
+# Documentation
+
+* [OrleanSpaces](https://github.com/ledjon-behluli/OrleanSpaces/docs/OrleanSpaces/README.md)
+* [OrleanSpaces.Analyzers](https://github.com/ledjon-behluli/OrleanSpaces/docs/OrleanSpaces.Analyzers/README.md)
 
 ---
 
