@@ -139,7 +139,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
             if (args[i] == 1)
             {
-                syntaxList = SingletonSeparatedList(CreateSpaceUnitArgumentSyntax());
+                syntaxList = SingletonSeparatedList(CreateReplacementNode());
             }
             else
             {
@@ -148,7 +148,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
                 for (int j = 0; j < syntaxNodeOrTokenCount; j++)
                 {
-                    syntaxNodeOrTokens[j] = j % 2 == 0 ? CreateSpaceUnitArgumentSyntax() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
+                    syntaxNodeOrTokens[j] = j % 2 == 0 ? CreateReplacementNode() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
                 }
 
                 syntaxList = SeparatedList<ArgumentSyntax>(syntaxNodeOrTokens);
@@ -415,7 +415,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 .WithLeadingTrivia(ElasticCarriageReturnLineFeed);
     }
 
-    private static ArgumentSyntax CreateSpaceUnitArgumentSyntax() =>
+    private static ArgumentSyntax CreateReplacementNode() =>
         Argument(
             MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,

@@ -40,23 +40,28 @@ internal sealed class SpaceUnitRefOverInitFixer : CodeFixProvider
             equivalenceKey: SpaceUnitRefOverInitAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
-
-                //TODO: Now 'new SpaceUnit()' as an argument is fixed, but as a member declaration its not working
-
                 SyntaxNode? newRoot = null;
+                SyntaxKind nodeKind = node.Kind();
 
-                if (node is ObjectCreationExpressionSyntax)
+                switch (nodeKind)
                 {
-                    newRoot = root.ReplaceNode(node, CreateSpaceUnitSyntax());
-                }
-
-                if (node is ArgumentSyntax)
-                {
-                    var objectCreationExpression = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
-                    if (objectCreationExpression != null)
-                    {
-                        newRoot = root.ReplaceNode(node, Argument(CreateSpaceUnitSyntax()));
-                    }
+                    case SyntaxKind.ObjectCreationExpression:
+                    case SyntaxKind.ImplicitObjectCreationExpression:
+                    case SyntaxKind.DefaultExpression:
+                    case SyntaxKind.DefaultLiteralExpression:
+                        {
+                            newRoot = root.ReplaceNode(node, CreateReplacmentSyntax(typeName));
+                        }
+                        break;
+                    case SyntaxKind.Argument:
+                        {
+                            var objectCreationExpression = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
+                            if (objectCreationExpression != null)
+                            {
+                                newRoot = root.ReplaceNode(node, Argument(CreateReplacmentSyntax(typeName)));
+                            }
+                        }
+                        break;
                 }
 
                 return Task.FromResult(newRoot == null ? context.Document :
@@ -66,9 +71,9 @@ internal sealed class SpaceUnitRefOverInitFixer : CodeFixProvider
         context.RegisterCodeFix(action, context.Diagnostics);
     }
 
-    private static MemberAccessExpressionSyntax CreateSpaceUnitSyntax() =>
+    private static MemberAccessExpressionSyntax CreateReplacmentSyntax(string identifierName) =>
         MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
-            IdentifierName("SpaceUnit"),
+            IdentifierName(identifierName),
             IdentifierName("Null"));
 }
