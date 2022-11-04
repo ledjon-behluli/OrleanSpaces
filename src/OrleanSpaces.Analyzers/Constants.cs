@@ -1,5 +1,11 @@
 ﻿namespace OrleanSpaces.Analyzers;
 
+internal static class Categories
+{
+    public const string Usage = "Usage";
+    public const string Performance = "Performance";
+}
+
 internal static class FullyQualifiedNames
 {
     public const string SpaceUnit = "OrleanSpaces.Tuples.SpaceUnit";
