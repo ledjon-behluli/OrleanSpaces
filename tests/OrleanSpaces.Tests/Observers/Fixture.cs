@@ -16,8 +16,8 @@ public class Fixture : IAsyncLifetime
         processor = new(new TestHostAppLifetime(), Registry, Channel);
     }
 
-    public async Task InitializeAsync() => await processor.StartAsync(default);
-    public async Task DisposeAsync() => await processor.StopAsync(default);
+    public Task InitializeAsync() => processor.StartAsync(default);
+    public Task DisposeAsync() => processor.StopAsync(default);
 
 
     public TestObserverScope StartScope() => new(Registry);

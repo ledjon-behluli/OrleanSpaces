@@ -14,12 +14,14 @@ public class SpaceTemplateCacheOverInitAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA002", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id);
-        Assert.Equal(Categories.Performance, SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, SpaceTemplateCacheOverInitAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Title);
-        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", SpaceTemplateCacheOverInitAnalyzer.Diagnostic.MessageFormat);
-        Assert.True(SpaceTemplateCacheOverInitAnalyzer.Diagnostic.IsEnabledByDefault);
+        var diagnostic = SpaceTemplateCacheOverInitAnalyzer.Diagnostic;
+
+        Assert.Equal("OSA002", diagnostic.Id);
+        Assert.Equal(Categories.Performance, diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
+        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", diagnostic.Title);
+        Assert.Equal("Avoid constructor instantiation of 'SpaceTemplate' having only 'SpaceUnit' type arguments.", diagnostic.MessageFormat);
+        Assert.True(diagnostic.IsEnabledByDefault);
     }
 
     [Theory]

@@ -2,5 +2,6 @@
 
 public enum Namespace
 {
+    OrleansSpaces,
     OrleanSpaces_Tuples
 }

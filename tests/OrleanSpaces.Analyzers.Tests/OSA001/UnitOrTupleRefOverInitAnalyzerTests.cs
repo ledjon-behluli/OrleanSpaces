@@ -14,12 +14,14 @@ public class UnitOrTupleRefOverInitAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OSA001", UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id);
-        Assert.Equal(Categories.Performance, UnitOrTupleRefOverInitAnalyzer.Diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, UnitOrTupleRefOverInitAnalyzer.Diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid instantiation by default constructor or expression.", UnitOrTupleRefOverInitAnalyzer.Diagnostic.Title);
-        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", UnitOrTupleRefOverInitAnalyzer.Diagnostic.MessageFormat);
-        Assert.True(UnitOrTupleRefOverInitAnalyzer.Diagnostic.IsEnabledByDefault);
+        var diagnostic = UnitOrTupleRefOverInitAnalyzer.Diagnostic;
+
+        Assert.Equal("OSA001", diagnostic.Id);
+        Assert.Equal(Categories.Performance, diagnostic.Category);
+        Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
+        Assert.Equal("Avoid instantiation by default constructor or expression.", diagnostic.Title);
+        Assert.Equal("Avoid instantiation of '{0}' by default constructor or expression.", diagnostic.MessageFormat);
+        Assert.True(diagnostic.IsEnabledByDefault);
     }
 
     [Theory]

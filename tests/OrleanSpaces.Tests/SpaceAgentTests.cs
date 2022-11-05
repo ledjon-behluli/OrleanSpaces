@@ -103,9 +103,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Throw_If_Tuple_Is_Null()
+    public Task Should_Throw_If_Tuple_Is_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
+        return Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
     }
 
     #endregion
@@ -146,9 +146,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Throw_On_EvaluateAsync_If_Null()
+    public Task Should_Throw_On_EvaluateAsync_If_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.EvaluateAsync(null));
+        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.EvaluateAsync(null));
     }
 
     [Fact]
@@ -241,9 +241,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Throw_On_PeekAsync_If_Null()
+    public Task Should_Throw_On_PeekAsync_If_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null));
+        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null));
     }
 
     [Fact]
@@ -347,9 +347,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Throw_On_PopAsync_If_Null()
+    public Task Should_Throw_On_PopAsync_If_Null()
     {
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null));
+        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null));
     }
 
     [Fact]

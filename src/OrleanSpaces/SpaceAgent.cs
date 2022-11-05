@@ -110,10 +110,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         observerRegistry.Remove(observerId);
     }
 
-    public async Task WriteAsync(SpaceTuple tuple)
-        => await grain.WriteAsync(tuple);
+    public Task WriteAsync(SpaceTuple tuple)
+        => grain.WriteAsync(tuple);
 
-    public async ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
+    public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
         ThrowIfNotBeingConsumed(evaluationChannel);
 
@@ -122,11 +122,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
             throw new ArgumentNullException(nameof(evaluation));
         }
 
-        await evaluationChannel.Writer.WriteAsync(evaluation);
+        return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public async ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-        => await grain.PeekAsync(template);
+    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
+        => grain.PeekAsync(template);
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -149,8 +149,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         }
     }
 
-    public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
-            => await grain.PopAsync(template);
+    public ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
+            => grain.PopAsync(template);
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -173,14 +173,14 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         }
     }
 
-    public async ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
-            => await grain.ScanAsync(template);
+    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
+        => grain.ScanAsync(template);
 
-    public async ValueTask<int> CountAsync()
-            => await grain.CountAsync(null);
+    public ValueTask<int> CountAsync()
+        => grain.CountAsync(null);
 
-    public async ValueTask<int> CountAsync(SpaceTemplate template)
-            => await grain.CountAsync(template);
+    public ValueTask<int> CountAsync(SpaceTemplate template)
+        => grain.CountAsync(template);
 
     private static void ThrowIfNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
     {

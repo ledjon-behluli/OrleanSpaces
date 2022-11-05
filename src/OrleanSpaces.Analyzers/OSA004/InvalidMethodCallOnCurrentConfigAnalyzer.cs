@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.OSA004;
@@ -16,14 +15,62 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         category: Categories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        title: "The invocation will result in a runtime exception due to current configuration.",
-        messageFormat: "The invocation of '{0}' will result in a runtime exception due to current configuration.",
+        title: "Method is not supported on the configured environment.",
+        messageFormat: "Method '{0}' is not supported on the configured environment.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA004.md");
+
+    private static readonly List<string> methodNames = new() { "PeekAsync", "PopAsync", "EvaluateAsync" };
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
     public override void Initialize(AnalysisContext context)
     {
-        throw new NotImplementedException();
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+        context.EnableConcurrentExecution();
+
+        context.RegisterSyntaxNodeAction(AnalyseInvocation, SyntaxKind.InvocationExpression);
+    }
+
+    private static void AnalyseInvocation(SyntaxNodeAnalysisContext context)
+    {
+        var invocationExpression = (InvocationExpressionSyntax)context.Node;
+        var memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+
+        if (memberAccessExpression == null || !methodNames.Contains(memberAccessExpression.Name.Identifier.ValueText))
+        {
+            return;
+        }
+
+        ITypeSymbol? typeSymbol = null;
+
+        // The target is a simple identifier, the code being analysed is of the form: "agent.PeekAsync()", and identifierName = "agent".
+        if (memberAccessExpression.Expression is IdentifierNameSyntax identifierName)
+        {
+            typeSymbol = context.SemanticModel.GetTypeInfo(identifierName).Type;
+        }
+
+        // The target is another invocationSyntax, the code being analysed is of the form: "GetAgent().PeekAsync()", and _invocationExpression = "GetAgent()". 
+        if (memberAccessExpression.Expression is InvocationExpressionSyntax _invocationExpression)
+        {
+            var symbol = context.SemanticModel.GetSymbolInfo(_invocationExpression).Symbol;
+            typeSymbol = symbol is IMethodSymbol methodSymbol ? methodSymbol.ReturnType : null;
+        }
+        
+        // The target is a member access, the code being analysed is of the form: "x.Agent.PeekAsync()", _memberAccessExpression = "x.Agent"
+        if (memberAccessExpression.Expression is MemberAccessExpressionSyntax _memberAccessExpression)
+        {
+            var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression).Symbol;
+
+            if (symbol is IFieldSymbol fieldSymbol) typeSymbol = fieldSymbol.Type;
+            if (symbol is IPropertySymbol propertySymbol) typeSymbol = propertySymbol.Type;
+        }
+
+        if (typeSymbol?.Name == "ISpaceAgent")
+        {
+            context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
+               descriptor: Diagnostic,
+               location: invocationExpression.GetLocation(),
+               messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
+        }
     }
 }
