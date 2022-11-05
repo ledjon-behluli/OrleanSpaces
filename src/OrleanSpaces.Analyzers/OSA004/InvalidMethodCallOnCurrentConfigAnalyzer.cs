@@ -19,7 +19,7 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         messageFormat: "Method '{0}' is not supported on the configured environment.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA004.md");
 
-    private static readonly List<string> methodNames = new() { "PeekAsync", "PopAsync", "EvaluateAsync" };
+    
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
@@ -36,27 +36,27 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         var invocationExpression = (InvocationExpressionSyntax)context.Node;
         var memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
 
-        if (memberAccessExpression == null || !methodNames.Contains(memberAccessExpression.Name.Identifier.ValueText))
+        if (memberAccessExpression == null || !IsMethodOfInterest())
         {
             return;
         }
 
         ITypeSymbol? typeSymbol = null;
 
-        // The target is a simple identifier, the code being analysed is of the form: "agent.PeekAsync()", and identifierName = "agent".
+        // The target is a simple identifier, the code being analysed is of the form: "agent.PeekAsync(...)", and identifierName = "agent".
         if (memberAccessExpression.Expression is IdentifierNameSyntax identifierName)
         {
             typeSymbol = context.SemanticModel.GetTypeInfo(identifierName).Type;
         }
 
-        // The target is another invocationSyntax, the code being analysed is of the form: "GetAgent().PeekAsync()", and _invocationExpression = "GetAgent()". 
+        // The target is another invocationSyntax, the code being analysed is of the form: "GetAgent().PeekAsync(...)", and _invocationExpression = "GetAgent()". 
         if (memberAccessExpression.Expression is InvocationExpressionSyntax _invocationExpression)
         {
             var symbol = context.SemanticModel.GetSymbolInfo(_invocationExpression).Symbol;
             typeSymbol = symbol is IMethodSymbol methodSymbol ? methodSymbol.ReturnType : null;
         }
-        
-        // The target is a member access, the code being analysed is of the form: "x.Agent.PeekAsync()", _memberAccessExpression = "x.Agent"
+
+        // The target is a member access, the code being analysed is of the form: "x.Agent.PeekAsync(...)", _memberAccessExpression = "x.Agent"
         if (memberAccessExpression.Expression is MemberAccessExpressionSyntax _memberAccessExpression)
         {
             var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression).Symbol;
@@ -71,6 +71,27 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
                descriptor: Diagnostic,
                location: invocationExpression.GetLocation(),
                messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
+        }
+
+        bool IsMethodOfInterest()
+        {
+            string methodName = memberAccessExpression.Name.Identifier.ValueText;
+
+            if (methodName == "EvaluateAsync")
+            {
+                return true;
+            }
+
+            if (methodName == "PeekAsync" || methodName == "PopAsync")
+            {
+                // Arguments.Count = 2, because only the overloads with a callback delegate can not work without full configuration in place.
+                if (invocationExpression.ChildNodes().OfType<ArgumentListSyntax>().Single().Arguments.Count == 2)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
