@@ -24,28 +24,45 @@ public class InvalidMethodCallOnCurrentConfigAnalyzerTests : AnalyzerFixture
         Assert.True(diagnostic.IsEnabledByDefault);
     }
 
+    #region Identifier Expression
+
     [Theory]
     [InlineData("void M(ISpaceAgent agent) => [|agent.PeekAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M(ISpaceAgent agent) => [|agent.PopAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M(ISpaceAgent agent) => [|agent.EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
-    public void Should_Diagnose_On_IdentifierExpression(string code)
-    {
-        string newCode = @$"
+    public void Should_Diagnos_On_IdentifierExpression(string code) =>
+        HasDiagnostic(ComposeCodeForIdentifierExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    [InlineData("void M(ISpaceAgent agent) => [|agent.PeekAsync(template)|];")]
+    [InlineData("void M(ISpaceAgent agent) => [|agent.PopAsync(template)|];")]
+    public void Should_Not_Diagnose_NonCallbackOverload_On_IdentifierExpression(string code) =>
+        NoDiagnostic(ComposeCodeForIdentifierExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    private static string ComposeCodeForIdentifierExpression(string code) => @$"
 SpaceTemplate template = new(1);
 SpaceTuple tuple = new SpaceTuple(1);
 
 {code}";
 
-        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
+    #endregion
+
+    #region Invocation Expression
 
     [Theory]
     [InlineData("void M() => [|GetAgent().PeekAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M() => [|GetAgent().PopAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M() => [|GetAgent().EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
-    public void Should_Diagnose_On_InvocationExpression(string code)
-    {
-        string newCode = @$"
+    public void Should_Diagnose_On_InvocationExpression(string code) =>
+        HasDiagnostic(ComposeCodeForInvocationExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    [InlineData("void M() => [|GetAgent().PeekAsync(template)|];")]
+    [InlineData("void M() => [|GetAgent().PopAsync(template)|];")]
+    public void Should_Not_Diagnose_NonCallbackOverload_On_InvocationExpression(string code) =>
+        NoDiagnostic(ComposeCodeForInvocationExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    private static string ComposeCodeForInvocationExpression(string code) => @$"
 SpaceTemplate template = new(1);
 SpaceTuple tuple = new SpaceTuple(1);
 
@@ -53,8 +70,9 @@ SpaceTuple tuple = new SpaceTuple(1);
 
 static ISpaceAgent GetAgent() => (ISpaceAgent)new object();";
 
-        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
+    #endregion
+
+    #region Member Access Expression
 
     [Theory]
     // Field
@@ -69,9 +87,23 @@ static ISpaceAgent GetAgent() => (ISpaceAgent)new object();";
     [InlineData("[|c.GetAgent().PeekAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("[|c.GetAgent().PopAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("[|c.GetAgent().EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
-    public void Should_Diagnose_On_MemberAccessExpression(string code)
-    {
-        string newCode = @$"
+    public void Should_Diagnose_On_MemberAccessExpression(string code) =>
+        HasDiagnostic(ComposeCodeForMemberAccessExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    // Field
+    [InlineData("[|c.agent.PeekAsync(template)|];")]
+    [InlineData("[|c.agent.PopAsync(template)|];")]
+    // Property
+    [InlineData("[|c.Agent.PeekAsync(template)|];")]
+    [InlineData("[|c.Agent.PopAsync(template)|];")]
+    // Method
+    [InlineData("[|c.GetAgent().PeekAsync(template)|];")]
+    [InlineData("[|c.GetAgent().PopAsync(template)|];")]
+    public void Should_Not_Diagnose_NonCallbackOverload_On_MemberAccessExpression(string code) =>
+        NoDiagnostic(ComposeCodeForMemberAccessExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+
+    private static string ComposeCodeForMemberAccessExpression(string code) => @$"
 SpaceTemplate template = new(1);
 SpaceTuple tuple = new SpaceTuple(1);
 	
@@ -88,8 +120,8 @@ class C
     public ISpaceAgent GetAgent() => (ISpaceAgent)new object();
 }}";
 
-        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
+
+    #endregion
 
     [Fact]
     public void A()

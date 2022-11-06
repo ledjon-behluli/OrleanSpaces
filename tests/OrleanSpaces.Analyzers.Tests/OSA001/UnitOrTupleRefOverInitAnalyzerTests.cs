@@ -41,9 +41,9 @@ public class UnitOrTupleRefOverInitAnalyzerTests : AnalyzerFixture
         HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
-    [InlineData("SpaceTuple tuple = new(1)")]
-    [InlineData("SpaceTuple tuple = new(1, \"a\")")]
-    [InlineData("SpaceTuple tuple = new(1, \"a\", 1.5f)")]
+    [InlineData("SpaceTuple tuple = [|new(1)|]")]
+    [InlineData("SpaceTuple tuple = [|new(1, \"a\")|]")]
+    [InlineData("SpaceTuple tuple = [|new(1, \"a\", 1.5f)|]")]
     public void Should_Not_Diagnose_SpaceTuple(string code) =>
         NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }

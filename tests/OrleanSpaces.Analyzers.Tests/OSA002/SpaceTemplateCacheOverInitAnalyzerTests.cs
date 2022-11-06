@@ -33,4 +33,17 @@ public class SpaceTemplateCacheOverInitAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new([|SpaceUnit.Null, new SpaceUnit(), SpaceUnit.Null|]);")]
     public void Should_Diagnose_SpaceTemplate(string code) =>
         HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
+
+    [Theory]
+    [InlineData("SpaceTemplate template = new([|1|]);")]
+    [InlineData("SpaceTemplate template = new([|1, new SpaceUnit()|]);")]
+    [InlineData("SpaceTemplate template = new([|1, new SpaceUnit(), new SpaceUnit()|]);")]
+    [InlineData("SpaceTemplate template = new([|1, SpaceUnit.Null|]);")]
+    [InlineData("SpaceTemplate template = new([|SpaceUnit.Null, 1|]);")]
+    [InlineData("SpaceTemplate template = new([|1, SpaceUnit.Null, SpaceUnit.Null|]);")]
+    [InlineData("SpaceTemplate template = new([|SpaceUnit.Null, 1, SpaceUnit.Null|]);")]
+    [InlineData("SpaceTemplate template = new([|SpaceUnit.Null, 1, new SpaceUnit(), SpaceUnit.Null|]);")]
+    [InlineData("SpaceTemplate template = new([|SpaceUnit.Null, 1, new SpaceUnit(), 1, SpaceUnit.Null|]);")]
+    public void Should_Not_Diagnose_SpaceTemplate(string code) =>
+        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }
