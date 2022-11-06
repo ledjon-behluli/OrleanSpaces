@@ -19,71 +19,99 @@ public class InvalidMethodCallOnCurrentConfigAnalyzerTests : AnalyzerFixture
         Assert.Equal("OSA004", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
-        Assert.Equal("Method is not supported on the configured environment.", diagnostic.Title);
-        Assert.Equal("Method '{0}' is not supported on the configured environment.", diagnostic.MessageFormat);
+        Assert.Equal("Method is not supported with the current configuration.", diagnostic.Title);
+        Assert.Equal("Method '{0}' is not supported with the current configuration.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
+    }
+
+    [Theory]
+    [InlineData("void M(ISpaceAgent agent) => [|agent.PeekAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("void M(ISpaceAgent agent) => [|agent.PopAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("void M(ISpaceAgent agent) => [|agent.EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
+    public void Should_Diagnose_On_IdentifierExpression(string code)
+    {
+        string newCode = @$"
+SpaceTemplate template = new(1);
+SpaceTuple tuple = new SpaceTuple(1);
+
+{code}";
+
+        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    [Theory]
+    [InlineData("void M() => [|GetAgent().PeekAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("void M() => [|GetAgent().PopAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("void M() => [|GetAgent().EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
+    public void Should_Diagnose_On_InvocationExpression(string code)
+    {
+        string newCode = @$"
+SpaceTemplate template = new(1);
+SpaceTuple tuple = new SpaceTuple(1);
+
+{code}
+
+static ISpaceAgent GetAgent() => (ISpaceAgent)new object();";
+
+        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    [Theory]
+    // Field
+    [InlineData("[|c.agent.PeekAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.agent.PopAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.agent.EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
+    // Property
+    [InlineData("[|c.Agent.PeekAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.Agent.PopAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.Agent.EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
+    // Method
+    [InlineData("[|c.GetAgent().PeekAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.GetAgent().PopAsync(template, tuple => Task.CompletedTask)|];")]
+    [InlineData("[|c.GetAgent().EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
+    public void Should_Diagnose_On_MemberAccessExpression(string code)
+    {
+        string newCode = @$"
+SpaceTemplate template = new(1);
+SpaceTuple tuple = new SpaceTuple(1);
+	
+void M()
+{{
+    C c = new();
+    {code}
+}}
+
+class C
+{{
+    public ISpaceAgent agent = (ISpaceAgent)new object();
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+    public ISpaceAgent GetAgent() => (ISpaceAgent)new object();
+}}";
+
+        HasDiagnostic(newCode, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
     }
 
     [Fact]
     public void A()
     {
-        string code = @"
+        string code = @$"
 SpaceTemplate template = new(1);
-
-void M(ISpaceAgent agent) => [|agent.PeekAsync(template)|];";
-
-        HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
-
-    [Fact]
-    public void B()
-    {
-        string code = @"
-SpaceTemplate template = new(1);
+SpaceTuple tuple = new SpaceTuple(1);
 	
-void M() => [|GetAgent().PeekAsync(template)|];
+void M()
+{{
+    C c = new();
+    Func<ISpaceAgent> func = () => c.GetAgent();
 
-static ISpaceAgent GetAgent() => (ISpaceAgent)new object();";
+    [|func().PeekAsync(template, tuple => Task.CompletedTask)|];
+}}
 
-        HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
-
-    [Fact]
-    public void C()
-    {
-        string code = @"
-SpaceTemplate template = new(1);
-	
-void M(ISpaceAgent agent)
-{
-    X x = new();
-    [|x.Agent.PeekAsync(template)|];
-}
-
-class X
-{
+class C
+{{
+    public ISpaceAgent agent = (ISpaceAgent)new object();
     public ISpaceAgent Agent => (ISpaceAgent)new object();
-}";
-
-        HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
-    }
-
-    [Fact]
-    public void D()
-    {
-        string code = @"
-SpaceTemplate template = new(1);
-	
-void M(ISpaceAgent agent)
-{
-    X x = new();
-    [|x.Agent.PeekAsync(template)|];
-}
-
-class X
-{
-    public ISpaceAgent Agent = (ISpaceAgent)new object();
-}";
+    public ISpaceAgent GetAgent() => (ISpaceAgent)new object();
+}}";
 
         HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
     }

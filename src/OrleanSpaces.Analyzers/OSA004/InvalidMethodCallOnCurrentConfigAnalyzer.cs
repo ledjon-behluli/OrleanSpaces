@@ -15,8 +15,8 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         category: Categories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        title: "Method is not supported on the configured environment.",
-        messageFormat: "Method '{0}' is not supported on the configured environment.",
+        title: "Method is not supported with the current configuration.",
+        messageFormat: "Method '{0}' is not supported with the current configuration.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA004.md");
 
     
@@ -46,20 +46,22 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         // The target is a simple identifier, the code being analysed is of the form: "agent.PeekAsync(...)", and identifierName = "agent".
         if (memberAccessExpression.Expression is IdentifierNameSyntax identifierName)
         {
-            typeSymbol = context.SemanticModel.GetTypeInfo(identifierName).Type;
+            typeSymbol = context.SemanticModel.GetTypeInfo(identifierName, context.CancellationToken).Type;
         }
 
-        // The target is another invocationSyntax, the code being analysed is of the form: "GetAgent().PeekAsync(...)", and _invocationExpression = "GetAgent()". 
+        // The target is another invocation syntax, the code being analysed is of the form: "GetAgent().PeekAsync(...)", and _invocationExpression = "GetAgent()". 
         if (memberAccessExpression.Expression is InvocationExpressionSyntax _invocationExpression)
         {
-            var symbol = context.SemanticModel.GetSymbolInfo(_invocationExpression).Symbol;
-            typeSymbol = symbol is IMethodSymbol methodSymbol ? methodSymbol.ReturnType : null;
+            var symbol = context.SemanticModel.GetSymbolInfo(_invocationExpression, context.CancellationToken).Symbol;
+
+            if (symbol is IMethodSymbol methodSymbol) typeSymbol = methodSymbol.ReturnType;
+            if (symbol is IFunctionPointerTypeSymbol funcSymbol) typeSymbol = funcSymbol.Signature.ReturnType;
         }
 
-        // The target is a member access, the code being analysed is of the form: "x.Agent.PeekAsync(...)", _memberAccessExpression = "x.Agent"
+        // The target is a member access syntaxt, the code being analysed is of the form: "x.Agent.PeekAsync(...)", _memberAccessExpression = "x.Agent"
         if (memberAccessExpression.Expression is MemberAccessExpressionSyntax _memberAccessExpression)
         {
-            var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression).Symbol;
+            var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression, context.CancellationToken).Symbol;
 
             if (symbol is IFieldSymbol fieldSymbol) typeSymbol = fieldSymbol.Type;
             if (symbol is IPropertySymbol propertySymbol) typeSymbol = propertySymbol.Type;
@@ -84,7 +86,7 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
 
             if (methodName == "PeekAsync" || methodName == "PopAsync")
             {
-                // Arguments.Count = 2, because only the overloads with a callback delegate can not work without full configuration in place.
+                // Arguments.Count = 2, because only the overloads with a callback delegate can not work without full configuration in-place.
                 if (invocationExpression.ChildNodes().OfType<ArgumentListSyntax>().Single().Arguments.Count == 2)
                 {
                     return true;
