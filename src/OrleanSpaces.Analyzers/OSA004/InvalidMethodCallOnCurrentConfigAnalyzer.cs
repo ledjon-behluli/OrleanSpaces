@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
@@ -19,8 +20,6 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         messageFormat: "Method '{0}' is not supported with the current configuration.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA004.md");
 
-    
-
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
     public override void Initialize(AnalysisContext context)
@@ -36,7 +35,7 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         var invocationExpression = (InvocationExpressionSyntax)context.Node;
         var memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
 
-        if (memberAccessExpression == null || !IsMethodOfInterest())
+        if (memberAccessExpression == null || !IsNonBlockingSpaceAgentMethod())
         {
             return;
         }
@@ -62,20 +61,20 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         if (memberAccessExpression.Expression is MemberAccessExpressionSyntax _memberAccessExpression)
         {
             var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression, context.CancellationToken).Symbol;
-
+          
             if (symbol is IFieldSymbol fieldSymbol) typeSymbol = fieldSymbol.Type;
             if (symbol is IPropertySymbol propertySymbol) typeSymbol = propertySymbol.Type;
         }
 
-        if (typeSymbol?.Name == "ISpaceAgent")
+        if (typeSymbol?.Name == "ISpaceAgent" && !IsGenericHostBuilt())
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
-               descriptor: Diagnostic,
-               location: invocationExpression.GetLocation(),
-               messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
+                descriptor: Diagnostic,
+                location: invocationExpression.GetLocation(),
+                messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
         }
 
-        bool IsMethodOfInterest()
+        bool IsNonBlockingSpaceAgentMethod()
         {
             string methodName = memberAccessExpression.Name.Identifier.ValueText;
 
@@ -94,6 +93,71 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
             }
 
             return false;
+        }
+
+        bool IsGenericHostBuilt()
+        {
+            SyntaxNode? parentNode = context.Node.Parent;
+            while (parentNode is not null && parentNode is not CompilationUnitSyntax)
+            {
+                parentNode = parentNode.Parent;
+            }
+
+            ITypeSymbol? typeSymbol = null;
+            if (parentNode is CompilationUnitSyntax compilationSyntax)
+            {
+                //_ = compilationSyntax.ChildNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault(x => x.Identifier.ToString() == "Program")?
+                //    .DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault(identifierName =>
+                //    {
+                //        if (identifierName.ToString() == "CreateDefaultBuilder")
+                //        {
+                //            var b11 = context.SemanticModel.GetDeclaredSymbol(identifierName);
+                //            var b112 = context.SemanticModel.GetSymbolInfo(identifierName);
+                //            var b222 = context.SemanticModel.GetTypeInfo(identifierName);
+
+                //            if (identifierName.Parent is MemberAccessExpressionSyntax memberAccessExpression)
+                //            {
+                //                var a = context.SemanticModel.GetDeclaredSymbol(memberAccessExpression.Expression);
+                //                var b = context.SemanticModel.GetDeclaredSymbol(memberAccessExpression);
+
+                //                var a1 = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression);
+                //                var b1 = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
+
+                //                var a2 = context.SemanticModel.GetTypeInfo(memberAccessExpression.Expression);
+                //                var b2 = context.SemanticModel.GetTypeInfo(memberAccessExpression);
+
+                //                //var a = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression, context.CancellationToken).Symbol;
+
+                //                if (a is IMethodSymbol methodSymbol)
+                //                {
+                //                    typeSymbol = methodSymbol.ReturnType;
+                //                }
+                //            }
+                //        }
+
+                //        return typeSymbol != null;
+                //    });
+
+                _ = compilationSyntax.ChildNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault(x => x.Identifier.ToString() == "Program")?
+                    .DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault(memberAccessExpression =>
+                    {
+                        if (memberAccessExpression.Name.Identifier.ToString() == "CreateDefaultBuilder")
+                        {
+                            var d = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
+                            var a = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol;
+                            var b = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression).Symbol;
+
+                            if (a is IMethodSymbol methodSymbol)
+                            {
+                                typeSymbol = methodSymbol.ReturnType;
+                            }
+                        }
+
+                        return typeSymbol != null;
+                    });
+            }
+
+            return typeSymbol?.Name == "IHostBuilder" || typeSymbol?.Name == "IWebHostBuilder";
         }
     }
 }

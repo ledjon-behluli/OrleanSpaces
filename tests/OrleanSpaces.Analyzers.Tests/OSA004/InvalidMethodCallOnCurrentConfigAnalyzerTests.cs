@@ -30,7 +30,7 @@ public class InvalidMethodCallOnCurrentConfigAnalyzerTests : AnalyzerFixture
     [InlineData("void M(ISpaceAgent agent) => [|agent.PeekAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M(ISpaceAgent agent) => [|agent.PopAsync(template, tuple => Task.CompletedTask)|];")]
     [InlineData("void M(ISpaceAgent agent) => [|agent.EvaluateAsync(template, () => Task.FromResult(tuple))|];")]
-    public void Should_Diagnos_On_IdentifierExpression(string code) =>
+    public void Should_Diagnose_On_IdentifierExpression(string code) =>
         HasDiagnostic(ComposeCodeForIdentifierExpression(code), Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
@@ -126,24 +126,22 @@ class C
     [Fact]
     public void A()
     {
-        string code = @$"
-SpaceTemplate template = new(1);
-SpaceTuple tuple = new SpaceTuple(1);
-	
-void M()
-{{
-    C c = new();
-    Func<ISpaceAgent> func = () => c.GetAgent();
+        string code = @"
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        C c = new();
+        [|c.Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
 
-    [|func().PeekAsync(template, tuple => Task.CompletedTask)|];
-}}
+        await Host.CreateDefaultBuilder(args).Build().RunAsync();
+    }
+}
 
 class C
-{{
-    public ISpaceAgent agent = (ISpaceAgent)new object();
+{
     public ISpaceAgent Agent => (ISpaceAgent)new object();
-    public ISpaceAgent GetAgent() => (ISpaceAgent)new object();
-}}";
+}";
 
         HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
     }

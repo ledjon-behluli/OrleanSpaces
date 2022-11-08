@@ -64,7 +64,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             }
             else   // Add appropriate ref field
             {
-                visitor.TuplesPresent.Add(numOfSpaceUnits);     // Add 'numOfSpaceUnits' as its not present. 
+                visitor.TuplesPresent.Add(numOfSpaceUnits);
                 var newCacheNode = CreateSpaceTemplateCache(visitor.TuplesPresent.ToArray());
 
                 context.RegisterCodeFix(
