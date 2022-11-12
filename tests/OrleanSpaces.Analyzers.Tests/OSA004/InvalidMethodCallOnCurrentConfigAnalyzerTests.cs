@@ -123,18 +123,34 @@ class C
 
     #endregion
 
+    #region Host
+
     [Fact]
-    public void A()
+    public void Should_Not_Diagnose_When_Host_Is_Initialized()
     {
         string code = @"
-public class Program
-{
-    public static async Task Main(string[] args)
-    {
-        C c = new();
-        [|c.Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
 
-        await Host.CreateDefaultBuilder(args).Build().RunAsync();
+Host.CreateDefaultBuilder(args).Build().Run();
+
+class C
+{
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+}";
+
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    [Fact]
+    public void Should_Not_Diagnose_When_Host_Is_Initialized_In_Program_CS()
+    {
+        string code = @"
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+        Host.CreateDefaultBuilder(args).Build().Run();
     }
 }
 
@@ -143,6 +159,90 @@ class C
     public ISpaceAgent Agent => (ISpaceAgent)new object();
 }";
 
-        HasDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
     }
+
+    #endregion
+
+    #region WebHost
+
+    [Fact]
+    public void Should_Not_Diagnose_When_WebHost_Is_Initialized()
+    {
+        string code = @"
+await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+
+WebHost.CreateDefaultBuilder(args).Build().Run();
+
+class C
+{
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+}";
+
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    [Fact]
+    public void Should_Not_Diagnose_When_WebHost_Is_Initialized_In_Program_CS()
+    {
+        string code = @"
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+        WebHost.CreateDefaultBuilder(args).Build().Run();
+    }
+}
+
+class C
+{
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+}";
+
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    #endregion
+
+    #region WebApplication
+
+    [Fact]
+    public void Should_Not_Diagnose_When_WebApplication_Is_Initialized()
+    {
+        string code = @"
+await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+
+WebApplication.CreateBuilder(args).Build().Run();
+
+class C
+{
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+}";
+
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    [Fact]
+    public void Should_Not_Diagnose_When_WebApplication_Is_Initialized_In_Program_CS()
+    {
+        string code = @"
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        await [|new C().Agent.PeekAsync(new(1), tuple => Task.CompletedTask)|];
+        WebApplication.CreateBuilder(args).Build().Run();
+    }
+}
+
+class C
+{
+    public ISpaceAgent Agent => (ISpaceAgent)new object();
+}";
+
+        NoDiagnostic(code, Namespace.OrleansSpaces, Namespace.OrleanSpaces_Tuples);
+    }
+
+    #endregion
 }

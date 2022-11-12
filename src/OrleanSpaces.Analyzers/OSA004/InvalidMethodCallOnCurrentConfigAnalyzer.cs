@@ -1,12 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.OSA004;
 
 /// <summary>
-/// Warns when a method which is supported only on full configuration, is called when partial configuration is used.
+/// Warns when a method which is supported only in full configuration, is called when partial configuration is used.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnalyzer
@@ -35,7 +34,7 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         var invocationExpression = (InvocationExpressionSyntax)context.Node;
         var memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
 
-        if (memberAccessExpression == null || !IsNonBlockingSpaceAgentMethod())
+        if (memberAccessExpression == null || !IsNonBlockingSpaceAgentMethod(invocationExpression, memberAccessExpression))
         {
             return;
         }
@@ -61,12 +60,12 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         if (memberAccessExpression.Expression is MemberAccessExpressionSyntax _memberAccessExpression)
         {
             var symbol = context.SemanticModel.GetSymbolInfo(_memberAccessExpression, context.CancellationToken).Symbol;
-          
+
             if (symbol is IFieldSymbol fieldSymbol) typeSymbol = fieldSymbol.Type;
             if (symbol is IPropertySymbol propertySymbol) typeSymbol = propertySymbol.Type;
         }
 
-        if (typeSymbol?.Name == "ISpaceAgent" && !IsGenericHostBuilt())
+        if (typeSymbol?.Name == "ISpaceAgent" && !IsHostPresent(ref context))
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
@@ -74,90 +73,72 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
                 messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
         }
 
-        bool IsNonBlockingSpaceAgentMethod()
-        {
-            string methodName = memberAccessExpression.Name.Identifier.ValueText;
+        
+    }
 
-            if (methodName == "EvaluateAsync")
+    private static bool IsNonBlockingSpaceAgentMethod(InvocationExpressionSyntax invocationExpression, MemberAccessExpressionSyntax memberAccessExpression)
+    {
+        string methodName = memberAccessExpression.Name.Identifier.ValueText;
+
+        if (methodName == "EvaluateAsync")
+        {
+            return true;
+        }
+
+        if (methodName == "PeekAsync" || methodName == "PopAsync")
+        {
+            // Arguments.Count = 2, because only the overloads with a callback delegate can not work without full configuration in-place.
+            if (invocationExpression.ChildNodes().OfType<ArgumentListSyntax>().Single().Arguments.Count == 2)
             {
                 return true;
             }
-
-            if (methodName == "PeekAsync" || methodName == "PopAsync")
-            {
-                // Arguments.Count = 2, because only the overloads with a callback delegate can not work without full configuration in-place.
-                if (invocationExpression.ChildNodes().OfType<ArgumentListSyntax>().Single().Arguments.Count == 2)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
-        bool IsGenericHostBuilt()
+        return false;
+    }
+
+    private static bool IsHostPresent(ref SyntaxNodeAnalysisContext context)
+    {
+        SyntaxNode? parentNode = context.Node.Parent;
+
+        while (parentNode is not null && parentNode is not CompilationUnitSyntax)
         {
-            SyntaxNode? parentNode = context.Node.Parent;
-            while (parentNode is not null && parentNode is not CompilationUnitSyntax)
+            parentNode = parentNode.Parent;
+        }
+
+        if (parentNode is CompilationUnitSyntax compilationSyntax)
+        {
+            foreach (var memberAccessExpression in compilationSyntax.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
             {
-                parentNode = parentNode.Parent;
-            }
-
-            ITypeSymbol? typeSymbol = null;
-            if (parentNode is CompilationUnitSyntax compilationSyntax)
-            {
-                //_ = compilationSyntax.ChildNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault(x => x.Identifier.ToString() == "Program")?
-                //    .DescendantNodes().OfType<IdentifierNameSyntax>().FirstOrDefault(identifierName =>
-                //    {
-                //        if (identifierName.ToString() == "CreateDefaultBuilder")
-                //        {
-                //            var b11 = context.SemanticModel.GetDeclaredSymbol(identifierName);
-                //            var b112 = context.SemanticModel.GetSymbolInfo(identifierName);
-                //            var b222 = context.SemanticModel.GetTypeInfo(identifierName);
-
-                //            if (identifierName.Parent is MemberAccessExpressionSyntax memberAccessExpression)
-                //            {
-                //                var a = context.SemanticModel.GetDeclaredSymbol(memberAccessExpression.Expression);
-                //                var b = context.SemanticModel.GetDeclaredSymbol(memberAccessExpression);
-
-                //                var a1 = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression);
-                //                var b1 = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
-
-                //                var a2 = context.SemanticModel.GetTypeInfo(memberAccessExpression.Expression);
-                //                var b2 = context.SemanticModel.GetTypeInfo(memberAccessExpression);
-
-                //                //var a = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression, context.CancellationToken).Symbol;
-
-                //                if (a is IMethodSymbol methodSymbol)
-                //                {
-                //                    typeSymbol = methodSymbol.ReturnType;
-                //                }
-                //            }
-                //        }
-
-                //        return typeSymbol != null;
-                //    });
-
-                _ = compilationSyntax.ChildNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault(x => x.Identifier.ToString() == "Program")?
-                    .DescendantNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault(memberAccessExpression =>
+                var identifierNames = memberAccessExpression.ChildNodes().OfType<IdentifierNameSyntax>().ToArray();
+                if (identifierNames.Length == 2)
+                {
+                    if (IsConsoleApp(identifierNames) || IsWebApp(identifierNames))
                     {
-                        if (memberAccessExpression.Name.Identifier.ToString() == "CreateDefaultBuilder")
+                        if (memberAccessExpression.Parent is InvocationExpressionSyntax invocationExpression)
                         {
-                            var d = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
-                            var a = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol;
-                            var b = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression).Symbol;
-
-                            if (a is IMethodSymbol methodSymbol)
+                            var argumentSyntax = invocationExpression.ArgumentList.Arguments.FirstOrDefault();
+                            if (argumentSyntax != null)
                             {
-                                typeSymbol = methodSymbol.ReturnType;
+                                var typeSymbol = context.SemanticModel.GetTypeInfo(argumentSyntax.Expression, context.CancellationToken).Type;
+                                if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol && arrayTypeSymbol.ElementType.SpecialType == SpecialType.System_String)
+                                {
+                                    return true;
+                                }
                             }
                         }
-
-                        return typeSymbol != null;
-                    });
+                    }
+                }
             }
-
-            return typeSymbol?.Name == "IHostBuilder" || typeSymbol?.Name == "IWebHostBuilder";
         }
+
+        return false;
+
+        static bool IsConsoleApp(IdentifierNameSyntax[] identifierNames) =>
+            identifierNames[0].Identifier.ValueText == "Host" && identifierNames[1].Identifier.ValueText == "CreateDefaultBuilder";
+
+        static bool IsWebApp(IdentifierNameSyntax[] identifierNames) =>
+            (identifierNames[0].Identifier.ValueText == "WebHost" && identifierNames[1].Identifier.ValueText == "CreateDefaultBuilder") ||
+            (identifierNames[0].Identifier.ValueText == "WebApplication" && identifierNames[1].Identifier.ValueText == "CreateBuilder");
     }
 }
