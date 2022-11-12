@@ -120,7 +120,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         }
 
         var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>()
-            .FirstOrDefault(syntax => syntax.Identifier.ToString() == "SpaceTemplateCache");
+            .FirstOrDefault(syntax => syntax.Identifier.ValueText == "SpaceTemplateCache");
 
         return cacheDeclaration;
     }

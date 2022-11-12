@@ -15,8 +15,8 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         category: Categories.Usage,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        title: "Method is not supported with the current configuration.",
-        messageFormat: "Method '{0}' is not supported with the current configuration.",
+        title: "Method is not supported with the current configuration. An instance of 'Microsoft.Extensions.Hosting.IHost' must be configured to run.",
+        messageFormat: "Method '{0}' is not supported with the current configuration. An instance of 'Microsoft.Extensions.Hosting.IHost' must be configured to run.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA004.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);

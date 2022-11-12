@@ -9,3 +9,9 @@ namespace AnalyzersOffenders;
 //    SpaceTemplate template3 = new(SpaceUnit.Null, SpaceUnit.Null);
 //    SpaceTemplate template4 = new(SpaceUnit.Null, new SpaceUnit(), SpaceUnit.Null);
 //}
+
+public class OSA002
+{
+    SpaceTemplate template3 = new(SpaceUnit.Null, SpaceUnit.Null);
+}
+

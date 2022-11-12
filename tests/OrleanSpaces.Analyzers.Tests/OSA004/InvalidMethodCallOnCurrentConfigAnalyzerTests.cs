@@ -19,8 +19,8 @@ public class InvalidMethodCallOnCurrentConfigAnalyzerTests : AnalyzerFixture
         Assert.Equal("OSA004", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
-        Assert.Equal("Method is not supported with the current configuration.", diagnostic.Title);
-        Assert.Equal("Method '{0}' is not supported with the current configuration.", diagnostic.MessageFormat);
+        Assert.Equal("Method is not supported with the current configuration. An instance of 'Microsoft.Extensions.Hosting.IHost' must be configured to run.", diagnostic.Title);
+        Assert.Equal("Method '{0}' is not supported with the current configuration. An instance of 'Microsoft.Extensions.Hosting.IHost' must be configured to run.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
     }
 
