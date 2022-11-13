@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
@@ -86,30 +87,86 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         }
         else   // SpaceTemplateCache does not exist - Create & Add appropriate ref field
         {
+            var fixInFileAction = CodeAction.Create(
+                title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
+                equivalenceKey: $"{SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id}-1",
+                createChangedDocument: _ =>
+                {
+                    var newRoot = root.ReplaceNode(node, newNode);
+                    if (newRoot != null)
+                    {
+                        var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                        if (namespaceNode != null)
+                        {
+                            var cacheNode = CreateSpaceTemplateCache(new int[] { numOfSpaceUnits });
+                            newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { cacheNode });
+
+                            return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
+                        }
+                    }
+
+                    return Task.FromResult(context.Document);
+                });
+
+            var fixInNewFileAction = CodeAction.Create(
+                title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference in a new file.",
+                equivalenceKey: $"{SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id}-2",
+                createChangedDocument: async ct =>
+                {
+                    var solutionFilePath = context.Document.Project.Solution.FilePath;
+                    if (solutionFilePath != null)
+                    {
+                        using var workspace = MSBuildWorkspace.Create();
+
+                        var solution = await workspace.OpenSolutionAsync(solutionFilePath: solutionFilePath, cancellationToken: ct);
+
+                        var newSolution = solution.AddDocument(
+                            documentId: DocumentId.CreateNewId(context.Document.Project.Id, "SpaceTemplateCache_DEBUG.cs"),
+                            name: "SpaceTemplateCache.cs",
+                            text: CreateSpaceTemplateCache(new int[] { numOfSpaceUnits }).ToFullString());
+
+                        if (workspace.CanApplyChange(ApplyChangesKind.AddDocument))
+                        {
+                            if (workspace.TryApplyChanges(newSolution))
+                            {
+                                var newRoot = root.ReplaceNode(node, newNode);
+                                return context.Document.WithSyntaxRoot(newRoot);
+                            }
+                        }
+                    }
+
+                    return context.Document;
+                });
+
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
-                    equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
-                    createChangedDocument: _ =>
-                    {
-                        var newRoot = root.ReplaceNode(node, newNode);
-                        if (newRoot != null)
-                        {
-                            var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
-                            if (namespaceNode != null)
-                            {
-                                var cacheNode = CreateSpaceTemplateCache(new int[] { numOfSpaceUnits });
-                                newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { cacheNode });
-
-                                return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
-                            }
-                        }
-
-                        return Task.FromResult(context.Document);
-
-                    }), context.Diagnostics);
+                    nestedActions: ImmutableArray.Create(fixInFileAction, fixInNewFileAction),
+                    isInlinable: true),
+                context.Diagnostics);
         }
     }
+
+    //private async Task<Solution> CreateChangedSolutionAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellation)
+    //{
+    //    var projectDoc = context.Document.Project.AdditionalDocuments
+    //        .FirstOrDefault(doc => doc.FilePath.EndsWith(".csproj"));
+
+    //    if (projectDoc == null)
+    //        return null;
+
+    //    var documentSyntax = Parser.ParseText((await projectDoc.GetTextAsync()).ToString());
+    //    var newNode = documentSyntax.Accept(new AddPropertyVisitor("AndroidUseIntermediateDesignerFile", "True"));
+
+    //    var text = await projectDoc.GetTextAsync(cancellation);
+    //    var newDoc = context.Document.Project.Solution
+    //        .WithAdditionalDocumentText(projectDoc.Id, SourceText.From(
+    //            newNode.ToFullString(), text.Encoding))
+    //        .GetProject(context.Document.Project.Id)
+    //        .GetDocument(context.Document.Id);
+
+    //    return newDoc.Project.Solution;
+    //}
 
     private static async Task<StructDeclarationSyntax?> GetSpaceTemplateCacheNode(Document document, CancellationToken cancellationToken)
     {

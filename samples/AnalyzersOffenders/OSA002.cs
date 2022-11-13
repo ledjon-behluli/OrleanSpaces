@@ -14,4 +14,3 @@ public class OSA002
 {
     SpaceTemplate template3 = new(SpaceUnit.Null, SpaceUnit.Null);
 }
-
