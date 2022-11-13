@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
+using Microsoft.CodeAnalysis.Text;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
@@ -42,54 +43,15 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             IdentifierName("SpaceTemplateCache"),
             IdentifierName($"Tuple_{numOfSpaceUnits}"));
 
-        var cacheNode = await GetSpaceTemplateCacheNode(context.Document, context.CancellationToken);
-        if (cacheNode != null)  // SpaceTemplateCache already exists
-        {
-            SpaceTemplateCacheFieldVisitor visitor = new();
-            visitor.Visit(cacheNode);
+        var result = await GetSpaceTemplateCacheNodeAsync(context.Document.Project.Solution, context.Document, context.CancellationToken);
+        var cacheNode = result.Node;
 
-            if (visitor.TuplesPresent.Contains(numOfSpaceUnits))   // Appropriate ref field already exists
-            {
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
-                        equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
-                        createChangedDocument: _ =>
-                        {
-                            var newRoot = root.ReplaceNode(node, newNode);
-
-                            return Task.FromResult(newRoot == null ? context.Document :
-                                context.Document.WithSyntaxRoot(newRoot));
-
-                        }), context.Diagnostics);
-            }
-            else   // Add appropriate ref field
-            {
-                visitor.TuplesPresent.Add(numOfSpaceUnits);
-                var newCacheNode = CreateSpaceTemplateCache(visitor.TuplesPresent.ToArray());
-
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
-                        equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
-                        createChangedDocument: async ct =>
-                        {
-                            var documentEditor = await DocumentEditor.CreateAsync(context.Document, ct);
-
-                            documentEditor.ReplaceNode(cacheNode, newCacheNode);
-                            documentEditor.ReplaceNode(node, newNode);
-
-                            var newDocument = documentEditor.GetChangedDocument();
-                            return newDocument;
-
-                        }), context.Diagnostics);
-            }
-        }
-        else   // SpaceTemplateCache does not exist - Create & Add appropriate ref field
+        // SpaceTemplateCache does not exist - Create & Add appropriate member
+        if (cacheNode == null)
         {
             var fixInFileAction = CodeAction.Create(
                 title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
-                equivalenceKey: $"{SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id}-1",
+                equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
                     var newRoot = root.ReplaceNode(node, newNode);
@@ -98,7 +60,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                         if (namespaceNode != null)
                         {
-                            var cacheNode = CreateSpaceTemplateCache(new int[] { numOfSpaceUnits });
+                            var cacheNode = CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits });
                             newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { cacheNode });
 
                             return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
@@ -110,32 +72,29 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
             var fixInNewFileAction = CodeAction.Create(
                 title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference in a new file.",
-                equivalenceKey: $"{SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id}-2",
-                createChangedDocument: async ct =>
+                equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
+                createChangedSolution: _ =>
                 {
-                    var solutionFilePath = context.Document.Project.Solution.FilePath;
-                    if (solutionFilePath != null)
+                    var newRoot = root.ReplaceNode(node, newNode);
+                    if (newRoot != null)
                     {
-                        using var workspace = MSBuildWorkspace.Create();
-
-                        var solution = await workspace.OpenSolutionAsync(solutionFilePath: solutionFilePath, cancellationToken: ct);
-
-                        var newSolution = solution.AddDocument(
-                            documentId: DocumentId.CreateNewId(context.Document.Project.Id, "SpaceTemplateCache_DEBUG.cs"),
-                            name: "SpaceTemplateCache.cs",
-                            text: CreateSpaceTemplateCache(new int[] { numOfSpaceUnits }).ToFullString());
-
-                        if (workspace.CanApplyChange(ApplyChangesKind.AddDocument))
+                        var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                        if (namespaceNode != null)
                         {
-                            if (workspace.TryApplyChanges(newSolution))
+                            var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
+                            if (newSolution != null)
                             {
-                                var newRoot = root.ReplaceNode(node, newNode);
-                                return context.Document.WithSyntaxRoot(newRoot);
+                                newSolution = newSolution.AddAdditionalDocument(
+                                    documentId: context.Document.Id,
+                                    name: "SpaceTemplateCache.cs",
+                                    text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+
+                                return Task.FromResult(newSolution);
                             }
                         }
                     }
 
-                    return context.Document;
+                    return Task.FromResult(context.Document.Project.Solution);
                 });
 
             context.RegisterCodeFix(
@@ -144,45 +103,142 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     nestedActions: ImmutableArray.Create(fixInFileAction, fixInNewFileAction),
                     isInlinable: true),
                 context.Diagnostics);
+
+            return;
         }
-    }
 
-    //private async Task<Solution> CreateChangedSolutionAsync(CodeFixContext context, Diagnostic diagnostic, CancellationToken cancellation)
-    //{
-    //    var projectDoc = context.Document.Project.AdditionalDocuments
-    //        .FirstOrDefault(doc => doc.FilePath.EndsWith(".csproj"));
+        // SpaceTemplateCache already exists
+        SpaceTemplateCacheFieldVisitor visitor = new();
+        visitor.Visit(cacheNode);
 
-    //    if (projectDoc == null)
-    //        return null;
-
-    //    var documentSyntax = Parser.ParseText((await projectDoc.GetTextAsync()).ToString());
-    //    var newNode = documentSyntax.Accept(new AddPropertyVisitor("AndroidUseIntermediateDesignerFile", "True"));
-
-    //    var text = await projectDoc.GetTextAsync(cancellation);
-    //    var newDoc = context.Document.Project.Solution
-    //        .WithAdditionalDocumentText(projectDoc.Id, SourceText.From(
-    //            newNode.ToFullString(), text.Encoding))
-    //        .GetProject(context.Document.Project.Id)
-    //        .GetDocument(context.Document.Id);
-
-    //    return newDoc.Project.Solution;
-    //}
-
-    private static async Task<StructDeclarationSyntax?> GetSpaceTemplateCacheNode(Document document, CancellationToken cancellationToken)
-    {
-        var root = await document.GetSyntaxRootAsync(cancellationToken);
-        if (root == null)
+        // Appropriate member already exists
+        if (visitor.TuplesPresent.Contains(numOfSpaceUnits))   
         {
-            return null;
+            context.RegisterCodeFix(
+                CodeAction.Create(
+                    title: $"Use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                    equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
+                    createChangedDocument: _ =>
+                    {
+                        var newRoot = root.ReplaceNode(node, newNode);
+
+                        return Task.FromResult(newRoot == null ? context.Document :
+                            context.Document.WithSyntaxRoot(newRoot));
+
+                    }), context.Diagnostics);
+
+            return;
         }
 
-        var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>()
-            .FirstOrDefault(syntax => syntax.Identifier.ValueText == "SpaceTemplateCache");
+        // Appropriate member does not exist
+        visitor.TuplesPresent.Add(numOfSpaceUnits);
+        int[] args = visitor.TuplesPresent.ToArray();
 
-        return cacheDeclaration;
+        // Add appropriate member to SpaceTemplateCache (part of the document under analysis)
+        if (result.IsPartOfDocument)   
+        {
+            context.RegisterCodeFix(
+               CodeAction.Create(
+                   title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                   equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
+                   createChangedDocument: async ct =>
+                   {
+                       var documentEditor = await DocumentEditor.CreateAsync(context.Document, ct);
+
+                       // Cache Node
+                       var newCacheNode = CreateSpaceTemplateCacheNode(args);
+                       documentEditor.ReplaceNode(cacheNode, newCacheNode);
+
+                       // Node
+                       documentEditor.ReplaceNode(node, newNode);
+
+                       var newDocument = documentEditor.GetChangedDocument();
+                       return newDocument;
+
+                   }), context.Diagnostics);
+
+            return;
+        }
+
+        // Add appropriate member to SpaceTemplateCache (part of another document)
+        context.RegisterCodeFix(
+            CodeAction.Create(
+                title: $"Add and use 'SpaceTemplateCache.Tuple_{numOfSpaceUnits}'",
+                equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
+                createChangedSolution: async ct =>
+                {
+                    var solution = context.Document.Project.Solution;
+                    var solutionEditor = new SolutionEditor(solution);
+
+                    // Cache Node
+                    var (namespaceNode, @namespace) = cacheNode.GetNamespaceParts();
+                    var newCacheNode = CreateSpaceTemplateCacheNode(args, namespaceNode);
+                    var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(solution.GetDocumentId(cacheNode.SyntaxTree), ct);
+                    cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);
+
+                    // Node
+                    var nodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(solution.GetDocumentId(node.SyntaxTree), ct);
+                    nodeDocumentEditor.ReplaceNode(node, newNode);
+
+                    var newSolution = solutionEditor.GetChangedSolution();
+                    return newSolution;
+
+                }), context.Diagnostics);
     }
 
-    private static StructDeclarationSyntax CreateSpaceTemplateCache(int[] args)
+//    private static async Task<SpaceTemplateCacheNodeResult> GetSpaceTemplateCacheNodeAsync(Solution solution, Document document, CancellationToken cancellationToken)
+//    {
+//        try
+//        {
+//            using var workspace = MSBuildWorkspace.Create();
+//#pragma warning disable CS8604 // Possible null reference argument.
+//            var project = await workspace.OpenProjectAsync(
+//                projectFilePath: solution.Projects.FirstOrDefault(x => x.Id == document.Project.Id)?.FilePath, 
+//                cancellationToken: cancellationToken);
+//#pragma warning restore CS8604 // Possible null reference argument.
+//            var compilation = await project.GetCompilationAsync(cancellationToken);
+
+//            foreach (var _document in project.Documents)
+//            {
+//                var root = await _document.GetSyntaxRootAsync(cancellationToken);
+//                if (root == null)
+//                {
+//                    continue;
+//                }
+
+//                var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>().FirstOrDefault(syntax => syntax.Identifier.ValueText == "SpaceTemplateCache");
+//                if (cacheDeclaration != null)
+//                {
+//                    return new(cacheDeclaration, _document.Id.Equals(document.Id));
+//                }
+//            }
+//        }
+//        catch { }
+
+//        return new();
+//    }
+
+    private static async Task<SpaceTemplateCacheNodeResult> GetSpaceTemplateCacheNodeAsync(Solution solution, Document document, CancellationToken cancellationToken)
+    {
+        foreach (var _document in solution.Projects.SelectMany(x => x.Documents))
+        {
+            var root = await _document.GetSyntaxRootAsync(cancellationToken);
+            if (root == null)
+            {
+                continue;
+            }
+
+            var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>().FirstOrDefault(syntax => syntax.Identifier.ValueText == "SpaceTemplateCache");
+            if (cacheDeclaration != null)
+            {
+                return new(cacheDeclaration, _document.Id.Equals(document.Id));
+            }
+        }
+
+        return new();
+    }
+
+    private static SyntaxNode CreateSpaceTemplateCacheNode(int[] args, SyntaxNode? namespaceNode = null)
     {
         args = args.OrderBy(x => x).ToArray();
         string diagnosticId = SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id;
@@ -196,7 +252,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
             if (args[i] == 1)
             {
-                syntaxList = SingletonSeparatedList(CreateReplacementNode());
+                syntaxList = SingletonSeparatedList(CreateArgumentNode());
             }
             else
             {
@@ -205,7 +261,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
                 for (int j = 0; j < syntaxNodeOrTokenCount; j++)
                 {
-                    syntaxNodeOrTokens[j] = j % 2 == 0 ? CreateReplacementNode() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
+                    syntaxNodeOrTokens[j] = j % 2 == 0 ? CreateArgumentNode() : Token(TriviaList(), SyntaxKind.CommaToken, TriviaList(Space));
                 }
 
                 syntaxList = SeparatedList<ArgumentSyntax>(syntaxNodeOrTokens);
@@ -268,7 +324,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     TriviaList(
                         Space)));
 
-            if (i == 0)      // first field declaration
+            if (i == 0)      // first declaration
             {
                 fieldDeclaration = fieldDeclaration
                     .WithModifiers(
@@ -436,48 +492,84 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             .Cast<MemberDeclarationSyntax>()
             .Concat(propertyDeclarations.Cast<MemberDeclarationSyntax>());
 
-        return StructDeclaration(
-                    Identifier(
-                        TriviaList(),
-                        "SpaceTemplateCache",
-                        TriviaList(
-                            CarriageReturnLineFeed)))
-                .WithModifiers(
-                    TokenList(
-                        new[]{
-                            Token(
-                                TriviaList(),
-                                SyntaxKind.PublicKeyword,
-                                TriviaList(
-                                    Space)),
-                            Token(
-                                TriviaList(),
-                                SyntaxKind.ReadOnlyKeyword,
-                                TriviaList(
-                                    Space))}))
-                .WithKeyword(
-                    Token(
-                        TriviaList(),
-                        SyntaxKind.StructKeyword,
-                        TriviaList(
-                            Space)))
-                .WithOpenBraceToken(
-                    Token(
-                        TriviaList(),
-                        SyntaxKind.OpenBraceToken,
-                        TriviaList(
-                            CarriageReturnLineFeed)))
+        var structDeclaration = StructDeclaration(
+            Identifier(
+                TriviaList(),
+                "SpaceTemplateCache",
+                TriviaList(
+                    CarriageReturnLineFeed)))
+            .WithModifiers(
+                TokenList(
+                    new[]{
+                        Token(
+                            TriviaList(),
+                            SyntaxKind.PublicKeyword,
+                            TriviaList(
+                                Space)),
+                        Token(
+                            TriviaList(),
+                            SyntaxKind.ReadOnlyKeyword,
+                            TriviaList(
+                                Space))}))
+            .WithKeyword(
+                Token(
+                    TriviaList(),
+                    SyntaxKind.StructKeyword,
+                    TriviaList(
+                        Space)))
+            .WithOpenBraceToken(
+                Token(
+                    TriviaList(),
+                    SyntaxKind.OpenBraceToken,
+                    TriviaList(
+                        CarriageReturnLineFeed)))
+            .WithMembers(
+                List(memberDeclarations))
+            .WithLeadingTrivia(ElasticCarriageReturnLineFeed);
+
+        if (namespaceNode is BaseNamespaceDeclarationSyntax namespaceDeclaration)
+        {
+            return CompilationUnit()
+                .WithUsings(
+                    SingletonList(
+                        UsingDirective(
+                            QualifiedName(
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[0]),
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))))
                 .WithMembers(
-                    List(memberDeclarations))
-                .WithLeadingTrivia(ElasticCarriageReturnLineFeed);
+                    SingletonList<MemberDeclarationSyntax>(namespaceDeclaration.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                        .WithMembers(
+                            SingletonList<MemberDeclarationSyntax>(structDeclaration))))
+                .NormalizeWhitespace();
+        }
+
+        return structDeclaration;
+
+        static ArgumentSyntax CreateArgumentNode() =>
+            Argument(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName("SpaceUnit"),
+                    IdentifierName("Null")));
     }
 
-    private static ArgumentSyntax CreateReplacementNode() =>
-        Argument(
-            MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("SpaceUnit"),
-                IdentifierName("Null")));
+    private class SpaceTemplateCacheNodeResult
+    {
+        public StructDeclarationSyntax? Node { get; }
+
+        /// <summary>
+        /// Indicates wether <see cref="Node"/> is part of the document, the analyzer raised the issue for.
+        /// </summary>
+        public bool IsPartOfDocument { get; }
+
+        public SpaceTemplateCacheNodeResult() : this(null, false) { }
+
+        public SpaceTemplateCacheNodeResult(StructDeclarationSyntax? node, bool isInNewFile)
+        {
+            Node = node;
+            IsPartOfDocument = isInNewFile;
+        }
+    }
 
     private class SpaceTemplateCacheFieldVisitor : CSharpSyntaxWalker
     {

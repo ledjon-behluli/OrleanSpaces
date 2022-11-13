@@ -72,8 +72,6 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
                 location: invocationExpression.GetLocation(),
                 messageArgs: new[] { memberAccessExpression.Name.Identifier.ValueText }));
         }
-
-        
     }
 
     private static bool IsNonBlockingSpaceAgentMethod(InvocationExpressionSyntax invocationExpression, MemberAccessExpressionSyntax memberAccessExpression)
