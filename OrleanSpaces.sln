@@ -53,11 +53,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Benchmarks", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzersOffenders", "samples\AnalyzersOffenders\AnalyzersOffenders.csproj", "{3C3EE11F-5B98-4F98-9DF7-CC4966DAAC7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication_3_1", "samples\WebApplication_3_1\WebApplication_3_1.csproj", "{C2C6516C-0276-45F7-9FFD-2992BD4787AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication_3_1", "samples\WebApplication_3_1\WebApplication_3_1.csproj", "{C2C6516C-0276-45F7-9FFD-2992BD4787AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication_5_0", "samples\WebApplication_5_0\WebApplication_5_0.csproj", "{6BC5CB53-6F86-452F-9A26-0CCF03DD8D88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication_5_0", "samples\WebApplication_5_0\WebApplication_5_0.csproj", "{6BC5CB53-6F86-452F-9A26-0CCF03DD8D88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication_6_0", "samples\WebApplication_6_0\WebApplication_6_0.csproj", "{80C30535-C45C-4E6B-8001-2999C3534204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication_6_0", "samples\WebApplication_6_0\WebApplication_6_0.csproj", "{80C30535-C45C-4E6B-8001-2999C3534204}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

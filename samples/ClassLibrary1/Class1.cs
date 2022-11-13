@@ -1,6 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
 
-namespace AnalyzersOffenders.OSA002;
+namespace ClassLibrary1;
+
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002

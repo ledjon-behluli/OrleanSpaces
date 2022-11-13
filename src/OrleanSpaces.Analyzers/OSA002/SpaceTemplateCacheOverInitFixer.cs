@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
@@ -70,7 +69,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     return Task.FromResult(context.Document);
                 });
 
-            var fixInNewFileAction = CodeAction.Create(
+            var fixInNewFileAction = MultiDocumentCodeAction.Create(
                 title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference in a new file.",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: _ =>
@@ -89,12 +88,12 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                     name: "SpaceTemplateCache.cs",
                                     text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
 
-                                return Task.FromResult(newSolution);
+                                return Task.FromResult<Solution?>(newSolution);
                             }
                         }
                     }
 
-                    return Task.FromResult(context.Document.Project.Solution);
+                    return Task.FromResult<Solution?>(context.Document.Project.Solution);
                 });
 
             context.RegisterCodeFix(
@@ -173,54 +172,32 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     // Cache Node
                     var (namespaceNode, @namespace) = cacheNode.GetNamespaceParts();
                     var newCacheNode = CreateSpaceTemplateCacheNode(args, namespaceNode);
-                    var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(solution.GetDocumentId(cacheNode.SyntaxTree), ct);
+                    var newCacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
+                    var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(newCacheNodeDocumentId, context.CancellationToken);
                     cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);
 
                     // Node
-                    var nodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(solution.GetDocumentId(node.SyntaxTree), ct);
+                    var nodeDocumentId = solution.GetDocumentId(node.SyntaxTree);
+                    var nodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(nodeDocumentId, context.CancellationToken);
                     nodeDocumentEditor.ReplaceNode(node, newNode);
 
+                    // Result
                     var newSolution = solutionEditor.GetChangedSolution();
                     return newSolution;
 
                 }), context.Diagnostics);
     }
 
-//    private static async Task<SpaceTemplateCacheNodeResult> GetSpaceTemplateCacheNodeAsync(Solution solution, Document document, CancellationToken cancellationToken)
-//    {
-//        try
-//        {
-//            using var workspace = MSBuildWorkspace.Create();
-//#pragma warning disable CS8604 // Possible null reference argument.
-//            var project = await workspace.OpenProjectAsync(
-//                projectFilePath: solution.Projects.FirstOrDefault(x => x.Id == document.Project.Id)?.FilePath, 
-//                cancellationToken: cancellationToken);
-//#pragma warning restore CS8604 // Possible null reference argument.
-//            var compilation = await project.GetCompilationAsync(cancellationToken);
-
-//            foreach (var _document in project.Documents)
-//            {
-//                var root = await _document.GetSyntaxRootAsync(cancellationToken);
-//                if (root == null)
-//                {
-//                    continue;
-//                }
-
-//                var cacheDeclaration = root.DescendantNodes().OfType<StructDeclarationSyntax>().FirstOrDefault(syntax => syntax.Identifier.ValueText == "SpaceTemplateCache");
-//                if (cacheDeclaration != null)
-//                {
-//                    return new(cacheDeclaration, _document.Id.Equals(document.Id));
-//                }
-//            }
-//        }
-//        catch { }
-
-//        return new();
-//    }
-
     private static async Task<SpaceTemplateCacheNodeResult> GetSpaceTemplateCacheNodeAsync(Solution solution, Document document, CancellationToken cancellationToken)
     {
-        foreach (var _document in solution.Projects.SelectMany(x => x.Documents))
+        var project = document.Project;
+        var projectReferences = project.AllProjectReferences;
+        var referencedProjects = solution.Projects.Where(x => projectReferences.Contains(new ProjectReference(x.Id)));
+        var referencedProjectsAndSelf = referencedProjects.ToList();
+        
+        referencedProjectsAndSelf.Add(project);
+
+        foreach (var _document in referencedProjectsAndSelf.SelectMany(x => x.Documents))
         {
             var root = await _document.GetSyntaxRootAsync(cancellationToken);
             if (root == null)
@@ -574,11 +551,9 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
     private class SpaceTemplateCacheFieldVisitor : CSharpSyntaxWalker
     {
         /// <summary>
-        /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(SpaceUnit.Null, ..., SpaceUnit.Null)' are present.
+        /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(SpaceUnit.Null, ... , SpaceUnit.Null)' are present.
         /// </summary>
         public List<int> TuplesPresent { get; private set; } = new();
-
-        public override string ToString() => string.Join(", ", TuplesPresent);
 
         public override void VisitVariableDeclaration(VariableDeclarationSyntax node)
         {
@@ -614,5 +589,34 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 }
             }
         }
+    }
+
+    private class MultiDocumentCodeAction : CodeAction
+    {
+        private readonly Func<CancellationToken, Task<Solution?>> createChangedSolution;
+
+        public override string Title { get; }
+        public override string? EquivalenceKey { get; }
+
+        private MultiDocumentCodeAction(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
+        {
+            Title = title;
+            EquivalenceKey = equivalenceKey;
+            this.createChangedSolution = createChangedSolution;
+        }
+
+        public static new MultiDocumentCodeAction Create(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
+        {
+            if (title == null)
+                throw new ArgumentNullException(nameof(title));
+
+            if (createChangedSolution == null)
+                throw new ArgumentNullException(nameof(createChangedSolution));
+
+            return new MultiDocumentCodeAction(title, createChangedSolution, equivalenceKey);
+        }
+
+        protected override Task<Solution?> GetChangedSolutionAsync(CancellationToken cancellationToken) => createChangedSolution(cancellationToken);
+        //protected
     }
 }
