@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 using System.Reflection;
-using System.Threading;
 
 namespace OrleanSpaces.Analyzers.OSA004;
 
@@ -27,27 +26,6 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.EnableConcurrentExecution();
-
-        context.RegisterCompilationStartAction(context =>
-        {
-            AnalyzerOptions options = context.Options;
-            Workspace workspace = (Workspace)options.GetType().GetRuntimeProperty("Workspace").GetValue(options);
-            Project? currentProject = workspace.CurrentSolution.GetDocument(context.Node.SyntaxTree)?.Project;
-
-            if (currentProject == null)
-            {
-                return;
-            }
-
-            foreach (var project in workspace.CurrentSolution.Projects)
-            {
-                if (project.AllProjectReferences.Contains(new ProjectReference(currentProject.Id)))
-                {
-                    var compilation = await project.GetCompilationAsync(cancellationToken);
-                    compilation.GetTypeByMetadataName("");
-                }
-            }
-        });
 
         context.RegisterSyntaxNodeAction(AnalyseInvocation, SyntaxKind.InvocationExpression);
     }
@@ -88,7 +66,7 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
             if (symbol is IPropertySymbol propertySymbol) typeSymbol = propertySymbol.Type;
         }
 
-        if (typeSymbol?.Name == "ISpaceAgent")
+        if (typeSymbol?.Name == "ISpaceAgent" && !IsHostPresent(ref context))
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
@@ -123,27 +101,6 @@ internal sealed class InvalidMethodCallOnCurrentConfigAnalyzer : DiagnosticAnaly
         Unknown,
         Built,
         NotBuilt
-    }
-
-    private static async Task<HostState> GetHostState(SyntaxNodeAnalysisContext context, CancellationToken cancellationToken)
-    {
-        AnalyzerOptions options = context.Options;
-        Workspace workspace = (Workspace)options.GetType().GetRuntimeProperty("Workspace").GetValue(options);
-        Project? currentProject = workspace.CurrentSolution.GetDocument(context.Node.SyntaxTree)?.Project;
-
-        if (currentProject == null)
-        {
-            return HostState.Unknown;
-        }
-
-        foreach (var project in workspace.CurrentSolution.Projects)
-        {
-            if (project.AllProjectReferences.Contains(new ProjectReference(currentProject.Id)))
-            {
-                var compilation = await project.GetCompilationAsync(cancellationToken);
-                compilation.GetTypeByMetadataName("");
-            }
-        }
     }
 
     private static bool IsHostPresent(ref SyntaxNodeAnalysisContext context)

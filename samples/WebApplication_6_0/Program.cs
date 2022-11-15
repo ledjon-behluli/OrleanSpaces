@@ -4,11 +4,7 @@ using OrleanSpaces.Tuples;
 using System.Threading.Tasks;
 using System;
 
-var builder = WebApplication.CreateBuilder(args);
-
-var app = builder.Build();
-
-app.Run();
+WebApplication.CreateBuilder(args).Build().Run();
 
 SpaceTemplate template = new(1);
 
