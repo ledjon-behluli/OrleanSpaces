@@ -590,32 +590,4 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             }
         }
     }
-
-    private class MultiDocumentCodeAction : CodeAction
-    {
-        private readonly Func<CancellationToken, Task<Solution?>> createChangedSolution;
-
-        public override string Title { get; }
-        public override string? EquivalenceKey { get; }
-
-        private MultiDocumentCodeAction(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
-        {
-            Title = title;
-            EquivalenceKey = equivalenceKey;
-            this.createChangedSolution = createChangedSolution;
-        }
-
-        public static MultiDocumentCodeAction CreateMultiDoc(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
-        {
-            if (title == null)
-                throw new ArgumentNullException(nameof(title));
-
-            if (createChangedSolution == null)
-                throw new ArgumentNullException(nameof(createChangedSolution));
-
-            return new MultiDocumentCodeAction(title, createChangedSolution, equivalenceKey);
-        }
-
-        protected override Task<Solution?> GetChangedSolutionAsync(CancellationToken cancellationToken) => createChangedSolution(cancellationToken);
-    }
 }
