@@ -40,7 +40,7 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
     public void Should_Fix_SpaceTemplate_Without_Namespace_In_New_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: false), Namespace.OrleanSpaces_Tuples);
+        TestCodeFix(groupTitle, actionTitle, code, $"SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};", Namespace.OrleanSpaces_Tuples);
     }
 
     [Theory]
@@ -64,7 +64,7 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
     public void Should_Fix_SpaceTemplate_With_Namespace_In_New_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: true), Namespace.OrleanSpaces_Tuples);
+        TestCodeFix(groupTitle, actionTitle, code, $"namespace MyNamespace; SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};", Namespace.OrleanSpaces_Tuples);
     }
 
 
