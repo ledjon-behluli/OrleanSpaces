@@ -69,7 +69,9 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
 
     private static (string, string) GetNestedActionTitle(int numOfSpaceUnits, bool isNewFile) =>
-        new($"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.", isNewFile ? "Create in this file." : "Create in this file.");
+        new("Cache value as a static readonly reference.", isNewFile ?
+            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file." :
+            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file.");
 
     private static string GenerateFixedCode(int numOfSpaceUnits, bool useNamespace)
     {

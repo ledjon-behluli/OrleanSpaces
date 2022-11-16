@@ -49,7 +49,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         if (cacheNode == null)
         {
             var fixInFileAction = CodeAction.Create(
-                title: "Create in this file.",
+                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file.",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
@@ -70,7 +70,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 });
 
             var fixInNewFileAction = CodeAction.Create(
-                title: "Create in a new file.",
+                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file.",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: _ =>
                 {
@@ -98,7 +98,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
+                    title: "Cache value as a static readonly reference.",
                     nestedActions: ImmutableArray.Create(fixInFileAction, fixInNewFileAction),
                     isInlinable: true),
                 context.Diagnostics);
