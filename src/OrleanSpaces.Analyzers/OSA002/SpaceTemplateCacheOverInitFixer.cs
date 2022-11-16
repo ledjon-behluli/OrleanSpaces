@@ -88,12 +88,12 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                     name: "SpaceTemplateCache.cs",
                                     text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
 
-                                return Task.FromResult<Solution>(newSolution);
+                                return Task.FromResult(newSolution);
                             }
                         }
                     }
 
-                    return Task.FromResult<Solution>(context.Document.Project.Solution);
+                    return Task.FromResult(context.Document.Project.Solution);
                 });
 
             context.RegisterCodeFix(
@@ -134,7 +134,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         int[] args = visitor.TuplesPresent.ToArray();
 
         // Add appropriate member to SpaceTemplateCache (part of the document under analysis)
-        if (cacheNodeResult.IsPartOfDocument)   
+        if (cacheNodeResult.IsPartOfDocument)
         {
             context.RegisterCodeFix(
                CodeAction.Create(

@@ -12,9 +12,12 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
     }
 
+    #region Non-Existing SpaceTemplateCache 
+
     [Fact]
     public void Should_Equal() =>
         Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
+
 
     [Theory]
     [InlineData(1, "SpaceTemplate template = [|new()|];")]
@@ -22,27 +25,22 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
     [InlineData(2, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
     [InlineData(4, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
     [InlineData(8, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    public void Should_Fix_SpaceTemplate_Without_Namespace(int numOfSpaceUnits, string code)
+    public void Should_Fix_SpaceTemplate_Without_Namespace_Within_File(int numOfSpaceUnits, string code)
     {
-        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: false);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: false), Namespace.OrleanSpaces_Tuples);
+    }
 
-        static string GenerateFixedCode(int numOfSpaceUnits)
-        {
-            string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
-
-            return
-    @$"SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};
-
-public readonly struct SpaceTemplateCache
-{{
-#pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_{numOfSpaceUnits} = new({unitArrayArgument});
-#pragma warning restore OSA002
-
-    public static ref readonly SpaceTemplate Tuple_{numOfSpaceUnits} => ref tuple_{numOfSpaceUnits};
-}}";
-        }
+    [Theory]
+    [InlineData(1, "SpaceTemplate template = [|new()|];")]
+    [InlineData(1, "SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
+    [InlineData(2, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(4, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(8, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    public void Should_Fix_SpaceTemplate_Without_Namespace_In_New_File(int numOfSpaceUnits, string code)
+    {
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: false), Namespace.OrleanSpaces_Tuples);
     }
 
     [Theory]
@@ -51,17 +49,35 @@ public readonly struct SpaceTemplateCache
     [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
     [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
     [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    public void Should_Fix_SpaceTemplate_With_Namespace(int numOfSpaceUnits, string code)
+    public void Should_Fix_SpaceTemplate_With_Namespace_Within_File(int numOfSpaceUnits, string code)
     {
-        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: false);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: true), Namespace.OrleanSpaces_Tuples);
+    }
 
-        static string GenerateFixedCode(int numOfSpaceUnits)
-        {
-            string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
+    [Theory]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
+    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    public void Should_Fix_SpaceTemplate_With_Namespace_In_New_File(int numOfSpaceUnits, string code)
+    {
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits, useNamespace: true), Namespace.OrleanSpaces_Tuples);
+    }
 
-            return
-    @$"namespace MyNamespace; SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};
+
+    private static (string, string) GetNestedActionTitle(int numOfSpaceUnits, bool isNewFile) =>
+        new($"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.", isNewFile ? "Create in this file." : "Create in this file.");
+
+    private static string GenerateFixedCode(int numOfSpaceUnits, bool useNamespace)
+    {
+        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
+        string potentialNamespace = useNamespace ? "namespace MyNamespace; " : string.Empty;
+
+        return
+@$"{potentialNamespace}SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfSpaceUnits};
 
 public readonly struct SpaceTemplateCache
 {{
@@ -71,12 +87,12 @@ public readonly struct SpaceTemplateCache
 
     public static ref readonly SpaceTemplate Tuple_{numOfSpaceUnits} => ref tuple_{numOfSpaceUnits};
 }}";
-        }
     }
 
-    private static (string, string) GetNestedActionTitle(int numOfSpaceUnits) =>
-        new($"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.", "Create in this file.");
+    
+    #endregion
 
+    #region Existing SpaceTemplateCache 
 
     [Fact]
     public void Should_Fix_1_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
@@ -203,4 +219,6 @@ public readonly struct SpaceTemplateCache
 
         TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples);
     }
+
+    #endregion
 }
