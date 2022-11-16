@@ -42,14 +42,14 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             IdentifierName("SpaceTemplateCache"),
             IdentifierName($"Tuple_{numOfSpaceUnits}"));
 
-        var result = await GetSpaceTemplateCacheNodeAsync(context.Document.Project.Solution, context.Document, context.CancellationToken);
-        var cacheNode = result.Node;
+        var cacheNodeResult = await GetSpaceTemplateCacheNodeAsync(context.Document.Project.Solution, context.Document, context.CancellationToken);
+        var cacheNode = cacheNodeResult.Node;
 
         // SpaceTemplateCache does not exist - Create & Add appropriate member
         if (cacheNode == null)
         {
             var fixInFileAction = CodeAction.Create(
-                title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.",
+                title: "Create in this file.",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
@@ -69,8 +69,8 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     return Task.FromResult(context.Document);
                 });
 
-            var fixInNewFileAction = MultiDocumentCodeAction.Create(
-                title: $"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference in a new file.",
+            var fixInNewFileAction = CodeAction.Create(
+                title: "Create in a new file.",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: _ =>
                 {
@@ -88,12 +88,12 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                     name: "SpaceTemplateCache.cs",
                                     text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
 
-                                return Task.FromResult<Solution?>(newSolution);
+                                return Task.FromResult<Solution>(newSolution);
                             }
                         }
                     }
 
-                    return Task.FromResult<Solution?>(context.Document.Project.Solution);
+                    return Task.FromResult<Solution>(context.Document.Project.Solution);
                 });
 
             context.RegisterCodeFix(
@@ -134,7 +134,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         int[] args = visitor.TuplesPresent.ToArray();
 
         // Add appropriate member to SpaceTemplateCache (part of the document under analysis)
-        if (result.IsPartOfDocument)   
+        if (cacheNodeResult.IsPartOfDocument)   
         {
             context.RegisterCodeFix(
                CodeAction.Create(
@@ -170,10 +170,10 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     var solutionEditor = new SolutionEditor(solution);
 
                     // Cache Node
+                    var cacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
                     var (namespaceNode, @namespace) = cacheNode.GetNamespaceParts();
                     var newCacheNode = CreateSpaceTemplateCacheNode(args, namespaceNode);
-                    var newCacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
-                    var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(newCacheNodeDocumentId, context.CancellationToken);
+                    var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(cacheNodeDocumentId, context.CancellationToken);
                     cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);
 
                     // Node
@@ -195,7 +195,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         var referencedProjects = solution.Projects.Where(x => projectReferences.Contains(new ProjectReference(x.Id)));
         var referencedProjectsAndSelf = referencedProjects.ToList();
         
-        referencedProjectsAndSelf.Add(project);
+        referencedProjectsAndSelf.Add(project);   // add self
 
         foreach (var _document in referencedProjectsAndSelf.SelectMany(x => x.Documents))
         {
@@ -535,7 +535,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         public StructDeclarationSyntax? Node { get; }
 
         /// <summary>
-        /// Indicates wether <see cref="Node"/> is part of the document, the analyzer raised the issue for.
+        /// Indicates wether <see cref="Node"/> is part of the document the analyzer raised the issue for.
         /// </summary>
         public bool IsPartOfDocument { get; }
 
@@ -605,7 +605,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             this.createChangedSolution = createChangedSolution;
         }
 
-        public static new MultiDocumentCodeAction Create(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
+        public static MultiDocumentCodeAction CreateMultiDoc(string title, Func<CancellationToken, Task<Solution?>> createChangedSolution, string? equivalenceKey = null)
         {
             if (title == null)
                 throw new ArgumentNullException(nameof(title));
@@ -617,6 +617,5 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         }
 
         protected override Task<Solution?> GetChangedSolutionAsync(CancellationToken cancellationToken) => createChangedSolution(cancellationToken);
-        //protected
     }
 }

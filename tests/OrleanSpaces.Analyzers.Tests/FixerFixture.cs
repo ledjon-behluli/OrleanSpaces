@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using RoslynTestKit.CodeActionLocators;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -26,7 +27,19 @@ public class FixerFixture : CodeFixTestFixture
         this.diagnosticId = diagnosticId;
     }
 
-    protected void TestCodeFix(string code, string fixedCode, params Namespace[] namespaces)
+    /// <summary>
+    /// Use for single actions.
+    /// </summary>
+    protected void TestCodeFix(string code, string fixedCode, params Namespace[] namespaces) =>
+        TestCodeFix(code, fixedCode, namespaces, new ByIndexCodeActionSelector(0));
+
+    /// <summary>
+    /// Use for nested actions.
+    /// </summary>
+    protected void TestCodeFix(string groupTitle, string actionTitle, string code, string fixedCode, params Namespace[] namespaces) =>
+        TestCodeFix(code, fixedCode, namespaces, new ByTitleForNestedActionSelector(groupTitle, actionTitle));
+
+    private void TestCodeFix(string code, string fixedCode, Namespace[] namespaces, ICodeActionSelector selector)
     {
         string newCode = code;
         string newFixedCode = fixedCode;
@@ -55,7 +68,7 @@ public class FixerFixture : CodeFixTestFixture
             newFixedCode = fixedCodeBuilder.ToString();
         }
 
-        TestCodeFix(newCode, newFixedCode, diagnosticId);
+        TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
     }
 
     private const string startTag = "[|";

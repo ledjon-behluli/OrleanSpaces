@@ -24,7 +24,9 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
     [InlineData(8, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
     public void Should_Fix_SpaceTemplate_Without_Namespace(int numOfSpaceUnits, string code)
     {
-        TestCodeFix(code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+
         static string GenerateFixedCode(int numOfSpaceUnits)
         {
             string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
@@ -51,7 +53,9 @@ public readonly struct SpaceTemplateCache
     [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
     public void Should_Fix_SpaceTemplate_With_Namespace(int numOfSpaceUnits, string code)
     {
-        TestCodeFix(code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits);
+        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCode(numOfSpaceUnits), Namespace.OrleanSpaces_Tuples);
+
         static string GenerateFixedCode(int numOfSpaceUnits)
         {
             string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
@@ -69,6 +73,10 @@ public readonly struct SpaceTemplateCache
 }}";
         }
     }
+
+    private static (string, string) GetNestedActionTitle(int numOfSpaceUnits) =>
+        new($"Create wrapper around a cached '{numOfSpaceUnits}-tuple' reference.", "Create in this file.");
+
 
     [Fact]
     public void Should_Fix_1_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
