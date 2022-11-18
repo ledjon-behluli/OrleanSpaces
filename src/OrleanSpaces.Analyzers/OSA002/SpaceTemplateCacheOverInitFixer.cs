@@ -80,27 +80,28 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                         if (namespaceNode != null)
                         {
-                            var project = context.Document.Project;
+                            //var project = context.Document.Project;
 
-                            var newSolution = project.Solution.AddAdditionalDocument(
-                                documentId: DocumentId.CreateNewId(project.Id), //context.Document.Id,
-                                filePath: context.Document.FilePath, // TODO: test why its not working
-                                name: "SpaceTemplateCache.cs",
-                                text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+                            //var newSolution = project.Solution.AddAdditionalDocument(
+                            //    documentId: DocumentId.CreateNewId(context.Document.Project.Id),
+                            //    folders: context.Document.Folders,
+                            //    //filePath: context.Document.FilePath, // TODO: test why its not working
+                            //    name: "SpaceTemplateCache.cs",
+                            //    text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
 
-                            return Task.FromResult(newSolution);
+                            //return Task.FromResult(newSolution);
 
-                            //var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
-                            //if (newSolution != null)
-                            //{
-                            //    newSolution = newSolution.AddAdditionalDocument(
-                            //        documentId: DocumentId.CreateNewId(context.Document.Project.Id), //context.Document.Id,
-                            //        filePath: context.Document.FilePath, // TODO: test why its not working
-                            //        name: "SpaceTemplateCache.cs",
-                            //        text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+                            var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
+                            if (newSolution != null)
+                            {
+                                newSolution = newSolution.AddAdditionalDocument(
+                                    documentId: DocumentId.CreateNewId(context.Document.Project.Id),//context.Document.Id,
+                                    folders: context.Document.Folders,
+                                    name: "SpaceTemplateCache.cs",
+                                    text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
 
-                            //    return Task.FromResult(newSolution);
-                            //}
+                                return Task.FromResult(newSolution);
+                            }
                         }
                     }
 
@@ -525,7 +526,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                 IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[0]),
                                 IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))))
                 .WithMembers(
-                    SingletonList<MemberDeclarationSyntax>(namespaceDeclaration.WithLeadingTrivia(ElasticCarriageReturnLineFeed)
+                    SingletonList<MemberDeclarationSyntax>(namespaceDeclaration
                         .WithMembers(
                             SingletonList<MemberDeclarationSyntax>(structDeclaration))))
                 .NormalizeWhitespace();
