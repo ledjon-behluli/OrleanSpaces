@@ -80,16 +80,27 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                         if (namespaceNode != null)
                         {
-                            var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
-                            if (newSolution != null)
-                            {
-                                newSolution = newSolution.AddAdditionalDocument(
-                                    documentId: context.Document.Id,
-                                    name: "SpaceTemplateCache.cs",
-                                    text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+                            var project = context.Document.Project;
 
-                                return Task.FromResult(newSolution);
-                            }
+                            var newSolution = project.Solution.AddAdditionalDocument(
+                                documentId: DocumentId.CreateNewId(project.Id), //context.Document.Id,
+                                filePath: context.Document.FilePath, // TODO: test why its not working
+                                name: "SpaceTemplateCache.cs",
+                                text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+
+                            return Task.FromResult(newSolution);
+
+                            //var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
+                            //if (newSolution != null)
+                            //{
+                            //    newSolution = newSolution.AddAdditionalDocument(
+                            //        documentId: DocumentId.CreateNewId(context.Document.Project.Id), //context.Document.Id,
+                            //        filePath: context.Document.FilePath, // TODO: test why its not working
+                            //        name: "SpaceTemplateCache.cs",
+                            //        text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
+
+                            //    return Task.FromResult(newSolution);
+                            //}
                         }
                     }
 
