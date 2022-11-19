@@ -56,7 +56,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     var newRoot = root.ReplaceNode(node, newNode);
                     if (newRoot != null)
                     {
-                        var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                        var namespaceNode = newRoot.TryGetNamespaceNode();
                         if (namespaceNode != null)
                         {
                             var cacheNode = CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits });
@@ -77,7 +77,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                     var newRoot = root.ReplaceNode(node, newNode);
                     if (newRoot != null)
                     {
-                        var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
+                        var namespaceNode = newRoot.TryGetNamespaceNode();
                         if (namespaceNode != null)
                         {
                             var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
@@ -172,7 +172,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
                     // Cache Node
                     var cacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
-                    var (namespaceNode, @namespace) = cacheNode.GetNamespaceParts();
+                    var namespaceNode = cacheNode.TryGetNamespaceNode();
                     var newCacheNode = CreateSpaceTemplateCacheNode(args, namespaceNode);
                     var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(cacheNodeDocumentId, context.CancellationToken);
                     cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);

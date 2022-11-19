@@ -88,7 +88,7 @@ internal static class OperationExtensions
 
 internal static class SyntaxExtensions
 {
-    public static (SyntaxNode?, string) GetNamespaceParts(this SyntaxNode? node)
+    public static SyntaxNode? TryGetNamespaceNode(this SyntaxNode? node)
     {
         string @namespace = string.Empty;
         SyntaxNode? namespaceNode = null;
@@ -102,7 +102,7 @@ internal static class SyntaxExtensions
 
             if (potentialNamespace != null)
             {
-                TrySetResult(potentialNamespace, ref @namespace, ref namespaceNode);
+                TrySetNot(potentialNamespace, ref namespaceNode);
             }
         }
         else
@@ -116,17 +116,22 @@ internal static class SyntaxExtensions
                 potentialNamespace = potentialNamespace.Parent;
             }
 
-            TrySetResult(potentialNamespace, ref @namespace, ref namespaceNode);
+            TrySetNot(potentialNamespace, ref namespaceNode);
         }
 
-        return (namespaceNode, @namespace);
+        return namespaceNode;
     }
 
-    private static void TrySetResult(SyntaxNode? potentialNamespace, ref string @namespace, ref SyntaxNode? namespaceNode)
+    private static void TrySetNot(SyntaxNode? potentialNamespaceNode, ref SyntaxNode? namespaceNode)
     {
-        if (potentialNamespace is BaseNamespaceDeclarationSyntax namespaceParent)
+        if (potentialNamespaceNode is GlobalStatementSyntax globalStatement)
         {
-            @namespace = namespaceParent.Name.ToString();
+            namespaceNode = globalStatement;
+            return;
+        }
+
+        if (potentialNamespaceNode is BaseNamespaceDeclarationSyntax namespaceParent)
+        {
             namespaceNode = namespaceParent;
 
             while (true)
@@ -136,19 +141,9 @@ internal static class SyntaxExtensions
                     break;
                 }
 
-                @namespace = $"{namespaceParent.Name}.{@namespace}";  // Add the outer namespace as a prefix to the final namespace
-
                 namespaceParent = parent;
                 namespaceNode = parent;
             }
-
-            return;
-        }
-       
-        if (potentialNamespace is GlobalStatementSyntax globalStatement)
-        {
-            @namespace = string.Empty;
-            namespaceNode = globalStatement;
         }
     }
 }
