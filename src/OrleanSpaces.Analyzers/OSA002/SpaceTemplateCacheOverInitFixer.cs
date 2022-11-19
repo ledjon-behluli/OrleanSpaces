@@ -80,22 +80,11 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         var (namespaceNode, @namespace) = newRoot.GetNamespaceParts();
                         if (namespaceNode != null)
                         {
-                            //var project = context.Document.Project;
-
-                            //var newSolution = project.Solution.AddAdditionalDocument(
-                            //    documentId: DocumentId.CreateNewId(context.Document.Project.Id),
-                            //    folders: context.Document.Folders,
-                            //    //filePath: context.Document.FilePath, // TODO: test why its not working
-                            //    name: "SpaceTemplateCache.cs",
-                            //    text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
-
-                            //return Task.FromResult(newSolution);
-
                             var newSolution = context.Document.Project.Solution.WithDocumentSyntaxRoot(context.Document.Id, newRoot);
                             if (newSolution != null)
                             {
                                 newSolution = newSolution.AddAdditionalDocument(
-                                    documentId: DocumentId.CreateNewId(context.Document.Project.Id),//context.Document.Id,
+                                    documentId: DocumentId.CreateNewId(context.Document.Project.Id),
                                     folders: context.Document.Folders,
                                     name: "SpaceTemplateCache.cs",
                                     text: SourceText.From(CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits }, namespaceNode).ToFullString()));
@@ -112,7 +101,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 CodeAction.Create(
                     title: "Cache value as a static readonly reference.",
                     nestedActions: ImmutableArray.Create(fixInFileAction, fixInNewFileAction),
-                    isInlinable: true),
+                    isInlinable: false),
                 context.Diagnostics);
 
             return;
@@ -516,7 +505,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 List(memberDeclarations))
             .WithLeadingTrivia(ElasticCarriageReturnLineFeed);
 
-        if (namespaceNode is BaseNamespaceDeclarationSyntax namespaceDeclaration)
+        if (namespaceNode is NamespaceDeclarationSyntax namespaceDeclaration)
         {
             return CompilationUnit()
                 .WithUsings(
@@ -524,12 +513,112 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         UsingDirective(
                             QualifiedName(
                                 IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[0]),
-                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))))
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))
+                        .WithUsingKeyword(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.UsingKeyword,
+                                TriviaList(
+                                    Space)))
+                        .WithSemicolonToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.SemicolonToken,
+                                TriviaList(
+                                    CarriageReturnLineFeed)))))
+                    .WithMembers(
+                        SingletonList<MemberDeclarationSyntax>(namespaceDeclaration
+                            .WithNamespaceKeyword(
+                                Token(
+                                    TriviaList(
+                                        CarriageReturnLineFeed),
+                                    SyntaxKind.NamespaceKeyword,
+                                    TriviaList(
+                                        Space)))
+                            .WithOpenBraceToken(
+                                Token(
+                                    TriviaList(),
+                                    SyntaxKind.OpenBraceToken,
+                                    TriviaList(
+                                        CarriageReturnLineFeed)))
+                            .WithMembers(
+                                SingletonList<MemberDeclarationSyntax>(
+                                    structDeclaration))
+                    .WithCloseBraceToken(
+                        Token(
+                            TriviaList(
+                                Whitespace("    ")),
+                            SyntaxKind.CloseBraceToken,
+                            TriviaList(
+                                CarriageReturnLineFeed)))))
+                    .NormalizeWhitespace();
+        }
+
+        if (namespaceNode is FileScopedNamespaceDeclarationSyntax fileScopedNamespaceDeclaration)
+        {
+            return CompilationUnit()
+                .WithUsings(
+                    SingletonList(
+                        UsingDirective(
+                            QualifiedName(
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[0]),
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))
+                        .WithUsingKeyword(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.UsingKeyword,
+                                TriviaList(
+                                    Space)))
+                        .WithSemicolonToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.SemicolonToken,
+                                TriviaList(
+                                    CarriageReturnLineFeed)))))
                 .WithMembers(
-                    SingletonList<MemberDeclarationSyntax>(namespaceDeclaration
+                    SingletonList<MemberDeclarationSyntax>(fileScopedNamespaceDeclaration
+                        .WithNamespaceKeyword(
+                            Token(
+                                TriviaList(
+                                    CarriageReturnLineFeed),
+                                SyntaxKind.NamespaceKeyword,
+                                TriviaList(
+                                    Space)))
+                        .WithSemicolonToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.SemicolonToken,
+                                TriviaList(
+                                    CarriageReturnLineFeed)))
                         .WithMembers(
-                            SingletonList<MemberDeclarationSyntax>(structDeclaration))))
-                .NormalizeWhitespace();
+                            SingletonList<MemberDeclarationSyntax>(
+                                structDeclaration))));
+        }
+
+        if (namespaceNode is GlobalStatementSyntax globalStatement)
+        {
+            return CompilationUnit()
+                .WithUsings(
+                    SingletonList(
+                        UsingDirective(
+                            QualifiedName(
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[0]),
+                                IdentifierName(FullyQualifiedNames.SpaceTemplate.Split('.')[1])))
+                        .WithUsingKeyword(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.UsingKeyword,
+                                TriviaList(
+                                    Space)))
+                        .WithSemicolonToken(
+                            Token(
+                                TriviaList(),
+                                SyntaxKind.SemicolonToken,
+                                TriviaList(
+                                    CarriageReturnLineFeed)))))
+                .WithMembers(
+                    SingletonList<MemberDeclarationSyntax>(
+                        structDeclaration));
         }
 
         return structDeclaration;
