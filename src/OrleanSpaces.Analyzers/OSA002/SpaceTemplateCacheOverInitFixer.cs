@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Rename;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
@@ -152,6 +153,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                        // Node
                        documentEditor.ReplaceNode(node, newNode);
 
+                       // Result
                        var newDocument = documentEditor.GetChangedDocument();
                        return newDocument;
 
@@ -200,6 +202,11 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
         foreach (var _document in referencedProjectsAndSelf.SelectMany(x => x.Documents))
         {
+            if (!_document.SupportsSyntaxTree)
+            {
+                continue;
+            }
+
             var root = await _document.GetSyntaxRootAsync(cancellationToken);
             if (root == null)
             {
