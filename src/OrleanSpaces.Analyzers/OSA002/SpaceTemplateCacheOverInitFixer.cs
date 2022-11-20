@@ -60,7 +60,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         var namespaceNode = newRoot.TryGetNamespaceNode();
                         if (namespaceNode != null)
                         {
-                            cacheNode = CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits });
+                            cacheNode = CreateSpaceTemplateCacheNode(args: new int[] { numOfSpaceUnits }, isRightShifted: false);
                             newRoot = newRoot.InsertNodesAfter(namespaceNode, new SyntaxNode[] { cacheNode });
 
                             return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
@@ -85,7 +85,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                             if (newSolution != null)
                             {
                                 CompilationUnitSyntax? compilationUnit = null;
-                                cacheNode = CreateSpaceTemplateCacheNode(new int[] { numOfSpaceUnits });
+                                cacheNode = CreateSpaceTemplateCacheNode(args: new int[] { numOfSpaceUnits }, isRightShifted: false);
 
                                 if (namespaceNode is NamespaceDeclarationSyntax nd)
                                 {
@@ -168,7 +168,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                        var documentEditor = await DocumentEditor.CreateAsync(context.Document, ct);
 
                        // Cache Node
-                       var newCacheNode = CreateSpaceTemplateCacheNode(args);
+                       var newCacheNode = CreateSpaceTemplateCacheNode(args: args, isRightShifted: false);
                        documentEditor.ReplaceNode(cacheNode, newCacheNode);
 
                        // Node
@@ -195,7 +195,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
                     // Cache Node
                     var cacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
-                    var newCacheNode = CreateSpaceTemplateCacheNode(args);
+                    var newCacheNode = CreateSpaceTemplateCacheNode(args: args, isRightShifted: cacheNode.TryGetNamespaceNode() is NamespaceDeclarationSyntax);
                     var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(cacheNodeDocumentId, context.CancellationToken);
                     cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);
 
@@ -243,10 +243,11 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         return new();
     }
 
-    private static StructDeclarationSyntax CreateSpaceTemplateCacheNode(int[] args)
+    private static StructDeclarationSyntax CreateSpaceTemplateCacheNode(int[] args, bool isRightShifted)
     {
         args = args.OrderBy(x => x).ToArray();
         string diagnosticId = SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id;
+        string whiteSpace = isRightShifted ? "    " : "";
 
         List<FieldDeclarationSyntax> fieldDeclarations = new();
         List<PropertyDeclarationSyntax> propertyDeclarations = new();
@@ -349,7 +350,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                 TriviaList()),
                             Token(
                                 TriviaList(
-                                    Whitespace("    ")),
+                                    Whitespace("    " + whiteSpace)),
                                 SyntaxKind.PrivateKeyword,
                                 TriviaList(
                                     Space)),
@@ -389,7 +390,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                                         CarriageReturnLineFeed)),
                                 Token(
                                     TriviaList(
-                                        Whitespace("    ")),
+                                        Whitespace("    " + whiteSpace)),
                                     SyntaxKind.PublicKeyword,
                                     TriviaList(
                                         Space)),
@@ -429,7 +430,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                             new[]{
                             Token(
                                 TriviaList(
-                                    Whitespace("    ")),
+                                    Whitespace("    " + whiteSpace)),
                                 SyntaxKind.PrivateKeyword,
                                 TriviaList(
                                     Space)),
@@ -456,7 +457,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                             new[]{
                                 Token(
                                     TriviaList(
-                                        Whitespace("    ")),
+                                        Whitespace("    " + whiteSpace)),
                                     SyntaxKind.PublicKeyword,
                                     TriviaList(
                                         Space)),
@@ -493,7 +494,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             propertyDeclarations.Add(propertyDeclaration);
         }
 
-        IEnumerable<MemberDeclarationSyntax> memberDeclarations = fieldDeclarations
+        IEnumerable <MemberDeclarationSyntax> memberDeclarations = fieldDeclarations
             .Cast<MemberDeclarationSyntax>()
             .Concat(propertyDeclarations.Cast<MemberDeclarationSyntax>());
 
@@ -507,7 +508,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 TokenList(
                     new[]{
                         Token(
-                            TriviaList(),
+                            TriviaList(Whitespace(whiteSpace)),
                             SyntaxKind.PublicKeyword,
                             TriviaList(
                                 Space)),
@@ -524,7 +525,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                         Space)))
             .WithOpenBraceToken(
                 Token(
-                    TriviaList(),
+                    TriviaList(Whitespace(whiteSpace)),
                     SyntaxKind.OpenBraceToken,
                     TriviaList(
                         CarriageReturnLineFeed)))
