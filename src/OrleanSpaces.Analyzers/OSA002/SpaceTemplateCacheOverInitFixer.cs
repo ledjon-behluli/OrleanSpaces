@@ -174,8 +174,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
                     // Cache Node
                     var cacheNodeDocumentId = solution.GetDocumentId(cacheNode.SyntaxTree);
-                    var namespaceNode = cacheNode.TryGetNamespaceNode();
-                    var newCacheNode = CreateSpaceTemplateCacheNode(args, namespaceNode);
+                    var newCacheNode = CreateSpaceTemplateCacheNode(args);  // TODO: Check the formating here! (Look at pic)
                     var cacheNodeDocumentEditor = await solutionEditor.GetDocumentEditorAsync(cacheNodeDocumentId, context.CancellationToken);
                     cacheNodeDocumentEditor.ReplaceNode(cacheNode, newCacheNode);
 
