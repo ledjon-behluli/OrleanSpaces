@@ -19,9 +19,9 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
     #region Non-Existing SpaceTemplateCache 
 
     private static (string, string) GetNestedActionTitle(int numOfSpaceUnits, bool isNewFile) =>
-        new("Cache value as a static readonly reference.", isNewFile ?
-            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file." :
-            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file.");
+        new("Cache value as a static readonly reference", isNewFile ?
+            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file" :
+            $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file");
 
     #region Within File
 
