@@ -50,13 +50,13 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_On_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple(SpaceUnit.Null));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(new SpaceUnit()));
     }
 
     [Fact]
     public void Should_Throw_If_Tuple_Contains_SpaceUnit()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, "a", SpaceUnit.Null));
+        Assert.Throws<ArgumentException>(() => new SpaceTuple(1, "a", new SpaceUnit()));
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class SpaceTupleTests
     {
         var expection = Record.Exception(() =>
         {
-            new SpaceTuple("");
-            new SpaceTuple(string.Empty);
+            _ = new SpaceTuple("");
+            _ = new SpaceTuple(string.Empty);
         });
         Assert.Null(expection);
     }
@@ -205,7 +205,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal($"({SpaceUnit.Null})", new SpaceTuple().ToString());
+        Assert.Equal($"({new SpaceUnit()})", new SpaceTuple().ToString());
         Assert.Equal("(1)", new SpaceTuple(1).ToString());
         Assert.Equal("(1, a)", new SpaceTuple(1, "a").ToString());
         Assert.Equal("(1, a, 1.5)", new SpaceTuple(1, "a", 1.5f).ToString());

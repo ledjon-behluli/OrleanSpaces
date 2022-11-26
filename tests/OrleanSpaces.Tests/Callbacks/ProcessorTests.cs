@@ -34,9 +34,9 @@ public class ProcessorTests : IClassFixture<Fixture>
     {
         registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, true));
         registry.Add(new(1, "a"), new(tuple => Task.CompletedTask, false));
-        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
-        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, false));
-        registry.Add(new(1, SpaceUnit.Null), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, new SpaceUnit()), new(tuple => Task.CompletedTask, true));
+        registry.Add(new(1, new SpaceUnit()), new(tuple => Task.CompletedTask, false));
+        registry.Add(new(1, new SpaceUnit()), new(tuple => Task.CompletedTask, true));
         registry.Add(new(1, "a", 1.5F), new(tuple => Task.CompletedTask, true));
 
         SpaceTuple tuple = new(1, "a");

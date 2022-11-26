@@ -75,7 +75,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
                 if (space.State.Tuples.Count == 0)
                 {
-                    await stream.OnNextAsync(SpaceUnit.Null);
+                    await stream.OnNextAsync(new SpaceUnit());
                 }
 
                 return tuple;

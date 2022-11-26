@@ -43,7 +43,7 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Implicitly_Convert_From_SpaceTuple()
     {
-        SpaceTemplate template1 = new SpaceTemplate();
+        SpaceTemplate template1 = new();
         SpaceTemplate implicit1 = new SpaceTuple();
 
         SpaceTemplate template2 = new(1);
@@ -63,10 +63,10 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Created_On_SpaceUnit()
     {
-        SpaceTemplate template = new(SpaceUnit.Null);
+        SpaceTemplate template = new(new SpaceUnit());
 
         Assert.Equal(1, template.Length);
-        Assert.Equal(SpaceUnit.Null, template[0]);
+        Assert.Equal(new SpaceUnit(), template[0]);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Create_Template_With_Single_Unit_Field_On_Null()
     {
-        Assert.Equal(new SpaceTemplate(SpaceUnit.Null), new SpaceTemplate(null));
+        Assert.Equal(new SpaceTemplate(new SpaceUnit()), new SpaceTemplate(null));
     }
 
     [Fact]
@@ -118,14 +118,14 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Not_Throw_If_Template_Contains_SpaceUnit()
     {
-        var expection = Record.Exception(() => new SpaceTemplate(1, "a", SpaceUnit.Null));
+        var expection = Record.Exception(() => new SpaceTemplate(1, "a", new SpaceUnit()));
         Assert.Null(expection);
     }
 
     [Fact]
     public void Should_Not_Throw_If_Template_Contains_Types()
     {
-        var expection = Record.Exception(() => new SpaceTemplate(1, typeof(int), SpaceUnit.Null));
+        var expection = Record.Exception(() => new SpaceTemplate(1, typeof(int), new SpaceUnit()));
         Assert.Null(expection);
     }
 
@@ -134,8 +134,8 @@ public class SpaceTemplateTests
     {
         var expection = Record.Exception(() =>
         {
-            new SpaceTemplate("");
-            new SpaceTemplate(string.Empty);
+            _ = new SpaceTemplate("");
+            _ = new SpaceTemplate(string.Empty);
         });
         Assert.Null(expection);
     }
@@ -143,8 +143,8 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Equal()
     {
-        SpaceTemplate template1 = new(1, "a", 1.5f, SpaceUnit.Null);
-        SpaceTemplate template2 = new(1, "a", 1.5f, SpaceUnit.Null);
+        SpaceTemplate template1 = new(1, "a", 1.5f, new SpaceUnit());
+        SpaceTemplate template2 = new(1, "a", 1.5f, new SpaceUnit());
 
         Assert.Equal(template1, template2);
         Assert.True(template1 == template2);
@@ -165,8 +165,8 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Equal_On_Object()
     {
-        SpaceTemplate template = new(1, "a", 1.5f, SpaceUnit.Null);
-        object obj = new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null);
+        SpaceTemplate template = new(1, "a", 1.5f, new SpaceUnit());
+        object obj = new SpaceTemplate(1, "a", 1.5f, new SpaceUnit());
 
         Assert.True(template.Equals(obj));
     }
@@ -175,7 +175,7 @@ public class SpaceTemplateTests
     public void Should_Not_Be_Equal_On_Object()
     {
         SpaceTemplate template = new(1, "a", 1.5f);
-        object obj = new SpaceTemplate(1, "a", SpaceUnit.Null);
+        object obj = new SpaceTemplate(1, "a", new SpaceUnit());
 
         Assert.False(template.Equals(obj));
     }
@@ -237,13 +237,13 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal($"({SpaceUnit.Null})", new SpaceTemplate().ToString());
+        Assert.Equal($"({new SpaceUnit()})", new SpaceTemplate().ToString());
         Assert.Equal("(1)", new SpaceTemplate(1).ToString());
         Assert.Equal("(1, a)", new SpaceTemplate(1, "a").ToString());
         Assert.Equal("(1, a, 1.5)", new SpaceTemplate(1, "a", 1.5f).ToString());
         Assert.Equal("(1, a, 1.5, b)", new SpaceTemplate(1, "a", 1.5f, 'b').ToString());
-        Assert.Equal("(1, a, 1.5, b, {NULL})", new SpaceTemplate(1, "a", 1.5f, 'b', SpaceUnit.Null).ToString());
-        Assert.Equal("(1, a, 1.5, b, {NULL}, System.Int32)", new SpaceTemplate(1, "a", 1.5f, 'b', SpaceUnit.Null, typeof(int)).ToString());
+        Assert.Equal("(1, a, 1.5, b, {NULL})", new SpaceTemplate(1, "a", 1.5f, 'b', new SpaceUnit()).ToString());
+        Assert.Equal("(1, a, 1.5, b, {NULL}, System.Int32)", new SpaceTemplate(1, "a", 1.5f, 'b', new SpaceUnit(), typeof(int)).ToString());
     }
 
     public static object[][] CompareData() =>
@@ -252,9 +252,9 @@ public class SpaceTemplateTests
             new object[] { new SpaceTemplate(1), 1 },
             new object[] { new SpaceTemplate(2), 1 },
             new object[] { new SpaceTemplate(1, "a"), 0 },
-            new object[] { new SpaceTemplate(SpaceUnit.Null, 1), 0 },
-            new object[] { new SpaceTemplate(1, "a", SpaceUnit.Null), -1 },
-            new object[] { new SpaceTemplate("a", SpaceUnit.Null, 1.8f), -1 },
+            new object[] { new SpaceTemplate(new SpaceUnit(), 1), 0 },
+            new object[] { new SpaceTemplate(1, "a", new SpaceUnit()), -1 },
+            new object[] { new SpaceTemplate("a", new SpaceUnit(), 1.8f), -1 },
        };
 }
 
@@ -280,8 +280,8 @@ public class MatchTests
         Assert.True(new SpaceTemplate(1).Matches(new(1)));
         Assert.True(new SpaceTemplate(1, "a").Matches(new(1, "a")));
         Assert.True(new SpaceTemplate(1, "a", 1.5f).Matches(new(1, "a", 1.5f)));
-        Assert.True(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).Matches(new(1, "a", 1.5f, 1.1m)));
-        Assert.True(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).Matches(new(1, "a", 1.5f, 1.1m)));
+        Assert.True(new SpaceTemplate(1, "a", 1.5f, new SpaceUnit()).Matches(new(1, "a", 1.5f, 1.1m)));
+        Assert.True(new SpaceTemplate(1, new SpaceUnit(), 1.5f, new SpaceUnit()).Matches(new(1, "a", 1.5f, 1.1m)));
     }
 
     [Fact]
@@ -289,8 +289,8 @@ public class MatchTests
     {
         Assert.False(new SpaceTemplate(1, "a").Matches(new(1)));
         Assert.False(new SpaceTemplate(1, "a", 1.5f).Matches(new(1, "a", 2.5f)));
-        Assert.False(new SpaceTemplate(1, "a", 1.5f, SpaceUnit.Null).Matches(new(1, "b", 1.5f, 1.1m)));
-        Assert.False(new SpaceTemplate(1, SpaceUnit.Null, 1.5f, SpaceUnit.Null).Matches(new(1, "a", 2.5f, 1.1m)));
+        Assert.False(new SpaceTemplate(1, "a", 1.5f, new SpaceUnit()).Matches(new(1, "b", 1.5f, 1.1m)));
+        Assert.False(new SpaceTemplate(1, new SpaceUnit(), 1.5f, new SpaceUnit()).Matches(new(1, "a", 2.5f, 1.1m)));
     }
 
     #region Values
@@ -329,12 +329,12 @@ public class MatchTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnValues()
     {
-        SpaceTemplate template1 = new(1, "a", SpaceUnit.Null);
-        SpaceTemplate template2 = new(1, SpaceUnit.Null, 1.5f);
-        SpaceTemplate template3 = new(1, SpaceUnit.Null, SpaceUnit.Null);
-        SpaceTemplate template4 = new(SpaceUnit.Null, "a", 1.5f);
-        SpaceTemplate template5 = new(SpaceUnit.Null, SpaceUnit.Null, 1.5f);
-        SpaceTemplate template6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+        SpaceTemplate template1 = new(1, "a", new SpaceUnit());
+        SpaceTemplate template2 = new(1, new SpaceUnit(), 1.5f);
+        SpaceTemplate template3 = new(1, new SpaceUnit(), new SpaceUnit());
+        SpaceTemplate template4 = new(new SpaceUnit(), "a", 1.5f);
+        SpaceTemplate template5 = new(new SpaceUnit(), new SpaceUnit(), 1.5f);
+        SpaceTemplate template6 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
 
         Assert.True(template1.Matches(tuple));
         Assert.True(template2.Matches(tuple));
@@ -382,12 +382,12 @@ public class MatchTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnTypes()
     {
-        SpaceTemplate template1 = new(typeof(int), typeof(string), SpaceUnit.Null);
-        SpaceTemplate template2 = new(typeof(int), SpaceUnit.Null, typeof(float));
-        SpaceTemplate template3 = new(typeof(int), SpaceUnit.Null, SpaceUnit.Null);
-        SpaceTemplate template4 = new(SpaceUnit.Null, typeof(string), typeof(float));
-        SpaceTemplate template5 = new(SpaceUnit.Null, SpaceUnit.Null, typeof(float));
-        SpaceTemplate template6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+        SpaceTemplate template1 = new(typeof(int), typeof(string), new SpaceUnit());
+        SpaceTemplate template2 = new(typeof(int), new SpaceUnit(), typeof(float));
+        SpaceTemplate template3 = new(typeof(int), new SpaceUnit(), new SpaceUnit());
+        SpaceTemplate template4 = new(new SpaceUnit(), typeof(string), typeof(float));
+        SpaceTemplate template5 = new(new SpaceUnit(), new SpaceUnit(), typeof(float));
+        SpaceTemplate template6 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
 
         Assert.True(template1.Matches(tuple));
         Assert.True(template2.Matches(tuple));
@@ -434,11 +434,11 @@ public class MatchTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_But_Some_Are_Null_OnMixed()
     {
-        SpaceTemplate template1 = new(1, SpaceUnit.Null, typeof(float));
-        SpaceTemplate template2 = new(typeof(int), "a", SpaceUnit.Null);
-        SpaceTemplate template3 = new(typeof(int), SpaceUnit.Null, SpaceUnit.Null);
-        SpaceTemplate template4 = new(SpaceUnit.Null, typeof(string), 1.5f);
-        SpaceTemplate template5 = new(SpaceUnit.Null, "a", typeof(float));
+        SpaceTemplate template1 = new(1, new SpaceUnit(), typeof(float));
+        SpaceTemplate template2 = new(typeof(int), "a", new SpaceUnit());
+        SpaceTemplate template3 = new(typeof(int), new SpaceUnit(), new SpaceUnit());
+        SpaceTemplate template4 = new(new SpaceUnit(), typeof(string), 1.5f);
+        SpaceTemplate template5 = new(new SpaceUnit(), "a", typeof(float));
 
         Assert.True(template1.Matches(tuple));
         Assert.True(template2.Matches(tuple));

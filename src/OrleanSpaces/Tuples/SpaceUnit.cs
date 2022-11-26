@@ -9,19 +9,13 @@ namespace OrleanSpaces.Tuples;
 [Immutable]
 public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
 {
-    private static readonly SpaceUnit @null = new();
     /// <summary>
-    /// Default and only value of this type.
-    /// </summary>
-    public static ref readonly SpaceUnit Null => ref @null;
-
-    /// <summary>
-    /// Default constructor which always instantiates a <see cref="Null"/>. 
+    /// Default and only constructor. 
     /// </summary>
     public SpaceUnit() { }
 
     int ITuple.Length => 1;
-    object ITuple.this[int index] => index == 0 ? Null : throw new IndexOutOfRangeException();
+    object ITuple.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
 
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;

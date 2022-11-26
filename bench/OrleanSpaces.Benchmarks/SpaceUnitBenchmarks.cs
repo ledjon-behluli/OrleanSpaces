@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples;
+using System.Runtime.CompilerServices;
 
 [MemoryDiagnoser]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -16,7 +17,7 @@ public class SpaceUnitBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            unitStructs[i] = SpaceUnit.Null;
+            unitStructs[i] = new();
         }
     }
 
@@ -25,13 +26,18 @@ public class SpaceUnitBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            unitClasses[i] = SpaceUnitClass.Null;
+            unitClasses[i] = new();
         }
     }
 
-    private class SpaceUnitClass
+    private class SpaceUnitClass : ITuple, IEquatable<SpaceUnitClass>, IComparable<SpaceUnitClass>
     {
-        private static readonly SpaceUnitClass @null = new();
-        public static ref readonly SpaceUnitClass Null => ref @null;
+        int ITuple.Length => 1;
+        object ITuple.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
+
+        public override bool Equals(object obj) => obj is SpaceUnitClass;
+        public bool Equals(SpaceUnitClass other) => true;
+        public int CompareTo(SpaceUnitClass other) => 0;
+        public override int GetHashCode() => 0;
     }
 }

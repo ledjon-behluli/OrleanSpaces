@@ -15,7 +15,7 @@ public class ObserverTests
         async (observer) => await observer.NotifyAsync(template, default);
 
     private static Func<SpaceObserver, Task> Flattening =>
-        async (observer) => await observer.NotifyAsync(SpaceUnit.Null, default);
+        async (observer) => await observer.NotifyAsync(new SpaceUnit(), default);
 
     private static Func<SpaceObserver, Task> Everything =>
         async (observer) =>

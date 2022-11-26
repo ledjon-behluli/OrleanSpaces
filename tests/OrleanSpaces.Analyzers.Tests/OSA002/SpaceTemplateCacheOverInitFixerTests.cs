@@ -27,10 +27,10 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
     [Theory]
     [InlineData(1, "SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
-    [InlineData(2, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(4, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(8, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(1, "SpaceTemplate template = [|new(new SpaceUnit())|];")]
+    [InlineData(2, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(4, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(8, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
     public void Should_Fix_SpaceTemplate_Without_Namespace_Within_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: false);
@@ -39,10 +39,10 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
     [Theory]
     [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
-    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit())|];")]
+    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
     public void Should_Fix_SpaceTemplate_With_Namespace_Within_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: false);
@@ -51,7 +51,7 @@ public class SpaceTemplateCacheOverInitFixerTests : FixerFixture
 
     private static string GenerateFixedCodeWithinFile(int numOfSpaceUnits, bool useNamespace)
     {
-        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("SpaceUnit.Null", numOfSpaceUnits));
+        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("new SpaceUnit()", numOfSpaceUnits));
         string potentialNamespace = useNamespace ? "namespace MyNamespace; " : string.Empty;
 
         return
@@ -73,10 +73,10 @@ public readonly struct SpaceTemplateCache
 
     [Theory]
     [InlineData(1, "SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
-    [InlineData(2, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(4, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(8, "SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(1, "SpaceTemplate template = [|new(new SpaceUnit())|];")]
+    [InlineData(2, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(4, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(8, "SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
     public void Should_Fix_SpaceTemplate_Without_Namespace_In_New_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
@@ -85,10 +85,10 @@ public readonly struct SpaceTemplateCache
 
     [Theory]
     [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null)|];")]
-    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
-    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null)|];")]
+    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit())|];")]
+    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
+    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit())|];")]
     public void Should_Fix_SpaceTemplate_With_Namespace_In_New_File(int numOfSpaceUnits, string code)
     {
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfSpaceUnits, isNewFile: true);
@@ -111,12 +111,12 @@ public readonly struct SpaceTemplateCache
     public void Should_Fix_1_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
     {
         string code =
-@"SpaceTemplate template = [|new(SpaceUnit.Null)|];
+@"SpaceTemplate template = [|new(new SpaceUnit())|];
 
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
@@ -128,7 +128,7 @@ public readonly struct SpaceTemplateCache
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
@@ -141,12 +141,12 @@ public readonly struct SpaceTemplateCache
     public void Should_Fix_2_Tuple_SpaceTemplate_By_Using_Existing_SpaceTemplateCache()
     {
         string code =
-@"SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];
+@"SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];
 
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_2 = new(new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
@@ -158,7 +158,7 @@ public readonly struct SpaceTemplateCache
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_2 = new(new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
@@ -171,12 +171,12 @@ public readonly struct SpaceTemplateCache
     public void Should_Fix_2_Tuple_SpaceTemplate_With_FullyQualifiedName_By_Using_Existing_SpaceTemplateCache()
     {
         string code =
-@"SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];
+@"SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];
 
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
@@ -188,7 +188,7 @@ public readonly struct SpaceTemplateCache
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly OrleanSpaces.Tuples.SpaceTemplate tuple_2 = new (new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
@@ -201,13 +201,13 @@ public readonly struct SpaceTemplateCache
     public void Should_Fix_2_Tuple_SpaceTemplate_By_Adding_Field_Between_1_And_3_In_Existing_SpaceTemplateCache()
     {
         string code =
-@"SpaceTemplate template = [|new(SpaceUnit.Null, SpaceUnit.Null)|];
+@"SpaceTemplate template = [|new(new SpaceUnit(), new SpaceUnit())|];
 
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(new SpaceUnit());
+    private static readonly SpaceTemplate tuple_3 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
@@ -220,9 +220,9 @@ public readonly struct SpaceTemplateCache
 public readonly struct SpaceTemplateCache
 {
 #pragma warning disable OSA002
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(new SpaceUnit());
+    private static readonly SpaceTemplate tuple_2 = new(new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_3 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
 #pragma warning restore OSA002
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;

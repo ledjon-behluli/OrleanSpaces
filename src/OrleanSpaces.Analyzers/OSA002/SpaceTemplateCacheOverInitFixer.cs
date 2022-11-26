@@ -535,10 +535,10 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
         static ArgumentSyntax CreateArgumentNode() =>
             Argument(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("SpaceUnit"),
-                    IdentifierName("Null")));
+                 ObjectCreationExpression(
+                    IdentifierName("SpaceUnit"))
+                .WithArgumentList(
+                    ArgumentList()));
     }
 
     private static CompilationUnitSyntax WrapSpaceTemplateCacheInNamespace(StructDeclarationSyntax structDeclaration, NamespaceDeclarationSyntax namespaceDeclaration) =>
@@ -672,7 +672,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
     private class SpaceTemplateCacheFieldVisitor : CSharpSyntaxWalker
     {
         /// <summary>
-        /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(SpaceUnit.Null, ... , SpaceUnit.Null)' are present.
+        /// Represents how many <see cref="VariableDeclarationSyntax"/> of type 'new SpaceTemplate(new SpaceUnit(), ... , new SpaceUnit())' are present.
         /// </summary>
         public List<int> TuplesPresent { get; private set; } = new();
 

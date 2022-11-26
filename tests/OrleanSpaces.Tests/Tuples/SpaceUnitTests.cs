@@ -15,7 +15,7 @@ public class SpaceUnitTests
     [MemberData(nameof(Data))]
     public void Should_Be_Equatable(object value, bool isEqual)
     {
-        SpaceUnit unit = SpaceUnit.Null;
+        SpaceUnit unit = new();
 
         if (isEqual)
         {
@@ -30,7 +30,7 @@ public class SpaceUnitTests
     [Fact]
     public void Should_Be_Equatable_By_Operator()
     {
-        SpaceUnit unit1 = SpaceUnit.Null;
+        SpaceUnit unit1 = new();
         SpaceUnit unit2 = new();
 
         Assert.True(unit1 == unit2);
@@ -41,19 +41,19 @@ public class SpaceUnitTests
     [MemberData(nameof(CompareData))]
     public void Should_Be_Compareable(SpaceUnit unit)
     {
-        Assert.Equal(0, SpaceUnit.Null.CompareTo(unit));
+        Assert.Equal(0, new SpaceUnit().CompareTo(unit));
     }
 
     [Fact]
     public void Should_Have_Length_Of_One()
     {
-        Assert.Equal(1, ((ITuple)SpaceUnit.Null).Length);
+        Assert.Equal(1, ((ITuple)new SpaceUnit()).Length);
     }
 
     [Fact]
     public void Should_Return_Itself_On_Zero_Index()
     {
-        Assert.Equal(SpaceUnit.Null, ((ITuple)SpaceUnit.Null)[0]);
+        Assert.Equal(new SpaceUnit(), ((ITuple)new SpaceUnit())[0]);
     }
 
     [Theory]
@@ -62,19 +62,19 @@ public class SpaceUnitTests
     [InlineData(3)]
     public void Should_Throw_On_Non_Zero_Index(int index)
     {
-        Assert.Throws<IndexOutOfRangeException>(() => ((ITuple)SpaceUnit.Null)[index]);
+        Assert.Throws<IndexOutOfRangeException>(() => ((ITuple)new SpaceUnit())[index]);
     }
 
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("{NULL}", SpaceUnit.Null.ToString());
+        Assert.Equal("{NULL}", new SpaceUnit().ToString());
     }
 
     public static object[][] CompareData() =>
         new[]
         {
-            new object[] { SpaceUnit.Null },
+            new object[] { new SpaceUnit() },
             new object[] { new SpaceUnit() },
             new object[] { default(SpaceUnit) },
         };
@@ -88,7 +88,7 @@ public class SpaceUnitTests
             new object[] { null, false },
             new object[] { new Uri("https://www.google.com"), false },
             new object[] { new SpaceUnit(), true },
-            new object[] { SpaceUnit.Null, true },
+            new object[] { new SpaceUnit(), true },
             new object[] { default(SpaceUnit), true },
         };
 }

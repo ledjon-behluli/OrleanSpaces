@@ -14,7 +14,7 @@ namespace AnalyzersOffenders;
 //        _ = new SpaceTuple(
 //            'a', "a",
 //            true, false,
-//            SpaceUnit.Null, new SpaceUnit(),
+//            new SpaceUnit(), new SpaceUnit(),
 //            (byte)1, (sbyte)1, (short)1, (ushort)1, (int)1, (uint)1, (long)1, (ulong)1, (float)1, (decimal)1, (double)1, typeof(int), typeof(string),
 //            DateTime.MinValue, DateTimeOffset.MinValue, TimeSpan.MinValue, Guid.Empty,
 //            1, new TestClass(), new TestStruct(), TestEnum.A,
@@ -23,7 +23,7 @@ namespace AnalyzersOffenders;
 //        _ = new SpaceTemplate(
 //            'a', "a",
 //            true, false,
-//            SpaceUnit.Null, new SpaceUnit(),
+//            new SpaceUnit(), new SpaceUnit(),
 //            (byte)1, (sbyte)1, (short)1, (ushort)1, (int)1, (uint)1, (long)1, (ulong)1, (float)1, (decimal)1, (double)1, typeof(int), typeof(string),
 //            DateTime.MinValue, DateTimeOffset.MinValue, TimeSpan.MinValue, Guid.Empty,
 //            1, new TestClass(), new TestStruct(), TestEnum.A,

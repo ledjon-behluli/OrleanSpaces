@@ -16,14 +16,14 @@ public class SpaceTemplateBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = new SpaceTemplate(SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-            _ = new SpaceTemplate(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+            _ = new SpaceTemplate(new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+            _ = new SpaceTemplate(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
         }
     }
 
@@ -100,7 +100,7 @@ public class SpaceTemplateBenchmarks
 
     private readonly static SpaceTuple tuple = new(1, "a", 1.5f);
     private readonly static SpaceTemplate template1 = new(1, "a", 1.5f);
-    private readonly static SpaceTemplate template2 = new(1, SpaceUnit.Null, 1.5f);
+    private readonly static SpaceTemplate template2 = new(1, new SpaceUnit(), 1.5f);
     private readonly static SpaceTemplate template3 = new(1, "a", 2.5f);
     private readonly static SpaceTemplate template4 = new(1, "a");
 
@@ -137,14 +137,14 @@ public class SpaceTemplateBenchmarks
 
 public readonly struct SpaceTemplateCache
 {
-    private static readonly SpaceTemplate tuple_1 = new(SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_2 = new(SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_3 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_4 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_5 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_6 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_7 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
-    private static readonly SpaceTemplate tuple_8 = new(SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null, SpaceUnit.Null);
+    private static readonly SpaceTemplate tuple_1 = new(new SpaceUnit());
+    private static readonly SpaceTemplate tuple_2 = new(new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_3 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_4 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_5 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_6 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_7 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
+    private static readonly SpaceTemplate tuple_8 = new(new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit(), new SpaceUnit());
 
     public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
     public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;

@@ -65,7 +65,7 @@ public class Worker : BackgroundService
         Console.WriteLine("----------------------\n");
         Console.WriteLine("Total tuples in space:\n");
 
-        SpaceTemplate template = new(SpaceUnit.Null, SpaceUnit.Null);
+        SpaceTemplate template = new(new SpaceUnit(), new SpaceUnit());
 
         foreach (var tuple in await agent.ScanAsync(template))
         {

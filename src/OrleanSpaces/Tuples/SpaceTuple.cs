@@ -42,7 +42,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     {
         if (fields == null || fields.Length == 0)
         {
-            this.fields = new object[1] { SpaceUnit.Null };
+            this.fields = new object[1] { new SpaceUnit() };
         }
         else
         {

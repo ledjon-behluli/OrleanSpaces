@@ -18,6 +18,6 @@ Paket:
 
 |Id|Category|Description|Severity|Code Fix|
 |:-:|:-:|-|:-:|:-:|
-|[OSA001](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA001.md)|Performance|Avoid instantiation of `SpaceUnit` or `SpaceTuple` by default constructor or expression.|<span title='Info'>ℹ</span>|✔️|
+|[OSA001](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA001.md)|Performance|Avoid instantiation of empty 'SpaceTuple' by default constructor or expression.|<span title='Info'>ℹ</span>|✔️|
 |[OSA002](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA001.md)|Performance|Avoid constructor instantiation of `SpaceTemplate` having only `SpaceUnit` type arguments.|<span title='Info'>ℹ</span>|✔️|
 |[OSA003](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA002.md)|Usage|One or more of the supplied argument types for `SpaceTuple` or `SpaceTemplate` is not supported.|<span title='Warning'>⚠️</span>|✔️|

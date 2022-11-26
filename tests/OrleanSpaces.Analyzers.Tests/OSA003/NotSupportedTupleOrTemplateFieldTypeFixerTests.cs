@@ -22,7 +22,6 @@ public class NotSupportedTupleOrTemplateFieldTypeFixerTests : FixerFixture
     [InlineData("SpaceTuple tuple = new([|typeof(int)|]);")]
     [InlineData("SpaceTuple tuple = new([|typeof(decimal)|]);")]
     [InlineData("SpaceTuple tuple = new([|new SpaceUnit()|]);")]
-    [InlineData("SpaceTuple tuple = new([|SpaceUnit.Null|]);")]
 
     [InlineData("SpaceTuple tuple = new([|new TestClass()|]); class TestClass {}")]
     [InlineData("SpaceTuple tuple = new([|new TestStruct()|]); struct TestStruct {}")]
@@ -38,7 +37,6 @@ public class NotSupportedTupleOrTemplateFieldTypeFixerTests : FixerFixture
     [InlineData("SpaceTuple tuple = new(1 [|, typeof(int)|], 'a');")]
     [InlineData("SpaceTuple tuple = new(1 [|, typeof(decimal)|], 'a');")]
     [InlineData("SpaceTuple tuple = new(1 [|, new SpaceUnit()|], 'a');")]
-    [InlineData("SpaceTuple tuple = new(1 [|, SpaceUnit.Null|], 'a');")]
 
     [InlineData("SpaceTuple tuple = new(1 [|, new TestClass()|], 'a'); class TestClass {}")]
     [InlineData("SpaceTuple tuple = new(1 [|, new TestStruct()|], 'a'); struct TestStruct {}")]

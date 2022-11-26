@@ -12,7 +12,7 @@ public class Ponger : SpaceObserver
         ListenTo(EventType.Expansions);
 
         this.provider = provider;
-        template = new("ping", SpaceUnit.Null);
+        template = new("ping", new SpaceUnit());
     }
 
     public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)

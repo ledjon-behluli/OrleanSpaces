@@ -7,12 +7,12 @@ using System.Composition;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Code fix provider for <see cref="UnitOrTupleRefOverInitAnalyzer"/>.
+/// Code fix provider for <see cref="SpaceTupleNullRefOverInitAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UnitOrTupleRefOverInitFixer)), Shared]
-internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpaceTupleNullRefOverInitFixer)), Shared]
+internal sealed class SpaceTupleNullRefOverInitFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(SpaceTupleNullRefOverInitAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -29,15 +29,9 @@ internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
             return;
         }
 
-        string? typeName = context.Diagnostics.First().Properties.GetValueOrDefault("typeName");
-        if (typeName == null)
-        {
-            return;
-        }
-
         CodeAction action = CodeAction.Create(
-            title: $"Use '{typeName}.Null'",
-            equivalenceKey: UnitOrTupleRefOverInitAnalyzer.Diagnostic.Id,
+            title: "Use 'SpaceTuple.Null'",
+            equivalenceKey: SpaceTupleNullRefOverInitAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
                 SyntaxNode? newRoot = null;
@@ -50,7 +44,7 @@ internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
                     case SyntaxKind.DefaultExpression:
                     case SyntaxKind.DefaultLiteralExpression:
                         {
-                            newRoot = root.ReplaceNode(node, CreateReplacmentSyntax(typeName));
+                            newRoot = root.ReplaceNode(node, CreateReplacmentSyntax());
                         }
                         break;
                     case SyntaxKind.Argument:
@@ -58,7 +52,7 @@ internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
                             var objectCreationExpression = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>().FirstOrDefault();
                             if (objectCreationExpression != null)
                             {
-                                newRoot = root.ReplaceNode(node, Argument(CreateReplacmentSyntax(typeName)));
+                                newRoot = root.ReplaceNode(node, Argument(CreateReplacmentSyntax()));
                             }
                         }
                         break;
@@ -71,9 +65,9 @@ internal sealed class UnitOrTupleRefOverInitFixer : CodeFixProvider
         context.RegisterCodeFix(action, context.Diagnostics);
     }
 
-    private static MemberAccessExpressionSyntax CreateReplacmentSyntax(string identifierName) =>
+    private static MemberAccessExpressionSyntax CreateReplacmentSyntax() =>
         MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
-            IdentifierName(identifierName),
+            IdentifierName("SpaceTuple"),
             IdentifierName("Null"));
 }

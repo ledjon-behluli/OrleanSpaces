@@ -377,7 +377,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
+        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
 
         Assert.Equal(3, tuples.Count());
     }
@@ -396,7 +396,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
             await agent.WriteAsync(tuple);
         }
 
-        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
+        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
 
         Assert.Equal(3, matchingCount);
     }
@@ -412,7 +412,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         }
 
         int totalCount = await agent.CountAsync();
-        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), SpaceUnit.Null));
+        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
 
         Assert.True(totalCount > matchingCount);
     }
