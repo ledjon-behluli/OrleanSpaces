@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using System.Composition;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Rename;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
@@ -49,7 +48,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
         if (cacheNode == null)
         {
             var fixInFileAction = CodeAction.Create(
-                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file.",
+                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in this file",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
@@ -70,7 +69,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
                 });
 
             var fixInNewFileAction = CodeAction.Create(
-                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file.",
+                title: $"Cache value as a '{numOfSpaceUnits}-tuple' static readonly reference in a new file",
                 equivalenceKey: SpaceTemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: _ =>
                 {
@@ -120,7 +119,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
 
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Cache value as a static readonly reference.",
+                    title: "Cache value as a static readonly reference",
                     nestedActions: ImmutableArray.Create(fixInFileAction, fixInNewFileAction),
                     isInlinable: false),
                 context.Diagnostics);

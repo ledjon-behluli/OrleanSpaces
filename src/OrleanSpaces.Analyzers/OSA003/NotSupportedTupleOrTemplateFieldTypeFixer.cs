@@ -29,11 +29,11 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeFixer : CodeFixProvide
         }
 
         CodeAction action = CodeAction.Create(
-            title: "Remove argument.",
+            title: "Remove unsupported argument",
             equivalenceKey: NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
-                var newRoot = root.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
+                var newRoot = root.RemoveNode(node, SyntaxRemoveOptions.KeepTrailingTrivia);
 
                 return Task.FromResult(newRoot == null ? context.Document :
                     context.Document.WithSyntaxRoot(newRoot));
