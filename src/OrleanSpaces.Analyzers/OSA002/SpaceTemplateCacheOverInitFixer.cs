@@ -32,8 +32,7 @@ internal sealed class SpaceTemplateCacheOverInitFixer : CodeFixProvider
             return;
         }
 
-        if (!int.TryParse(context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"), out int numOfSpaceUnits) ||
-            numOfSpaceUnits < 1)
+        if (!int.TryParse(context.Diagnostics.First().Properties.GetValueOrDefault("numOfSpaceUnits"), out int numOfSpaceUnits) || numOfSpaceUnits == 0)
         {
             return;
         }

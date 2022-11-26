@@ -44,24 +44,19 @@ internal sealed class SpaceTemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         if (arguments.Count == 0)
         {
             ReportDiagnostic(ref context, creationOperation, 1);
+            return;
         }
-
-        int numOfSpaceUnits = 0;
 
         foreach (var argument in arguments)
         {
             var argumentType = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
-            if (argumentType.IsOfType(spaceUnitSymbol))
+            if (!argumentType.IsOfType(spaceUnitSymbol))
             {
-                var a = argumentType?.OriginalDefinition;
-                numOfSpaceUnits++;
+                return;
             }
         }
 
-        if (numOfSpaceUnits > 0)
-        {
-            ReportDiagnostic(ref context, creationOperation, numOfSpaceUnits);
-        }
+        ReportDiagnostic(ref context, creationOperation, arguments.Count);
     }
 
     private static void ReportDiagnostic(ref OperationAnalysisContext context, IOperation operation, int numOfSpaceUnits) =>
