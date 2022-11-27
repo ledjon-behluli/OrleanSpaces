@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Analyzers
 
 on:
   workflow_dispatch:
@@ -22,9 +22,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
     - name: Pack
-      working-directory: src/OrleanSpaces
+      working-directory: src/OrleanSpaces.Analyzers
       run: dotnet pack --configuration Release --no-build -p:Version=${GITHUB_REF##*/v}
     - name: Push
-      working-directory: src/OrleanSpaces/bin/Release
+      working-directory: src/OrleanSpaces.Analyzers/bin/Release
       run: |
-        dotnet nuget push OrleanSpaces.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push OrleanSpaces.Analyzers.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
