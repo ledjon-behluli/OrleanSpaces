@@ -22,6 +22,11 @@ jobs:
         dotnet-version: 6.0.x
     - name: Build
       run: dotnet build --configuration Release
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+    - uses: actions/checkout@v2
     - name: Test
       run: dotnet test --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Coverage
