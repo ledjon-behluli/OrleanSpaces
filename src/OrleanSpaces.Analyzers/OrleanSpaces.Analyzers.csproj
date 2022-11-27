@@ -7,15 +7,28 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>Nullable</WarningsAsErrors>
 		<IsPackable>true</IsPackable>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<PackageId>OrleanSpaces.Analyzers</PackageId>
+		<Authors>Ledjon Behluli</Authors>
+		<Title>Roslyn analysers for OrleanSpaces.</Title>
+		<Description>Roslyn analysers for OrleanSpaces.</Description>
+		<Copyright>Copyright (c) Ledjon Behluli</Copyright>
+		<PackageTags>dotnet;rosyln;analyzers;orleans;tuple-space;orlean-spaces;</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageIconUrl>https://raw.githubusercontent.com/ledjon-behluli/OrleanSpaces/master/OrleansLogo.png</PackageIconUrl>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/ledjon-behluli/OrleanSpaces</RepositoryUrl>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.1" PrivateAssets="all" />
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Analyzers.Tests</_Parameter1>
-		</AssemblyAttribute>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>TestProject</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 
