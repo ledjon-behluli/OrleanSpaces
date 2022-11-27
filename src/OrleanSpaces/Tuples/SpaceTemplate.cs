@@ -34,7 +34,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, ICompa
     {
         if (fields == null || fields.Length == 0)
         {
-            this.fields = new object[1] { SpaceUnit.Null };
+            this.fields = new object[1] { new SpaceUnit() };
         }
         else
         {

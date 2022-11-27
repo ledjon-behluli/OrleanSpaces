@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SpaceHost": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:53766;http://localhost:53773"
+    }
+  }
+}

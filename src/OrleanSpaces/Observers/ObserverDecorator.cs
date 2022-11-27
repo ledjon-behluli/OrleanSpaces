@@ -12,12 +12,12 @@ internal sealed class ObserverDecorator : SpaceObserver
         ListenTo(Everything);
     }
 
-    public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) =>
-        await observer.OnExpansionAsync(tuple, cancellationToken);
+    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) =>
+        observer.OnExpansionAsync(tuple, cancellationToken);
 
-    public override async Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken) =>
-        await observer.OnContractionAsync(template, cancellationToken);
+    public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken) =>
+        observer.OnContractionAsync(template, cancellationToken);
 
-    public override async Task OnFlatteningAsync(CancellationToken cancellationToken) =>
-        await observer.OnFlatteningAsync(cancellationToken);
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken) =>
+        observer.OnFlatteningAsync(cancellationToken);
 }

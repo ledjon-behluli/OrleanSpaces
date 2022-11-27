@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Orleans.Concurrency;
-using System;
+﻿using Orleans.Concurrency;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
@@ -11,21 +9,13 @@ namespace OrleanSpaces.Tuples;
 [Immutable]
 public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
 {
-    private static readonly SpaceUnit @null = new();
     /// <summary>
-    /// Default and only value of this type.
+    /// Default and only constructor. 
     /// </summary>
-    /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
-    public static ref readonly SpaceUnit Null => ref @null;
-
-    /// <summary>
-    /// Default constructor which always instantiates a <see cref="Null"/>. 
-    /// </summary>
-    /// <remarks><i>Use <see cref="Null"/> over this to avoid unneccessary memory allocations.</i></remarks>
     public SpaceUnit() { }
 
     int ITuple.Length => 1;
-    object ITuple.this[int index] => index == 0 ? Null : throw new IndexOutOfRangeException();
+    object ITuple.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
 
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;

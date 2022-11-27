@@ -36,7 +36,7 @@ public class Worker : BackgroundService
         });
 
         Console.WriteLine($"WORKER: Simulating some delay until a tuple that matches template {template} is written...");
-        await Task.Delay(5000);
+        await Task.Delay(5000, cancellationToken);
 
         SpaceTuple tuple = new(EXCHANGE_KEY, 1.2334);
         Console.WriteLine($"WORKER: Writing sensor data in form of the tuple {tuple}");

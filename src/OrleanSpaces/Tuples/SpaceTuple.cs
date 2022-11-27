@@ -19,7 +19,6 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// <summary>
     /// Represents a <see cref="SpaceTuple"/> with a single field of type <see cref="SpaceUnit"/>.
     /// </summary>
-    /// <remarks><i>Use over the default constructor to avoid unneccessary memory allocations.</i></remarks>
     public static ref readonly SpaceTuple Null => ref @null;
 
     /// <summary>
@@ -30,7 +29,6 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// <summary>
     /// Default constructor which always instantiates a <see cref="Null"/>. 
     /// </summary>
-    /// <remarks><i>Use <see cref="Null"/> over this to avoid unneccessary memory allocations.</i></remarks>
     public SpaceTuple() : this(null) { }
 
     /// <summary>
@@ -44,7 +42,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     {
         if (fields == null || fields.Length == 0)
         {
-            this.fields = new object[1] { SpaceUnit.Null };
+            this.fields = new object[1] { new SpaceUnit() };
         }
         else
         {
