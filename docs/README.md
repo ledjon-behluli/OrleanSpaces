@@ -45,8 +45,8 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 
 # Documentation
 
-* [OrleanSpaces](https://github.com/ledjon-behluli/OrleanSpaces/docs/OrleanSpaces/README.md)
-* [OrleanSpaces.Analyzers](https://github.com/ledjon-behluli/OrleanSpaces/docs/OrleanSpaces.Analyzers/README.md)
+* [OrleanSpaces](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces/README.md)
+* [OrleanSpaces.Analyzers](https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/README.md)
 
 ---
 
