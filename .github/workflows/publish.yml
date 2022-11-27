@@ -4,10 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       project_name:
-        description: 'Project name'     
-        required: true
-        default: 'OrleanSpaces'
-
+        type: choice
+        description: Project name
+        options:
+        - 'OrleanSpaces'
+        - 'OrleanSpaces.Analyzers'
+      nuget_version:
+        type: string
+        description: NuGet version
+        
 permissions:
   contents: write
   
@@ -27,9 +32,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
     - name: Pack
-      working-directory: src/${{ github.event.inputs.project_name }}
-      run: dotnet pack --configuration Release --no-build -p:Version=${GITHUB_REF##*/v}
+      working-directory: src/${{ inputs.project_name }}
+      run: dotnet pack --configuration Release --no-build -p:Version=${{ inputs.nuget_version }}
     - name: Push
-      working-directory: src/${{ github.event.inputs.project_name }}/bin/Release
+      working-directory: src/${{ inputs.project_name }}/bin/Release
       run: |
-        dotnet nuget push ${{ github.event.inputs.project_name }}.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push ${{ inputs.project_name }}.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
