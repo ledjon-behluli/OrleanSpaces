@@ -38,9 +38,9 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 
 [![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml) [![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master)
 
-|Package|NuGet|Description|
+|Package|Description|Version|
 |-|-|-|
-| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. |  [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces)  |
+| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) |
 | [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) |
 
 ---
