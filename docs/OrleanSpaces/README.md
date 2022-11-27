@@ -121,7 +121,7 @@ await agent.PopAsync(template1, async tuple =>
     await Task.Delay(100);
 });
 
-SpaceTemplate template2 = new SpaceTemplate(1, typeof(string), SpaceUnit.Null);
+SpaceTemplate template2 = new SpaceTemplate(1, typeof(string), new SpaceUnit());
 
 IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(template2);
 int count = await agent.CountAsync(template2);
