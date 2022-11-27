@@ -2,6 +2,11 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'Project name'     
+        required: true
+        default: 'OrleanSpaces'
 
 permissions:
   contents: write
@@ -22,9 +27,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
     - name: Pack
-      working-directory: src/OrleanSpaces
+      working-directory: src/${{ github.event.inputs.project_name }}
       run: dotnet pack --configuration Release --no-build -p:Version=${GITHUB_REF##*/v}
     - name: Push
-      working-directory: src/OrleanSpaces/bin/Release
+      working-directory: src/${{ github.event.inputs.project_name }}/bin/Release
       run: |
-        dotnet nuget push OrleanSpaces.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push ${{ github.event.inputs.project_name }}.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
