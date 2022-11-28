@@ -38,7 +38,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: tests/OrleanSpaces.Tests/TestResults/coverage.info
+        path-to-lcov: ../tests/OrleanSpaces.Tests/TestResults/coverage.info
       
     - name: Test - "OrleanSpaces.Analyzers"
       run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=false
