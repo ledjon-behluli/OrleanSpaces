@@ -35,9 +35,10 @@ jobs:
       run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
       
     - name: Coverage - "OrleanSpaces"
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v1.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./tests/OrleanSpaces.Tests/TestResults/coverage.info
       
     - name: Test - "OrleanSpaces.Analyzers"
       run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=false
