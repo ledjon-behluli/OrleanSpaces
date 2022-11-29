@@ -36,7 +36,7 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 
 # Packages
 
-[![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml) [![Coverage](https://coveralls.io/repos/github/ledjon-behluli/OrleanSpaces/badge.svg?branch=master)](https://coveralls.io/github/ledjon-behluli/OrleanSpaces?branch=master)
+[![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml)
 
 |Package|Description|Version|
 |-|-|-|
