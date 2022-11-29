@@ -32,12 +32,12 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Test - "OrleanSpaces"
-      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     
     - name: Coverage - "OrleanSpaces"  
       uses: codecov/codecov-action@v3
       with:
-        files: /tests/OrleanSpaces.Tests/TestResults/coverage.info
+        files: coverage.opencover.xml
         fail_ci_if_error: "true"
       
     - name: Test - "OrleanSpaces.Analyzers"
