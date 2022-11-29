@@ -16,6 +16,9 @@ jobs:
 
     steps:
     
+    - name: Configure git
+      run: git config --global core.autocrlf false
+    
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -28,7 +31,7 @@ jobs:
     ############ Core ############
     
     - name: Core tests
-      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -v:detailed -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -v:normal -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
 
     - name: Core tests coverage
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
@@ -42,15 +45,9 @@ jobs:
         gist-auth-token: ${{ secrets.GIST_TOKEN }}
         
     ############ Analyzers ############
-    
-    - name: Git use LF
-      run: |
-        git config --global core.autocrlf false
-        git config --global core.eol lf
-    - uses: actions/checkout@v2
-    
+  
     - name: Analyzers tests
-      run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Debug --no-build -v:detailed -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
+      run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -v:normal -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
 
     - name: Analyzers tests coverage
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
