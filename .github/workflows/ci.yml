@@ -33,9 +33,9 @@ jobs:
     
     - name: Test - "OrleanSpaces"
       run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
-      
-    - uses: codecov/codecov-action@v3
-    - name: Coverage - "OrleanSpaces"
+    
+    - name: Coverage - "OrleanSpaces"  
+      uses: codecov/codecov-action@v3
       with:
         files: ./tests/OrleanSpaces.Tests/TestResults/coverage.info
         fail_ci_if_error: "true"
