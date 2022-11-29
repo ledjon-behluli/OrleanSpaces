@@ -24,12 +24,37 @@ jobs:
         
     - name: Build all
       run: dotnet build --configuration Release
-      
+
+    - name: Core tests
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover OrleanSpaces.Tests/
+
+    - name: Core tests coverage
+      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
+      id: core_badge
+      with:
+        label: Coverage
+        color: brightgreen
+        path: OrleanSpaces.Tests/TestResults/coverage.opencover.xml
+        gist-filename: osa-core-cov.json
+        gist-id: ba8ac624da19bbc52e71d9855d47ad85
+        gist-auth-token: ${{ secrets.GIST_TOKEN }}
+    
     - name: Git use LF
       run: |
         git config --global core.autocrlf false
         git config --global core.eol lf
     - uses: actions/checkout@v2
     
-    - name: Run tests
-      run: dotnet test --configuration Release --no-build
+    - name: Analyzers tests
+      run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover OrleanSpaces.Analyzers.Tests/
+
+    - name: Analyzers tests coverage
+      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
+      id: analyzers_badge
+      with:
+        label: Coverage
+        color: brightgreen
+        path: OrleanSpaces.Analyzers.Tests/TestResults/coverage.opencover.xml
+        gist-filename: osa-analyzers-cov.json
+        gist-id: 8888a48765d5d508f575e955a06f1763
+        gist-auth-token: ${{ secrets.GIST_TOKEN }}
