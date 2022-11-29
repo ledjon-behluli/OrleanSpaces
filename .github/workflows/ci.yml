@@ -27,6 +27,20 @@ jobs:
     
     ############ Core ############
     
+    - name: Core tests
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -v:detailed -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
+
+    - name: Core tests coverage
+      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
+      id: core_badge
+      with:
+        label: Coverage
+        color: brightgreen
+        path: tests/OrleanSpaces.Tests/TestResults/coverage.opencover.xml
+        gist-filename: osa-core-cov.json
+        gist-id: ba8ac624da19bbc52e71d9855d47ad85
+        gist-auth-token: ${{ secrets.GIST_TOKEN }}
+        
     ############ Analyzers ############
     
     - name: Git use LF
