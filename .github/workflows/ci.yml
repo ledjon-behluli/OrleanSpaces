@@ -16,11 +16,6 @@ jobs:
 
     steps:
     
-    - name: Configure git
-      run: |
-        git config --global core.autocrlf false
-        git config --global core.eol lf
-    
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
