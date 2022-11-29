@@ -64,8 +64,13 @@ public class FixerFixture : CodeFixTestFixture
             fixedCodeBuilder.Append(builder);
             fixedCodeBuilder.Append(fixedCode);
 
-            newCode = codeBuilder.ToString();
-            newFixedCode = fixedCodeBuilder.ToString();
+            newCode = codeBuilder
+                .ToString()
+                .ReplaceLineEndings();          // To ensure tests are cross-platform due to line endings.
+
+            newFixedCode = fixedCodeBuilder
+                .ToString()
+                .ReplaceLineEndings();          // To ensure tests are cross-platform due to line endings.
         }
 
         TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
