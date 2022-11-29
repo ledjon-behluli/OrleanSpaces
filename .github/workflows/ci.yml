@@ -25,11 +25,11 @@ jobs:
     - name: Build all
       run: dotnet build --configuration Release
       
-    - name: Set git to use LF
+    - name: Git use LF
       run: |
         git config --global core.autocrlf false
         git config --global core.eol lf
     - uses: actions/checkout@v2
     
-    - name: Test
+    - name: Run tests
       run: dotnet test --configuration Release --no-build
