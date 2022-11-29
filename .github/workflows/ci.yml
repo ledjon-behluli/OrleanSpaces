@@ -33,7 +33,6 @@ jobs:
       run: |
         git config --global core.autocrlf false
         git config --global core.eol lf
-    - uses: actions/checkout@v2
     
     - name: Analyzers tests
       run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -v:detailed -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
