@@ -26,7 +26,7 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Core tests
-      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover OrleanSpaces.Tests/
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
 
     - name: Core tests coverage
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
@@ -46,7 +46,7 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Analyzers tests
-      run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover OrleanSpaces.Analyzers.Tests/
+      run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
 
     - name: Analyzers tests coverage
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
