@@ -32,13 +32,13 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Test - "OrleanSpaces"
-      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=${{ github.workspace }}/coverage.info/ /p:CoverletOutputFormat=lcov
+      run: dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutput=/home/runner/work/OrleanSpaces/OrleanSpaces/coverage.info/ /p:CoverletOutputFormat=lcov
       
     - name: Coverage - "OrleanSpaces"
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ${{ github.workspace }}/coverage.info
+        path-to-lcov: /home/runner/work/OrleanSpaces/OrleanSpaces/coverage.info
       
     - name: Test - "OrleanSpaces.Analyzers"
       run: dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build /p:CollectCoverage=false
