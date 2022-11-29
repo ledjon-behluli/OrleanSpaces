@@ -38,10 +38,10 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 
 [![CI](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml/badge.svg)](https://github.com/ledjon-behluli/OrleanSpaces/actions/workflows/ci.yml)
 
-|Package|Description|Version|
-|-|-|-|
-| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) |
-| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) |
+|Package|Description|Version|Coverage|
+|-|-|-|-|
+| [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) | ![badge](https://img.shields.io/endpoint?url=https://gist.github.com/ledjon-behluli/ba8ac624da19bbc52e71d9855d47ad85/raw/osa-core-cov.json) |
+| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![NuGet](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) | ![badge](https://img.shields.io/endpoint?url=https://gist.github.com/ledjon-behluli/8888a48765d5d508f575e955a06f1763/raw/osa-analyzers-cov.json) |
 
 ---
 
