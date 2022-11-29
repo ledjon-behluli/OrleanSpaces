@@ -37,7 +37,7 @@ jobs:
     - name: Coverage - "OrleanSpaces"  
       uses: codecov/codecov-action@v3
       with:
-        files: tests/OrleanSpaces.Tests/TestResults/coverage.info
+        files: /tests/OrleanSpaces.Tests/TestResults/coverage.info
         fail_ci_if_error: "true"
       
     - name: Test - "OrleanSpaces.Analyzers"
