@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using RoslynTestKit.CodeActionLocators;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -68,8 +69,8 @@ public class FixerFixture : CodeFixTestFixture
             newFixedCode = fixedCodeBuilder.ToString();
         }
 
-        newCode = newCode.ReplaceLineEndings("\r\n");            // To ensure tests are cross-platform, due to line endings.
-        newFixedCode = newFixedCode.ReplaceLineEndings("\r\n");  // To ensure tests are cross-platform, due to line endings.
+        // Since roslyn will generate the actual code depending on which OS the tests run, we need to configure line endings of the fixed code based on the OS.
+        newFixedCode = newFixedCode.ReplaceLineEndings(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\r\n" : "\n");
 
         TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
     }
