@@ -34,7 +34,7 @@ jobs:
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: core_badge
       with:
-        label: Coverage
+        label: coverage
         color: brightgreen
         path: tests/OrleanSpaces.Tests/TestResults/coverage.opencover.xml
         gist-filename: orleanspaces-core.json
@@ -50,7 +50,7 @@ jobs:
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
       id: analyzers_badge
       with:
-        label: Coverage
+        label: coverage
         color: brightgreen
         path: tests/OrleanSpaces.Analyzers.Tests/TestResults/coverage.opencover.xml
         gist-filename: orleanspaces-analyzers.json
