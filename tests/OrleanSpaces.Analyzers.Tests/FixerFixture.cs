@@ -69,9 +69,6 @@ public class FixerFixture : CodeFixTestFixture
             newFixedCode = fixedCodeBuilder.ToString();
         }
 
-        // Since roslyn will generate the actual code depending on which OS the tests run, we need to configure line endings of the fixed code based on the OS.
-        //newFixedCode = newFixedCode.ReplaceLineEndings(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\n" : "\r\n");
-
         TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
     }
 
