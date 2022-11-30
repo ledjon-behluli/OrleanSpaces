@@ -68,7 +68,7 @@ public class FixerFixture : CodeFixTestFixture
             newFixedCode = fixedCodeBuilder.ToString();
         }
 
-        //newCode = newCode.ReplaceLineEndings();            // To ensure tests are cross-platform, due to line endings.
+        newCode = newCode.ReplaceLineEndings("\r\n");            // To ensure tests are cross-platform, due to line endings.
         newFixedCode = newFixedCode.ReplaceLineEndings("\r\n");  // To ensure tests are cross-platform, due to line endings.
 
         TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
