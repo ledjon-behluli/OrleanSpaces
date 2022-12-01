@@ -13,8 +13,8 @@
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
 		<PackageId>OrleanSpaces.Analyzers</PackageId>
 		<Authors>Ledjon Behluli</Authors>
-		<Title>Roslyn analyzers for OrleanSpaces.</Title>
-		<Description>Roslyn analyzers for OrleanSpaces.</Description>
+		<Title>Best practice analyzers for OrleanSpaces.</Title>
+		<Description>Best practice analyzers for OrleanSpaces.</Description>
 		<Copyright>Copyright (c) Ledjon Behluli</Copyright>
 		<PackageTags>dotnet;rosyln;analyzers;orleans;tuple-space;orlean-spaces;</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
