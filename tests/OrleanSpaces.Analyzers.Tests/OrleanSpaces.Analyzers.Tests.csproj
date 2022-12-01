@@ -19,7 +19,7 @@
 		    <PrivateAssets>all</PrivateAssets>
 		    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SmartAnalyzers.RoslynTestKit" Version="4.6.0" />
+		<PackageReference Include="SmartAnalyzers.RoslynTestKit" Version="4.7.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.3.1" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Features" Version="4.3.1" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.1" />

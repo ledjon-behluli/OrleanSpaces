@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest  # for analyzer tests and line endings
+    runs-on: ubuntu-latest
 
     steps:
     
