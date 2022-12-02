@@ -41,7 +41,7 @@ All of the above-mentioned capabilities come out-of-the-box with Orleans. The id
 |Package|Description|NuGet Version|Test Coverage|
 |-|-|-|-|
 | [OrleanSpaces](https://www.nuget.org/packages/OrleanSpaces) | Main library. | [![nuget](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) | ![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ledjon-behluli/f1e76e073c791df73243a7f113a7e37f/raw/orleanspaces-core.json) |
-| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![nuget](https://img.shields.io/nuget/v/OrleanSpaces?color=blue)](https://www.nuget.org/packages/OrleanSpaces) | ![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ledjon-behluli/f1e76e073c791df73243a7f113a7e37f/raw/orleanspaces-analyzers.json) |
+| [OrleanSpaces.Analyzers](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | Code analysis and fixes for OrleanSpaces. | [![nuget](https://img.shields.io/nuget/v/OrleanSpaces.Analyzers?color=blue)](https://www.nuget.org/packages/OrleanSpaces.Analyzers) | ![coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/ledjon-behluli/f1e76e073c791df73243a7f113a7e37f/raw/orleanspaces-analyzers.json) |
 
 ---
 
