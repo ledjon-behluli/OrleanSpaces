@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -14,21 +16,12 @@ public interface ITypedSpaceTuple<T, H> : ISpaceTuple<T, H>
     where T : struct
     where H : ISpaceTuple<T, H>
 {
-    Vector<T> Fields { get; }
-}
-
-class T
-{
-    public T()
-    {
-        IntegerTuple tuple = new IntegerTuple(new[] {1, 2, 3, 4});
-
-    }
+    T[] Fields { get; }
 }
 
 public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
 {
-    public readonly Vector<int> Fields { get; }
+    public readonly int[] Fields { get; }
 
     public int this[int index] => Fields[index];
     public int Length { get; }
@@ -36,13 +29,7 @@ public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
     public IntegerTuple(int[] fields)
     {
         Length = fields.Length;
-        Fields = new Vector<int>(fields);
-    }
-
-    public IntegerTuple(Span<int> fields)
-    {
-        Length = fields.Length;
-        Fields = new Vector<int>(fields);
+        Fields = fields;
     }
 
     public static bool operator ==(IntegerTuple left, IntegerTuple right) => left.Equals(right);
@@ -59,10 +46,36 @@ public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
 
         if (Vector.IsHardwareAccelerated)
         {
-            return Vector.EqualsAll(Fields, other.Fields);
+            Vector<int> vector1 = BuildVector(Fields);
+            Vector<int> vector2 = BuildVector(other.Fields);
+
+            return Vector.EqualsAll(vector1, vector2);
         }
 
         return FallbackEquals(other);
+    }
+
+    private static Vector<int> BuildVector(int[] fields)
+    {
+        Vector<int> fieldsVector = Vector<int>.Zero;
+
+        int diff = Vector<int>.Count - fields.Length;
+        if (diff == 0)
+        {
+            return new(fields);
+        }
+
+        Span<int> current = new(fields);
+        Span<int> target = stackalloc int[Vector<int>.Count];
+
+        current.CopyTo(target);
+
+        Span<int> paddings = stackalloc int[diff];
+        paddings.Fill(0);
+
+        paddings.CopyTo(target.Slice(current.Length));
+
+        return new(target);
     }
 
     private bool FallbackEquals(IntegerTuple other)

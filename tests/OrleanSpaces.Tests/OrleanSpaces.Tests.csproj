@@ -32,4 +32,8 @@
     <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Orleans_CodeGenInputs Remove="Class1.cs" />
+  </ItemGroup>
+
 </Project>
