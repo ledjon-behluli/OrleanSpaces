@@ -55,6 +55,7 @@ public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
         return FallbackEquals(other);
     }
 
+    // TODO: Handle case where 'fields' is greater than 'Vector<int>.Count'
     private static Vector<int> BuildVector(int[] fields)
     {
         Vector<int> fieldsVector = Vector<int>.Zero;
