@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Numerics;
 
 namespace OrleanSpaces.Tuples;
 
@@ -12,14 +10,14 @@ public interface ISpaceTuple<T, H> : IEquatable<H>, IComparable<H>
     int Length { get; }
 }
 
-public interface ITypedSpaceTuple<T, H> : ISpaceTuple<T, H>
-    where T : struct
+public interface INumericSpaceTuple<T, H> : ISpaceTuple<T, H>
+    where T : struct, INumber<T>
     where H : ISpaceTuple<T, H>
 {
     T[] Fields { get; }
 }
 
-public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
+public readonly struct IntegerTuple : INumericSpaceTuple<int, IntegerTuple>
 {
     public readonly int[] Fields { get; }
 
@@ -28,8 +26,8 @@ public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
 
     public IntegerTuple(int[] fields)
     {
-        Length = fields.Length;
         Fields = fields;
+        Length = fields.Length;
     }
 
     public static bool operator ==(IntegerTuple left, IntegerTuple right) => left.Equals(right);
@@ -44,39 +42,7 @@ public readonly struct IntegerTuple : ITypedSpaceTuple<int, IntegerTuple>
             return false;
         }
 
-        if (Vector.IsHardwareAccelerated)
-        {
-            Vector<int> vector1 = BuildVector(Fields);
-            Vector<int> vector2 = BuildVector(other.Fields);
-
-            return Vector.EqualsAll(vector1, vector2);
-        }
-
-        return FallbackEquals(other);
-    }
-
-    // TODO: Handle case where 'fields' is greater than 'Vector<int>.Count'
-    private static Vector<int> BuildVector(int[] fields)
-    {
-        Vector<int> fieldsVector = Vector<int>.Zero;
-
-        int diff = Vector<int>.Count - fields.Length;
-        if (diff == 0)
-        {
-            return new(fields);
-        }
-
-        Span<int> current = new(fields);
-        Span<int> target = stackalloc int[Vector<int>.Count];
-
-        current.CopyTo(target);
-
-        Span<int> paddings = stackalloc int[diff];
-        paddings.Fill(0);
-
-        paddings.CopyTo(target.Slice(current.Length));
-
-        return new(target);
+        return Vector.IsHardwareAccelerated ? this.SimdEquals(other) : FallbackEquals(other);
     }
 
     private bool FallbackEquals(IntegerTuple other)
