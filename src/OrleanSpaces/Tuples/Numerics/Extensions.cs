@@ -1,12 +1,13 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using OrleanSpaces.Tuples.Numerics;
 
 namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
-    public static bool SimdEquals<T, H>(this INumericSpaceTuple<T, H> left, INumericSpaceTuple<T, H> right)
+    public static bool SimdEquals<T, H>(this INumericTuple<T, H> left, INumericTuple<T, H> right)
         where T : struct, INumber<T>
         where H : ISpaceTuple<T, H>
     {
@@ -45,7 +46,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref T GetRef<T, H>(INumericSpaceTuple<T, H> tuple)
+    private static ref T GetRef<T, H>(INumericTuple<T, H> tuple)
         where T : struct, INumber<T>
         where H : ISpaceTuple<T, H>
         => ref MemoryMarshal.GetReference(tuple.Fields.AsSpan());

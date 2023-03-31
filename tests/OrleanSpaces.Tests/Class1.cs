@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Tuples;
+﻿using OrleanSpaces.Tuples.Numerics;
 using System.Numerics;
 
 namespace OrleanSpaces.Tests;
@@ -10,8 +10,8 @@ public class Class1
     {
         if (Vector.IsHardwareAccelerated)
         {
-            IntegerTuple tuple = new(new[] { 1, 2, 3, 4});
-            IntegerTuple tuple1 = new(new[] { 1, 2, 3, 5 });
+            IntTuple tuple = new(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+            IntTuple tuple1 = new(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
 
             Assert.Equal(tuple, tuple1);
         }
