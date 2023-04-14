@@ -50,13 +50,10 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
 
             for (int i = 0; i < fields.Length; i++)
             {
-                object obj = fields[i];
-                if (obj is null)
-                {
-                    throw new ArgumentException($"The field at position = {i} can not be null.");
-                }
+                object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
 
-                if (!TypeChecker.IsSimpleType(obj.GetType()))
+                Type type = obj.GetType();
+                if (!TypeChecker.IsSimpleType(type))
                 {
                     throw new ArgumentException($"The field at position = {i} is not a valid type.");
                 }

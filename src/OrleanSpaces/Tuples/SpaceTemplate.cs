@@ -42,14 +42,9 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, ICompa
 
             for (int i = 0; i < fields.Length; i++)
             {
-                object obj = fields[i];
-                if (obj is null)
-                {
-                    throw new ArgumentException($"The field at position = {i} can not be null.");
-                }
+                object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
 
                 Type type = obj.GetType();
-
                 if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
                 {
                     throw new ArgumentException($"The field at position = {i} is not a valid type.");

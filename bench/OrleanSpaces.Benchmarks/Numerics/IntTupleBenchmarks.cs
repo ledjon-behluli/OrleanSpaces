@@ -1,48 +1,146 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Numerics;
 
+[ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class IntTupleBenchmarks
 {
     private const int iterations = 100_000;
 
-    private readonly static int[] fields = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
-    private readonly static SpaceTuple spaceTuple = new(fields);
-    private readonly static IntTuple intTuple = new(fields);
+    #region Instantiation
 
-    [BenchmarkCategory("Init"), Benchmark]
-    public void SpaceTuple_Init()
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateSpaceTuple()
     {
+        object[] spaceTupleFields = new object[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
         for (int i = 0; i < iterations; i++)
-        {
-            _ = new SpaceTuple(fields);
-        }
+            _ = new SpaceTuple(spaceTupleFields);
     }
 
-    [BenchmarkCategory("Init"), Benchmark]
-    public void IntTuple_Init()
+    [BenchmarkCategory("Instantiation"), Benchmark]
+    public void InstantiateIntTuple()
     {
+        int[] intTupleFields = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
         for (int i = 0; i < iterations; i++)
-        {
-            _ = new IntTuple(fields);
-        }
+            _ = new IntTuple(intTupleFields);
+    }
+
+    #endregion
+
+    #region Equality
+
+    [BenchmarkCategory("Equality", "XS"), Benchmark]
+    public void XS_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3, 4);
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "XS"), Benchmark]
+    public void XS_IntTuple()
+    {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4 });
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "S"), Benchmark]
+    public void S_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3, 4, 5, 6, 7, 8);
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "S"), Benchmark]
+    public void S_IntTuple()
+    {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
     }
    
-    [BenchmarkCategory("Equals", "SpaceTuple"), Benchmark]
-    public void SpaceTuple_Equals()
+    [BenchmarkCategory("Equality", "M"), Benchmark]
+    public void M_SpaceTuple()
     {
+        SpaceTuple tuple = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
         for (int i = 0; i < iterations; i++)
-            spaceTuple.Equals(spaceTuple);
+            tuple.Equals(tuple);
     }
 
-    [BenchmarkCategory("Equals", "IntTuple"), Benchmark]
-    public void IntTuple_Equals()
+    [BenchmarkCategory("Equality", "M"), Benchmark]
+    public void M_IntTuple()
     {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
+
         for (int i = 0; i < iterations; i++)
-            intTuple.Equals(intTuple);
+            tuple.Equals(tuple);
     }
+
+    [BenchmarkCategory("Equality", "L"), Benchmark]
+    public void L_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32);
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "L"), Benchmark]
+    public void L_IntTuple()
+    {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 });
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "XL"), Benchmark]
+    public void XL_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64);
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "XL"), Benchmark]
+    public void XL_IntTuple()
+    {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64 });
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "XXL"), Benchmark]
+    public void XXL_SpaceTuple()
+    {
+        SpaceTuple tuple = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128);
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    [BenchmarkCategory("Equality", "XXL"), Benchmark]
+    public void XXL_IntTuple()
+    {
+        IntTuple tuple = new(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128 });
+
+        for (int i = 0; i < iterations; i++)
+            tuple.Equals(tuple);
+    }
+
+    #endregion
 }
