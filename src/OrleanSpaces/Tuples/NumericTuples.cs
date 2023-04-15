@@ -325,10 +325,10 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
         {
             for (int i = 0; i < Length; i++)
             {
-                Vector128<byte> vLeft = AsVector(in fields[i]);
-                Vector128<byte> vRight = AsVector(in other.fields[i]);
+                ref Vector128<byte> vLeft = ref Extensions.AsRef<Guid, Vector128<byte>>(in fields[i]);
+                ref Vector128<byte> vRight = ref Extensions.AsRef<Guid, Vector128<byte>>(in other.fields[i]);
 
-                if (vLeft != vRight)
+                if (vLeft != vRight)  //todo: test me!
                 {
                     return false;
                 }
@@ -339,10 +339,6 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
 
         return Extensions.FallbackEquals(this, other);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<byte> AsVector(in Guid value)
-        => Vector128.LoadUnsafe(ref Unsafe.As<Guid, byte>(ref Unsafe.AsRef(in value)));
 
     public int CompareTo(GuidTuple other) => Length.CompareTo(other.Length);
 

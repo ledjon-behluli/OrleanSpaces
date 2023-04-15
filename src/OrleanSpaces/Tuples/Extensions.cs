@@ -32,8 +32,8 @@ internal static class Extensions
 
         int i = 0;
 
-        ref Vector<T> vLeft = ref AsVector(in rLeft);
-        ref Vector<T> vRight = ref AsVector(in rRight);
+        ref Vector<T> vLeft = ref AsRef<T, Vector<T>>(in rLeft);
+        ref Vector<T> vRight = ref AsRef<T, Vector<T>>(in rRight);
 
         for (; i < length; i++)
         {
@@ -81,6 +81,8 @@ internal static class Extensions
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref Vector<T> AsVector<T>(in T value) where T : struct
-        => ref Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in value));
+    public static ref TOut AsRef<TIn, TOut>(in TIn value) 
+        where TIn : struct 
+        where TOut : struct
+        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 }
