@@ -6,7 +6,8 @@ namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
-    public static bool Equals<T, H>(INumericTuple<T, H> left, INumericTuple<T, H> right)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool SimdEquals<T, H>(INumericTuple<T, H> left, INumericTuple<T, H> right)
        where T : struct, INumber<T>
        where H : ISpaceTuple<T, H>
     {
@@ -17,17 +18,17 @@ internal static class Extensions
 
         if (!Vector.IsHardwareAccelerated)
         {
-            return RegularEquals(left, right);
+            return FallbackEquals(left, right);
         }
 
         int length = left.Length / Vector<T>.Count;
         if (length == 0)
         {
-            return RegularEquals(left, right);
+            return FallbackEquals(left, right);
         }
 
-        ref T rLeft = ref GetRef(left);
-        ref T rRight = ref GetRef(right);
+        ref T rLeft = ref GetRef(left.Data);
+        ref T rRight = ref GetRef(right.Data);
 
         int i = 0;
 
@@ -55,8 +56,9 @@ internal static class Extensions
         return true;
     }
 
-    private static bool RegularEquals<T, H>(INumericTuple<T, H> left, INumericTuple<T, H> right)
-         where T : struct, INumber<T>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool FallbackEquals<T, H>(ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
+         where T : struct
          where H : ISpaceTuple<T, H>
     {
         for (int i = 0; i < left.Length; i++)
@@ -71,16 +73,14 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref T GetRef<T, H>(INumericTuple<T, H> tuple)
-        where T : struct, INumber<T>
-        where H : ISpaceTuple<T, H>
-        => ref MemoryMarshal.GetReference(tuple.Span);
+    public static ref T GetRef<T>(Span<T> span) where T : struct
+        => ref MemoryMarshal.GetReference(span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref T Offset<T>(this ref T source, int count) where T : struct
+    public static ref T Offset<T>(this ref T source, int count) where T : struct
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref Vector<T> AsVector<T>(in T value) where T : struct, INumber<T>
+    public static ref Vector<T> AsVector<T>(in T value) where T : struct
         => ref Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in value));
 }
