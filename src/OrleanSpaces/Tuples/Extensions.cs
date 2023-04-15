@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples;
 
-internal static class NumericExtensions
+internal static class Extensions
 {
     public static bool Equals<T, H>(INumericTuple<T, H> left, INumericTuple<T, H> right)
        where T : struct, INumber<T>
@@ -31,8 +31,8 @@ internal static class NumericExtensions
 
         int i = 0;
 
-        ref Vector<T> vLeft = ref AsVector(rLeft);
-        ref Vector<T> vRight = ref AsVector(rRight);
+        ref Vector<T> vLeft = ref AsVector(in rLeft);
+        ref Vector<T> vRight = ref AsVector(in rRight);
 
         for (; i < length; i++)
         {
@@ -74,7 +74,7 @@ internal static class NumericExtensions
     private static ref T GetRef<T, H>(INumericTuple<T, H> tuple)
         where T : struct, INumber<T>
         where H : ISpaceTuple<T, H>
-        => ref MemoryMarshal.GetReference(tuple.Fields.AsSpan());
+        => ref MemoryMarshal.GetReference(tuple.Span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref T Offset<T>(this ref T source, int count) where T : struct
@@ -82,5 +82,5 @@ internal static class NumericExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref Vector<T> AsVector<T>(in T value) where T : struct, INumber<T>
-        => ref Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(value));
+        => ref Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in value));
 }

@@ -28,6 +28,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="ErrorProne.NET.Structs" Version="0.4.0-beta.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
 		<PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.6.5" />
 		<PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">
