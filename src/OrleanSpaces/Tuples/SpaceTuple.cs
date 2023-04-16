@@ -34,8 +34,8 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// <summary>
     /// Main constructor which instantiates a non-<see cref="Null"/>, when all <paramref name="fields"/> are of valid type.
     /// </summary>
-    /// <param name="fields">The fields of this tuple.</param>
-    /// <remarks><i>Tuple fields can have types of: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
+    /// <param name="fields">The ticks of this tuple.</param>
+    /// <remarks><i>Tuple ticks can have types of: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
     public SpaceTuple([AllowNull] params object[] fields)
@@ -76,7 +76,7 @@ public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<
     /// Determines whether the current object is equal to another object of the same type.
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
-    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of fields, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTuple other)
     {
         if (Length != other.Length)
