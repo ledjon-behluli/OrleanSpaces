@@ -9,6 +9,10 @@ public class Class1
     [Fact]
     public void A()
     {
+        IntTuple intTuple = new();
+
+        int a = intTuple.Length;
+
         //var a1 = Marshal.SizeOf(typeof(SpaceUnit));
         //var a2 = Marshal.SizeOf(typeof(SpaceTuple));
         //var a3 = Marshal.SizeOf(typeof(IntTuple));

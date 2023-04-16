@@ -1,6 +1,4 @@
 ﻿using Orleans.Concurrency;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples;
@@ -11,15 +9,12 @@ public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>
     private readonly sbyte[] fields;
     
     public sbyte this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<sbyte> INumericTuple<sbyte, SByteTuple>.Data => fields.AsSpan();
 
-    public SByteTuple(sbyte[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public SByteTuple() : this(Array.Empty<sbyte>()) { }
+    public SByteTuple(sbyte[] fields) => this.fields = fields;
 
     public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
     public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);
@@ -40,15 +35,12 @@ public readonly struct ByteTuple : INumericTuple<byte, ByteTuple>
     private readonly byte[] fields;
 
     public byte this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<byte> INumericTuple<byte, ByteTuple>.Data => fields.AsSpan();
 
-    public ByteTuple(byte[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public ByteTuple() : this(Array.Empty<byte>()) { }
+    public ByteTuple(byte[] fields) => this.fields = fields;
 
     public static bool operator ==(ByteTuple left, ByteTuple right) => left.Equals(right);
     public static bool operator !=(ByteTuple left, ByteTuple right) => !(left == right);
@@ -69,15 +61,12 @@ public readonly struct ShortTuple : INumericTuple<short, ShortTuple>
     private readonly short[] fields;
 
     public short this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<short> INumericTuple<short, ShortTuple>.Data => fields.AsSpan();
 
-    public ShortTuple(short[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public ShortTuple() : this(Array.Empty<short>()) { }
+    public ShortTuple(short[] fields) => this.fields = fields;
 
     public static bool operator ==(ShortTuple left, ShortTuple right) => left.Equals(right);
     public static bool operator !=(ShortTuple left, ShortTuple right) => !(left == right);
@@ -98,15 +87,12 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>
     private readonly ushort[] fields;
 
     public ushort this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<ushort> INumericTuple<ushort, UShortTuple>.Data => fields.AsSpan();
 
-    public UShortTuple(ushort[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public UShortTuple() : this(Array.Empty<ushort>()) { }
+    public UShortTuple(ushort[] fields) => this.fields = fields;
 
     public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
     public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
@@ -127,15 +113,12 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>
     private readonly int[] fields;
 
     public int this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<int> INumericTuple<int, IntTuple>.Data => fields.AsSpan();
 
-    public IntTuple(int[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public IntTuple() : this(Array.Empty<int>()) { }
+    public IntTuple(int[] fields) => this.fields = fields;
 
     public static bool operator ==(IntTuple left, IntTuple right) => left.Equals(right);
     public static bool operator !=(IntTuple left, IntTuple right) => !(left == right);
@@ -156,15 +139,12 @@ public readonly struct UIntTuple : INumericTuple<uint, UIntTuple>
     private readonly uint[] fields;
 
     public uint this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<uint> INumericTuple<uint, UIntTuple>.Data => fields.AsSpan();
 
-    public UIntTuple(uint[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public UIntTuple() : this(Array.Empty<uint>()) { }
+    public UIntTuple(uint[] fields) => this.fields = fields;
 
     public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
     public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
@@ -185,15 +165,12 @@ public readonly struct LongTuple : INumericTuple<long, LongTuple>
     private readonly long[] fields;
 
     public long this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<long> INumericTuple<long, LongTuple>.Data => fields.AsSpan();
 
-    public LongTuple(long[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public LongTuple() : this(Array.Empty<long>()) { }
+    public LongTuple(long[] fields) => this.fields = fields;
 
     public static bool operator ==(LongTuple left, LongTuple right) => left.Equals(right);
     public static bool operator !=(LongTuple left, LongTuple right) => !(left == right);
@@ -214,15 +191,12 @@ public readonly struct ULongTuple : INumericTuple<ulong, ULongTuple>
     private readonly ulong[] fields;
 
     public ulong this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<ulong> INumericTuple<ulong, ULongTuple>.Data => fields.AsSpan();
 
-    public ULongTuple(ulong[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public ULongTuple() : this(Array.Empty<ulong>()) { }
+    public ULongTuple(ulong[] fields) => this.fields = fields;
 
     public static bool operator ==(ULongTuple left, ULongTuple right) => left.Equals(right);
     public static bool operator !=(ULongTuple left, ULongTuple right) => !(left == right);
@@ -243,15 +217,12 @@ public readonly struct FloatTuple : INumericTuple<float, FloatTuple>
     private readonly float[] fields;
 
     public float this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<float> INumericTuple<float, FloatTuple>.Data => fields.AsSpan();
 
-    public FloatTuple(float[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public FloatTuple() : this(Array.Empty<float>()) { }
+    public FloatTuple(float[] fields) => this.fields = fields;
 
     public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
     public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
@@ -272,15 +243,12 @@ public readonly struct DoubleTuple : INumericTuple<double, DoubleTuple>
     private readonly double[] fields;
 
     public double this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
     Span<double> INumericTuple<double, DoubleTuple>.Data => fields.AsSpan();
 
-    public DoubleTuple(double[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public DoubleTuple() : this(Array.Empty<double>()) { }
+    public DoubleTuple(double[] fields) => this.fields = fields;
 
     public static bool operator ==(DoubleTuple left, DoubleTuple right) => left.Equals(right);
     public static bool operator !=(DoubleTuple left, DoubleTuple right) => !(left == right);
@@ -301,13 +269,10 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
     private readonly Guid[] fields;
 
     public Guid this[int index] => fields[index];
-    public int Length { get; }
+    public int Length => fields.Length;
 
-    public GuidTuple(Guid[] fields)
-    {
-        this.fields = fields;
-        Length = fields.Length;
-    }
+    public GuidTuple() : this(Array.Empty<Guid>()) { }
+    public GuidTuple(Guid[] fields) => this.fields = fields;
 
     public static bool operator ==(GuidTuple left, GuidTuple right) => left.Equals(right);
     public static bool operator !=(GuidTuple left, GuidTuple right) => !(left == right);

@@ -1,7 +1,10 @@
-﻿namespace OrleanSpaces.Tuples;
+﻿using System.Runtime.CompilerServices;
+
+namespace OrleanSpaces.Tuples;
 
 internal static class TypeChecker
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsSimpleType(Type type)
     {
         return
