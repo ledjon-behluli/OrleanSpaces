@@ -1,13 +1,14 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using OrleanSpaces.Tuples.Typed.Numerics;
 
 namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SimdEquals<T, H>(INumericTuple<T, H> left, INumericTuple<T, H> right)
+    public static bool ParallelEquals<T, H>(this INumericTuple<T, H> left, INumericTuple<T, H> right)
        where T : struct, INumber<T>
        where H : ISpaceTuple<T, H>
     {
@@ -18,13 +19,13 @@ internal static class Extensions
 
         if (!Vector.IsHardwareAccelerated)
         {
-            return FallbackEquals(left, right);
+            return SequentialEquals(left, right);
         }
 
         int length = left.Length / Vector<T>.Count;
         if (length == 0)
         {
-            return FallbackEquals(left, right);
+            return SequentialEquals(left, right);
         }
 
         ref T rLeft = ref GetRef(left.Data);
@@ -57,7 +58,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool FallbackEquals<T, H>(ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
+    public static bool SequentialEquals<T, H>(this ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
          where T : struct
          where H : ISpaceTuple<T, H>
     {
@@ -81,8 +82,8 @@ internal static class Extensions
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut AsRef<TIn, TOut>(in TIn value) 
-        where TIn : struct 
+    public static ref TOut AsRef<TIn, TOut>(in TIn value)
+        where TIn : struct
         where TOut : struct
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 }

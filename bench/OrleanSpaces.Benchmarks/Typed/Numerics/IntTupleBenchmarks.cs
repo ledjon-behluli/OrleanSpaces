@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Typed.Numerics;
 
 [ShortRunJob]
 [MemoryDiagnoser]

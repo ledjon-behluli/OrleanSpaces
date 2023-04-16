@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace OrleanSpaces.Tuples;
+namespace OrleanSpaces.Tuples.Typed.Numerics;
 
 internal interface INumericTuple<T, H> : ISpaceTuple<T, H>
     where T : struct, INumber<T>
