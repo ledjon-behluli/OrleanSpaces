@@ -3,23 +3,23 @@
 namespace OrleanSpaces.Tuples.Typed.Numerics;
 
 [Immutable]
-public readonly struct DoubleTuple : INumericTuple<double, DoubleTuple>
+public readonly struct DoubleTuple : INumericSpaceTuple<double, DoubleTuple>
 {
     private readonly double[] fields;
 
     public double this[int index] => fields[index];
     public int Length => fields.Length;
 
-    Span<double> INumericTuple<double, DoubleTuple>.Data => fields.AsSpan();
+    Span<double> INumericSpaceTuple<double, DoubleTuple>.Data => fields.AsSpan();
 
     public DoubleTuple() : this(Array.Empty<double>()) { }
-    public DoubleTuple(double[] fields) => this.fields = fields;
+    public DoubleTuple(params double[] fields) => this.fields = fields;
 
     public static bool operator ==(DoubleTuple left, DoubleTuple right) => left.Equals(right);
     public static bool operator !=(DoubleTuple left, DoubleTuple right) => !(left == right);
 
     public override bool Equals(object? obj) => obj is DoubleTuple tuple && Equals(tuple);
-    public bool Equals(DoubleTuple other) => this.ParallelEquals(other);
+    public bool Equals(DoubleTuple other) => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public int CompareTo(DoubleTuple other) => Length.CompareTo(other.Length);
 

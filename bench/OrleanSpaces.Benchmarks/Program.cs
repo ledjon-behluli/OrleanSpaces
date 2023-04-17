@@ -6,6 +6,7 @@
 //BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 //BenchmarkRunner.Run<IntTupleBenchmarks>();
 
-BenchmarkRunner.Run<TestBench>();
+//BenchmarkRunner.Run<TestBench>();
+BenchmarkRunner.Run<DateTimeTupleBenchmarks>();
 
 Console.ReadKey();

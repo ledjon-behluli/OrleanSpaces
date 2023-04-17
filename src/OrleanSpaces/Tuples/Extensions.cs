@@ -1,39 +1,90 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Tuples.Typed.Numerics;
 
 namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
-    public static bool ParallelEquals<T, H>(this INumericTuple<T, H> left, INumericTuple<T, H> right)
-       where T : struct, INumber<T>
-       where H : ISpaceTuple<T, H>
+    public static bool TryParallelEquals<T, H>(this INumericSpaceTuple<T, H> left, INumericSpaceTuple<T, H> right, out bool equalityResult)
+        where T : struct, INumber<T>
+        where H : ISpaceTuple<T, H>
+    {
+        equalityResult = false;
+
+        if (!Vector.IsHardwareAccelerated)
+        {
+            return false;
+        }
+
+        int length = left.Length / Vector<T>.Count;
+        if (length == 0)
+        {
+            return false;
+        }
+
+        equalityResult = ParallelEquals(left.Data, right.Data, length);
+        return true;
+    }
+
+    public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool equalityResult)
+        where TIn : struct
+        where TOut : struct, INumber<TOut>
+    {
+        equalityResult = false;
+
+        if (!Vector.IsHardwareAccelerated)
+        {
+            return false;
+        }
+
+        int length = marshaller.Left.Length / Vector<TOut>.Count;
+        if (length == 0)
+        {
+            return false;
+        }
+
+        equalityResult = ParallelEquals(marshaller.Left, marshaller.Right, length);
+        return true;
+    }
+
+    public static bool SequentialEquals<T, H>(this ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
+         where T : notnull
+         where H : ISpaceTuple<T, H>
     {
         if (left.Length != right.Length)
         {
             return false;
         }
 
-        if (!Vector.IsHardwareAccelerated)
+        for (int i = 0; i < left.Length; i++)
         {
-            return SequentialEquals(left, right);
+            if (!left[i].Equals(right[i]))
+            {
+                return false;
+            }
         }
 
-        int length = left.Length / Vector<T>.Count;
-        if (length == 0)
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool ParallelEquals<TOut>(Span<TOut> left, Span<TOut> right, int length) where TOut : struct, INumber<TOut>
+    {
+        if (left.Length != right.Length)
         {
-            return SequentialEquals(left, right);
+            return false;
         }
 
-        ref T rLeft = ref GetRef(left.Data);
-        ref T rRight = ref GetRef(right.Data);
+        ref TOut rLeft = ref GetRef(left);
+        ref TOut rRight = ref GetRef(right);
 
         int i = 0;
 
-        ref Vector<T> vLeft = ref AsRef<T, Vector<T>>(in rLeft);
-        ref Vector<T> vRight = ref AsRef<T, Vector<T>>(in rRight);
+        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in rLeft);
+        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in rRight);
 
         for (; i < length; i++)
         {
@@ -43,26 +94,11 @@ internal static class Extensions
             }
         }
 
-        i *= Vector<T>.Count;
+        i *= Vector<TOut>.Count;
 
         for (; i < left.Length; i++)
         {
             if (rLeft.Offset(i) != rRight.Offset(i))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static bool SequentialEquals<T, H>(this ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
-         where T : struct
-         where H : ISpaceTuple<T, H>
-    {
-        for (int i = 0; i < left.Length; i++)
-        {
-            if (!left[i].Equals(right[i]))
             {
                 return false;
             }

@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Tuples.Typed.Numerics;
 
-internal interface INumericTuple<T, H> : ISpaceTuple<T, H>
+internal interface INumericSpaceTuple<T, H> : ISpaceTuple<T, H>
     where T : struct, INumber<T>
     where H : ISpaceTuple<T, H>
 {
