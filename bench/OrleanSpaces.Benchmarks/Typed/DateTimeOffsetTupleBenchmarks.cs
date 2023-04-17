@@ -210,11 +210,11 @@ public class DateTimeOffsetTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality Type", "Sequential DateTimeOffsetTuple"), Benchmark]
-    public void SequentialEqualityDateTimeOffsetTupleEquality()
+    public void SequentialDateTimeOffsetTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
-            SequentialEqualityDateTimeOffsetTuple tuple = new(
+            SequentialDateTimeOffsetTuple tuple = new(
                 DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now,
                 DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now,
                 DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now,
@@ -225,7 +225,7 @@ public class DateTimeOffsetTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality Type", "Parallel DateTimeOffsetTuple"), Benchmark]
-    public void DateTimeOffsetTupleEquality()
+    public void ParallelDateTimeOffsetTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -239,26 +239,26 @@ public class DateTimeOffsetTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialEqualityDateTimeOffsetTuple : ISpaceTuple<DateTime, SequentialEqualityDateTimeOffsetTuple>
+    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTime, SequentialDateTimeOffsetTuple>
     {
         private readonly DateTime[] fields;
 
         public DateTime this[int index] => fields[index];
         public int Length => fields.Length;
 
-        public SequentialEqualityDateTimeOffsetTuple() : this(Array.Empty<DateTime>()) { }
-        public SequentialEqualityDateTimeOffsetTuple(params DateTime[] fields) => this.fields = fields;
+        public SequentialDateTimeOffsetTuple() : this(Array.Empty<DateTime>()) { }
+        public SequentialDateTimeOffsetTuple(params DateTime[] fields) => this.fields = fields;
 
-        public static bool operator ==(SequentialEqualityDateTimeOffsetTuple left, SequentialEqualityDateTimeOffsetTuple right) => left.Equals(right);
-        public static bool operator !=(SequentialEqualityDateTimeOffsetTuple left, SequentialEqualityDateTimeOffsetTuple right) => !(left == right);
+        public static bool operator ==(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => left.Equals(right);
+        public static bool operator !=(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => !(left == right);
 
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-        public override bool Equals(object? obj) => obj is SequentialEqualityDateTimeOffsetTuple tuple && Equals(tuple);
+        public override bool Equals(object? obj) => obj is SequentialDateTimeOffsetTuple tuple && Equals(tuple);
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
-        public bool Equals(SequentialEqualityDateTimeOffsetTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals(other);
 
-        public int CompareTo(SequentialEqualityDateTimeOffsetTuple other) => Length.CompareTo(other.Length);
+        public int CompareTo(SequentialDateTimeOffsetTuple other) => Length.CompareTo(other.Length);
 
         public override int GetHashCode() => fields.GetHashCode();
 
