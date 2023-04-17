@@ -1,6 +1,6 @@
 ﻿using Orleans.Concurrency;
 
-namespace OrleanSpaces.Tuples.Typed.Numerics;
+namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
 public readonly struct FloatTuple : INumericSpaceTuple<float, FloatTuple>

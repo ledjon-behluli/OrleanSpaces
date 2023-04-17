@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OrleanSpaces.Tuples.Typed;
-using OrleanSpaces.Tuples.Typed.Numerics;
 
 namespace OrleanSpaces.Tuples;
 
