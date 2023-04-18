@@ -1,1 +1,2 @@
 Left: decimal, char, string, Enum
+ToDo: Add support for 'nint' & 'nuint'

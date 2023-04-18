@@ -28,6 +28,27 @@ internal static class Extensions
         return true;
     }
 
+    public static bool TryParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right, out bool equalityResult)
+       where TOut : struct, INumber<TOut>
+    {
+        equalityResult = false;
+
+        if (!Vector.IsHardwareAccelerated)
+        {
+            return false;
+        }
+
+        int length = left.Length / Vector<TOut>.Count;
+        if (length == 0)
+        {
+            return false;
+        }
+
+        equalityResult = ParallelEquals(left, right, length);
+        return true;
+    }
+
+
     public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool equalityResult)
         where TIn : struct
         where TOut : struct, INumber<TOut>
@@ -70,7 +91,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ParallelEquals<TOut>(Span<TOut> left, Span<TOut> right, int length) 
+    private static bool ParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right, int length) 
         where TOut : struct, INumber<TOut>
     {
         if (left.Length != right.Length)
