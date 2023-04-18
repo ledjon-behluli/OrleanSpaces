@@ -8,7 +8,8 @@
 //BenchmarkRunner.Run<DateTimeTupleBenchmarks>();
 //BenchmarkRunner.Run<DateTimeOffsetTupleBenchmarks>();
 //BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
+//BenchmarkRunner.Run<BoolTupleBenchmarks>();
 
-BenchmarkRunner.Run<TestBench>();
+//BenchmarkRunner.Run<TestBench>();
 
 Console.ReadKey();
