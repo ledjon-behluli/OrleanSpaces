@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
 
@@ -16,7 +17,10 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
     int ISpaceTuple<SpaceUnit, SpaceUnit>.Length => 1;
     SpaceUnit ISpaceTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
 
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types are always equal to each other.")]
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
+
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")] 
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;
 
     /// <summary>

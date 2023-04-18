@@ -1,8 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Continuations;
 
 internal interface ITupleRouter
 {
-    Task RouteAsync(ITuple tuple);
+    Task RouteAsync(ISpaceTuple tuple);
 }

@@ -1,7 +1,6 @@
 ﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
@@ -22,7 +21,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        ITuple result = await continuationChannel.Reader.ReadAsync(default);
+        ISpaceTuple result = await continuationChannel.Reader.ReadAsync(default);
 
         Assert.NotNull(result);
         Assert.True(result is SpaceTuple);
@@ -33,7 +32,7 @@ public class ProcessorTests : IClassFixture<Fixture>
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
-        continuationChannel.Reader.TryRead(out ITuple result);
+        continuationChannel.Reader.TryRead(out ISpaceTuple result);
 
         Assert.Null(result);
     }

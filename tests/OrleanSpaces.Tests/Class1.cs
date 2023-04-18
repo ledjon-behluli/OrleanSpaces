@@ -12,15 +12,11 @@ public class Class1
     [Fact]
     public void A()
     {
+        TimeSpan[] ts1 = new TimeSpan[] { TimeSpan.MinValue, TimeSpan.MaxValue };
+        TimeSpan[] ts2 = new TimeSpan[] { TimeSpan.Zero, TimeSpan.MinValue, TimeSpan.MaxValue };
+
+        var a = new NumericMarshaller<TimeSpan, long>(ts1, ts2);
 
     }
 }
 
-
-public readonly struct Test : INumber<>
-{
-    public Test()
-    {
-        Int32 a = 1;
-    }
-}

@@ -52,6 +52,7 @@ public class Fixture : IAsyncLifetime
             }
 
             localRegistry.Clear();
+            GC.SuppressFinalize(this);
         }
     }
 }

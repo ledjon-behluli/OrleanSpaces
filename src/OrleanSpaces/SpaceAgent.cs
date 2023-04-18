@@ -5,12 +5,12 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using OrleanSpaces.Tuples;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
 
-internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITuple>
+internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ISpaceTuple>
 {
     private readonly IClusterClient client;
     private readonly EvaluationChannel evaluationChannel;
@@ -50,7 +50,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
         {
             var streamId = await grain.ListenAsync();
             var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var stream = provider.GetStream<ITuple>(streamId, Constants.TupleStream);
+            var stream = provider.GetStream<ISpaceTuple>(streamId, Constants.TupleStream);
 
             await stream.SubscribeAsync(this);
         }
@@ -58,7 +58,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     #region IAsyncObserver
 
-    public async Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
+    public async Task OnNextAsync(ISpaceTuple tuple, StreamSequenceToken token)
     {
         await observerChannel.Writer.WriteAsync(tuple);
         if (tuple is SpaceTuple spaceTuple)
@@ -74,7 +74,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ITu
 
     #region ITupleRouter
 
-    public async Task RouteAsync(ITuple tuple)
+    public async Task RouteAsync(ISpaceTuple tuple)
     {
         if (tuple == null)
         {

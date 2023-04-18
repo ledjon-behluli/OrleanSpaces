@@ -210,8 +210,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         SpaceTuple peekedTuple = new();
         SpaceTemplate template = new("peek-not-available");
-        Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
-
+       
         await agent.PeekAsync(template, callback);
 
         ReadOnlyCollection<CallbackEntry> entries;
@@ -222,6 +221,8 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
+
+        Task callback(SpaceTuple tuple) => Task.FromResult(peekedTuple = tuple);
     }
 
     [Fact]
@@ -305,7 +306,6 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         SpaceTuple peekedTuple = new();
         SpaceTemplate template = new("pop-not-available");
-        Func<SpaceTuple, Task> callback = tuple => Task.FromResult(peekedTuple = tuple);
 
         await agent.PopAsync(template, callback);
 
@@ -317,6 +317,8 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         Assert.True(peekedTuple.IsNull);
         Assert.Equal(callback, entries.Single().Callback);
+
+        Task callback(SpaceTuple tuple) => Task.FromResult(peekedTuple = tuple);
     }
 
     [Fact]

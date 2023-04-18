@@ -1,7 +1,6 @@
 ﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests.Callbacks;
 
@@ -24,7 +23,7 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new(1);
         await callbackChannel.Writer.WriteAsync(tuple);
 
-        continuationChannel.Reader.TryRead(out ITuple result);
+        continuationChannel.Reader.TryRead(out ISpaceTuple result);
 
         Assert.Null(result);
     }
@@ -46,7 +45,7 @@ public class ProcessorTests : IClassFixture<Fixture>
 
         while (rounds > 0)
         {
-            if (continuationChannel.Reader.TryRead(out ITuple result))
+            if (continuationChannel.Reader.TryRead(out ISpaceTuple result))
             {
                 Assert.NotNull(result);
                 Assert.True(result is SpaceTemplate);

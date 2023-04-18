@@ -56,7 +56,6 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
     [Fact]
     public void Should_Register_Services_With_CustomClusterClient_On_ServiceCollection()
     {
-        Func<IClusterClient> clientFactory = () => this.client;
         ServiceCollection services = new();
 
         services.AddSingleton<IHostApplicationLifetime, TestHostAppLifetime>();
@@ -67,6 +66,8 @@ public class ExtensionsTests : IClassFixture<ClusterFixture>
 
         Assert.Equal(clientFactory(), client);
         EnsureAdded(provider);
+
+        IClusterClient clientFactory() => this.client;
     }
 
     private static void EnsureAdded(IServiceProvider provider)

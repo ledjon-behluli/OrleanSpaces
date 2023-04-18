@@ -32,7 +32,11 @@ public class ClusterFixture : IDisposable
         Client.ServiceProvider.GetRequiredService<ObserverChannel>().IsBeingConsumed = true;
     }
 
-    public void Dispose() => cluster.StopAllSilos();
+    public void Dispose()
+    {
+        cluster.StopAllSilos();
+        GC.SuppressFinalize(this);
+    }
 
     private class TestSiloConfigurator : ISiloConfigurator
     {

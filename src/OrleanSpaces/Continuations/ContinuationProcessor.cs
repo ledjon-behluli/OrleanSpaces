@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System.Runtime.CompilerServices;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Continuations;
 
@@ -20,7 +20,7 @@ internal sealed class ContinuationProcessor : BackgroundService
     {
         channel.IsBeingConsumed = true;
 
-        await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (ISpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
             await router.RouteAsync(tuple);
         }

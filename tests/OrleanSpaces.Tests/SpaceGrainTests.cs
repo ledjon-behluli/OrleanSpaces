@@ -1,7 +1,6 @@
 ﻿using Orleans;
 using Orleans.Streams;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -12,7 +11,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly ISpaceGrain grain;
     private readonly AsyncObserver observer;
 
-    private IAsyncStream<ITuple> stream;
+    private IAsyncStream<ISpaceTuple> stream;
     private Guid streamId;
 
     public SpaceGrainTests(ClusterFixture fixture)
@@ -26,7 +25,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         streamId = await grain.ListenAsync();
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<ITuple>(streamId, Constants.TupleStream);
+        stream = provider.GetStream<ISpaceTuple>(streamId, Constants.TupleStream);
         await stream.SubscribeAsync(observer);
     }
 
@@ -79,13 +78,13 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         observer.Reset();
     }
 
-    private class AsyncObserver : IAsyncObserver<ITuple>
+    private class AsyncObserver : IAsyncObserver<ISpaceTuple>
     {
         public SpaceTuple LastTuple { get; private set; } = new();
         public SpaceTemplate LastTemplate { get; private set; } = new();
         public bool LastFlattening { get; private set; }
 
-        public Task OnNextAsync(ITuple tuple, StreamSequenceToken token)
+        public Task OnNextAsync(ISpaceTuple tuple, StreamSequenceToken token)
         {
             if (tuple is SpaceTuple spaceTuple)
             {

@@ -39,13 +39,14 @@ public class RegistryTests
     public void Should_Get_Callback()
     {
         bool isContinuable = false;
-        Func<SpaceTuple, Task> callback = tuple => Task.CompletedTask;
-
+       
         registry.Add(new("test"), new(callback, isContinuable));
         var entry = registry.Take(new("test")).ElementAt(0);
 
         Assert.NotNull(entry);
         Assert.Equal(callback, entry.Callback);
         Assert.Equal(isContinuable, entry.IsContinuable);
+
+        static Task callback(SpaceTuple tuple) => Task.CompletedTask;
     }
 }

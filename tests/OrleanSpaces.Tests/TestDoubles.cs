@@ -2,7 +2,6 @@
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
 
@@ -12,9 +11,9 @@ public enum TestEnum { A }
 
 public class TestTupleRouter : ITupleRouter
 {
-    public ITuple Tuple { get; set; }
+    public ISpaceTuple Tuple { get; set; }
 
-    public Task RouteAsync(ITuple tuple)
+    public Task RouteAsync(ISpaceTuple tuple)
     {
         Tuple = tuple;
         return Task.CompletedTask;

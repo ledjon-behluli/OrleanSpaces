@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Observers;
 
@@ -17,7 +16,7 @@ public abstract class SpaceObserver : ISpaceObserver
     /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
     protected void ListenTo(EventType type) => this.type = type;
 
-    internal async ValueTask NotifyAsync(ITuple tuple, CancellationToken cancellationToken)
+    internal async ValueTask NotifyAsync(ISpaceTuple tuple, CancellationToken cancellationToken)
     {
         if (tuple is SpaceTuple spaceTuple && type.HasFlag(Expansions))
         {

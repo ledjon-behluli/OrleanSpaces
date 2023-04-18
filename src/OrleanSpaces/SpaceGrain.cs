@@ -3,7 +3,6 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Tuples;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
 
@@ -11,7 +10,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<TupleSpaceState> space;
 
-    [AllowNull] private IAsyncStream<ITuple> stream;
+    [AllowNull] private IAsyncStream<ISpaceTuple> stream;
 
     public SpaceGrain([PersistentState(Constants.TupleSpaceState, Constants.TupleSpaceStore)] IPersistentState<TupleSpaceState> space)
     {
@@ -21,7 +20,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     public override Task OnActivateAsync()
     {
         var provider = GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<ITuple>(this.GetPrimaryKey(), Constants.TupleStream);
+        stream = provider.GetStream<ISpaceTuple>(this.GetPrimaryKey(), Constants.TupleStream);
 
         return base.OnActivateAsync();
     }

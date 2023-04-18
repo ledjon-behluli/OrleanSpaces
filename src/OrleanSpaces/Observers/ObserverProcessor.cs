@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System.Runtime.CompilerServices;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Observers;
 
@@ -23,7 +23,7 @@ internal sealed class ObserverProcessor : BackgroundService
     {
         channel.IsBeingConsumed = true;
 
-        await foreach (ITuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (ISpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
 
@@ -38,7 +38,7 @@ internal sealed class ObserverProcessor : BackgroundService
         channel.IsBeingConsumed = false;
     }
 
-    private async Task NotifyAsync(SpaceObserver observer, ITuple tuple, CancellationToken cancellationToken)
+    private async Task NotifyAsync(SpaceObserver observer, ISpaceTuple tuple, CancellationToken cancellationToken)
     {
         try
         {

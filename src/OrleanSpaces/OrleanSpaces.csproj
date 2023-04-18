@@ -47,4 +47,8 @@
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Orleans_CodeGenInputs Remove="Tuples\Typed\TimeSpanTuple.cs" />
+	</ItemGroup>
+
 </Project>

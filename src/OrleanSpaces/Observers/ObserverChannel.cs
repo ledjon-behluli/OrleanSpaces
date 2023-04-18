@@ -1,15 +1,15 @@
-﻿using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Tuples;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
 internal sealed class ObserverChannel : IConsumable
 {
-    private readonly Channel<ITuple> channel = 
-        Channel.CreateUnbounded<ITuple>(new() { SingleReader = true });
+    private readonly Channel<ISpaceTuple> channel = 
+        Channel.CreateUnbounded<ISpaceTuple>(new() { SingleReader = true });
 
     public bool IsBeingConsumed { get; set; }
 
-    public ChannelReader<ITuple> Reader => channel.Reader;
-    public ChannelWriter<ITuple> Writer => channel.Writer;
+    public ChannelReader<ISpaceTuple> Reader => channel.Reader;
+    public ChannelWriter<ISpaceTuple> Writer => channel.Writer;
 }
