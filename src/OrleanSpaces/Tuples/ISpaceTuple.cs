@@ -1,9 +1,9 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-public interface ISpaceTuple<T, H> : IEquatable<H>, IComparable<H>
-    where T : notnull
-    where H : ISpaceTuple<T, H>
+public interface ISpaceTuple<TValue, TType> : IEquatable<TType>, IComparable<TType>
+    where TValue : notnull
+    where TType : ISpaceTuple<TValue, TType>
 {
-    T this[int index] { get; }
+    TValue this[int index] { get; }
     int Length { get; }
 }

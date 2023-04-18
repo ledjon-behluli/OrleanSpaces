@@ -7,9 +7,9 @@ namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
-    public static bool TryParallelEquals<T, H>(this INumericSpaceTuple<T, H> left, INumericSpaceTuple<T, H> right, out bool equalityResult)
-        where T : struct, INumber<T>
-        where H : ISpaceTuple<T, H>
+    public static bool TryParallelEquals<TValue, TType>(this INumericSpaceTuple<TValue, TType> left, INumericSpaceTuple<TValue, TType> right, out bool equalityResult)
+        where TValue : struct, INumber<TValue>
+        where TType : ISpaceTuple<TValue, TType>
     {
         equalityResult = false;
 
@@ -18,7 +18,7 @@ internal static class Extensions
             return false;
         }
 
-        int length = left.Length / Vector<T>.Count;
+        int length = left.Length / Vector<TValue>.Count;
         if (length == 0)
         {
             return false;
@@ -49,9 +49,9 @@ internal static class Extensions
         return true;
     }
 
-    public static bool SequentialEquals<T, H>(this ISpaceTuple<T, H> left, ISpaceTuple<T, H> right)
-         where T : notnull
-         where H : ISpaceTuple<T, H>
+    public static bool SequentialEquals<TValue, TType>(this ISpaceTuple<TValue, TType> left, ISpaceTuple<TValue, TType> right)
+         where TValue : notnull
+         where TType : ISpaceTuple<TValue, TType>
     {
         if (left.Length != right.Length)
         {
@@ -70,7 +70,8 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ParallelEquals<TOut>(Span<TOut> left, Span<TOut> right, int length) where TOut : struct, INumber<TOut>
+    private static bool ParallelEquals<TOut>(Span<TOut> left, Span<TOut> right, int length) 
+        where TOut : struct, INumber<TOut>
     {
         if (left.Length != right.Length)
         {

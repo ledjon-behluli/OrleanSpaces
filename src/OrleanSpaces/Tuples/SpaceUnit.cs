@@ -1,5 +1,4 @@
 ﻿using Orleans.Concurrency;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -7,15 +6,15 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
-public readonly struct SpaceUnit : ITuple, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
+public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
 {
     /// <summary>
     /// Default and only constructor. 
     /// </summary>
     public SpaceUnit() { }
 
-    int ITuple.Length => 1;
-    object ITuple.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
+    int ISpaceTuple<SpaceUnit, SpaceUnit>.Length => 1;
+    SpaceUnit ISpaceTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
 
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;

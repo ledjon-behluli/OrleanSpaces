@@ -1,6 +1,5 @@
 ﻿using Orleans.Concurrency;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -8,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTuple : ITuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
+public readonly struct SpaceTuple : ISpaceTuple<object, SpaceTuple>
 {
     private readonly object[] fields;
 
