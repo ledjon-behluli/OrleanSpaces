@@ -1,1 +1,1 @@
-Left: char, string, Enum
+Left: decimal, char, string, Enum
