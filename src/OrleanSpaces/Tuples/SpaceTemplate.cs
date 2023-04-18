@@ -1,6 +1,5 @@
 ﻿using Orleans.Concurrency;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -8,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
+public readonly struct SpaceTemplate : ISpaceTuple<object, SpaceTemplate>
 {
     private readonly object[] fields;
 
@@ -18,10 +17,7 @@ public readonly struct SpaceTemplate : ITuple, IEquatable<SpaceTemplate>, ICompa
     /// <summary>
     /// Default constructor which always instantiates a <see cref="SpaceTemplate"/> with a single field of type <see cref="SpaceUnit"/>.
     /// </summary>
-    public SpaceTemplate() : this(null)
-    {
-
-    }
+    public SpaceTemplate() : this(null) { }
 
     /// <summary>
     /// Main constructor which instantiates a <see cref="SpaceTemplate"/>, when all <paramref name="fields"/> are of valid type.

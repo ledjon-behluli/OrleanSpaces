@@ -17,7 +17,7 @@ public class Class1
 }
 
 
-public readonly struct Test
+public readonly struct Test : INumber<>
 {
     public Test()
     {
