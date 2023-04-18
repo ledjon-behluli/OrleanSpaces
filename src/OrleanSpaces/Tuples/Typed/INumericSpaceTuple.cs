@@ -2,9 +2,9 @@
 
 namespace OrleanSpaces.Tuples.Typed;
 
-internal interface INumericSpaceTuple<TValue, TType> : ISpaceTuple<TValue, TType>
-    where TValue : struct, INumber<TValue>
-    where TType : ISpaceTuple<TValue, TType>
+internal interface INumericSpaceTuple<T, TSelf> : ISpaceTuple<T, TSelf>
+    where T : struct, INumber<T>
+    where TSelf : ISpaceTuple<T, TSelf>
 {
-    Span<TValue> Data { get; }
+    Span<T> Data { get; }
 }
