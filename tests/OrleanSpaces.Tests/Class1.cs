@@ -15,8 +15,11 @@ public class Class1
         TimeSpan[] ts1 = new TimeSpan[] { TimeSpan.MinValue, TimeSpan.MaxValue };
         TimeSpan[] ts2 = new TimeSpan[] { TimeSpan.Zero, TimeSpan.MinValue, TimeSpan.MaxValue };
 
-        var a = new NumericMarshaller<TimeSpan, long>(ts1, ts2);
+        TimeSpanTuple tst1 = new(ts1);
+        TimeSpanTuple tst2 = new(ts2);
 
+        Assert.Equal(tst1, tst1);
+        Assert.NotEqual(tst1, tst2);
     }
 }
 

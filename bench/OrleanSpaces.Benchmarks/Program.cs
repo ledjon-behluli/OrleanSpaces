@@ -7,6 +7,7 @@
 //BenchmarkRunner.Run<IntTupleBenchmarks>();
 //BenchmarkRunner.Run<DateTimeTupleBenchmarks>();
 //BenchmarkRunner.Run<DateTimeOffsetTupleBenchmarks>();
+//BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
 
 BenchmarkRunner.Run<TestBench>();
 

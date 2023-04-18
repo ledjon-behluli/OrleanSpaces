@@ -3,7 +3,7 @@ using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
 
-[ShortRunJob]
+[ShortRunJob] //TODO: Remove
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.Declared)]
