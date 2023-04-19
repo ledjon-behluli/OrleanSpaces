@@ -9,7 +9,7 @@ IntTuple it1 = new(1, 1, 1, 1, 1, 1, 1, 1);
 IntTuple it2 = new(1, 1, 1, 1, 1, 1, 1, 1);
 IntTuple it3 = new(1, 1, 1, 1, 1, 1, 1, 2);
 
-var a1 = it1.Equals(it2);
+var a1 = it1 == it2;
 var a2 = it1 != it3;
 
 var a = dt1 == dt2;
