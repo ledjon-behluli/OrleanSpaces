@@ -1,19 +1,4 @@
 ﻿using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Typed;
-
-DecimalTuple dt1 = new(1111111111111.11m, 11.111m); //new(111.11m, 123.321m, 11111111111.1111m, 2222222222222222222.222222m);
-DecimalTuple dt2 = new(1111111111111.11m, 11.111m); //new(111.11m, 123.321m, 11111111111.1111m, 2222222222222222222.222222m);
-DecimalTuple dt3 = new(1111111111111.12m, 11.112m); //new(2222222222222222222.222222m, 11111111111.1111m, 123.321m, 111.11m);
-
-IntTuple it1 = new(1, 1, 1, 1, 1, 1, 1, 1);
-IntTuple it2 = new(1, 1, 1, 1, 1, 1, 1, 1);
-IntTuple it3 = new(1, 1, 1, 1, 1, 1, 1, 2);
-
-var a1 = it1 == it2;
-var a2 = it1 != it3;
-
-var a = dt1 == dt2;
-var b = dt1 != dt3;
 
 SpaceTupleSyntax();
 SpaceTemplateSyntax();
