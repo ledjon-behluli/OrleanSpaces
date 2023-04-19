@@ -54,13 +54,13 @@ internal static class Extensions
     public static bool ParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right) 
         where TOut : struct, INumber<TOut>
     {
-        ref TOut rLeft = ref GetRef(left);
-        ref TOut rRight = ref GetRef(right);
+        ref TOut iLeft = ref left.GetZeroIndex();
+        ref TOut iRight = ref right.GetZeroIndex();
 
         int i = 0;
 
-        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in rLeft);
-        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in rRight);
+        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in iLeft);
+        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in iRight);
 
         for (; i < left.Length; i++)
         {
@@ -74,7 +74,7 @@ internal static class Extensions
 
         for (; i < left.Length; i++)
         {
-            if (rLeft.Offset(i) != rRight.Offset(i))
+            if (iLeft.Offset(i) != iRight.Offset(i))
             {
                 return false;
             }
@@ -110,7 +110,7 @@ internal static class Extensions
         => Vector.IsHardwareAccelerated && span.Length / Vector<T>.Count > 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetRef<T>(Span<T> span) where T : struct
+    public static ref T GetZeroIndex<T>(this Span<T> span) where T : struct
         => ref MemoryMarshal.GetReference(span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
