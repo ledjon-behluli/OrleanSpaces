@@ -21,13 +21,13 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
 
     public bool Equals(GuidTuple other)
     {
-        if (Length != other.Length)
-        {
-            return false;
-        }
-
         if (Vector128.IsHardwareAccelerated)
         {
+            if (Length != other.Length)
+            {
+                return false;
+            }
+
             for (int i = 0; i < Length; i++)
             {
                 ref Vector128<byte> vLeft = ref Extensions.AsRef<Guid, Vector128<byte>>(in fields[i]);

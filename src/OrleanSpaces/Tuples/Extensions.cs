@@ -7,69 +7,84 @@ namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericSpaceTuple<T, TSelf> left, INumericSpaceTuple<T, TSelf> right, out bool equalityResult)
         where T : struct, INumber<T>
         where TSelf : ISpaceTuple<T, TSelf>
     {
         equalityResult = false;
 
-        if (!Vector.IsHardwareAccelerated)
+        if (left.Length != right.Length)
+        {
+            return true;
+        }
+
+        if (!left.Data.IsVectorizable())
         {
             return false;
         }
 
-        int length = left.Length / Vector<T>.Count;
-        if (length == 0)
-        {
-            return false;
-        }
-
-        equalityResult = ParallelEquals(left.Data, right.Data, length);
+        equalityResult = ParallelEquals(left.Data, right.Data);
         return true;
     }
 
-    public static bool TryParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right, out bool equalityResult)
-       where TOut : struct, INumber<TOut>
-    {
-        equalityResult = false;
-
-        if (!Vector.IsHardwareAccelerated)
-        {
-            return false;
-        }
-
-        int length = left.Length / Vector<TOut>.Count;
-        if (length == 0)
-        {
-            return false;
-        }
-
-        equalityResult = ParallelEquals(left, right, length);
-        return true;
-    }
-
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool equalityResult)
         where TIn : struct
         where TOut : struct, INumber<TOut>
     {
         equalityResult = false;
 
-        if (!Vector.IsHardwareAccelerated)
+        if (marshaller.Left.Length != marshaller.Right.Length)
+        {
+            return true;
+        }
+
+        if (!marshaller.Left.IsVectorizable())
         {
             return false;
         }
 
-        int length = marshaller.Left.Length / Vector<TOut>.Count;
-        if (length == 0)
-        {
-            return false;
-        }
-
-        equalityResult = ParallelEquals(marshaller.Left, marshaller.Right, length);
+        equalityResult = ParallelEquals(marshaller.Left, marshaller.Right);
         return true;
     }
 
+    /// <remarks><i>Ensure the <see cref="Span{TOut}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right) 
+        where TOut : struct, INumber<TOut>
+    {
+        ref TOut rLeft = ref GetRef(left);
+        ref TOut rRight = ref GetRef(right);
+
+        int i = 0;
+
+        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in rLeft);
+        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in rRight);
+
+        for (; i < left.Length; i++)
+        {
+            if (vLeft.Offset(i) != vRight.Offset(i))
+            {
+                return false;
+            }
+        }
+
+        i *= Vector<TOut>.Count;
+
+        for (; i < left.Length; i++)
+        {
+            if (rLeft.Offset(i) != rRight.Offset(i))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
          where T : notnull
          where TSelf : ISpaceTuple<T, TSelf>
@@ -91,42 +106,8 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right, int length) 
-        where TOut : struct, INumber<TOut>
-    {
-        if (left.Length != right.Length)
-        {
-            return false;
-        }
-
-        ref TOut rLeft = ref GetRef(left);
-        ref TOut rRight = ref GetRef(right);
-
-        int i = 0;
-
-        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in rLeft);
-        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in rRight);
-
-        for (; i < length; i++)
-        {
-            if (vLeft.Offset(i) != vRight.Offset(i))
-            {
-                return false;
-            }
-        }
-
-        i *= Vector<TOut>.Count;
-
-        for (; i < left.Length; i++)
-        {
-            if (rLeft.Offset(i) != rRight.Offset(i))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public static bool IsVectorizable<T>(this Span<T> span) where T : struct, INumber<T>
+        => Vector.IsHardwareAccelerated && span.Length / Vector<T>.Count > 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T GetRef<T>(Span<T> span) where T : struct
