@@ -58,12 +58,14 @@ internal static class Extensions
         ref TOut iRight = ref right.GetZeroIndex();
 
         int i = 0;
-        int length = left.Length / Vector<TOut>.Count;
+        
+        int vCount = Vector<TOut>.Count;
+        int vlength = left.Length / vCount;
 
         ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in iLeft);
         ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in iRight);
 
-        for (; i < length; i++)
+        for (; i < vlength; i++)
         {
             if (vLeft.Offset(i) != vRight.Offset(i))
             {
@@ -71,7 +73,9 @@ internal static class Extensions
             }
         }
 
-        i *= Vector<TOut>.Count;
+        i *= vCount;
+
+        int length = left.Length;
 
         for (; i < length; i++)
         {

@@ -239,15 +239,15 @@ public class DateTimeOffsetTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTime, SequentialDateTimeOffsetTuple>
+    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
     {
-        private readonly DateTime[] fields;
+        private readonly DateTimeOffset[] fields;
 
-        public DateTime this[int index] => fields[index];
+        public DateTimeOffset this[int index] => fields[index];
         public int Length => fields.Length;
 
-        public SequentialDateTimeOffsetTuple() : this(Array.Empty<DateTime>()) { }
-        public SequentialDateTimeOffsetTuple(params DateTime[] fields) => this.fields = fields;
+        public SequentialDateTimeOffsetTuple() : this(Array.Empty<DateTimeOffset>()) { }
+        public SequentialDateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;
 
         public static bool operator ==(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => left.Equals(right);
         public static bool operator !=(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => !(left == right);
