@@ -62,8 +62,8 @@ internal static class Extensions
         int vCount = Vector<TOut>.Count;
         int vlength = left.Length / vCount;
 
-        ref Vector<TOut> vLeft = ref AsRef<TOut, Vector<TOut>>(in iLeft);
-        ref Vector<TOut> vRight = ref AsRef<TOut, Vector<TOut>>(in iRight);
+        ref Vector<TOut> vLeft = ref Transform<TOut, Vector<TOut>>(in iLeft);
+        ref Vector<TOut> vRight = ref Transform<TOut, Vector<TOut>>(in iRight);
 
         for (; i < vlength; i++)
         {
@@ -123,7 +123,7 @@ internal static class Extensions
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut AsRef<TIn, TOut>(in TIn value)
+    public static ref TOut Transform<TIn, TOut>(in TIn value)
         where TIn : struct
         where TOut : struct
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
