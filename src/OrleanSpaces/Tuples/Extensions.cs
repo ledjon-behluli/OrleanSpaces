@@ -49,21 +49,29 @@ internal static class Extensions
         return true;
     }
 
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ParallelEquals<T>(this Span<T> left, Span<T> right) 
+        where T : struct, INumber<T>
+        => ParallelEqualsCore(left.Length, ref left.GetZeroIndex(), ref right.GetZeroIndex());
+
     /// <remarks><i>Ensure the <see cref="ReadOnlySpan{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals<T>(this ReadOnlySpan<T> left, ReadOnlySpan<T> right) 
+    public static bool ParallelEquals<T>(this ReadOnlySpan<T> left, ReadOnlySpan<T> right)
+        where T : struct, INumber<T> 
+        => ParallelEqualsCore(left.Length, ref left.GetZeroIndex(), ref right.GetZeroIndex());
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool ParallelEqualsCore<T>(int length, ref T zeroIndexLeft, ref T zeroIndexRight)
         where T : struct, INumber<T>
     {
-        ref T iLeft = ref left.GetZeroIndex();
-        ref T iRight = ref right.GetZeroIndex();
-
         int i = 0;
-        
-        int vCount = Vector<T>.Count;
-        int vlength = left.Length / vCount;
 
-        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
-        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
+        int vCount = Vector<T>.Count;
+        int vlength = length / vCount;
+
+        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in zeroIndexLeft);
+        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in zeroIndexRight);
 
         for (; i < vlength; i++)
         {
@@ -75,11 +83,9 @@ internal static class Extensions
 
         i *= vCount;
 
-        int length = left.Length;
-
         for (; i < length; i++)
         {
-            if (iLeft.Offset(i) != iRight.Offset(i))
+            if (zeroIndexLeft.Offset(i) != zeroIndexRight.Offset(i))
             {
                 return false;
             }
@@ -87,7 +93,6 @@ internal static class Extensions
 
         return true;
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
@@ -115,11 +120,15 @@ internal static class Extensions
         => Vector.IsHardwareAccelerated && span.Length / Vector<T>.Count > 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetZeroIndex<T>(this ReadOnlySpan<T> span) where T : struct
+    private static ref T GetZeroIndex<T>(this Span<T> span) where T : struct
         => ref MemoryMarshal.GetReference(span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Offset<T>(this ref T source, int count) where T : struct
+    private static ref T GetZeroIndex<T>(this ReadOnlySpan<T> span) where T : struct
+        => ref MemoryMarshal.GetReference(span);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ref T Offset<T>(this ref T source, int count) where T : struct
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,7 +146,6 @@ internal static class Extensions
         where TSelf : ISpaceTuple<T, TSelf>
     {
         int length = tuple.Length;
-
         if (length == 0)
         {
             return emptyTupleString;
