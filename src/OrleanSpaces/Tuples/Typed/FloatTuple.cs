@@ -8,15 +8,16 @@ public readonly struct FloatTuple : INumericSpaceTuple<float, FloatTuple>
     private readonly float[] fields;
 
     public float this[int index] => fields[index];
+    public Span<float> Fields => fields.AsSpan();
     public int Length => fields.Length;
+
+    Span<float> INumericSpaceTuple<float, FloatTuple>.Fields => fields.AsSpan();
 
     public FloatTuple() : this(Array.Empty<float>()) { }
     public FloatTuple(params float[] fields) => this.fields = fields;
 
     public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
     public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
-
-    public ReadOnlySpan<float> AsSpan() => fields.AsSpan();
 
     public override bool Equals(object? obj) => obj is FloatTuple tuple && Equals(tuple);
     public bool Equals(FloatTuple other) => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);

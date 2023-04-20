@@ -7,10 +7,10 @@ internal readonly ref struct NumericMarshaller<TIn, TOut>
     where TIn : struct
     where TOut : struct, INumber<TOut>
 {
-    public readonly ReadOnlySpan<TOut> Left;
-    public readonly ReadOnlySpan<TOut> Right;
+    public readonly Span<TOut> Left;
+    public readonly Span<TOut> Right;
 
-    public NumericMarshaller(ReadOnlySpan<TIn> left, ReadOnlySpan<TIn> right)
+    public NumericMarshaller(Span<TIn> left, Span<TIn> right)
     {
         Left = MemoryMarshal.Cast<TIn, TOut>(left);
         Right = MemoryMarshal.Cast<TIn, TOut>(right);

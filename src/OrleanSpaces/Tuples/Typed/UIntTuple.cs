@@ -8,15 +8,16 @@ public readonly struct UIntTuple : INumericSpaceTuple<uint, UIntTuple>
     private readonly uint[] fields;
 
     public uint this[int index] => fields[index];
+    public Span<uint> Fields => fields.AsSpan();
     public int Length => fields.Length;
+
+    Span<uint> INumericSpaceTuple<uint, UIntTuple>.Fields => fields.AsSpan();
 
     public UIntTuple() : this(Array.Empty<uint>()) { }
     public UIntTuple(params uint[] fields) => this.fields = fields;
 
     public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
     public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
-
-    public ReadOnlySpan<uint> AsSpan() => fields.AsSpan();
 
     public override bool Equals(object? obj) => obj is UIntTuple tuple && Equals(tuple);
     public bool Equals(UIntTuple other) => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);

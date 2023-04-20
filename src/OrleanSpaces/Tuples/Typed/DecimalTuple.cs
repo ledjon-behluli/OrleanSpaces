@@ -18,8 +18,6 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
     public static bool operator ==(DecimalTuple left, DecimalTuple right) => left.Equals(right);
     public static bool operator !=(DecimalTuple left, DecimalTuple right) => !(left == right);
 
-    public ReadOnlySpan<decimal> AsSpan() => fields.AsSpan();
-
     public override bool Equals(object? obj) => obj is DecimalTuple tuple && Equals(tuple);
 
     public bool Equals(DecimalTuple other)

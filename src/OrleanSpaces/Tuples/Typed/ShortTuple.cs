@@ -8,12 +8,13 @@ public readonly struct ShortTuple : INumericSpaceTuple<short, ShortTuple>
     private readonly short[] fields;
 
     public short this[int index] => fields[index];
+    public Span<short> Fields => fields.AsSpan();
     public int Length => fields.Length;
+
+    Span<short> INumericSpaceTuple<short, ShortTuple>.Fields => fields.AsSpan();
 
     public ShortTuple() : this(Array.Empty<short>()) { }
     public ShortTuple(params short[] fields) => this.fields = fields;
-
-    public ReadOnlySpan<short> AsSpan() => fields.AsSpan();
 
     public static bool operator ==(ShortTuple left, ShortTuple right) => left.Equals(right);
     public static bool operator !=(ShortTuple left, ShortTuple right) => !(left == right);

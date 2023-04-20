@@ -26,8 +26,6 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")] 
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;
 
-    ReadOnlySpan<SpaceUnit> ISpaceTuple<SpaceUnit, SpaceUnit>.AsSpan() => defaultArray.AsSpan();
-
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>

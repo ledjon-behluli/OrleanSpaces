@@ -18,8 +18,6 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
     public static bool operator ==(GuidTuple left, GuidTuple right) => left.Equals(right);
     public static bool operator !=(GuidTuple left, GuidTuple right) => !(left == right);
 
-    public ReadOnlySpan<Guid> AsSpan() => fields.AsSpan();
-
     public override bool Equals(object? obj) => obj is GuidTuple tuple && Equals(tuple);
 
     public bool Equals(GuidTuple other)

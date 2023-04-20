@@ -13,7 +13,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("Empty"), Benchmark]
     public void StringJoin_Empty()
     {
-        StringJoinTuple tuple = new();
+        StringJoinIntTuple tuple = new();
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -31,7 +31,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("Single"), Benchmark]
     public void StringJoin_Single()
     {
-        StringJoinTuple tuple = new(1);
+        StringJoinIntTuple tuple = new(1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -49,7 +49,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("XS"), Benchmark]
     public void StringJoin_XS()
     {
-        StringJoinTuple tuple = new(1, 1);
+        StringJoinIntTuple tuple = new(1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -67,7 +67,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("S"), Benchmark]
     public void StringJoin_S()
     {
-        StringJoinTuple tuple = new(1, 1, 1, 1);
+        StringJoinIntTuple tuple = new(1, 1, 1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -85,7 +85,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("M"), Benchmark]
     public void StringJoin_M()
     {
-        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1);
+        StringJoinIntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -103,7 +103,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("L"), Benchmark]
     public void StringJoin_L()
     {
-        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        StringJoinIntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -121,7 +121,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("XL"), Benchmark]
     public void StringJoin_XL()
     {
-        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        StringJoinIntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -139,7 +139,7 @@ public class TupleToStringBenchmarks
     [BenchmarkCategory("XXL"), Benchmark]
     public void StringJoin_XXL()
     {
-        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+        StringJoinIntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
         for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
@@ -154,25 +154,25 @@ public class TupleToStringBenchmarks
             _ = tuple.ToString();
     }
 
-    public readonly struct StringJoinTuple : INumericSpaceTuple<int, StringJoinTuple>
+    public readonly struct StringJoinIntTuple : INumericSpaceTuple<int, StringJoinIntTuple>
     {
         private readonly int[] fields;
 
         public int this[int index] => fields[index];
         public int Length => fields.Length;
 
-        public StringJoinTuple() : this(Array.Empty<int>()) { }
-        public StringJoinTuple(params int[] fields) => this.fields = fields;
+        Span<int> INumericSpaceTuple<int, StringJoinIntTuple>.Fields => fields.AsSpan();
 
-        public static bool operator ==(StringJoinTuple left, StringJoinTuple right) => left.Equals(right);
-        public static bool operator !=(StringJoinTuple left, StringJoinTuple right) => !(left == right);
+        public StringJoinIntTuple() : this(Array.Empty<int>()) { }
+        public StringJoinIntTuple(params int[] fields) => this.fields = fields;
 
-        public ReadOnlySpan<int> AsSpan() => fields.AsSpan();
+        public static bool operator ==(StringJoinIntTuple left, StringJoinIntTuple right) => left.Equals(right);
+        public static bool operator !=(StringJoinIntTuple left, StringJoinIntTuple right) => !(left == right);
 
-        public override bool Equals(object obj) => obj is StringJoinTuple tuple && Equals(tuple);
-        public bool Equals(StringJoinTuple other) => true;
+        public override bool Equals(object obj) => obj is StringJoinIntTuple tuple && Equals(tuple);
+        public bool Equals(StringJoinIntTuple other) => true;
 
-        public int CompareTo(StringJoinTuple other) => Length.CompareTo(other.Length);
+        public int CompareTo(StringJoinIntTuple other) => Length.CompareTo(other.Length);
 
         public override int GetHashCode() => fields.GetHashCode();
 
