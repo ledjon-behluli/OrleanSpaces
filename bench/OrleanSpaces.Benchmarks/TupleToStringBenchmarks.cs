@@ -8,18 +8,14 @@ using OrleanSpaces.Tuples.Typed;
 [Orderer(SummaryOrderPolicy.Declared)]
 public class TupleToStringBenchmarks
 {
-    [Params(1_000, 10_000, 100_000, 1_000_000)]
-    public int Iterations { get; set; }
-
-    private static readonly StringJoinTuple stringJoinTuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-    private static readonly IntTuple intTuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+    private const int iterations = 100_000;
 
     [BenchmarkCategory("Empty"), Benchmark]
     public void StringJoin_Empty()
     {
         StringJoinTuple tuple = new();
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
@@ -28,47 +24,135 @@ public class TupleToStringBenchmarks
     {
         IntTuple tuple = new();
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
     [BenchmarkCategory("Single"), Benchmark]
     public void StringJoin_Single()
     {
-        StringJoinTuple tuple = new();
+        StringJoinTuple tuple = new(1);
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
     [BenchmarkCategory("Single"), Benchmark]
     public void Custom_Single()
     {
-        IntTuple tuple = new();
+        IntTuple tuple = new(1);
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
     [BenchmarkCategory("XS"), Benchmark]
     public void StringJoin_XS()
     {
-        StringJoinTuple tuple = new();
+        StringJoinTuple tuple = new(1, 1);
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
     [BenchmarkCategory("XS"), Benchmark]
     public void Custom_XS()
     {
-        IntTuple tuple = new();
+        IntTuple tuple = new(1, 1);
 
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < iterations; i++)
             _ = tuple.ToString();
     }
 
-    //TODO: Continue with rest, and run benchmarks
+    [BenchmarkCategory("S"), Benchmark]
+    public void StringJoin_S()
+    {
+        StringJoinTuple tuple = new(1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("S"), Benchmark]
+    public void Custom_S()
+    {
+        IntTuple tuple = new(1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("M"), Benchmark]
+    public void StringJoin_M()
+    {
+        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("M"), Benchmark]
+    public void Custom_M()
+    {
+        IntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("L"), Benchmark]
+    public void StringJoin_L()
+    {
+        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("L"), Benchmark]
+    public void Custom_L()
+    {
+        IntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("XL"), Benchmark]
+    public void StringJoin_XL()
+    {
+        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("XL"), Benchmark]
+    public void Custom_XL()
+    {
+        IntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("XXL"), Benchmark]
+    public void StringJoin_XXL()
+    {
+        StringJoinTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
+
+    [BenchmarkCategory("XXL"), Benchmark]
+    public void Custom_XXL()
+    {
+        IntTuple tuple = new(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+        for (int i = 0; i < iterations; i++)
+            _ = tuple.ToString();
+    }
 
     public readonly struct StringJoinTuple : INumericSpaceTuple<int, StringJoinTuple>
     {

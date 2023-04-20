@@ -49,21 +49,21 @@ internal static class Extensions
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="ReadOnlySpan{TOut}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="ReadOnlySpan{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals<TOut>(this ReadOnlySpan<TOut> left, ReadOnlySpan<TOut> right) 
-        where TOut : struct, INumber<TOut>
+    public static bool ParallelEquals<T>(this ReadOnlySpan<T> left, ReadOnlySpan<T> right) 
+        where T : struct, INumber<T>
     {
-        ref TOut iLeft = ref left.GetZeroIndex();
-        ref TOut iRight = ref right.GetZeroIndex();
+        ref T iLeft = ref left.GetZeroIndex();
+        ref T iRight = ref right.GetZeroIndex();
 
         int i = 0;
         
-        int vCount = Vector<TOut>.Count;
+        int vCount = Vector<T>.Count;
         int vlength = left.Length / vCount;
 
-        ref Vector<TOut> vLeft = ref Transform<TOut, Vector<TOut>>(in iLeft);
-        ref Vector<TOut> vRight = ref Transform<TOut, Vector<TOut>>(in iRight);
+        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
+        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
 
         for (; i < vlength; i++)
         {
