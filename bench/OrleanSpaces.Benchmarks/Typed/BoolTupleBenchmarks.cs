@@ -252,6 +252,8 @@ public class BoolTupleBenchmarks
         public static bool operator ==(SequentialBoolTuple left, SequentialBoolTuple right) => left.Equals(right);
         public static bool operator !=(SequentialBoolTuple left, SequentialBoolTuple right) => !(left == right);
 
+        public ReadOnlySpan<bool> AsSpan() => fields.AsSpan();
+
         public override bool Equals(object obj) => obj is SequentialBoolTuple tuple && Equals(tuple);
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
 

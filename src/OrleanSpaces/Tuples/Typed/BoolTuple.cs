@@ -16,6 +16,8 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
     public static bool operator ==(BoolTuple left, BoolTuple right) => left.Equals(right);
     public static bool operator !=(BoolTuple left, BoolTuple right) => !(left == right);
 
+    public ReadOnlySpan<bool> AsSpan() => fields.AsSpan();
+
     public override bool Equals(object? obj) => obj is BoolTuple tuple && Equals(tuple);
 
     public bool Equals(BoolTuple other)

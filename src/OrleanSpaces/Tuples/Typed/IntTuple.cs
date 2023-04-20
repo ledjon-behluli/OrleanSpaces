@@ -10,13 +10,13 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>
     public int this[int index] => fields[index];
     public int Length => fields.Length;
 
-    Span<int> INumericSpaceTuple<int, IntTuple>.Data => fields.AsSpan();
-
     public IntTuple() : this(Array.Empty<int>()) { }
     public IntTuple(params int[] fields) => this.fields = fields;
 
     public static bool operator ==(IntTuple left, IntTuple right) => left.Equals(right);
     public static bool operator !=(IntTuple left, IntTuple right) => !(left == right);
+
+    public ReadOnlySpan<int> AsSpan() => fields.AsSpan();
 
     public override bool Equals(object? obj) => obj is IntTuple tuple && Equals(tuple);
     public bool Equals(IntTuple other) => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);

@@ -252,6 +252,8 @@ public class TimeSpanTupleBenchmarks
         public static bool operator ==(SequentialTimeSpanTuple left, SequentialTimeSpanTuple right) => left.Equals(right);
         public static bool operator !=(SequentialTimeSpanTuple left, SequentialTimeSpanTuple right) => !(left == right);
 
+        public ReadOnlySpan<TimeSpan> AsSpan() => fields.AsSpan();
+
         public override bool Equals(object obj) => obj is SequentialTimeSpanTuple tuple && Equals(tuple);
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);

@@ -10,10 +10,10 @@ public readonly struct SByteTuple : INumericSpaceTuple<sbyte, SByteTuple>
     public sbyte this[int index] => fields[index];
     public int Length => fields.Length;
 
-    Span<sbyte> INumericSpaceTuple<sbyte, SByteTuple>.Data => fields.AsSpan();
-
     public SByteTuple() : this(Array.Empty<sbyte>()) { }
     public SByteTuple(params sbyte[] fields) => this.fields = fields;
+
+    public ReadOnlySpan<sbyte> AsSpan() => fields.AsSpan();
 
     public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
     public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);

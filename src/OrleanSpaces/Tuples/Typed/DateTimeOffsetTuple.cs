@@ -16,6 +16,8 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTim
     public static bool operator ==(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => !(left == right);
 
+    public ReadOnlySpan<DateTimeOffset> AsSpan() => fields.AsSpan();
+
     public override bool Equals(object? obj) => obj is DateTimeOffsetTuple tuple && Equals(tuple);
 
     public bool Equals(DateTimeOffsetTuple other)

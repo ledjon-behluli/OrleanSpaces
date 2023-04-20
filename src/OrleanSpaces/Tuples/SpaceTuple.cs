@@ -65,6 +65,9 @@ public readonly struct SpaceTuple : ISpaceTuple<object, SpaceTuple>
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
+    /// <inheritdoc/>
+    public ReadOnlySpan<object> AsSpan() => fields.AsSpan();
+
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>

@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OrleanSpaces.Tuples.Typed;
@@ -20,12 +19,12 @@ internal static class Extensions
             return true;
         }
 
-        if (!left.Data.IsVectorizable())
+        if (!left.AsSpan().IsVectorizable())
         {
             return false;
         }
 
-        equalityResult = ParallelEquals(left.Data, right.Data);
+        equalityResult = ParallelEquals(left.AsSpan(), right.AsSpan());
         return true;
     }
 
@@ -50,9 +49,9 @@ internal static class Extensions
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="Span{TOut}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="ReadOnlySpan{TOut}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals<TOut>(this Span<TOut> left, Span<TOut> right) 
+    public static bool ParallelEquals<TOut>(this ReadOnlySpan<TOut> left, ReadOnlySpan<TOut> right) 
         where TOut : struct, INumber<TOut>
     {
         ref TOut iLeft = ref left.GetZeroIndex();
@@ -112,11 +111,11 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsVectorizable<T>(this Span<T> span) where T : struct, INumber<T>
+    public static bool IsVectorizable<T>(this ReadOnlySpan<T> span) where T : struct, INumber<T>
         => Vector.IsHardwareAccelerated && span.Length / Vector<T>.Count > 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetZeroIndex<T>(this Span<T> span) where T : struct
+    public static ref T GetZeroIndex<T>(this ReadOnlySpan<T> span) where T : struct
         => ref MemoryMarshal.GetReference(span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -252,6 +252,8 @@ public class DecimalTupleBenchmarks
         public static bool operator ==(SequentialDecimalTuple left, SequentialDecimalTuple right) => left.Equals(right);
         public static bool operator !=(SequentialDecimalTuple left, SequentialDecimalTuple right) => !(left == right);
 
+        public ReadOnlySpan<decimal> AsSpan() => fields.AsSpan();
+
         public override bool Equals(object obj) => obj is SequentialDecimalTuple tuple && Equals(tuple);
         public bool Equals(SequentialDecimalTuple other) => this.SequentialEquals(other);
 

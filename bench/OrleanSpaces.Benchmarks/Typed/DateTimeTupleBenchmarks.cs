@@ -252,6 +252,8 @@ public class DateTimeTupleBenchmarks
         public static bool operator ==(SequentialDateTimeTuple left, SequentialDateTimeTuple right) => left.Equals(right);
         public static bool operator !=(SequentialDateTimeTuple left, SequentialDateTimeTuple right) => !(left == right);
 
+        public ReadOnlySpan<DateTime> AsSpan() => fields.AsSpan();
+
         public override bool Equals(object obj) => obj is SequentialDateTimeTuple tuple && Equals(tuple);
 
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);

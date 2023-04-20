@@ -2,7 +2,7 @@
 
 public interface ISpaceTuple
 {
-    void ToString(Span<char> destination, out int charsWritten);
+    
 }
 
 public interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, IComparable<TSelf>
@@ -11,4 +11,6 @@ public interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, ICompar
 {
     T this[int index] { get; }
     int Length { get; }
+
+    ReadOnlySpan<T> AsSpan();
 }

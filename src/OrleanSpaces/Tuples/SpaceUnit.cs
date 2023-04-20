@@ -9,6 +9,9 @@ namespace OrleanSpaces.Tuples;
 [Immutable]
 public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
 {
+    private const string defaultString = "{NULL}";
+    private static readonly SpaceUnit[] defaultArray = new SpaceUnit[1] { new() };
+
     /// <summary>
     /// Default and only constructor. 
     /// </summary>
@@ -22,6 +25,8 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
 
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")] 
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;
+
+    ReadOnlySpan<SpaceUnit> ISpaceTuple<SpaceUnit, SpaceUnit>.AsSpan() => defaultArray.AsSpan();
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -44,5 +49,5 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
     public int CompareTo(SpaceUnit other) => 0;
 
     public override int GetHashCode() => 0;
-    public override string ToString() => "{NULL}";
+    public override string ToString() => defaultString;
 }

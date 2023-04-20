@@ -16,6 +16,8 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>
     public static bool operator ==(TimeSpanTuple left, TimeSpanTuple right) => left.Equals(right);
     public static bool operator !=(TimeSpanTuple left, TimeSpanTuple right) => !(left == right);
 
+    public ReadOnlySpan<TimeSpan> AsSpan() => fields.AsSpan();
+
     public override bool Equals(object? obj) => obj is TimeSpanTuple tuple && Equals(tuple);
 
     public bool Equals(TimeSpanTuple other)

@@ -252,6 +252,8 @@ public class DateTimeOffsetTupleBenchmarks
         public static bool operator ==(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => left.Equals(right);
         public static bool operator !=(SequentialDateTimeOffsetTuple left, SequentialDateTimeOffsetTuple right) => !(left == right);
 
+        public ReadOnlySpan<DateTimeOffset> AsSpan() => fields.AsSpan();
+
         public override bool Equals(object obj) => obj is SequentialDateTimeOffsetTuple tuple && Equals(tuple);
 
         public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals(other);

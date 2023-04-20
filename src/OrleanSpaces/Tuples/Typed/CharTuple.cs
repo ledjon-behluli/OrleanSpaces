@@ -17,6 +17,8 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>
     public static bool operator ==(CharTuple left, CharTuple right) => left.Equals(right);
     public static bool operator !=(CharTuple left, CharTuple right) => !(left == right);
 
+    public ReadOnlySpan<char> AsSpan() => fields.AsSpan();
+
     public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
     public bool Equals(CharTuple other)
