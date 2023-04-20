@@ -32,7 +32,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
             for (int i = 0; i < Length; i++)
             {
                 // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
-                // to new managed pointer(s) of type 'Vector128<byte>' and comparing them if they are equal.
+                // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
 
                 ref Vector128<byte> vLeft = ref Extensions.Transform<Guid, Vector128<byte>>(in fields[i]);
                 ref Vector128<byte> vRight = ref Extensions.Transform<Guid, Vector128<byte>>(in other.fields[i]);
@@ -53,5 +53,5 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }

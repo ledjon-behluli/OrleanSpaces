@@ -28,5 +28,5 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }

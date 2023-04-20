@@ -25,5 +25,5 @@ public readonly struct FloatTuple : INumericSpaceTuple<float, FloatTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }

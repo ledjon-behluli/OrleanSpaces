@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OrleanSpaces.Tuples.Typed;
@@ -127,4 +128,50 @@ internal static class Extensions
         where TIn : struct
         where TOut : struct
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
+    private const string emptyTupleString = "()";
+    private const int bracketsCount = 2;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToTupleString<T, TSelf>(this ISpaceTuple<T, TSelf> tuple)
+        where T : notnull
+        where TSelf : ISpaceTuple<T, TSelf>
+    {
+        int length = tuple.Length;
+
+        if (length == 0)
+        {
+            return emptyTupleString;
+        }
+
+        if (length == 1)
+        {
+            return $"({tuple[0]})";
+        }
+
+        int separatorsCount = 2 * (length - 1);
+        int bufferLength = length + separatorsCount + bracketsCount;
+
+        return string.Create(bufferLength, tuple, (buffer, state) => {
+
+            buffer[0] = '(';
+            int i = 1;
+
+            for (int j = 0; j < length; j++)
+            {
+                if (j > 0)
+                {
+                    buffer[i++] = ',';
+                    buffer[i++] = ' ';
+                }
+
+                ReadOnlySpan<char> span = state[j].ToString().AsSpan();
+                span.CopyTo(buffer.Slice(i, span.Length));
+
+                i += span.Length;
+            }
+
+            buffer[i] = ')';
+        });
+    }
 }

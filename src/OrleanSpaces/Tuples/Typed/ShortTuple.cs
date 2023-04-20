@@ -25,5 +25,5 @@ public readonly struct ShortTuple : INumericSpaceTuple<short, ShortTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }

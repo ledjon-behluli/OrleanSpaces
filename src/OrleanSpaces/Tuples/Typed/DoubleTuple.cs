@@ -25,5 +25,5 @@ public readonly struct DoubleTuple : INumericSpaceTuple<double, DoubleTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }

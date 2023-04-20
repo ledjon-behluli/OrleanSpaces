@@ -63,5 +63,5 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => this.ToTupleString();
 }
