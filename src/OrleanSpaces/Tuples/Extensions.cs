@@ -151,36 +151,43 @@ internal static class Extensions
             return;
         }
 
-        if (props.TupleLength == 1)
-        {
-            $"({tuple[0]})".AsSpan().CopyTo(destination);
-            return;
-        }
-
         Span<char> tupleSpan = stackalloc char[props.TotalLength];
         Span<char> fieldSpan = stackalloc char[props.MaxCharsWrittable];
 
-        tupleSpan[0] = '(';
-        charsWritten = 1;
-
-        for (int i = 0; i < props.TupleLength; i++)
+        if (props.TupleLength == 1)
         {
-            if (i > 0)
+            tupleSpan[charsWritten++] = '(';
+
+            FormatField(0, formattable, tupleSpan, fieldSpan, ref charsWritten);
+
+            tupleSpan[charsWritten++] = ')';
+            tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+        }
+        else
+        {
+            tupleSpan[charsWritten++] = '(';
+
+            for (int i = 0; i < props.TupleLength; i++)
             {
-                tupleSpan[charsWritten++] = ',';
-                tupleSpan[charsWritten++] = ' ';
+                if (i > 0)
+                {
+                    tupleSpan[charsWritten++] = ',';
+                    tupleSpan[charsWritten++] = ' ';
+                }
+
+                fieldSpan.Clear();
+                FormatField(i, formattable, tupleSpan, fieldSpan, ref charsWritten);
             }
 
-            fieldSpan.Clear();
-            _ = formattable.TryFormat(i, fieldSpan, out int fieldCharsWritten);
-            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
-
-            charsWritten += fieldCharsWritten;
+            tupleSpan[charsWritten++] = ')';
+            tupleSpan[..(charsWritten + 1)].CopyTo(destination);
         }
 
-        tupleSpan[charsWritten] = ')';
-        charsWritten++;
-
-        tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+        static void FormatField(int index, ISpaceFormattable formattable, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
+        {
+            _ = formattable.TryFormat(index, fieldSpan, out int fieldCharsWritten);
+            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
+            charsWritten += fieldCharsWritten;
+        }
     }
 }

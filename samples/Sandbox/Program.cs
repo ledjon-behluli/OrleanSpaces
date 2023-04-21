@@ -1,28 +1,32 @@
 ﻿
-using Newtonsoft.Json.Linq;
-using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
-using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
 
-Test test = new();
+Span<char> chars = stackalloc char[48];
+bool result = new IntTuple().TryFormat(chars, out int w);
 
-string a = "asddasdas";
-string b = "asddasdas";
+Span<char> chars1 = stackalloc char[48];
+bool result1 = new IntTuple(1).TryFormat(chars, out int w1);
 
-//Span<char> chars = stackalloc char[12];
-//new IntTuple(1, 1, 1, 1).TryFormat(chars, out _);
-//var a = chars.ToString();
+Span<char> chars2 = stackalloc char[48];
+bool result2 = new IntTuple(1, 1).TryFormat(chars, out int w2);
+
+//int[] array = new int[4] { 1, 1, 1, 1 }; 
+
+//long memoryBefore = GC.GetTotalMemory(true);
+
+//Test(array);
+
+//long memoryAfter = GC.GetTotalMemory(true);
+//long memoryUsed = memoryAfter - memoryBefore;
+
+//memoryUsed = memoryUsed > 0 ? memoryUsed : 0;
+
+//Console.WriteLine($"Memory used: {memoryUsed} bytes");
 
 Console.ReadKey();
 
-
-class Test
-{
-    public Test()
-    {
-        
-    }
-}
+//static void Test(int[] array)
+//{
+//    Span<char> chars = stackalloc char[48];
+//    bool result = new IntTuple(array).TryFormat(chars, out int w);
+//}
