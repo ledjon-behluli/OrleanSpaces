@@ -5,7 +5,11 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct IntTuple : INumericTuple<int, IntTuple>, ISpaceFormattable
 {
-    internal const int MaxCharsWrittable = 10;
+    /// <summary>
+    /// An <see cref="int"/> is a 32-bit signed integer, which means it can represent values ranging from -2,147,483,648 to 2,147,483,647 (inclusive).
+    /// We need a minimum of 11 characters to represent the number, including a possible negative sign.
+    /// </summary>
+    internal const int MaxCharsWrittable = 11;
 
     private readonly int[] fields;
 
@@ -26,22 +30,22 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, ISpaceFormattabl
     public int CompareTo(IntTuple other) => Length.CompareTo(other.Length);
     public override int GetHashCode() => fields.GetHashCode();
 
-    public bool TryFormat(Span<char> destination, out int charsWritten)
-    {
-        SpanFormatProps props = new(Length, MaxCharsWrittable);
-        if (destination.Length < props.TotalLength)
-        {
-            charsWritten = 0;
-            return false;
-        }
+    public bool TryFormat(Span<char> destination, out int charsWritten) => this.TryFormat(destination, out charsWritten);
+    //{
+    //    SpanFormatProps props = new(Length, MaxCharsWrittable);
+    //    if (destination.Length < props.TotalLength)
+    //    {
+    //        charsWritten = 0;
+    //        return false;
+    //    }
 
-        Span<char> span = stackalloc char[props.DestinationSpanLength];
-        this.SpanFormat(this, span, in props, out charsWritten);
+    //    Span<char> span = stackalloc char[props.DestinationSpanLength];
+    //    this.SpanFormat(span, in props, out charsWritten);
 
-        span[..charsWritten].CopyTo(destination);
+    //    span[..charsWritten].CopyTo(destination);
 
-        return true;
-    }
+    //    return true;
+    //}
 
     public bool TryFormat(int index, Span<char> destination, out int charsWritten)
     {

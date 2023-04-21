@@ -129,7 +129,27 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, ISpaceFormattable formattable, Span<char> destination, in SpanFormatProps props, out int charsWritten)
+    public static bool TryFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, Span<char> destination, int maxCharsWrittable, out int charsWritten)
+       where T : notnull
+       where TSelf : ISpaceTuple<T, TSelf>
+    {
+        SpanFormatProps props = new(tuple.Length, maxCharsWrittable);
+        if (destination.Length < props.TotalLength)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        Span<char> span = stackalloc char[props.DestinationSpanLength];
+        tuple.SpanFormat(span, in props, out charsWritten);
+
+        span[..charsWritten].CopyTo(destination);
+
+        return true;
+    }
+
+   [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, Span<char> destination, in SpanFormatProps props, out int charsWritten)
         where T : notnull
         where TSelf : ISpaceTuple<T, TSelf>
     {
@@ -150,7 +170,7 @@ internal static class Extensions
         {
             tupleSpan[charsWritten++] = '(';
 
-            FormatField(0, formattable, tupleSpan, fieldSpan, ref charsWritten);
+            FormatField(0, tuple, tupleSpan, fieldSpan, ref charsWritten);
 
             tupleSpan[charsWritten++] = ')';
             tupleSpan[..(charsWritten + 1)].CopyTo(destination);
@@ -169,7 +189,7 @@ internal static class Extensions
             }
 
             fieldSpan.Clear();
-            FormatField(i, formattable, tupleSpan, fieldSpan, ref charsWritten);
+            FormatField(i, tuple, tupleSpan, fieldSpan, ref charsWritten);
         }
 
         tupleSpan[charsWritten++] = ')';
