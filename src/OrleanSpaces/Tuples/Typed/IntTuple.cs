@@ -35,7 +35,7 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, ISpaceFormattabl
             return false;
         }
 
-        Span<char> span = stackalloc char[MaxCharsWrittable * Length];
+        Span<char> span = stackalloc char[props.DestinationSpanLength];
         this.SpanFormat(this, span, in props, out charsWritten);
 
         span[..charsWritten].CopyTo(destination);

@@ -137,6 +137,9 @@ internal static class Extensions
 
         if (props.TupleLength == 0)
         {
+            destination[charsWritten++] = '(';
+            destination[charsWritten++] = ')';
+
             return;
         }
 
@@ -151,26 +154,26 @@ internal static class Extensions
 
             tupleSpan[charsWritten++] = ')';
             tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+
+            return;
         }
-        else
+
+        tupleSpan[charsWritten++] = '(';
+
+        for (int i = 0; i < props.TupleLength; i++)
         {
-            tupleSpan[charsWritten++] = '(';
-
-            for (int i = 0; i < props.TupleLength; i++)
+            if (i > 0)
             {
-                if (i > 0)
-                {
-                    tupleSpan[charsWritten++] = ',';
-                    tupleSpan[charsWritten++] = ' ';
-                }
-
-                fieldSpan.Clear();
-                FormatField(i, formattable, tupleSpan, fieldSpan, ref charsWritten);
+                tupleSpan[charsWritten++] = ',';
+                tupleSpan[charsWritten++] = ' ';
             }
 
-            tupleSpan[charsWritten++] = ')';
-            tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+            fieldSpan.Clear();
+            FormatField(i, formattable, tupleSpan, fieldSpan, ref charsWritten);
         }
+
+        tupleSpan[charsWritten++] = ')';
+        tupleSpan[..(charsWritten + 1)].CopyTo(destination);
 
         static void FormatField(int index, ISpaceFormattable formattable, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {

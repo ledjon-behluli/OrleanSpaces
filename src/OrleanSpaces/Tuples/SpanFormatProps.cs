@@ -2,8 +2,6 @@
 
 internal readonly ref struct SpanFormatProps
 {
-    internal const int BracketsCount = 2;
-
     public readonly int MaxCharsWrittable;
     public readonly int TupleLength;
     public readonly int DestinationSpanLength;
@@ -11,9 +9,9 @@ internal readonly ref struct SpanFormatProps
 
     public SpanFormatProps(int tupleLength, int maxCharsWrittable)
     {
-        int separatorsCount = 2 * (tupleLength - 1);
-        int destinationSpanLength = maxCharsWrittable * tupleLength;
-        int totalLength = destinationSpanLength + separatorsCount + BracketsCount;
+        int separatorsCount = tupleLength == 0 ? 0 : 2 * (tupleLength - 1);
+        int destinationSpanLength = tupleLength == 0 ? 2 : maxCharsWrittable * tupleLength;
+        int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
 
         MaxCharsWrittable = maxCharsWrittable;
         TupleLength = tupleLength;
