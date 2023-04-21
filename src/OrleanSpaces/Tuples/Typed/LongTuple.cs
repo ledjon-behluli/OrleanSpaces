@@ -3,14 +3,14 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct LongTuple : INumericSpaceTuple<long, LongTuple>
+public readonly struct LongTuple : INumericTuple<long, LongTuple>
 {
     private readonly long[] fields;
 
     public long this[int index] => fields[index];
     public int Length => fields.Length;
 
-    Span<long> INumericSpaceTuple<long, LongTuple>.Fields => fields.AsSpan();
+    Span<long> INumericTuple<long, LongTuple>.Fields => fields.AsSpan();
 
     public LongTuple() : this(Array.Empty<long>()) { }
     public LongTuple(params long[] fields) => this.fields = fields;

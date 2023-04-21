@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples;
 internal static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this INumericSpaceTuple<T, TSelf> left, INumericSpaceTuple<T, TSelf> right, out bool equalityResult)
+    public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool equalityResult)
         where T : struct, INumber<T>
         where TSelf : ISpaceTuple<T, TSelf>
     {
@@ -127,17 +127,6 @@ internal static class Extensions
         where TIn : struct
         where TOut : struct
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    private const string emptyTupleString = "()";
-    private const int bracketsCount = 2;
-
-    public static string ToTupleString<T, TSelf>(this ISpaceTuple<T, TSelf> tuple)
-        where T : notnull
-        where TSelf : ISpaceTuple<T, TSelf>
-    {
-        return "";
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, ISpaceFormattable formattable, Span<char> destination, in SpanFormatProps props, out int charsWritten)

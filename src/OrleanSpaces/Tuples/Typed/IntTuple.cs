@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, ISpaceFormattable
+public readonly struct IntTuple : INumericTuple<int, IntTuple>, ISpaceFormattable
 {
     internal const int MaxCharsWrittable = 10;
 
@@ -12,7 +12,7 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, ISpaceForma
     public int this[int index] => fields[index];
     public int Length => fields.Length;
 
-    Span<int> INumericSpaceTuple<int, IntTuple>.Fields => fields.AsSpan();
+    Span<int> INumericTuple<int, IntTuple>.Fields => fields.AsSpan();
 
     public IntTuple() : this(Array.Empty<int>()) { }
     public IntTuple(params int[] fields) => this.fields = fields;

@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct FloatTuple : INumericSpaceTuple<float, FloatTuple>
+public readonly struct FloatTuple : INumericTuple<float, FloatTuple>
 {
     private readonly float[] fields;
 
@@ -11,7 +11,7 @@ public readonly struct FloatTuple : INumericSpaceTuple<float, FloatTuple>
     public Span<float> Fields => fields.AsSpan();
     public int Length => fields.Length;
 
-    Span<float> INumericSpaceTuple<float, FloatTuple>.Fields => fields.AsSpan();
+    Span<float> INumericTuple<float, FloatTuple>.Fields => fields.AsSpan();
 
     public FloatTuple() : this(Array.Empty<float>()) { }
     public FloatTuple(params float[] fields) => this.fields = fields;

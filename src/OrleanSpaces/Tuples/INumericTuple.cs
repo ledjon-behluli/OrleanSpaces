@@ -2,7 +2,7 @@
 
 namespace OrleanSpaces.Tuples;
 
-internal interface INumericSpaceTuple<T, TSelf> : ISpaceTuple<T, TSelf>//, ISpaceFormattable
+internal interface INumericTuple<T, TSelf> : ISpaceTuple<T, TSelf>
     where T : struct, INumber<T>
     where TSelf : ISpaceTuple<T, TSelf>
 {
