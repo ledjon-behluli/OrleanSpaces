@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using OrleanSpaces.Tuples.Typed;
@@ -155,6 +156,8 @@ internal static class Extensions
             buffer[0] = '(';
             int i = 1;
 
+            //Span<char> bridgeSpan = stackalloc char[state.MaxCharsWrittable];
+
             for (int j = 0; j < length; j++)
             {
                 if (j > 0)
@@ -163,10 +166,18 @@ internal static class Extensions
                     buffer[i++] = ' ';
                 }
 
+
+                //state.WriteTo(buffer.Slice(i), j, out int charsWritten);
+                //i += charsWritten;
+
+                //state.WriteTo(bridgeSpan, j, out int charsWritten);
+                //bridgeSpan.CopyTo(buffer.Slice(i, charsWritten));
+                //i += bridgeSpan.Length;
+
                 ReadOnlySpan<char> span = state[j].ToString().AsSpan();
                 span.CopyTo(buffer.Slice(i, span.Length));
 
-                i += span.Length;
+                //i += span.Length;
             }
 
             buffer[i] = ')';

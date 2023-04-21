@@ -12,6 +12,9 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>
 
     Span<int> INumericSpaceTuple<int, IntTuple>.Fields => fields.AsSpan();
 
+    //int ISpaceFormattable.MaxCharsWrittable => 10;
+    //void ISpaceFormattable.WriteTo(Span<char> destination, int index, out int charsWritten) => fields[index].TryFormat(destination, out charsWritten);
+
     public IntTuple() : this(Array.Empty<int>()) { }
     public IntTuple(params int[] fields) => this.fields = fields;
 
