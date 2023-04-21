@@ -55,13 +55,5 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, ISpaceForma
         return fields[index].TryFormat(destination, out charsWritten);
     }
 
-    public override string ToString()
-    {
-        Span<char> span = stackalloc char[MaxCharsWrittable * Length];
-        SpanFormatProps props = new(Length, MaxCharsWrittable);
-
-        this.SpanFormat(this, span, in props, out int charsWritten);
-
-        return span[..charsWritten].ToString();
-    }
+    public override string ToString() => $"({string.Join(", ", fields)})";
 }
