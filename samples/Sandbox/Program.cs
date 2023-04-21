@@ -7,10 +7,22 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 
-long kbAtExecution = GC.GetTotalMemory(false) / 1024;
+Test test = new();
 
-Span<char> chars = stackalloc char[12];
-new IntTuple(1, 1, 1, 1).TryFormat(chars, out _);
+string a = "asddasdas";
+string b = "asddasdas";
+
+//Span<char> chars = stackalloc char[12];
+//new IntTuple(1, 1, 1, 1).TryFormat(chars, out _);
 //var a = chars.ToString();
 
 Console.ReadKey();
+
+
+class Test
+{
+    public Test()
+    {
+        
+    }
+}
