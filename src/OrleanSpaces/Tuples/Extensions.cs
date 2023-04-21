@@ -140,7 +140,7 @@ internal static class Extensions
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, IFieldFormater formater, Span<char> destination, in SpanFormatProps props, out int charsWritten)
+    public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, ISpaceFormattable formattable, Span<char> destination, in SpanFormatProps props, out int charsWritten)
         where T : notnull
         where TSelf : ISpaceTuple<T, TSelf>
     {
@@ -172,7 +172,7 @@ internal static class Extensions
             }
 
             fieldSpan.Clear();
-            formater.Format(i, fieldSpan, out int fieldCharsWritten);
+            _ = formattable.TryFormat(i, fieldSpan, out int fieldCharsWritten);
             fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
 
             charsWritten += fieldCharsWritten;

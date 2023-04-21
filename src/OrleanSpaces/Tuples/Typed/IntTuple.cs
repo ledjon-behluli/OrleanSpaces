@@ -3,8 +3,10 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, IFieldFormater, ISpanFormattable
+public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, ISpaceFormattable
 {
+    internal const int MaxCharsWrittable = 10;
+
     private readonly int[] fields;
 
     public int this[int index] => fields[index];
@@ -22,36 +24,18 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, IFieldForma
     public bool Equals(IntTuple other) => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public int CompareTo(IntTuple other) => Length.CompareTo(other.Length);
-
     public override int GetHashCode() => fields.GetHashCode();
-
-   
-
-    private const int maxCharsWrittable = 10;
-
-    void IFieldFormater.Format(int index, Span<char> destination, out int charsWritten)
-        => fields[index].TryFormat(destination, out charsWritten);
-
-    public override string ToString()
-    {
-        Span<char> span = stackalloc char[maxCharsWrittable * Length];
-        SpanFormatProps props = new(Length, maxCharsWrittable);
-
-        this.SpanFormat(this, span, in props, out int charsWritten);
-
-        return span[..charsWritten].ToString();
-    }
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
     {
-        SpanFormatProps props = new(Length, maxCharsWrittable);
+        SpanFormatProps props = new(Length, MaxCharsWrittable);
         if (destination.Length < props.TotalLength)
         {
             charsWritten = 0;
             return false;
         }
 
-        Span<char> span = stackalloc char[maxCharsWrittable * Length];
+        Span<char> span = stackalloc char[MaxCharsWrittable * Length];
         this.SpanFormat(this, span, in props, out charsWritten);
 
         span[..charsWritten].CopyTo(destination);
@@ -59,6 +43,25 @@ public readonly struct IntTuple : INumericSpaceTuple<int, IntTuple>, IFieldForma
         return true;
     }
 
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) => TryFormat(destination, out charsWritten);
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
+    {
+        charsWritten = 0;
+
+        if (index < 0 || index >= fields.Length)
+        {
+            return false;
+        }
+
+        return fields[index].TryFormat(destination, out charsWritten);
+    }
+
+    public override string ToString()
+    {
+        Span<char> span = stackalloc char[MaxCharsWrittable * Length];
+        SpanFormatProps props = new(Length, MaxCharsWrittable);
+
+        this.SpanFormat(this, span, in props, out int charsWritten);
+
+        return span[..charsWritten].ToString();
+    }
 }
