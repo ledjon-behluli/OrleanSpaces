@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace OrleanSpaces.Tuples.Typed;
+namespace OrleanSpaces.Tuples;
 
 internal readonly ref struct NumericMarshaller<TIn, TOut>
     where TIn : struct

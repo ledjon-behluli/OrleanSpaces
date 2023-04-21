@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using OrleanSpaces.Tuples.Typed;
 
 namespace OrleanSpaces.Tuples;
 
@@ -132,55 +131,56 @@ internal static class Extensions
     private const string emptyTupleString = "()";
     private const int bracketsCount = 2;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToTupleString<T, TSelf>(this ISpaceTuple<T, TSelf> tuple)
         where T : notnull
         where TSelf : ISpaceTuple<T, TSelf>
     {
-        int length = tuple.Length;
-        if (length == 0)
+        return "";
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void SpanFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, IFieldFormater formater, Span<char> destination, in SpanFormatProps props, out int charsWritten)
+        where T : notnull
+        where TSelf : ISpaceTuple<T, TSelf>
+    {
+        charsWritten = 0;
+
+        if (props.TupleLength == 0)
         {
-            return emptyTupleString;
+            return;
         }
 
-        if (length == 1)
+        if (props.TupleLength == 1)
         {
-            return $"({tuple[0]})";
+            $"({tuple[0]})".AsSpan().CopyTo(destination);
+            return;
         }
 
-        int separatorsCount = 2 * (length - 1);
-        int bufferLength = length + separatorsCount + bracketsCount;
+        Span<char> tupleSpan = stackalloc char[props.TotalLength];
+        Span<char> fieldSpan = stackalloc char[props.MaxCharsWrittable];
 
-        return string.Create(bufferLength, tuple, (buffer, state) => {
+        tupleSpan[0] = '(';
+        charsWritten = 1;
 
-            buffer[0] = '(';
-            int i = 1;
-
-            //Span<char> bridgeSpan = stackalloc char[state.MaxCharsWrittable];
-
-            for (int j = 0; j < length; j++)
+        for (int i = 0; i < props.TupleLength; i++)
+        {
+            if (i > 0)
             {
-                if (j > 0)
-                {
-                    buffer[i++] = ',';
-                    buffer[i++] = ' ';
-                }
-
-
-                //state.WriteTo(buffer.Slice(i), j, out int charsWritten);
-                //i += charsWritten;
-
-                //state.WriteTo(bridgeSpan, j, out int charsWritten);
-                //bridgeSpan.CopyTo(buffer.Slice(i, charsWritten));
-                //i += bridgeSpan.Length;
-
-                ReadOnlySpan<char> span = state[j].ToString().AsSpan();
-                span.CopyTo(buffer.Slice(i, span.Length));
-
-                //i += span.Length;
+                tupleSpan[charsWritten++] = ',';
+                tupleSpan[charsWritten++] = ' ';
             }
 
-            buffer[i] = ')';
-        });
+            fieldSpan.Clear();
+            formater.Format(i, fieldSpan, out int fieldCharsWritten);
+            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
+
+            charsWritten += fieldCharsWritten;
+        }
+
+        tupleSpan[charsWritten] = ')';
+        charsWritten++;
+
+        tupleSpan[..(charsWritten + 1)].CopyTo(destination);
     }
 }

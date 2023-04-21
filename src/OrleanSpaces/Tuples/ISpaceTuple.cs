@@ -5,7 +5,7 @@ public interface ISpaceTuple
     
 }
 
-public interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, IComparable<TSelf>
+internal interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, IComparable<TSelf>
     where T : notnull
     where TSelf : ISpaceTuple<T, TSelf>
 {

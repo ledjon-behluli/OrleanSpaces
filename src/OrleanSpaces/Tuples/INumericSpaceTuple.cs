@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 
-namespace OrleanSpaces.Tuples.Typed;
+namespace OrleanSpaces.Tuples;
 
-internal interface INumericSpaceTuple<T, TSelf> : ISpaceTuple<T, TSelf>
+internal interface INumericSpaceTuple<T, TSelf> : ISpaceTuple<T, TSelf>//, ISpaceFormattable
     where T : struct, INumber<T>
     where TSelf : ISpaceTuple<T, TSelf>
 {

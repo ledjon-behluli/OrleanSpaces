@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Tests", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleanSpaces.Benchmarks", "bench\OrleanSpaces.Benchmarks\OrleanSpaces.Benchmarks.csproj", "{4941BEEF-A39D-454D-8F43-FA8C6D93D54C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "samples\Sandbox\Sandbox.csproj", "{9A82AAD5-6246-468C-9D46-27169113979F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,14 @@ Global
 		{4941BEEF-A39D-454D-8F43-FA8C6D93D54C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4941BEEF-A39D-454D-8F43-FA8C6D93D54C}.Release|x86.ActiveCfg = Release|Any CPU
 		{4941BEEF-A39D-454D-8F43-FA8C6D93D54C}.Release|x86.Build.0 = Release|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Debug|x86.Build.0 = Debug|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Release|x86.ActiveCfg = Release|Any CPU
+		{9A82AAD5-6246-468C-9D46-27169113979F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,6 +206,7 @@ Global
 		{84CD39CD-E37C-47DC-A355-38C69A505F96} = {577E93EC-ACED-4EDD-B540-A0554E4A1EFD}
 		{089358C4-C1AA-4C6F-BE6B-9CCEC0FEC226} = {577E93EC-ACED-4EDD-B540-A0554E4A1EFD}
 		{4941BEEF-A39D-454D-8F43-FA8C6D93D54C} = {DCFDAAD5-14EA-42CC-8E75-A44392B45B76}
+		{9A82AAD5-6246-468C-9D46-27169113979F} = {AF427224-A96F-4488-A34C-3DDC76C56A16}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {51F3D785-6674-42F7-A966-ECE43A673279}

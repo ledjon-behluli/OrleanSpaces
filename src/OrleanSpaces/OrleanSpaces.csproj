@@ -44,6 +44,13 @@
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Benchmarks</_Parameter1>
 		</AssemblyAttribute>
+		
+		<!--TODO: REMOVE-->
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>Sandbox</_Parameter1>
+		</AssemblyAttribute>
+		<!--TODO: REMOVE-->
+		
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
