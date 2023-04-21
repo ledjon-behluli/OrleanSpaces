@@ -249,19 +249,13 @@ public class BoolTupleBenchmarks
         public SequentialBoolTuple() : this(Array.Empty<bool>()) { }
         public SequentialBoolTuple(params bool[] fields) => this.fields = fields;
 
-        public static bool operator ==(SequentialBoolTuple left, SequentialBoolTuple right) => left.Equals(right);
-        public static bool operator !=(SequentialBoolTuple left, SequentialBoolTuple right) => !(left == right);
-
-        public ReadOnlySpan<bool> AsSpan() => fields.AsSpan();
-
-        public override bool Equals(object obj) => obj is SequentialBoolTuple tuple && Equals(tuple);
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
 
-        public int CompareTo(SequentialBoolTuple other) => Length.CompareTo(other.Length);
-
-        public override int GetHashCode() => fields.GetHashCode();
-
-        public override string ToString() => $"({string.Join(", ", fields)})";
+        public ReadOnlySpan<bool> AsSpan() => throw new NotImplementedException();
+        public int CompareTo(SequentialBoolTuple other) => throw new NotImplementedException();
+        public override string ToString() => throw new NotImplementedException();
+        public bool TryFormat(Span<char> destination, out int charsWritten) => throw new NotImplementedException();
+        public bool TryFormat(int index, Span<char> destination, out int charsWritten) => throw new NotImplementedException();
     }
 
     #endregion

@@ -142,5 +142,11 @@ public readonly struct SpaceTemplate : ISpaceTuple<object, SpaceTemplate>
 
     public override int GetHashCode() => fields.GetHashCode();
 
+    public bool TryFormat(Span<char> destination, out int charsWritten)
+       => throw new NotImplementedException();  //TODO: Implement
+
+    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
+        => throw new NotImplementedException();  //TODO: Implement
+
     public override string ToString() => $"({string.Join(", ", fields)})";
 }

@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
+public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ITupleFieldFormater
 {
     private readonly decimal[] fields;
 
@@ -67,5 +67,16 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => this.ToTupleString();
+    public bool TryFormat(Span<char> destination, out int charsWritten)
+        => this.TryFormatTuple(this, destination, out charsWritten);
+
+    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
+        => this.TryFormatTupleField(this, index, destination, out charsWritten);
+
+    int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+
+    bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
+        => fields[index].TryFormat(destination, out charsWritten);
+
+    public override string ToString() => $"({string.Join(", ", fields)})";
 }

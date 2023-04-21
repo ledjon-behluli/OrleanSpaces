@@ -3,14 +3,12 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>
+public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, ITupleFieldFormater
 {
     private readonly ushort[] fields;
 
     public ushort this[int index] => fields[index];
     public int Length => fields.Length;
-
-    Span<ushort> INumericTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
 
     public UShortTuple() : this(Array.Empty<ushort>()) { }
     public UShortTuple(params ushort[] fields) => this.fields = fields;
@@ -25,5 +23,18 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => this.ToTupleString();
+    public bool TryFormat(Span<char> destination, out int charsWritten)
+     => this.TryFormatTuple(this, destination, out charsWritten);
+
+    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
+        => this.TryFormatTupleField(this, index, destination, out charsWritten);
+
+    Span<ushort> INumericTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
+
+    int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+
+    bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
+        => fields[index].TryFormat(destination, out charsWritten);
+
+    public override string ToString() => $"({string.Join(", ", fields)})";
 }

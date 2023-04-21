@@ -10,7 +10,6 @@ namespace OrleanSpaces.Tuples;
 public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
 {
     private const string defaultString = "{NULL}";
-    private static readonly SpaceUnit[] defaultArray = new SpaceUnit[1] { new() };
 
     /// <summary>
     /// Default and only constructor. 
@@ -47,5 +46,12 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
     public int CompareTo(SpaceUnit other) => 0;
 
     public override int GetHashCode() => 0;
+
+    public bool TryFormat(Span<char> destination, out int charsWritten)
+        => throw new NotImplementedException();  //TODO: Implement
+
+    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
+        => throw new NotImplementedException();  //TODO: Implement
+
     public override string ToString() => defaultString;
 }
