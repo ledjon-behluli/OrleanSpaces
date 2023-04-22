@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTimeOffsetTuple>, ITupleFieldFormater
+public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTimeOffsetTuple>, ITupleFieldFormater<DateTimeOffset>
 {
     private readonly DateTimeOffset[] fields;
 
@@ -29,15 +29,15 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTim
     public override int GetHashCode() => fields.GetHashCode();
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(this, destination, out charsWritten);
+        => this.TryFormatTuple(destination, out charsWritten);
 
     public bool TryFormat(int index, Span<char> destination, out int charsWritten)
-        => this.TryFormatTupleField(this, index, destination, out charsWritten);
+        => this.TryFormatTupleField(index, destination, out charsWritten);
 
-    static int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+    static int ITupleFieldFormater<DateTimeOffset>.MaxCharsWrittable => 11;
 
-    bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
-        => fields[index].TryFormat(destination, out charsWritten);
+    static bool ITupleFieldFormater<DateTimeOffset>.TryFormat(DateTimeOffset field, Span<char> destination, out int charsWritten)
+        => field.TryFormat(destination, out charsWritten);
 
     public override string ToString() => $"({string.Join(", ", fields)})";
 }

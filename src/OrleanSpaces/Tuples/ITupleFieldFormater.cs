@@ -1,7 +1,7 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-internal interface ITupleFieldFormater
+internal interface ITupleFieldFormater<T> where T : notnull
 {
     static abstract int MaxCharsWrittable { get; }
-    bool TryFormat(int index, Span<char> destination, out int charsWritten);
+    static abstract bool TryFormat(T field, Span<char> destination, out int charsWritten);
 }

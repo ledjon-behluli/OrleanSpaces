@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, ITupleFieldFormater
+public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, ITupleFieldFormater<sbyte>
 {
     private readonly sbyte[] fields;
 
@@ -25,17 +25,17 @@ public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, ITupleFiel
     public override int GetHashCode() => fields.GetHashCode();
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-       => this.TryFormatTuple(this, destination, out charsWritten);
+       => this.TryFormatTuple(destination, out charsWritten);
 
     public bool TryFormat(int index, Span<char> destination, out int charsWritten)
-        => this.TryFormatTupleField(this, index, destination, out charsWritten);
+        => this.TryFormatTupleField(index, destination, out charsWritten);
 
     Span<sbyte> INumericTuple<sbyte, SByteTuple>.Fields => fields.AsSpan();
 
-    static int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+    static int ITupleFieldFormater<sbyte>.MaxCharsWrittable => 11;
 
-    bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
-        => fields[index].TryFormat(destination, out charsWritten);
+    static bool ITupleFieldFormater<sbyte>.TryFormat(sbyte field, Span<char> destination, out int charsWritten)
+        => field.TryFormat(destination, out charsWritten);
 
     public override string ToString() => $"({string.Join(", ", fields)})";
 }
