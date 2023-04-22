@@ -57,7 +57,7 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ITupleFieldForm
     public bool TryFormat(int index, Span<char> destination, out int charsWritten)
         => this.TryFormatTupleField(this, index, destination, out charsWritten);
 
-    int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+    static int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
 
     bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
         => throw new NotImplementedException();  //TODO: Implement

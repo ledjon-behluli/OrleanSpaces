@@ -31,7 +31,7 @@ public readonly struct ByteTuple : INumericTuple<byte, ByteTuple>, ITupleFieldFo
 
     Span<byte> INumericTuple<byte, ByteTuple>.Fields => fields.AsSpan();
 
-    int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+    static int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
 
     bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
         => fields[index].TryFormat(destination, out charsWritten);

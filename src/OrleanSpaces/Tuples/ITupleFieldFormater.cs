@@ -2,6 +2,6 @@
 
 internal interface ITupleFieldFormater
 {
-    int MaxCharsWrittable { get; }
+    static abstract int MaxCharsWrittable { get; }
     bool TryFormat(int index, Span<char> destination, out int charsWritten);
 }

@@ -30,7 +30,7 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, ITupleFieldForma
 
     Span<int> INumericTuple<int, IntTuple>.Fields => fields.AsSpan();
 
-    int ITupleFieldFormater.MaxCharsWrittable => 11;
+    static int ITupleFieldFormater.MaxCharsWrittable => 11;
 
     bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
         => fields[index].TryFormat(destination, out charsWritten);

@@ -73,7 +73,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ITuple
     public bool TryFormat(int index, Span<char> destination, out int charsWritten)
         => this.TryFormatTupleField(this, index, destination, out charsWritten);
 
-    int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
+    static int ITupleFieldFormater.MaxCharsWrittable => 11;  //TODO: Fix
 
     bool ITupleFieldFormater.TryFormat(int index, Span<char> destination, out int charsWritten)
         => fields[index].TryFormat(destination, out charsWritten);
