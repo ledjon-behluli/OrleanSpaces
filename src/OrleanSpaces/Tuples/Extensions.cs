@@ -130,7 +130,7 @@ internal static class Extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryFormatTupleField<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int index, Span<char> destination, out int charsWritten)
       where T : notnull
-      where TSelf : ISpaceTuple<T, TSelf>, ITupleFieldFormater<T>
+      where TSelf : ISpaceTuple<T, TSelf>, IFieldFormater<T>
     {
         charsWritten = 0;
 
@@ -145,13 +145,13 @@ internal static class Extensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryFormatTuple<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, Span<char> destination, out int charsWritten)
        where T : notnull
-       where TSelf : ISpaceTuple<T, TSelf>, ITupleFieldFormater<T>
+       where TSelf : ISpaceTuple<T, TSelf>, IFieldFormater<T>
     {
         charsWritten = 0;
 
         int tupleLength = tuple.Length;
         int maxCharsWrittable = TSelf.MaxCharsWrittable;
-        int totalLength = CalculateTotalLength(tuple.Length, maxCharsWrittable);
+        int totalLength = CalculateTotalLength(tupleLength, maxCharsWrittable);
 
         if (destination.Length < totalLength)
         {

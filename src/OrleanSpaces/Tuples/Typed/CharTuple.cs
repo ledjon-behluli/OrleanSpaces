@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ITupleFieldFormater<char>
+public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, IFieldFormater<char>
 {
     private readonly char[] fields;
 
@@ -19,33 +19,7 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ITupleFieldForm
 
     public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
-    public bool Equals(CharTuple other)
-    {
-        if (Vector128.IsHardwareAccelerated)
-        {
-            if (Length != other.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < Length; i++)
-            {
-                // We are loading 
-
-                ref Vector128<byte> vLeft = ref Extensions.Transform<char, Vector128<byte>>(in fields[i]);
-                ref Vector128<byte> vRight = ref Extensions.Transform<char, Vector128<byte>>(in other.fields[i]);
-
-                if (vLeft != vRight)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return this.SequentialEquals(other);
-    }
+    public bool Equals(CharTuple other) => throw new NotImplementedException();
 
     public int CompareTo(CharTuple other) => Length.CompareTo(other.Length);
 
@@ -54,12 +28,9 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ITupleFieldForm
     public bool TryFormat(Span<char> destination, out int charsWritten)
         => this.TryFormatTuple(destination, out charsWritten);
 
-    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
-        => this.TryFormatTupleField(index, destination, out charsWritten);
+    static int IFieldFormater<char>.MaxCharsWrittable => 11;
 
-    static int ITupleFieldFormater<char>.MaxCharsWrittable => 11;
-
-    static bool ITupleFieldFormater<char>.TryFormat(char field, Span<char> destination, out int charsWritten)
+    static bool IFieldFormater<char>.TryFormat(char field, Span<char> destination, out int charsWritten)
         => throw new NotImplementedException();  //TODO: Implement
 
     public override string ToString() => $"({string.Join(", ", fields)})";

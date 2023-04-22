@@ -255,7 +255,6 @@ public class DateTimeTupleBenchmarks
         public int CompareTo(SequentialDateTimeTuple other) => throw new NotImplementedException();
         public override string ToString() => throw new NotImplementedException();
         public bool TryFormat(Span<char> destination, out int charsWritten) => throw new NotImplementedException();
-        public bool TryFormat(int index, Span<char> destination, out int charsWritten) => throw new NotImplementedException();
     }
 
     #endregion

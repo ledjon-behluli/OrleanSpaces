@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ITupleFieldFormater<bool>
+public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, IFieldFormater<bool>
 {
     private readonly bool[] fields;
 
@@ -31,12 +31,9 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ITupleFieldForm
     public bool TryFormat(Span<char> destination, out int charsWritten)
         => this.TryFormatTuple(destination, out charsWritten);
 
-    public bool TryFormat(int index, Span<char> destination, out int charsWritten)
-        => this.TryFormatTupleField(index, destination, out charsWritten);
+    static int IFieldFormater<bool>.MaxCharsWrittable => 11;
 
-    static int ITupleFieldFormater<bool>.MaxCharsWrittable => 11;
-
-    static bool ITupleFieldFormater<bool>.TryFormat(bool field, Span<char> destination, out int charsWritten)
+    static bool IFieldFormater<bool>.TryFormat(bool field, Span<char> destination, out int charsWritten)
         => field.TryFormat(destination, out charsWritten);
 
     public override string ToString() => $"({string.Join(", ", fields)})";
