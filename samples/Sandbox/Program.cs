@@ -1,6 +1,9 @@
 ﻿
 using OrleanSpaces.Tuples.Typed;
 
+Console.WriteLine(true);
+Console.WriteLine(false);
+
 Span<char> chars = stackalloc char[48];
 bool result = new IntTuple().TryFormat(chars, out int w);
 

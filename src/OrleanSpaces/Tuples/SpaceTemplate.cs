@@ -141,9 +141,5 @@ public readonly struct SpaceTemplate : ISpaceTuple<object, SpaceTemplate>
     public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
-
-    public bool TryFormat(Span<char> destination, out int charsWritten)
-       => throw new NotImplementedException();  //TODO: Implement
-
     public override string ToString() => $"({string.Join(", ", fields)})";
 }

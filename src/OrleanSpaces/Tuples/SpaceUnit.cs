@@ -7,9 +7,9 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
-public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
+public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
 {
-    private const string defaultString = "{NULL}";
+    internal const string DefaultString = "{NULL}";
 
     /// <summary>
     /// Default and only constructor. 
@@ -46,9 +46,26 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>
     public int CompareTo(SpaceUnit other) => 0;
 
     public override int GetHashCode() => 0;
+    public override string ToString() => DefaultString;
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => throw new NotImplementedException();  //TODO: Implement
+    {
+        ReadOnlySpan<char> span = DefaultString.AsSpan();
 
-    public override string ToString() => defaultString;
+        if (destination.Length < span.Length)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        span.CopyTo(destination);
+        charsWritten = span.Length;
+
+        return true;
+    }
+
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => TryFormat(destination, out charsWritten);
+
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => DefaultString;
 }

@@ -102,9 +102,5 @@ public readonly struct SpaceTuple : ISpaceTuple<object, SpaceTuple>
     public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
-
-    public bool TryFormat(Span<char> destination, out int charsWritten)
-       => throw new NotImplementedException();  //TODO: Implement
-
     public override string ToString() => $"({string.Join(", ", fields)})";
 }
