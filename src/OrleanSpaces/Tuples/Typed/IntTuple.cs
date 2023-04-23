@@ -40,4 +40,6 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, ISpanFormattable
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
 }
