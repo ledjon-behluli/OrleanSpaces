@@ -177,9 +177,9 @@ internal static class Extensions
             {
                 tupleSpan[charsWritten++] = ',';
                 tupleSpan[charsWritten++] = ' ';
-            }
 
-            fieldSpan.Clear();
+                fieldSpan.Clear();
+            }
 
             if (!TryFormatField(tuple[i], tupleSpan, fieldSpan, ref charsWritten))
             {
@@ -194,7 +194,7 @@ internal static class Extensions
 
         static bool TryFormatField(T field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {
-            if (field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
+            if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
             {
                 charsWritten = 0;
                 return false;

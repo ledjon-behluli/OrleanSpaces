@@ -91,9 +91,9 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
             {
                 tupleSpan[charsWritten++] = ',';
                 tupleSpan[charsWritten++] = ' ';
-            }
 
-            fieldSpan.Clear();
+                fieldSpan.Clear();
+            }
 
             if (!TryFormatField(fields[i], tupleSpan, fieldSpan, ref charsWritten))
             {
@@ -108,7 +108,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
 
         static bool TryFormatField(bool field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {
-            if (field.TryFormat(fieldSpan, out int fieldCharsWritten))
+            if (!field.TryFormat(fieldSpan, out int fieldCharsWritten))
             {
                 charsWritten = 0;
                 return false;
