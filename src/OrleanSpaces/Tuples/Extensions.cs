@@ -192,15 +192,6 @@ internal static class Extensions
 
         return true;
 
-        static int CalculateTotalLength(int tupleLength, int maxCharsWrittable)
-        {
-            int separatorsCount = tupleLength == 0 ? 0 : 2 * (tupleLength - 1);
-            int destinationSpanLength = tupleLength == 0 ? 2 : maxCharsWrittable * tupleLength;
-            int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
-
-            return totalLength;
-        }
-
         static bool TryFormatField(T field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {
             if (field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
@@ -208,11 +199,21 @@ internal static class Extensions
                 charsWritten = 0;
                 return false;
             }
-            
+
             fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
             charsWritten += fieldCharsWritten;
 
             return true;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int CalculateTotalLength(int tupleLength, int maxCharsWrittable)
+    {
+        int separatorsCount = tupleLength == 0 ? 0 : 2 * (tupleLength - 1);
+        int destinationSpanLength = tupleLength == 0 ? 2 : maxCharsWrittable * tupleLength;
+        int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
+
+        return totalLength;
     }
 }
