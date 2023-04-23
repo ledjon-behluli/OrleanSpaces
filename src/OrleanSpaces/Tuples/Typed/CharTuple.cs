@@ -6,6 +6,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>a</example>
     internal const int MaxFieldCharLength = 1;
 
     private readonly char[] fields;

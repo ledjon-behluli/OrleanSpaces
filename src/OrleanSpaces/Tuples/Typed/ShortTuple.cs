@@ -5,6 +5,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct ShortTuple : INumericTuple<short, ShortTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-32768</example>
     internal const int MaxFieldCharLength = 6;
 
     private readonly short[] fields;

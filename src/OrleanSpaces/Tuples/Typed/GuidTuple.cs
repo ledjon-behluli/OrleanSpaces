@@ -7,6 +7,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>89b4a5d1-36ef-4106-9933-b450a587e58f</example>
     internal const int MaxFieldCharLength = 36;
 
     private readonly Guid[] fields;

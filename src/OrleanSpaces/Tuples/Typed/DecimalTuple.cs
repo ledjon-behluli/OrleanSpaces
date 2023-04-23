@@ -7,6 +7,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-79228162514264337593543950335</example>
     internal const int MaxFieldCharLength = 30;
 
     private readonly decimal[] fields;

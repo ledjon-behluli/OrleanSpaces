@@ -5,6 +5,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct LongTuple : INumericTuple<long, LongTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-9223372036854775808</example>
     internal const int MaxFieldCharLength = 20;
 
     private readonly long[] fields;

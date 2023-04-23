@@ -5,6 +5,12 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-10675199.02:48:05.4775808</example>
+    internal const int MaxFieldCharLength = 26;
+
     private readonly TimeSpan[] fields;
 
     public TimeSpan this[int index] => fields[index];
@@ -30,7 +36,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISp
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(11, destination, out charsWritten);
+        => this.TryFormatTuple(MaxFieldCharLength, destination, out charsWritten);
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         => TryFormat(destination, out charsWritten);

@@ -5,6 +5,12 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTimeOffsetTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>12/31/9999 11:59:59 PM +00:00</example>
+    internal const int MaxFieldCharLength = 29;
+
     private readonly DateTimeOffset[] fields;
 
     public DateTimeOffset this[int index] => fields[index];
@@ -30,7 +36,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTim
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(11, destination, out charsWritten);
+        => this.TryFormatTuple(MaxFieldCharLength, destination, out charsWritten);
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         => TryFormat(destination, out charsWritten);

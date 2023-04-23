@@ -5,6 +5,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct FloatTuple : INumericTuple<float, FloatTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-3.4028235E+38</example>
     internal const int MaxFieldCharLength = 24;
 
     private readonly float[] fields;

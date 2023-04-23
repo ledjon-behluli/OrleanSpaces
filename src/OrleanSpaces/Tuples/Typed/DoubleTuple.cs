@@ -5,6 +5,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DoubleTuple : INumericTuple<double, DoubleTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-1.7976931348623157E+308</example>
     internal const int MaxFieldCharLength = 24;
 
     private readonly double[] fields;

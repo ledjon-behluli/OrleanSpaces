@@ -5,6 +5,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>-128</example>
     internal const int MaxFieldCharLength = 4;
 
     private readonly sbyte[] fields;

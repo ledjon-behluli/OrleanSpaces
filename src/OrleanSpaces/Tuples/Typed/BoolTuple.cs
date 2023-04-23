@@ -6,6 +6,10 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>False</example>
     internal const int MaxFieldCharLength = 5;
 
     private readonly bool[] fields;
