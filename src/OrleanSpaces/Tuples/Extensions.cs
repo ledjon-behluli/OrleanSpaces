@@ -128,14 +128,14 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormatTuple<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int fieldCharLength, Span<char> destination, out int charsWritten)
+    public static bool TryFormatTuple<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
         where T : notnull, ISpanFormattable
         where TSelf : ISpaceTuple<T, TSelf>
     {
         charsWritten = 0;
 
         int tupleLength = tuple.Length;
-        int totalLength = CalculateTotalLength(tupleLength, fieldCharLength);
+        int totalLength = CalculateTotalLength(tupleLength, maxFieldCharLength);
 
         if (destination.Length < totalLength)
         {
@@ -152,7 +152,7 @@ internal static class Extensions
         }
 
         Span<char> tupleSpan = stackalloc char[totalLength];
-        Span<char> fieldSpan = stackalloc char[fieldCharLength];
+        Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
 
         if (tupleLength == 1)
         {
@@ -208,10 +208,10 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateTotalLength(int tupleLength, int fieldCharLength)
+    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength)
     {
         int separatorsCount = tupleLength == 0 ? 0 : 2 * (tupleLength - 1);
-        int destinationSpanLength = tupleLength == 0 ? 2 : fieldCharLength * tupleLength;
+        int destinationSpanLength = tupleLength == 0 ? 2 : maxFieldCharLength * tupleLength;
         int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
 
         return totalLength;

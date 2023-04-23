@@ -6,6 +6,8 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattable
 {
+    internal const int MaxFieldCharLength = 1;
+
     private readonly char[] fields;
 
     public char this[int index] => fields[index];
@@ -27,7 +29,7 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattabl
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(11, destination, out charsWritten);
+        => this.TryFormatTuple(MaxFieldCharLength, destination, out charsWritten);
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         => TryFormat(destination, out charsWritten);

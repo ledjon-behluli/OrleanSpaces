@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattable
 {
-    internal const int FieldCharLength = 5;
+    internal const int MaxFieldCharLength = 5;
 
     private readonly bool[] fields;
 
@@ -42,11 +42,10 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
         // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormatTuple` and are forced
         // to implement it here. See: https://github.com/dotnet/runtime/issues/67388
 
-        int maxCharsWrittable = 11;
         charsWritten = 0;
 
         int tupleLength = Length;
-        int totalLength = Extensions.CalculateTotalLength(tupleLength, maxCharsWrittable);
+        int totalLength = Extensions.CalculateTotalLength(tupleLength, MaxFieldCharLength);
 
         if (destination.Length < totalLength)
         {
@@ -63,7 +62,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
         }
 
         Span<char> tupleSpan = stackalloc char[totalLength];
-        Span<char> fieldSpan = stackalloc char[maxCharsWrittable];
+        Span<char> fieldSpan = stackalloc char[MaxFieldCharLength];
 
         if (tupleLength == 1)
         {
