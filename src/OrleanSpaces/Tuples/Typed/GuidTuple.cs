@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, IFieldFormater<Guid>
+public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, ISpanFormattable
 {
     private readonly Guid[] fields;
 
@@ -52,14 +52,13 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, IFieldFormater<
     public int CompareTo(GuidTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(destination, out charsWritten);
+        => this.TryFormatTuple(11, destination, out charsWritten);
 
-    static int IFieldFormater<Guid>.MaxCharsWrittable => 11;
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => TryFormat(destination, out charsWritten);
 
-    static bool IFieldFormater<Guid>.TryFormat(Guid field, Span<char> destination, out int charsWritten)
-        => field.TryFormat(destination, out charsWritten);
-
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }

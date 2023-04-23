@@ -3,13 +3,15 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct LongTuple : INumericTuple<long, LongTuple>, IFieldFormater<long>
+public readonly struct LongTuple : INumericTuple<long, LongTuple>, ISpanFormattable
 {
     private readonly long[] fields;
 
     public long this[int index] => fields[index];
     public int Length => fields.Length;
-   
+
+    Span<long> INumericTuple<long, LongTuple>.Fields => fields.AsSpan();
+
     public LongTuple() : this(Array.Empty<long>()) { }
     public LongTuple(params long[] fields) => this.fields = fields;
 
@@ -23,16 +25,13 @@ public readonly struct LongTuple : INumericTuple<long, LongTuple>, IFieldFormate
     public int CompareTo(LongTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-       => this.TryFormatTuple(destination, out charsWritten);
+        => this.TryFormatTuple(11, destination, out charsWritten);
 
-    Span<long> INumericTuple<long, LongTuple>.Fields => fields.AsSpan();
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => TryFormat(destination, out charsWritten);
 
-    static int IFieldFormater<long>.MaxCharsWrittable => 11;
-
-    static bool IFieldFormater<long>.TryFormat(long field, Span<char> destination, out int charsWritten)
-        => field.TryFormat(destination, out charsWritten);
-
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }

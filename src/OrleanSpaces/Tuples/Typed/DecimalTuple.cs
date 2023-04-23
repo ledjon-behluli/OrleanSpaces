@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, IFieldFormater<decimal>
+public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanFormattable
 {
     private readonly decimal[] fields;
 
@@ -66,14 +66,13 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, IField
     public int CompareTo(DecimalTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(destination, out charsWritten);
+        => this.TryFormatTuple(11, destination, out charsWritten);
 
-    static int IFieldFormater<decimal>.MaxCharsWrittable => 11;
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => TryFormat(destination, out charsWritten);
 
-    static bool IFieldFormater<decimal>.TryFormat(decimal field, Span<char> destination, out int charsWritten)
-        => field.TryFormat(destination, out charsWritten);
-
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }

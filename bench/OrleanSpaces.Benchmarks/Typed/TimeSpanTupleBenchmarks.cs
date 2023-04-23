@@ -250,11 +250,7 @@ public class TimeSpanTupleBenchmarks
         public SequentialTimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);
-
-        public ReadOnlySpan<bool> AsSpan() => throw new NotImplementedException();
         public int CompareTo(SequentialTimeSpanTuple other) => throw new NotImplementedException();
-        public override string ToString() => throw new NotImplementedException();
-        public bool TryFormat(Span<char> destination, out int charsWritten) => throw new NotImplementedException();
     }
 
     #endregion

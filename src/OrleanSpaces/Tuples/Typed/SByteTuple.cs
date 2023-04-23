@@ -3,13 +3,14 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, IFieldFormater<sbyte>
+public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, ISpanFormattable
 {
     private readonly sbyte[] fields;
 
     public sbyte this[int index] => fields[index];
-    public Span<sbyte> Fields => fields.AsSpan();
     public int Length => fields.Length;
+
+    Span<sbyte> INumericTuple<sbyte, SByteTuple>.Fields => fields.AsSpan();
 
     public SByteTuple() : this(Array.Empty<sbyte>()) { }
     public SByteTuple(params sbyte[] fields) => this.fields = fields;
@@ -24,16 +25,13 @@ public readonly struct SByteTuple : INumericTuple<sbyte, SByteTuple>, IFieldForm
     public int CompareTo(SByteTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
+    public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(destination, out charsWritten);
+        => this.TryFormatTuple(11, destination, out charsWritten);
 
-    Span<sbyte> INumericTuple<sbyte, SByteTuple>.Fields => fields.AsSpan();
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => TryFormat(destination, out charsWritten);
 
-    static int IFieldFormater<sbyte>.MaxCharsWrittable => 11;
-
-    static bool IFieldFormater<sbyte>.TryFormat(sbyte field, Span<char> destination, out int charsWritten)
-        => field.TryFormat(destination, out charsWritten);
-
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }
