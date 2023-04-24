@@ -117,7 +117,6 @@ public class BoolTupleBenchmarks
                 true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true, true, true);
 
-
             tuple.Equals(tuple);
         }
     }

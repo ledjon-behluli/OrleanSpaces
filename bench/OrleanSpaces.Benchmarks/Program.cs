@@ -10,7 +10,8 @@
 //BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
 //BenchmarkRunner.Run<BoolTupleBenchmarks>();
 //BenchmarkRunner.Run<DecimalTupleBenchmarks>();
+BenchmarkRunner.Run<CharTupleBenchmarks>();
 
-BenchmarkRunner.Run<TestBench>();
+//BenchmarkRunner.Run<TestBench>();
 
 Console.ReadKey();
