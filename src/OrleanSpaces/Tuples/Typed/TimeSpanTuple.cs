@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
+public readonly struct TimeSpanTuple : IValueTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -13,7 +13,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISp
 
     private readonly TimeSpan[] fields;
 
-    public TimeSpan this[int index] => fields[index];
+    public ref readonly TimeSpan this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public TimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }

@@ -7,9 +7,9 @@ namespace OrleanSpaces.Tuples;
 internal static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool equalityResult)
+    public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool equalityResult)
         where T : struct, INumber<T>
-        where TSelf : ISpaceTuple<T, TSelf>
+        where TSelf : INumericValueTuple<T, TSelf>
     {
         equalityResult = false;
 
@@ -87,11 +87,10 @@ internal static class Extensions
         return true;
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
-         where T : notnull
-         where TSelf : ISpaceTuple<T, TSelf>
+    public static bool SequentialEquals<T, TSelf>(this IObjectTuple<T, TSelf> left, IObjectTuple<T, TSelf> right)
+        where T : notnull
+        where TSelf : IObjectTuple<T, TSelf>
     {
         if (left.Length != right.Length)
         {
@@ -101,6 +100,30 @@ internal static class Extensions
         for (int i = 0; i < left.Length; i++)
         {
             if (!left[i].Equals(right[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool SequentialEquals<T, TSelf>(this IValueTuple<T, TSelf> left, IValueTuple<T, TSelf> right)
+         where T : struct
+         where TSelf : IValueTuple<T, TSelf>
+    {
+        if (left.Length != right.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < left.Length; i++)
+        {
+            ref readonly T iLeft = ref left[i];
+            ref readonly T iRight = ref right[i];
+
+            if (!iLeft.Equals(iRight))
             {
                 return false;
             }
@@ -128,9 +151,9 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormatTuple<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
-        where T : notnull, ISpanFormattable
-        where TSelf : ISpaceTuple<T, TSelf>
+    public static bool TryFormatTuple<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+        where T : struct, ISpanFormattable
+        where TSelf : IValueTuple<T, TSelf>
     {
         charsWritten = 0;
 
@@ -158,7 +181,7 @@ internal static class Extensions
         {
             tupleSpan[charsWritten++] = '(';
 
-            if (!TryFormatField(tuple[0], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[0], tupleSpan, fieldSpan, ref charsWritten))
             {
                 return false;
             }
@@ -181,7 +204,7 @@ internal static class Extensions
                 fieldSpan.Clear();
             }
 
-            if (!TryFormatField(tuple[i], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[i], tupleSpan, fieldSpan, ref charsWritten))
             {
                 return false;
             }
@@ -192,7 +215,7 @@ internal static class Extensions
 
         return true;
 
-        static bool TryFormatField(T field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
+        static bool TryFormatField(in T field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {
             if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
             {

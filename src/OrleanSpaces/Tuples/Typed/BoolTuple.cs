@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattable
+public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -13,7 +13,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
 
     private readonly bool[] fields;
 
-    public bool this[int index] => fields[index];
+    public ref readonly bool this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public BoolTuple() : this(Array.Empty<bool>()) { }

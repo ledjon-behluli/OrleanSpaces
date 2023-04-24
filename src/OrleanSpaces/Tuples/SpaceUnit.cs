@@ -7,18 +7,19 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
-public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
+public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
 {
     internal const string DefaultString = "{NULL}";
+    internal static readonly SpaceUnit DefaultUnit = new();
+
+    int ISpaceTuple.Length => 1;
+    SpaceUnit IObjectTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
 
     /// <summary>
     /// Default and only constructor. 
     /// </summary>
     public SpaceUnit() { }
-
-    int ISpaceTuple<SpaceUnit, SpaceUnit>.Length => 1;
-    SpaceUnit ISpaceTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
-
+    
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types are always equal to each other.")]
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
 
@@ -48,6 +49,7 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanForma
     public override int GetHashCode() => 0;
     public override string ToString() => DefaultString;
 
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For consistency with other tuple implementations.")]
     public bool TryFormat(Span<char> destination, out int charsWritten)
     {
         ReadOnlySpan<char> span = DefaultString.AsSpan();
@@ -67,5 +69,5 @@ public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanForma
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         => TryFormat(destination, out charsWritten);
 
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => DefaultString;
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }

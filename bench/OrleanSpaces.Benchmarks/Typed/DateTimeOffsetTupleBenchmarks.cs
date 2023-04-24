@@ -239,11 +239,11 @@ public class DateTimeOffsetTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
+    private readonly struct SequentialDateTimeOffsetTuple : IValueTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
     {
         private readonly DateTimeOffset[] fields;
 
-        public DateTimeOffset this[int index] => fields[index];
+        public ref readonly DateTimeOffset this[int index] => ref fields[index];
         public int Length => fields.Length;
 
         public SequentialDateTimeOffsetTuple() : this(Array.Empty<DateTimeOffset>()) { }

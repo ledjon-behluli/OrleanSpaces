@@ -239,11 +239,11 @@ public class DateTimeTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeTuple : ISpaceTuple<DateTime, SequentialDateTimeTuple>
+    private readonly struct SequentialDateTimeTuple : IValueTuple<DateTime, SequentialDateTimeTuple>
     {
         private readonly DateTime[] fields;
 
-        public DateTime this[int index] => fields[index];
+        public ref readonly DateTime this[int index] => ref fields[index];
         public int Length => fields.Length;
 
         public SequentialDateTimeTuple() : this(Array.Empty<DateTime>()) { }

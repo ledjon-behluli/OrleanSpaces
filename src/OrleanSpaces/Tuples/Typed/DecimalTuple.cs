@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -15,7 +15,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanF
 
     private readonly decimal[] fields;
 
-    public decimal this[int index] => fields[index];
+    public ref readonly decimal this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public DecimalTuple() : this(Array.Empty<decimal>()) { }

@@ -47,13 +47,13 @@ public class SpaceUnitTests
     [Fact]
     public void Should_Have_Length_Of_One()
     {
-        Assert.Equal(1, ((ISpaceTuple<SpaceUnit, SpaceUnit>)new SpaceUnit()).Length);
+        Assert.Equal(1, ((IObjectTuple<SpaceUnit, SpaceUnit>)new SpaceUnit()).Length);
     }
 
     [Fact]
     public void Should_Return_Itself_On_Zero_Index()
     {
-        Assert.Equal(new SpaceUnit(), ((ISpaceTuple<SpaceUnit, SpaceUnit>)new SpaceUnit())[0]);
+        Assert.Equal(new SpaceUnit(), ((IObjectTuple<SpaceUnit, SpaceUnit>)new SpaceUnit())[0]);
     }
 
     [Theory]
@@ -62,7 +62,7 @@ public class SpaceUnitTests
     [InlineData(3)]
     public void Should_Throw_On_Non_Zero_Index(int index)
     {
-        Assert.Throws<IndexOutOfRangeException>(() => ((ISpaceTuple<SpaceUnit, SpaceUnit>)new SpaceUnit())[index]);
+        Assert.Throws<IndexOutOfRangeException>(() => ((IObjectTuple<SpaceUnit, SpaceUnit>)new SpaceUnit())[index]);
     }
 
     [Fact]

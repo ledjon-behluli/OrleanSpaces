@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTimeOffsetTuple>, ISpanFormattable
+public readonly struct DateTimeOffsetTuple : IValueTuple<DateTimeOffset, DateTimeOffsetTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -13,7 +13,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTim
 
     private readonly DateTimeOffset[] fields;
 
-    public DateTimeOffset this[int index] => fields[index];
+    public ref readonly DateTimeOffset this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public DateTimeOffsetTuple() : this(Array.Empty<DateTimeOffset>()) { }

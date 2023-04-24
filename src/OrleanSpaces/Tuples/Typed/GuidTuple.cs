@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, ISpanFormattable
+public readonly struct GuidTuple : IValueTuple<Guid, GuidTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -15,7 +15,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>, ISpanFormattabl
 
     private readonly Guid[] fields;
 
-    public Guid this[int index] => fields[index];
+    public ref readonly Guid this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public GuidTuple() : this(Array.Empty<Guid>()) { }

@@ -239,11 +239,11 @@ public class BoolTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialBoolTuple : ISpaceTuple<bool, SequentialBoolTuple>
+    private readonly struct SequentialBoolTuple : IValueTuple<bool, SequentialBoolTuple>
     {
         private readonly bool[] fields;
 
-        public bool this[int index] => fields[index];
+        public ref readonly bool this[int index] => ref fields[index];
         public int Length => fields.Length;
 
         public SequentialBoolTuple() : this(Array.Empty<bool>()) { }

@@ -239,11 +239,11 @@ public class TimeSpanTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialTimeSpanTuple : ISpaceTuple<TimeSpan, SequentialTimeSpanTuple>
+    private readonly struct SequentialTimeSpanTuple : IValueTuple<TimeSpan, SequentialTimeSpanTuple>
     {
         private readonly TimeSpan[] fields;
 
-        public TimeSpan this[int index] => fields[index];
+        public ref readonly TimeSpan this[int index] => ref fields[index];
         public int Length => fields.Length;
 
         public SequentialTimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }

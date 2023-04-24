@@ -239,11 +239,11 @@ public class DecimalTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDecimalTuple : ISpaceTuple<decimal, SequentialDecimalTuple>
+    private readonly struct SequentialDecimalTuple : IValueTuple<decimal, SequentialDecimalTuple>
     {
         private readonly decimal[] fields;
 
-        public decimal this[int index] => fields[index];
+        public ref readonly decimal this[int index] => ref fields[index];
         public int Length => fields.Length;
 
         public SequentialDecimalTuple() : this(Array.Empty<decimal>()) { }

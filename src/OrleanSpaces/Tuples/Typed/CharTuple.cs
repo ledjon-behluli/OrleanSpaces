@@ -1,10 +1,9 @@
 ﻿using Orleans.Concurrency;
-using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattable
+public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -14,7 +13,7 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattabl
 
     private readonly char[] fields;
 
-    public char this[int index] => fields[index];
+    public ref readonly char this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public CharTuple() : this(Array.Empty<char>()) { }

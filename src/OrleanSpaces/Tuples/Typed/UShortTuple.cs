@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, ISpanFormattable
+public readonly struct UShortTuple : INumericValueTuple<ushort, UShortTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -13,10 +13,10 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, ISpanFo
 
     private readonly ushort[] fields;
 
-    public ushort this[int index] => fields[index];
+    public ref readonly ushort this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<ushort> INumericTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
+    Span<ushort> INumericValueTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
 
     public UShortTuple() : this(Array.Empty<ushort>()) { }
     public UShortTuple(params ushort[] fields) => this.fields = fields;
