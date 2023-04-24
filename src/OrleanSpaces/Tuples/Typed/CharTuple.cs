@@ -24,7 +24,11 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
 
     public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
-    public bool Equals(CharTuple other) => throw new NotImplementedException();
+    public bool Equals(CharTuple other)
+    {
+        NumericMarshaller<char, byte> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
+        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+    }
 
     public int CompareTo(CharTuple other) => Length.CompareTo(other.Length);
 

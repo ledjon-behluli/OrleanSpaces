@@ -1,5 +1,4 @@
 ﻿using Orleans.Concurrency;
-using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -59,9 +58,6 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
                 decimal.GetBits(this[i], thisSpan.Slice(i * 4, 4));
                 decimal.GetBits(other[i], otherSpan.Slice(i * 4, 4));
             }
-
-            
-            ReadOnlySpan<int> a = MemoryMarshal.CreateReadOnlySpan(ref thisSpan[0], thisSpan.Length);
 
             return thisSpan.ParallelEquals(otherSpan);
         }
