@@ -1,5 +1,6 @@
 ﻿using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 //Span<char> chars = stackalloc char[48];
@@ -10,5 +11,10 @@ using System.Runtime.InteropServices;
 //    item = 1;
 //    Console.WriteLine(item);
 //}
+
+CharTuple tuple1 = new('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a');
+CharTuple tuple2 = new('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a');
+
+bool result = tuple1.Equals(tuple2);
 
 Console.ReadKey();

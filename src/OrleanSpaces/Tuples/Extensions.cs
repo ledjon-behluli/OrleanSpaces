@@ -1,15 +1,16 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool equalityResult)
+    public static bool TryParallelEquals<T, TSelf>(this IVectorizableValueTuple<T, TSelf> left, IVectorizableValueTuple<T, TSelf> right, out bool equalityResult)
         where T : struct, INumber<T>
-        where TSelf : INumericValueTuple<T, TSelf>
+        where TSelf : IVectorizableValueTuple<T, TSelf>
     {
         equalityResult = false;
 

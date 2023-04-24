@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct ByteTuple : INumericValueTuple<byte, ByteTuple>, ISpanFormattable
+public readonly struct ByteTuple : IVectorizableValueTuple<byte, ByteTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -16,7 +16,7 @@ public readonly struct ByteTuple : INumericValueTuple<byte, ByteTuple>, ISpanFor
     public ref readonly byte this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<byte> INumericValueTuple<byte, ByteTuple>.Fields => fields.AsSpan();
+    Span<byte> IVectorizableValueTuple<byte, ByteTuple>.Fields => fields.AsSpan();
 
     public ByteTuple() : this(Array.Empty<byte>()) { }
     public ByteTuple(params byte[] fields) => this.fields = fields;

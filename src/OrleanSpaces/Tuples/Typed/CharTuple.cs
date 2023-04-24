@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattable
+public readonly struct CharTuple : IVectorizableValueTuple<char, CharTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -16,6 +16,8 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
     public ref readonly char this[int index] => ref fields[index];
     public int Length => fields.Length;
 
+    Span<char> IVectorizableValueTuple<char, CharTuple>.Fields => fields.AsSpan();
+
     public CharTuple() : this(Array.Empty<char>()) { }
     public CharTuple(params char[] fields) => this.fields = fields;
 
@@ -25,20 +27,30 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
     public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
     public bool Equals(CharTuple other)
-    {
-        // Since 'char' is not a number (doesn't implement INumber<T>), we are transforming it into a type which does implement INumber<T>.
-        // The sizeof(char) = 2 Bytes, therefor it can be represented by many number types, but the lowest possible (the one that provides the best parallelization)
-        // number type that can fully represent any type of 'char', is 'short/ushort'.
+        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
-        // In systems where 128-bit vector operations are subject to hardware acceleration, a total of 8 operations can be performed on 'ushort's
-        //      128 bits / 2 Bytes = 128 bits / 16 bits =  8 bits --> means: we can compare 8 chars at the same time!
+    //public bool Equals(CharTuple other)
+    //{
+    //Span<char> thisSpan = fields.AsSpan();
 
-        // In systems where 256-bit vector operations are subject to hardware acceleration, a total of 16 operations can be performed on 'ushort's
-        //      256 bits / 2 Bytes = 256 bits / 16 bits =  16 bits --> means: we can compare 16 chars at the same time!
+    //if (thisSpan.IsVectorizable())
+    //{
+    //    // Since 'char' is not a number (doesn't implement INumber<T>), we are transforming it into a type which does implement INumber<T>.
+    //    // The sizeof(char) = 2 Bytes, therefor it can be represented by many number types, but the lowest possible (the one that provides the best parallelization)
+    //    // number type that can fully represent any type of 'char', is 'short/ushort'.
 
-        NumericMarshaller<char, ushort> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
-    }
+    //    // In systems where 128-bit vector operations are subject to hardware acceleration, a total of 8 operations can be performed on 'ushort's
+    //    //      128 / (2 * 8) = 128 / 16 = 8  --> means: we can compare 8 chars at the same time!
+
+    //    // In systems where 256-bit vector operations are subject to hardware acceleration, a total of 16 operations can be performed on 'ushort's
+    //    //      256 / (2 * 8) = 256 / 16 = 16 --> means: we can compare 16 chars at the same time!
+
+    //    if ()
+
+    //    NumericMarshaller<char, ushort> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
+    //    return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+    //}
+    //}
 
     public int CompareTo(CharTuple other) => Length.CompareTo(other.Length);
 
