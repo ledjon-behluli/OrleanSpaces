@@ -49,7 +49,7 @@ public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanForm
     public override int GetHashCode() => 0;
     public override string ToString() => DefaultString;
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For consistency with other tuple implementations.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For consistency with other implementations.")]
     public bool TryFormat(Span<char> destination, out int charsWritten)
     {
         ReadOnlySpan<char> span = DefaultString.AsSpan();
