@@ -18,13 +18,23 @@ internal static class Extensions
             return true;
         }
 
-        if (!left.Fields.IsVectorizable())
+        if (!Vector.IsHardwareAccelerated)
         {
             return false;
         }
 
-        result = ParallelEquals(left.Fields, right.Fields);
+        result = ParallelEquals_New(left.Fields, right.Fields);
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Span<T> PadWithZeros<T>(this Span<T> span)
+        where T : struct, INumber<T>
+    {
+        Span<T> paddedSpan = new T[Vector<T>.Count];
+        span.CopyTo(paddedSpan[..span.Length]);
+
+        return paddedSpan;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -48,6 +58,73 @@ internal static class Extensions
         return true;
     }
 
+
+    //TODO: Benchmark and use in all...
+
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ParallelEquals_New<T>(this Span<T> left, Span<T> right)
+        where T : struct, INumber<T>
+    {
+        int length = left.Length;
+        if (length == 0)
+        {
+            return true;  // no elements, therefor 'left' & 'right' are equal.
+        }
+
+        ref T iLeft = ref left.GetZeroIndex();
+        ref T iRight = ref right.GetZeroIndex();
+
+        if (length == 1)
+        {
+            return iLeft == iRight;  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
+        }
+
+        // we create Vector<T> instances from the Span<T>'s by reference, so we don't need two extra buffers to copy the elements into.
+        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
+        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
+        
+        int vCount = Vector<T>.Count;
+        int vLength = length / vCount;
+
+        if (vLength == 0)
+        {
+            vLength = 1;
+        }
+
+        int i = 0;
+
+        for (; i < vLength; i++)
+        {
+            if (vLeft.Offset(i) != vRight.Offset(i))
+            {
+                return false;
+            }
+        }
+
+        i *= vCount;
+        
+        int remainingLength = length - i;
+
+        if (remainingLength == 0)
+        {
+            return true;  // means [length % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
+        }
+
+        if (remainingLength == 1)
+        {
+            return iLeft.Offset(i) == iRight.Offset(i);  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
+        }
+
+        iLeft = ref left.Slice(i, remainingLength).GetZeroIndex();
+        iRight = ref right.Slice(i, remainingLength).GetZeroIndex();
+
+        vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
+        vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
+
+        return vLeft == vRight;
+    }
+
     /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
@@ -60,12 +137,12 @@ internal static class Extensions
         int length = left.Length;
 
         int vCount = Vector<T>.Count;
-        int vlength = left.Length / vCount;
+        int vLength = left.Length / vCount;
 
         ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
         ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
 
-        for (; i < vlength; i++)
+        for (; i < vLength; i++)
         {
             if (vLeft.Offset(i) != vRight.Offset(i))
             {

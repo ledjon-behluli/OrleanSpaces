@@ -18,8 +18,14 @@ using System.Runtime.Intrinsics;
 
 //bool result = tuple1.Equals(tuple2);
 
-var a = Vector64.IsHardwareAccelerated;
-var b = Vector128.IsHardwareAccelerated;
-var c = Vector256.IsHardwareAccelerated;
+//IntTuple i1 = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+//IntTuple i2 = new(1, 2, 3, 4, 5, 6, 7, 8, 9, 11);
+
+//Console.WriteLine(i1.Equals(i2));
+
+LongTuple l1 = new(1, 1, 1);
+LongTuple l2 = new(1, 1, 1);
+
+Console.WriteLine(l1.Equals(l2));
 
 Console.ReadKey();
