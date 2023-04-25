@@ -1,18 +1,17 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples;
 
 internal static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this IVectorizableValueTuple<T, TSelf> left, IVectorizableValueTuple<T, TSelf> right, out bool equalityResult)
+    public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool result)
         where T : struct, INumber<T>
-        where TSelf : IVectorizableValueTuple<T, TSelf>
+        where TSelf : INumericValueTuple<T, TSelf>
     {
-        equalityResult = false;
+        result = false;
 
         if (left.Length != right.Length)
         {
@@ -24,16 +23,16 @@ internal static class Extensions
             return false;
         }
 
-        equalityResult = ParallelEquals(left.Fields, right.Fields);
+        result = ParallelEquals(left.Fields, right.Fields);
         return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool equalityResult)
+    public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool result)
         where TIn : struct
         where TOut : struct, INumber<TOut>
     {
-        equalityResult = false;
+        result = false;
 
         if (marshaller.Left.Length != marshaller.Right.Length)
         {
@@ -45,7 +44,7 @@ internal static class Extensions
             return false;
         }
 
-        equalityResult = ParallelEquals(marshaller.Left, marshaller.Right);
+        result = ParallelEquals(marshaller.Left, marshaller.Right);
         return true;
     }
 
@@ -58,6 +57,7 @@ internal static class Extensions
         ref T iRight = ref right.GetZeroIndex();
 
         int i = 0;
+        int length = left.Length;
 
         int vCount = Vector<T>.Count;
         int vlength = left.Length / vCount;
@@ -75,8 +75,6 @@ internal static class Extensions
 
         i *= vCount;
 
-        int length = left.Length;
-
         for (; i < length; i++)
         {
             if (iLeft.Offset(i) != iRight.Offset(i))
@@ -93,12 +91,13 @@ internal static class Extensions
         where T : notnull
         where TSelf : IObjectTuple<T, TSelf>
     {
-        if (left.Length != right.Length)
+        int length = left.Length;
+        if (length != right.Length)
         {
             return false;
         }
 
-        for (int i = 0; i < left.Length; i++)
+        for (int i = 0; i < length; i++)
         {
             if (!left[i].Equals(right[i]))
             {
@@ -114,12 +113,13 @@ internal static class Extensions
          where T : struct
          where TSelf : IValueTuple<T, TSelf>
     {
-        if (left.Length != right.Length)
+        int length = left.Length;
+        if (length != right.Length)
         {
             return false;
         }
 
-        for (int i = 0; i < left.Length; i++)
+        for (int i = 0; i < length; i++)
         {
             ref readonly T iLeft = ref left[i];
             ref readonly T iRight = ref right[i];

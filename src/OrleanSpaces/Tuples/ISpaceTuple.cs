@@ -21,9 +21,9 @@ public interface IValueTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, ICompar
     ref readonly T this[int index] { get; }
 }
 
-internal interface IVectorizableValueTuple<T, TSelf> : IValueTuple<T, TSelf>
+internal interface INumericValueTuple<T, TSelf> : IValueTuple<T, TSelf>
     where T : struct, INumber<T>
-    where TSelf : IVectorizableValueTuple<T, TSelf>
+    where TSelf : INumericValueTuple<T, TSelf>
 {
     Span<T> Fields { get; }
 }
