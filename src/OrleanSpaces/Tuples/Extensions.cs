@@ -48,7 +48,14 @@ internal static class Extensions
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal length beforehand.</i></remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller)
+        where TIn : struct
+        where TOut : struct, INumber<TOut>
+        => ParallelEquals(marshaller.Left, marshaller.Right);
+
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal length beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : struct, INumber<T>
@@ -59,8 +66,8 @@ internal static class Extensions
             return true;  // no elements, therefor 'left' & 'right' are equal.
         }
 
-        ref T iLeft = ref left.GetFirst();
-        ref T iRight = ref right.GetFirst();
+        ref T iLeft = ref left.GetFirstRef();
+        ref T iRight = ref right.GetFirstRef();
 
         if (length == 1)
         {
@@ -103,8 +110,8 @@ internal static class Extensions
             return iLeft.Offset(i) == iRight.Offset(i);  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        iLeft = ref left.Slice(i, remainingLength).GetFirst();
-        iRight = ref right.Slice(i, remainingLength).GetFirst();
+        iLeft = ref left.Slice(i, remainingLength).GetFirstRef();
+        iRight = ref right.Slice(i, remainingLength).GetFirstRef();
 
         vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
         vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
@@ -158,20 +165,6 @@ internal static class Extensions
 
         return true;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetFirst<T>(this Span<T> span) where T : struct
-        => ref MemoryMarshal.GetReference(span);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Offset<T>(this ref T source, int count) where T : struct
-        => ref Unsafe.Add(ref source, count);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut Transform<TIn, TOut>(in TIn value)
-        where TIn : struct
-        where TOut : struct
-        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryFormatTuple<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
@@ -262,4 +255,19 @@ internal static class Extensions
 
         return totalLength;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T GetFirstRef<T>(this Span<T> span) where T : struct
+        => ref MemoryMarshal.GetReference(span);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T Offset<T>(this ref T source, int count) where T : struct
+        => ref Unsafe.Add(ref source, count);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref TOut Transform<TIn, TOut>(in TIn value)
+        where TIn : struct
+        where TOut : struct
+        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
 }

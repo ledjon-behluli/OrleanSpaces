@@ -37,25 +37,54 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 return false;
             }
 
-            if (Length == 1)
+            //if (Length == 1)
+            //{
+            //    return fields[0] == other.fields[0];
+            //}
+
+            int totalCharLength = 0;
+
+            for (int i = 0; i < Length; i++)
             {
-                return fields[0] == other.fields[0];
+                int thisCharLength = fields[i].Length;
+                int otherCharLength = other.fields[i].Length;
+
+                if (thisCharLength != otherCharLength)
+                {
+                    // If the number of chars found in 'fields[i]' and 'other.fields[i]' are different, we dont need to perform any further equality checks
+                    // as its evident that the tuples are different. For example: ("a", "b", "c") != ("a", "bb", "c")
+
+                    return false;
+                }
+
+                totalCharLength += thisCharLength;
             }
 
-            NumericMarshaller<char, ushort> marshaller = new(ToCharSpan(fields), ToCharSpan(other.fields));
-            return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+            Span<char> thisSpan = stackalloc char[totalCharLength];
+            Span<char> otherSpan = stackalloc char[totalCharLength];
+
+            ref string thisFirstItemRef = ref MemoryMarshal.GetArrayDataReference(fields);
+            ref string otherFirstItemRef = ref MemoryMarshal.GetArrayDataReference(other.fields);
+
+            for (int i = 0; i < Length; i++)
+            {
+                CopyTo(ref thisFirstItemRef, i, thisSpan);
+                CopyTo(ref otherFirstItemRef, i, otherSpan);
+            }
+
+            return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();
         }
+
+        return this.SequentialEquals(other); ;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Span<char> ToCharSpan(string[] array)
+    private static void CopyTo(ref string firstItemRef, int offset, Span<char> destination)
     {
-        ref string firstString = ref MemoryMarshal.GetArrayDataReference(array);
-        ref char firstChar = ref MemoryMarshal.GetReference(firstString.AsSpan());
-
-        return MemoryMarshal.CreateSpan(ref firstChar, 111111);
+        ref string target = ref Unsafe.Add(ref firstItemRef, offset);
+        ReadOnlySpan<char> a = target.AsSpan();
+        a.CopyTo(destination);
     }
-
 
     public int CompareTo(StringTuple other) => Length.CompareTo(other.Length);
 
