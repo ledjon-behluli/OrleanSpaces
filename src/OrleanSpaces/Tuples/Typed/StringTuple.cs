@@ -66,24 +66,25 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             ref string thisFirstItemRef = ref MemoryMarshal.GetArrayDataReference(fields);
             ref string otherFirstItemRef = ref MemoryMarshal.GetArrayDataReference(other.fields);
 
+            int cursor = 0;
+
             for (int i = 0; i < Length; i++)
             {
-                CopyTo(ref thisFirstItemRef, i, thisSpan);
-                CopyTo(ref otherFirstItemRef, i, otherSpan);
+                ReadOnlySpan<char> thisFieldSpan = Unsafe.Add(ref thisFirstItemRef, i).AsSpan();
+                ReadOnlySpan<char> otherFieldSpan = Unsafe.Add(ref otherFirstItemRef, i).AsSpan();
+
+                int spanLength = thisFieldSpan.Length;
+
+                thisFieldSpan.CopyTo(thisSpan.Slice(cursor, spanLength));
+                otherFieldSpan.CopyTo(otherSpan.Slice(cursor, spanLength));
+
+                cursor += spanLength;
             }
 
             return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();
         }
 
-        return this.SequentialEquals(other); ;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void CopyTo(ref string firstItemRef, int offset, Span<char> destination)
-    {
-        ref string target = ref Unsafe.Add(ref firstItemRef, offset);
-        ReadOnlySpan<char> a = target.AsSpan();
-        a.CopyTo(destination);
+        return this.SequentialEquals(other);
     }
 
     public int CompareTo(StringTuple other) => Length.CompareTo(other.Length);
