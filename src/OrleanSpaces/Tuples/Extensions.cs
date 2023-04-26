@@ -23,18 +23,8 @@ internal static class Extensions
             return false;
         }
 
-        result = ParallelEquals_New(left.Fields, right.Fields);
+        result = ParallelEquals(left.Fields, right.Fields);
         return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Span<T> PadWithZeros<T>(this Span<T> span)
-        where T : struct, INumber<T>
-    {
-        Span<T> paddedSpan = new T[Vector<T>.Count];
-        span.CopyTo(paddedSpan[..span.Length]);
-
-        return paddedSpan;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,7 +39,7 @@ internal static class Extensions
             return true;
         }
 
-        if (!marshaller.Left.IsVectorizable())
+        if (!Vector.IsHardwareAccelerated)
         {
             return false;
         }
@@ -58,12 +48,9 @@ internal static class Extensions
         return true;
     }
 
-
-    //TODO: Benchmark and use in all...
-
     /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals_New<T>(this Span<T> left, Span<T> right)
+    public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : struct, INumber<T>
     {
         int length = left.Length;
@@ -106,7 +93,7 @@ internal static class Extensions
         
         int remainingLength = length - i;
 
-        if (remainingLength == 0)
+        if (remainingLength < 1)
         {
             return true;  // means [length % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
         }
@@ -123,44 +110,6 @@ internal static class Extensions
         vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
 
         return vLeft == vRight;
-    }
-
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</i></remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
-        where T : struct, INumber<T>
-    {
-        ref T iLeft = ref left.GetZeroIndex();
-        ref T iRight = ref right.GetZeroIndex();
-
-        int i = 0;
-        int length = left.Length;
-
-        int vCount = Vector<T>.Count;
-        int vLength = left.Length / vCount;
-
-        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
-        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
-
-        for (; i < vLength; i++)
-        {
-            if (vLeft.Offset(i) != vRight.Offset(i))
-            {
-                return false;
-            }
-        }
-
-        i *= vCount;
-
-        for (; i < length; i++)
-        {
-            if (iLeft.Offset(i) != iRight.Offset(i))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
