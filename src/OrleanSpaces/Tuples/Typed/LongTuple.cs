@@ -40,4 +40,6 @@ public readonly struct LongTuple : INumericValueTuple<long, LongTuple>, ISpanFor
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }

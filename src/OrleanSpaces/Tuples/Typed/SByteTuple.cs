@@ -40,4 +40,6 @@ public readonly struct SByteTuple : INumericValueTuple<sbyte, SByteTuple>, ISpan
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }

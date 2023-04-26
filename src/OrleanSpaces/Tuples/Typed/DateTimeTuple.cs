@@ -42,4 +42,6 @@ public readonly struct DateTimeTuple : IValueTuple<DateTime, DateTimeTuple>, ISp
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }

@@ -42,4 +42,6 @@ public readonly struct TimeSpanTuple : IValueTuple<TimeSpan, TimeSpanTuple>, ISp
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }

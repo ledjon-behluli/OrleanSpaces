@@ -40,4 +40,6 @@ public readonly struct UShortTuple : INumericValueTuple<ushort, UShortTuple>, IS
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }

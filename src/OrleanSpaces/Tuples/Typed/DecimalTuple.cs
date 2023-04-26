@@ -77,4 +77,6 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 }

@@ -80,4 +80,6 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }

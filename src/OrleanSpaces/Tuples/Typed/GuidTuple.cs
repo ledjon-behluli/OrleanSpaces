@@ -67,4 +67,6 @@ public readonly struct GuidTuple : IValueTuple<Guid, GuidTuple>, ISpanFormattabl
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
