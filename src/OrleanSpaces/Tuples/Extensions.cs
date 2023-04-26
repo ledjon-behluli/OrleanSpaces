@@ -59,8 +59,8 @@ internal static class Extensions
             return true;  // no elements, therefor 'left' & 'right' are equal.
         }
 
-        ref T iLeft = ref left.GetZeroIndex();
-        ref T iRight = ref right.GetZeroIndex();
+        ref T iLeft = ref left.GetFirst();
+        ref T iRight = ref right.GetFirst();
 
         if (length == 1)
         {
@@ -103,8 +103,8 @@ internal static class Extensions
             return iLeft.Offset(i) == iRight.Offset(i);  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        iLeft = ref left.Slice(i, remainingLength).GetZeroIndex();
-        iRight = ref right.Slice(i, remainingLength).GetZeroIndex();
+        iLeft = ref left.Slice(i, remainingLength).GetFirst();
+        iRight = ref right.Slice(i, remainingLength).GetFirst();
 
         vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
         vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
@@ -160,11 +160,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsVectorizable<T>(this Span<T> span) where T : struct, INumber<T>
-        => Vector.IsHardwareAccelerated && span.Length / Vector<T>.Count > 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetZeroIndex<T>(this Span<T> span) where T : struct
+    public static ref T GetFirst<T>(this Span<T> span) where T : struct
         => ref MemoryMarshal.GetReference(span);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

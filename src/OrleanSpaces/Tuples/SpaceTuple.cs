@@ -76,23 +76,7 @@ public readonly struct SpaceTuple : IObjectTuple<object, SpaceTuple>
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SpaceTuple other)
-    {
-        if (Length != other.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < Length; i++)
-        {
-            if (!this[i].Equals(other[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public bool Equals(SpaceTuple other) => this.SequentialEquals(other);
 
     /// <summary>
     /// Compares the current object with another object of the same type.

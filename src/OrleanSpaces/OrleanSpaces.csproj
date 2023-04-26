@@ -58,4 +58,8 @@
 	  <Orleans_CodeGenInputs Remove="Tuples\Typed\TimeSpanTuple.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Orleans_CodeGenInputs Remove="Tuples\Typed\StringTuple.cs" />
+	</ItemGroup>
+
 </Project>
