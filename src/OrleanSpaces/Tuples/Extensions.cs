@@ -71,13 +71,18 @@ internal static class Extensions
 
         if (length == 1)
         {
+            //return left[0] == right[0];
             return iLeft == iRight;  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
         // we create Vector<T> instances from the Span<T>(s) first element reference, as we will offset them in the loop.
-        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
-        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
-        
+
+        //ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
+        //ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
+
+        Vector<T> vLeft = left.AsVector(); // new(left); 
+        Vector<T> vRight = right.AsVector();// new(right);
+
         int vCount = Vector<T>.Count;
         int vLength = length / vCount;
 
@@ -98,23 +103,25 @@ internal static class Extensions
 
         i *= vCount;
         
-        int remainingLength = length - i;
-
-        if (remainingLength < 1)
+        int remaining = length - i;
+        if (remaining < 1)
         {
             return true;  // means [length % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
         }
 
-        if (remainingLength == 1)
+        if (remaining == 1)
         {
             return iLeft.Offset(i) == iRight.Offset(i);  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        iLeft = ref left.Slice(i, remainingLength).GetFirstRef();
-        iRight = ref right.Slice(i, remainingLength).GetFirstRef();
+        //iLeft = ref left.Slice(i, remaining).GetFirstRef();
+        //iRight = ref right.Slice(i, remaining).GetFirstRef();
 
-        vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
-        vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
+        vLeft = left.Slice(i, remaining).AsVector(); //new(left.Slice(i, remaining));
+        vRight = right.Slice(i, remaining).AsVector(); //new(right.Slice(i, remaining));
+
+        //vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remaining] elements set to default(T)
+        //vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remaining] elements set to default(T)
 
         return vLeft == vRight;
     }
@@ -268,5 +275,29 @@ internal static class Extensions
     public static ref TOut Transform<TIn, TOut>(in TIn value)  // 'value' is passed using 'in' to avoid defensive copying.
         where TIn : struct
         where TOut : struct
-        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(value));
+        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref Vector<T> AsVector<T>(this in Span<T> span)
+        where T : struct
+    {
+        int sLength = span.Length;
+        int vLength = Vector<T>.Count;
+
+        ref T first = ref span.GetFirstRef();
+        ref Vector<T> vector = ref Unsafe.As<T, Vector<T>>(ref first);
+
+        if (vLength > sLength)
+        {
+            Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
+
+            var a = tempSpan[8];
+
+            span.CopyTo(tempSpan);
+            tempSpan[span.Length..].Clear();  // We slice the tempSpan from 'span.Length' to the end, and then use 'Clear' which initializes the memory in a given Span<T> to its default value.
+            vector = ref Unsafe.As<T, Vector<T>>(ref MemoryMarshal.GetReference(tempSpan));
+        }
+
+        return ref vector;
+    }
 }

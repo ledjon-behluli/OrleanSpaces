@@ -13,7 +13,9 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-Console.WriteLine(new CharTuple('a', 'b', 'c', 'c', 'b', 'a') == new CharTuple('a', 'b', 'c', 'c', 'b', 'a'));
+Console.WriteLine(new CharTuple('1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i') == new CharTuple(
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'));
+Console.WriteLine(new CharTuple('1', '2', '3') == new CharTuple('1', '2', '3'));
 Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "cba"));
 
 //Console.WriteLine(new StringTuple("a12", "21a") == new StringTuple("a12", "21a"));
