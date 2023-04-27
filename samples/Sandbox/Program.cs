@@ -13,7 +13,7 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
+//Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
 Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "cba"));
 
 Console.ReadKey();
