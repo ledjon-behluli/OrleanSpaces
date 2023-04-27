@@ -75,8 +75,8 @@ internal static class Extensions
         }
 
         // we create Vector<T> instances from the Span<T>(s) first element reference, as we will offset them in the loop.
-        ref Vector<T> vRight = ref Transform<T, Vector<T>>(ref iRight);
-        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(ref iLeft);
+        ref Vector<T> vLeft = ref Transform<T, Vector<T>>(in iLeft);
+        ref Vector<T> vRight = ref Transform<T, Vector<T>>(in iRight);
         
         int vCount = Vector<T>.Count;
         int vLength = length / vCount;
@@ -113,8 +113,8 @@ internal static class Extensions
         iLeft = ref left.Slice(i, remainingLength).GetFirstRef();
         iRight = ref right.Slice(i, remainingLength).GetFirstRef();
 
-        vLeft = ref Transform<T, Vector<T>>(ref iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
-        vRight = ref Transform<T, Vector<T>>(ref iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
+        vLeft = ref Transform<T, Vector<T>>(in iLeft);    // vector will have [i + vCount - remainingLength] elements set to default(T)
+        vRight = ref Transform<T, Vector<T>>(in iRight);  // vector will have [i + vCount - remainingLength] elements set to default(T)
 
         return vLeft == vRight;
     }
@@ -265,8 +265,8 @@ internal static class Extensions
         => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut Transform<TIn, TOut>(ref TIn value)
+    public static ref TOut Transform<TIn, TOut>(in TIn value)  // 'value' is passed using 'in' to avoid defensive copying.
         where TIn : struct
         where TOut : struct
-        => ref Unsafe.As<TIn, TOut>(ref value);
+        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(value));
 }

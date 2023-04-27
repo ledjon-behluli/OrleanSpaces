@@ -80,7 +80,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
                 cursor += spanLength;
             }
-
+            
             return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();
         }
 
