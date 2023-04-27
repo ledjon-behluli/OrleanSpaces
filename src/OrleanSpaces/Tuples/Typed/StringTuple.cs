@@ -1,8 +1,5 @@
 ﻿using Orleans.Concurrency;
-using System;
 using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -63,16 +60,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             Span<char> thisSpan = stackalloc char[totalCharLength];
             Span<char> otherSpan = stackalloc char[totalCharLength];
 
-            //ref string thisFirstItemRef = ref MemoryMarshal.GetArrayDataReference(fields);
-            //ref string otherFirstItemRef = ref MemoryMarshal.GetArrayDataReference(other.fields);
-
             int cursor = 0;
 
             for (int i = 0; i < Length; i++)
-            {
-                //ReadOnlySpan<char> thisFieldSpan = Unsafe.Add(ref thisFirstItemRef, i).AsSpan();
-                //ReadOnlySpan<char> otherFieldSpan = Unsafe.Add(ref otherFirstItemRef, i).AsSpan();
-
+            {   
                 ReadOnlySpan<char> thisFieldSpan = fields[i].AsSpan();
                 ReadOnlySpan<char> otherFieldSpan = other.fields[i].AsSpan();
 

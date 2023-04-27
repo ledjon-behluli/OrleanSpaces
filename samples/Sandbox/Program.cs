@@ -13,11 +13,15 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-Console.WriteLine(new CharTuple('1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i') == new CharTuple(
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'));
-Console.WriteLine(new CharTuple('1', '2', '3') == new CharTuple('1', '2', '3'));
+//Console.WriteLine(new IntTuple(1, 2, 3) == new IntTuple(1, 2, 3));
+//Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
+
+//Console.WriteLine(new StringTuple("abc") == new StringTuple("abc"));
+Console.WriteLine(new StringTuple("abc") == new StringTuple("abd"));
+
 Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "cba"));
 
-//Console.WriteLine(new StringTuple("a12", "21a") == new StringTuple("a12", "21a"));
+Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("cbc", "cba"));
+Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "dba"));
 
 Console.ReadKey();
