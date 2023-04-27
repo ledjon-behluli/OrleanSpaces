@@ -10,7 +10,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
     /// 
     /// </summary>
     /// <example>a</example>
-    internal const int MaxFieldCharLength = 1;
+    internal const int MaxFieldCharLength = 1; // TODO: Look at me!
 
     private readonly string[] fields;
 
@@ -63,7 +63,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             int cursor = 0;
 
             for (int i = 0; i < Length; i++)
-            {   
+            {
                 ReadOnlySpan<char> thisFieldSpan = fields[i].AsSpan();
                 ReadOnlySpan<char> otherFieldSpan = other.fields[i].AsSpan();
 
@@ -75,7 +75,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 cursor += spanLength;
             }
 
-            return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();
+            return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();  // See: CharTuple.Equals for more details
         }
 
         return this.SequentialEquals(other);

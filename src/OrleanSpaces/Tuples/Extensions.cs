@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples;
 
@@ -249,29 +250,15 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T GetFirstRef<T>(this Span<T> span) where T : struct
-        => ref MemoryMarshal.GetReference(span);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Offset<T>(this ref T source, int count) where T : struct
-        => ref Unsafe.Add(ref source, count);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
-        where TIn : struct
-        where TOut : struct
-        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref Vector<T> AsVector<T>(this Span<T> span)
         where T : struct
     {
         int sLength = span.Length;
         int vLength = Vector<T>.Count;
 
-        ref T first = ref span.GetFirstRef();
-        ref Vector<T> vector = ref Unsafe.As<T, Vector<T>>(ref first);
-
+        ref T first = ref span[0];
+        ref Vector<T> vector = ref CastAs<T, Vector<T>>(in first);
+ 
         if (vLength > sLength)
         {
             Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
@@ -282,4 +269,14 @@ internal static class Extensions
 
         return ref vector;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref T Offset<T>(this ref T source, int count) where T : struct
+        => ref Unsafe.Add(ref source, count);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
+        where TIn : struct
+        where TOut : struct
+        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 }
