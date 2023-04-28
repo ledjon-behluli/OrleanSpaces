@@ -17,7 +17,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
     public ref readonly decimal this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-   
+
 
     public DecimalTuple() : this(Array.Empty<decimal>()) { }
     public DecimalTuple(params decimal[] fields) => this.fields = fields;
@@ -51,7 +51,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
             }
 
             int totalInt32Length = 4 * Length;
-            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(totalInt32Length, this, this, other);
+            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(totalInt32Length, in this, in other);
         }
 
         return this.SequentialEquals(other);
@@ -70,9 +70,6 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
-
-
     static int ISpanEquatable<int, DecimalTuple>.SizeOf => throw new NotImplementedException();
 
     static bool ISpanEquatable<int, DecimalTuple>.Equals(Span<int> span, DecimalTuple left, DecimalTuple right)
@@ -90,4 +87,6 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
 
         return leftSpan.ParallelEquals(rightSpan);
     }
+
+    public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 }

@@ -281,7 +281,7 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreEqual<TValue, TValueType, TEquator>(int arrayLength, TValueType left, TValueType right, TEquator equator)
+    public static bool AreEqual<TValue, TValueType, TEquator>(int arrayLength, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
         where TValue : unmanaged
         where TValueType : struct
         where TEquator : ISpanEquatable<TValue, TValueType>
