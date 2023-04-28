@@ -9,4 +9,6 @@ public static class Constants
     internal const string TupleSpaceState = "TupleSpaceState";
     internal const string TupleStream = "TupleStream";
     internal static readonly Guid SpaceGrainId = Guid.Empty;
+
+    internal const int MaxStackSize = 1024;
 }

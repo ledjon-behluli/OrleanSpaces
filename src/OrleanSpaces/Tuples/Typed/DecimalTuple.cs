@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanEquatable<int, DecimalTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -16,6 +16,8 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
     public ref readonly decimal this[int index] => ref fields[index];
     public int Length => fields.Length;
+
+   
 
     public DecimalTuple() : this(Array.Empty<decimal>()) { }
     public DecimalTuple(params decimal[] fields) => this.fields = fields;
@@ -45,21 +47,11 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
                 // Since this part of the code will only run if 256-bit vector operations are subject to hardware acceleration, it means that [4 / Vector<int>.Count] = [4 / 8] = [0].
                 // This effectively means switching to sequential comparission between the 4 int's, so it makes sense to directly compare the 2 decimals.
 
-                return this[0] == other[0]; 
+                return this[0] == other[0];
             }
 
             int totalInt32Length = 4 * Length;
-
-            Span<int> thisSpan = stackalloc int[totalInt32Length];
-            Span<int> otherSpan = stackalloc int[totalInt32Length];
-
-            for (int i = 0; i < Length; i++)
-            {
-                decimal.GetBits(this[i], thisSpan.Slice(i * 4, 4));
-                decimal.GetBits(other[i], otherSpan.Slice(i * 4, 4));
-            }
-
-            return thisSpan.ParallelEquals(otherSpan);
+            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(totalInt32Length, this, this, other);
         }
 
         return this.SequentialEquals(other);
@@ -79,4 +71,23 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
+
+
+    static int ISpanEquatable<int, DecimalTuple>.SizeOf => throw new NotImplementedException();
+
+    static bool ISpanEquatable<int, DecimalTuple>.Equals(Span<int> span, DecimalTuple left, DecimalTuple right)
+    {
+        int half = span.Length / 2;
+
+        Span<int> leftSpan = span[..half];
+        Span<int> rightSpan = span[half..];
+
+        for (int i = 0; i < left.Length; i++)
+        {
+            decimal.GetBits(left[i], leftSpan.Slice(i * 4, 8));
+            decimal.GetBits(right[i], rightSpan.Slice(i * 4, 8));
+        }
+
+        return leftSpan.ParallelEquals(rightSpan);
+    }
 }

@@ -1,7 +1,7 @@
-﻿using System.Numerics;
+﻿using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples;
 
@@ -49,14 +49,14 @@ internal static class Extensions
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal length beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal arrayLength beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller)
         where TIn : struct
         where TOut : struct, INumber<TOut>
         => ParallelEquals(marshaller.Left, marshaller.Right);
 
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal length beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal arrayLength beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : struct, INumber<T>
@@ -64,7 +64,7 @@ internal static class Extensions
         int length = left.Length;
         if (length == 0)
         {
-            return true;  // no elements, therefor 'left' & 'right' are equal.
+            return true;  // no elements, therefor 'right' & 'right' are equal.
         }
 
         if (length == 1)
@@ -94,11 +94,11 @@ internal static class Extensions
         }
 
         i *= vCount;
-        
+
         int remaining = length - i;
         if (remaining < 1)
         {
-            return true;  // means [length % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
+            return true;  // means [arrayLength % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
         }
 
         if (remaining == 1)
@@ -258,7 +258,7 @@ internal static class Extensions
 
         ref T first = ref span[0];
         ref Vector<T> vector = ref CastAs<T, Vector<T>>(in first);
- 
+
         if (vLength > sLength)
         {
             Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
@@ -279,4 +279,29 @@ internal static class Extensions
         where TIn : struct
         where TOut : struct
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool AreEqual<TValue, TValueType, TEquator>(int arrayLength, TValueType left, TValueType right, TEquator equator)
+        where TValue : unmanaged
+        where TValueType : struct
+        where TEquator : ISpanEquatable<TValue, TValueType>
+    {
+        unsafe
+        {
+            int totalLength = 2 * TEquator.SizeOf * arrayLength;  // 2x because we need to allocate memory for 'left' and 'right'
+            if (arrayLength <= 1024)
+            {
+                Span<TValue> buffer = stackalloc TValue[totalLength];
+                return TEquator.Equals(buffer, left, right);
+            }
+            else
+            {
+                TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalLength);
+                bool result = TEquator.Equals(buffer, left, right);
+                ArrayPool<TValue>.Shared.Return(buffer, true);
+
+                return result;
+            }
+        }
+    }
 }

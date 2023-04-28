@@ -1,5 +1,6 @@
 ﻿using Orleans.Concurrency;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -57,7 +58,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 totalCharLength += thisCharLength;
             }
 
-            Span<char> thisSpan = stackalloc char[totalCharLength];
+            // check if these are throwing the exception (stackoverflow can't be catched)
+            // Explore: System.Numerics.BigInteger
+
+            Span<char> thisSpan = stackalloc char[totalCharLength]; 
             Span<char> otherSpan = stackalloc char[totalCharLength];
 
             int cursor = 0;

@@ -8,6 +8,7 @@
 	 <WarningsAsErrors>Nullable</WarningsAsErrors>
 	 <IsPackable>true</IsPackable>
 	 <NoWarn>$(NoWarn);1591</NoWarn>
+	 <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
