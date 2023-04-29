@@ -13,11 +13,6 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-//TODO: Test me!
-DecimalTuple d1 = new(12345678, 87654321);
-DecimalTuple d2 = new(12345678, 87654321);
-
-Console.WriteLine(d1 == d2);
 
 //Console.WriteLine(new IntTuple(1, 2, 3) == new IntTuple(1, 2, 3));
 //Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
