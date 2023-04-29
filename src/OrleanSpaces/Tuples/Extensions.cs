@@ -49,14 +49,14 @@ internal static class Extensions
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal arrayLength beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal slots beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller)
         where TIn : struct
         where TOut : struct, INumber<TOut>
         => ParallelEquals(marshaller.Left, marshaller.Right);
 
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal arrayLength beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal slots beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : struct, INumber<T>
@@ -98,7 +98,7 @@ internal static class Extensions
         int remaining = length - i;
         if (remaining < 1)
         {
-            return true;  // means [arrayLength % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
+            return true;  // means [slots % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
         }
 
         if (remaining == 1)
@@ -281,26 +281,43 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreEqual<TValue, TValueType, TEquator>(int arrayLength, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
+    public static bool AreEqual<TValue, TValueType, TEquator>(int slots, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
         where TValue : unmanaged
         where TValueType : struct
         where TEquator : ISpanEquatable<TValue, TValueType>
     {
         unsafe
         {
-            int totalLength = 2 * TEquator.SizeOf * arrayLength;  // 2x because we need to allocate memory for 'left' and 'right'
-            if (arrayLength <= 1024)
+            int totalSlots = 2 * slots;  // 2x because we need to stack allocate memory for 'left' and 'right'
+            if (totalSlots <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
             {
-                Span<TValue> buffer = stackalloc TValue[totalLength];
-                return TEquator.Equals(buffer, left, right);
+                Span<TValue> leftSpan = stackalloc TValue[slots];
+                Span<TValue> rightSpan = stackalloc TValue[slots];
+
+                return TEquator.Equals(left, leftSpan, right, rightSpan);
+            }
+            else if (totalSlots <= 1_048_576)  // 1024 * 1024 is the maximum array length of ArrayPool.Shared
+            {
+                TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
+
+                Span<TValue> leftSpan = new(buffer, 0, slots);
+                Span<TValue> rightSpan = new(buffer, slots, slots);
+
+                // Since 'ArrayPool<TValue>.Shared' could be used from client code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
+                leftSpan.Clear();
+                rightSpan.Clear();
+
+                bool result = TEquator.Equals(left, leftSpan, right, rightSpan);
+                ArrayPool<TValue>.Shared.Return(buffer);  // No need to clear the array, since it will be cleared by the Span<TValue>(s).
+
+                return result;
             }
             else
             {
-                TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalLength);
-                bool result = TEquator.Equals(buffer, left, right);
-                ArrayPool<TValue>.Shared.Return(buffer, true);
+                Span<TValue> leftSpan = (new TValue[slots]).AsSpan();
+                Span<TValue> rightSpan = (new TValue[slots]).AsSpan();
 
-                return result;
+                return TEquator.Equals(left, leftSpan, right, rightSpan);
             }
         }
     }

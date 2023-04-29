@@ -48,7 +48,8 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
                 return this[0] == other[0];
             }
 
-            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(Length, in this, in other);
+            int slots = 4 * Length;  // 4x because each decimal will be decomposed into 4 ints
+            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
@@ -67,16 +68,11 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static int ISpanEquatable<int, DecimalTuple>.SizeOf => 4;
-
-    static bool ISpanEquatable<int, DecimalTuple>.Equals(Span<int> span, DecimalTuple left, DecimalTuple right)
+    static bool ISpanEquatable<int, DecimalTuple>.Equals(DecimalTuple left, Span<int> leftSpan, DecimalTuple right, Span<int> rightSpan)
     {
-        int half = span.Length / 2;
+        int length = left.Length;
 
-        Span<int> leftSpan = span[..half];
-        Span<int> rightSpan = span[half..];
-
-        for (int i = 0; i < left.Length; i++)
+        for (int i = 0; i < length; i++)
         {
             decimal.GetBits(left[i], leftSpan.Slice(i * 4, 4));
             decimal.GetBits(right[i], rightSpan.Slice(i * 4, 4));

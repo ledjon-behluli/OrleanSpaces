@@ -1,11 +1,10 @@
 ﻿using Orleans.Concurrency;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFormattable
+public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanEquatable<char, StringTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -40,11 +39,11 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 return fields[0] == other.fields[0];
             }
 
-            int totalCharLength = 0;
+            int slots = 0;
 
             for (int i = 0; i < Length; i++)
             {
-                int thisCharLength = fields[i].Length;
+                int thisCharLength = this[i].Length;
                 int otherCharLength = other.fields[i].Length;
 
                 if (thisCharLength != otherCharLength)
@@ -55,31 +54,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                     return false;
                 }
 
-                totalCharLength += thisCharLength;
+                slots += thisCharLength;
             }
 
-            // check if these are throwing the exception (stackoverflow can't be catched)
-            // Explore: System.Numerics.BigInteger
-
-            Span<char> thisSpan = stackalloc char[totalCharLength]; 
-            Span<char> otherSpan = stackalloc char[totalCharLength];
-
-            int cursor = 0;
-
-            for (int i = 0; i < Length; i++)
-            {
-                ReadOnlySpan<char> thisFieldSpan = fields[i].AsSpan();
-                ReadOnlySpan<char> otherFieldSpan = other.fields[i].AsSpan();
-
-                int spanLength = thisFieldSpan.Length;
-
-                thisFieldSpan.CopyTo(thisSpan.Slice(cursor, spanLength));
-                otherFieldSpan.CopyTo(otherSpan.Slice(cursor, spanLength));
-
-                cursor += spanLength;
-            }
-
-            return new NumericMarshaller<char, ushort>(thisSpan, otherSpan).ParallelEquals();  // See: CharTuple.Equals for more details
+            return Extensions.AreEqual<char, StringTuple, StringTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
@@ -101,6 +79,27 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
         => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+    static bool ISpanEquatable<char, StringTuple>.Equals(StringTuple left, Span<char> leftSpan, StringTuple right, Span<char> rightSpan)
+    {
+        int cursor = 0;
+        int length = left.Length;
+
+        for (int i = 0; i < length; i++)
+        {
+            ReadOnlySpan<char> thisFieldSpan = left[i].AsSpan();
+            ReadOnlySpan<char> otherFieldSpan = right.fields[i].AsSpan();
+
+            int spanLength = thisFieldSpan.Length;
+
+            thisFieldSpan.CopyTo(leftSpan.Slice(cursor, spanLength));
+            otherFieldSpan.CopyTo(rightSpan.Slice(cursor, spanLength));
+
+            cursor += spanLength;
+        }
+
+        return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.Equals for more details
+    }
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 }
