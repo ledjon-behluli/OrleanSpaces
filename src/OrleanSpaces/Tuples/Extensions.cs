@@ -286,39 +286,36 @@ internal static class Extensions
         where TValueType : struct
         where TEquator : ISpanEquatable<TValue, TValueType>
     {
-        unsafe
+        int totalSlots = 2 * slots;  // 2x because we need to stack allocate memory for 'left' and 'right'
+        if (totalSlots <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
         {
-            int totalSlots = 2 * slots;  // 2x because we need to stack allocate memory for 'left' and 'right'
-            if (totalSlots <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
-            {
-                Span<TValue> leftSpan = stackalloc TValue[slots];
-                Span<TValue> rightSpan = stackalloc TValue[slots];
+            Span<TValue> leftSpan = stackalloc TValue[slots];
+            Span<TValue> rightSpan = stackalloc TValue[slots];
 
-                return TEquator.Equals(left, leftSpan, right, rightSpan);
-            }
-            else if (totalSlots <= 1_048_576)  // 1024 * 1024 is the maximum array length of ArrayPool.Shared
-            {
-                TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
+            return TEquator.Equals(left, leftSpan, right, rightSpan);
+        }
+        else if (totalSlots <= 1_048_576)  // 1024 * 1024 is the maximum array length of ArrayPool.Shared
+        {
+            TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
 
-                Span<TValue> leftSpan = new(buffer, 0, slots);
-                Span<TValue> rightSpan = new(buffer, slots, slots);
+            Span<TValue> leftSpan = new(buffer, 0, slots);
+            Span<TValue> rightSpan = new(buffer, slots, slots);
 
-                // Since 'ArrayPool<TValue>.Shared' could be used from client code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
-                leftSpan.Clear();
-                rightSpan.Clear();
+            // Since 'ArrayPool<TValue>.Shared' could be used from client code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
+            leftSpan.Clear();
+            rightSpan.Clear();
 
-                bool result = TEquator.Equals(left, leftSpan, right, rightSpan);
-                ArrayPool<TValue>.Shared.Return(buffer);  // No need to clear the array, since it will be cleared by the Span<TValue>(s).
+            bool result = TEquator.Equals(left, leftSpan, right, rightSpan);
+            ArrayPool<TValue>.Shared.Return(buffer);  // No need to clear the array, since it will be cleared by the Span<TValue>(s).
 
-                return result;
-            }
-            else
-            {
-                Span<TValue> leftSpan = (new TValue[slots]).AsSpan();
-                Span<TValue> rightSpan = (new TValue[slots]).AsSpan();
+            return result;
+        }
+        else
+        {
+            Span<TValue> leftSpan = new TValue[slots];
+            Span<TValue> rightSpan = new TValue[slots];
 
-                return TEquator.Equals(left, leftSpan, right, rightSpan);
-            }
+            return TEquator.Equals(left, leftSpan, right, rightSpan);
         }
     }
 }
