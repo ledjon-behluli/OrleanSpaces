@@ -2,6 +2,7 @@
 using OrleanSpaces.Tuples.Typed;
 using System.Buffers;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 
@@ -15,8 +16,8 @@ using System.Runtime.Intrinsics;
 //}
 
 //Console.WriteLine(new DecimalTuple(1) == new DecimalTuple(1));
-//Console.WriteLine(new DecimalTuple(1, 2) == new DecimalTuple(1, 2));
-//Console.WriteLine(new DecimalTuple(1, 2, 3) == new DecimalTuple(1, 2, 3));
+
+Console.WriteLine(new DecimalTuple(1, 2, 3) == new DecimalTuple(1, 2, 3));
 
 //Console.WriteLine(new IntTuple(1, 2, 3) == new IntTuple(1, 2, 3));
 //Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
@@ -26,6 +27,6 @@ using System.Runtime.Intrinsics;
 //Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("cbc", "cba"));
 //Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "dba"));
 
-Console.WriteLine(new StringTuple("123456789", "123456789") == new StringTuple("123456789", "123456789"));
+//Console.WriteLine(new StringTuple("123456789", "123456789") == new StringTuple("123456789", "123456789"));
 
 Console.ReadKey();
