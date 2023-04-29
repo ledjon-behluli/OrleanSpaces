@@ -294,14 +294,14 @@ internal static class Extensions
 
             return TEquator.Equals(left, leftSpan, right, rightSpan);
         }
-        else if (totalSlots <= 1_048_576)  // 1024 * 1024 is the maximum array length of ArrayPool.Shared
+        else if (totalSlots <= 1_048_576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
         {
             TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
 
             Span<TValue> leftSpan = new(buffer, 0, slots);
             Span<TValue> rightSpan = new(buffer, slots, slots);
 
-            // Since 'ArrayPool<TValue>.Shared' could be used from client code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
+            // Since 'ArrayPool.Shared' could be used from user code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
             leftSpan.Clear();
             rightSpan.Clear();
 
