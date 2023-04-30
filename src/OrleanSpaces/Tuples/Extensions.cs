@@ -72,9 +72,6 @@ internal static class Extensions
             return left[0] == right[0];  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        Vector<T> vLeft = left.AsVector();
-        Vector<T> vRight = right.AsVector();
-
         int vCount = Vector<T>.Count;
         int vLength = length / vCount;
 
@@ -87,7 +84,10 @@ internal static class Extensions
 
         for (; i < vLength; i++)
         {
-            if (vLeft.Offset(i) != vRight.Offset(i))
+            ref Vector<T> vLeft = ref left.AsVector(i * vCount, vCount);
+            ref Vector<T> vRight = ref right.AsVector(i * vCount, vCount);
+
+            if (vLeft != vRight)
             {
                 return false;
             }
@@ -106,10 +106,10 @@ internal static class Extensions
             return left[i] == right[i];  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        vLeft = left.Slice(i, remaining).AsVector();   // vector will have [i + vCount - remaining] elements set to default(T)
-        vRight = right.Slice(i, remaining).AsVector(); // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vLeft = ref left.AsVector(i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vRight = ref right.AsVector(i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
 
-        return vLeft == vRight;
+        return _vLeft == _vRight;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -249,10 +249,19 @@ internal static class Extensions
         return totalLength;
     }
 
+    /// <summary>
+    /// Creates a <see cref="Vector{T}"/> from the given <paramref name="span"/>.
+    /// </summary>
+    /// <param name="span">The span to convert from.</param>
+    /// <param name="start">The index of <paramref name="span"/> to begin conversion to a <see cref="Vector{T}"/>.</param>
+    /// <param name="length">The number of items that will be mappend from <paramref name="span"/> to a <see cref="Vector{T}"/>.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref Vector<T> AsVector<T>(this Span<T> span)
+    public static ref Vector<T> AsVector<T>(this Span<T> span, int start, int length)
         where T : struct
     {
+        span = span.Slice(start, length);
+
         int sLength = span.Length;
         int vLength = Vector<T>.Count;
 
@@ -263,16 +272,12 @@ internal static class Extensions
         {
             Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
             span.CopyTo(tempSpan);
-            tempSpan[span.Length..].Clear();  // We slice the tempSpan from 'span.Length' to the end, and then use 'Clear' which initializes the memory in a given Span<T> to its default value.
+            tempSpan[span.Length..].Clear();  // we slice the tempSpan from 'span.Length' to the end, and then use 'Clear' which initializes the memory in a given Span<T> to its default value.
             vector = ref Unsafe.As<T, Vector<T>>(ref MemoryMarshal.GetReference(tempSpan));
         }
 
-        return ref vector;
+        return ref vector; // returning a reference because the size of Vector<T> is greater than the size of a pointer.
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref T Offset<T>(this ref T source, int count) where T : struct
-        => ref Unsafe.Add(ref source, count);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
@@ -303,12 +308,12 @@ internal static class Extensions
             Span<TValue> leftSpan = new(buffer, 0, slots);
             Span<TValue> rightSpan = new(buffer, slots, slots);
 
-            // Since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
+            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
             leftSpan.Clear();
             rightSpan.Clear();
 
             bool result = TEquator.Equals(left, leftSpan, right, rightSpan);
-            ArrayPool<TValue>.Shared.Return(buffer);  // No need to clear the array, since it will be cleared by the Span<TValue>(s).
+            ArrayPool<TValue>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<TValue>(s).
 
             return result;
         }
