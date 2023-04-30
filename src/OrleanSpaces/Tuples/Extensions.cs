@@ -94,7 +94,7 @@ internal static class Extensions
         }
 
         i *= vCount;
-
+      
         int remaining = length - i;
         if (remaining < 1)
         {
