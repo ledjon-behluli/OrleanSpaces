@@ -287,6 +287,7 @@ internal static class Extensions
         where TEquator : ISpanEquatable<TValue, TValueType>
     {
         int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
+
         if (totalSlots * Unsafe.SizeOf<TValue>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
         {
             Span<TValue> leftSpan = stackalloc TValue[slots];
@@ -294,7 +295,8 @@ internal static class Extensions
 
             return TEquator.Equals(left, leftSpan, right, rightSpan);
         }
-        else if (totalSlots <= 1_048_576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+
+        if (totalSlots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
         {
             TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
 
@@ -310,12 +312,10 @@ internal static class Extensions
 
             return result;
         }
-        else
-        {
-            Span<TValue> leftSpan = new TValue[slots];
-            Span<TValue> rightSpan = new TValue[slots];
 
-            return TEquator.Equals(left, leftSpan, right, rightSpan);
-        }
+        Span<TValue> _leftSpan = new TValue[slots];
+        Span<TValue> _rightSpan = new TValue[slots];
+
+        return TEquator.Equals(left, _leftSpan, right, _rightSpan);
     }
 }
