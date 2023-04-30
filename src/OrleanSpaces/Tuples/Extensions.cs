@@ -255,7 +255,6 @@ internal static class Extensions
     /// <param name="span">The span to cast.</param>
     /// <param name="start">The index of the first item from <paramref name="span"/> to map into the new <see cref="Vector{T}"/>.</param>
     /// <param name="length">The number of subsequent items starting from <paramref name="start"/> (inclusive) to map into the new <see cref="Vector{T}"/>.</param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref Vector<T> CastAsVector<T>(this Span<T> span, int start, int length)
         where T : struct
@@ -268,8 +267,13 @@ internal static class Extensions
         ref T first = ref span[0];
         ref Vector<T> vector = ref CastAs<T, Vector<T>>(in first);
 
-        if (vLength > sLength)
+        if (sLength < vLength)
         {
+            // in cases where the length of the given Span<T> is less than the size of the Vector<T>, if we try to create a vector from the span directly,
+            // it will result in a runtime exception due to the span being too short. Therefore, we need to create a temporary span of length equal to that
+            // of the vector length for the given type 'T', copy the contents of the original span into it, and then zero-out any remaining bytes that were not copied,
+            // this ensures that the temporary span has the correct size and is initialized properly, which allows us to create a vector from it safley.
+
             Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
             span.CopyTo(tempSpan);
             tempSpan[span.Length..].Clear();  // we slice the tempSpan from 'span.Length' to the end, and then use 'Clear' which initializes the memory in a given Span<T> to its default value.
