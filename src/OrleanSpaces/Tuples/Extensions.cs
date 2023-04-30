@@ -84,8 +84,8 @@ internal static class Extensions
 
         for (; i < vLength; i++)
         {
-            ref Vector<T> vLeft = ref left.AsVector(i * vCount, vCount);
-            ref Vector<T> vRight = ref right.AsVector(i * vCount, vCount);
+            ref Vector<T> vLeft = ref left.CastAsVector(i * vCount, vCount);
+            ref Vector<T> vRight = ref right.CastAsVector(i * vCount, vCount);
 
             if (vLeft != vRight)
             {
@@ -106,8 +106,8 @@ internal static class Extensions
             return left[i] == right[i];  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        ref Vector<T> _vLeft = ref left.AsVector(i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
-        ref Vector<T> _vRight = ref right.AsVector(i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vLeft = ref left.CastAsVector(i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vRight = ref right.CastAsVector(i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
 
         return _vLeft == _vRight;
     }
@@ -250,14 +250,14 @@ internal static class Extensions
     }
 
     /// <summary>
-    /// Creates a <see cref="Vector{T}"/> from the given <paramref name="span"/>.
+    /// Casts the given <paramref name="span"/> to a new <see cref="Vector{T}"/>.
     /// </summary>
-    /// <param name="span">The span to convert from.</param>
-    /// <param name="start">The index of <paramref name="span"/> to begin conversion to a <see cref="Vector{T}"/>.</param>
-    /// <param name="length">The number of items that will be mappend from <paramref name="span"/> to a <see cref="Vector{T}"/>.</param>
+    /// <param name="span">The span to cast.</param>
+    /// <param name="start">The index of the first item from <paramref name="span"/> to map into the new <see cref="Vector{T}"/>.</param>
+    /// <param name="length">The number of subsequent items starting from <paramref name="start"/> (inclusive) to map into the new <see cref="Vector{T}"/>.</param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref Vector<T> AsVector<T>(this Span<T> span, int start, int length)
+    public static ref Vector<T> CastAsVector<T>(this Span<T> span, int start, int length)
         where T : struct
     {
         span = span.Slice(start, length);
