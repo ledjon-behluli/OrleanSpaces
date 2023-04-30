@@ -286,8 +286,8 @@ internal static class Extensions
         where TValueType : struct
         where TEquator : ISpanEquatable<TValue, TValueType>
     {
-        int totalSlots = 2 * slots;  // 2x because we need to stack allocate memory for 'left' and 'right'
-        if (totalSlots <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
+        int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
+        if (totalSlots * Unsafe.SizeOf<TValue>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
         {
             Span<TValue> leftSpan = stackalloc TValue[slots];
             Span<TValue> rightSpan = stackalloc TValue[slots];
@@ -301,7 +301,7 @@ internal static class Extensions
             Span<TValue> leftSpan = new(buffer, 0, slots);
             Span<TValue> rightSpan = new(buffer, slots, slots);
 
-            // Since 'ArrayPool.Shared' could be used from user code, we need to be sure that the Span<TValue>(s) are cleared, before handing them out.
+            // Since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
             leftSpan.Clear();
             rightSpan.Clear();
 
