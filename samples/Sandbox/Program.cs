@@ -18,7 +18,7 @@ using System.Runtime.Intrinsics;
 
 //Console.WriteLine(new DecimalTuple(1) == new DecimalTuple(1));
 
-Console.WriteLine(new DecimalTuple(1, 2, 3) == new DecimalTuple(1, 2, 3));
+Console.WriteLine(new DecimalTuple(111111111111111, 2222222222222222, 33333333333333333) == new DecimalTuple(111111111111111, 2222222222222222, 33333333333333333));
 
 //Console.WriteLine(new IntTuple(1, 2, 3) == new IntTuple(1, 2, 3));
 //Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));

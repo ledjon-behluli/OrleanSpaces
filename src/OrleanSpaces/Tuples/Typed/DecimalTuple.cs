@@ -77,7 +77,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
             decimal.GetBits(left[i], leftSpan.Slice(i * 4, 4));
             decimal.GetBits(right[i], rightSpan.Slice(i * 4, 4));
         }
-
+        
         return leftSpan.ParallelEquals(rightSpan);
     }
 

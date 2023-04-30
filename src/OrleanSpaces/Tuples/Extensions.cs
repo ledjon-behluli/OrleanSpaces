@@ -290,7 +290,7 @@ internal static class Extensions
 
         if (totalSlots * Unsafe.SizeOf<TValue>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
         {
-            Span<TValue> leftSpan = stackalloc TValue[slots];
+            Span<TValue> leftSpan = stackalloc TValue[slots ];
             Span<TValue> rightSpan = stackalloc TValue[slots];
 
             return TEquator.Equals(left, leftSpan, right, rightSpan);
