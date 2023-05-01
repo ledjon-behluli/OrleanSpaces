@@ -4,7 +4,7 @@ using System.Numerics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanEquatable<char, StringTuple>, ISpanFormattable
+public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleComparer<char, StringTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -80,7 +80,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanEqu
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static bool ISpanEquatable<char, StringTuple>.Equals(StringTuple left, Span<char> leftSpan, StringTuple right, Span<char> rightSpan)
+    static bool ITupleComparer<char, StringTuple>.Equals(StringTuple left, Span<char> leftSpan, StringTuple right, Span<char> rightSpan)
     {
         int cursor = 0;
         int length = left.Length;

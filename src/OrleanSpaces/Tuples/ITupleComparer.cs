@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-internal interface ISpanEquatable<TValue, TValueType>
+internal interface ITupleComparer<TValue, TValueType>
     where TValue : unmanaged
     where TValueType : struct
 {

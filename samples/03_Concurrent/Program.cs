@@ -17,7 +17,7 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 
 //Normally you would call "var agent = await provider.GetAsync();" somewhere here.
-//But I want to showcase the thread-safety of the method.
+//But ITupleComparer want to showcase the thread-safety of the method.
 
 const string EXCHANGE_KEY = "exchange-key";
 

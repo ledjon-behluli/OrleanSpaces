@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanEquatable<int, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ITupleComparer<int, DecimalTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -84,7 +84,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static bool ISpanEquatable<int, DecimalTuple>.Equals(DecimalTuple left, Span<int> leftSpan, DecimalTuple right, Span<int> rightSpan)
+    static bool ITupleComparer<int, DecimalTuple>.Equals(DecimalTuple left, Span<int> leftSpan, DecimalTuple right, Span<int> rightSpan)
     {
         int length = left.Length;
 

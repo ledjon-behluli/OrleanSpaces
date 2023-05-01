@@ -284,10 +284,10 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreEqual<TValue, TValueType, TEquator>(int slots, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
+    public static bool AreEqual<TValue, TValueType, TComparer>(int slots, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
         where TValue : unmanaged
         where TValueType : struct
-        where TEquator : ISpanEquatable<TValue, TValueType>
+        where TComparer : ITupleComparer<TValue, TValueType>
     {
         int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
 
@@ -296,7 +296,7 @@ internal static class Extensions
             Span<TValue> leftSpan = stackalloc TValue[slots ];
             Span<TValue> rightSpan = stackalloc TValue[slots];
 
-            return TEquator.Equals(left, leftSpan, right, rightSpan);
+            return TComparer.Equals(left, leftSpan, right, rightSpan);
         }
 
         if (totalSlots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
@@ -310,7 +310,7 @@ internal static class Extensions
             leftSpan.Clear();
             rightSpan.Clear();
 
-            bool result = TEquator.Equals(left, leftSpan, right, rightSpan);
+            bool result = TComparer.Equals(left, leftSpan, right, rightSpan);
             ArrayPool<TValue>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<TValue>(s).
 
             return result;
@@ -319,6 +319,6 @@ internal static class Extensions
         Span<TValue> _leftSpan = new TValue[slots];
         Span<TValue> _rightSpan = new TValue[slots];
 
-        return TEquator.Equals(left, _leftSpan, right, _rightSpan);
+        return TComparer.Equals(left, _leftSpan, right, _rightSpan);
     }
 }
