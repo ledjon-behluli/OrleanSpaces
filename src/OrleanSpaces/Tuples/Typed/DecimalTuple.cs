@@ -50,9 +50,8 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanE
 
             int slots = 4 * Length;  // 4x because each decimal will be decomposed into 4 ints
 
-            return NewMethod(other, slots);
-
-            //return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
+            //return NewMethod(other, slots);
+            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
