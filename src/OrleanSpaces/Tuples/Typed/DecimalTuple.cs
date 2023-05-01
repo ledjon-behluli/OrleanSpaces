@@ -49,26 +49,10 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ITuple
             }
 
             int slots = 4 * Length;  // 4x because each decimal will be decomposed into 4 ints
-
-            //return NewMethod(other, slots);
             return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
-    }
-
-    private bool NewMethod(DecimalTuple other, int slots)
-    {
-        Span<int> leftSpan = stackalloc int[slots];
-        Span<int> rightSpan = stackalloc int[slots];
-
-        for (int i = 0; i < Length; i++)
-        {
-            decimal.GetBits(this[i], leftSpan.Slice(i * 4, 4));
-            decimal.GetBits(other[i], rightSpan.Slice(i * 4, 4));
-        }
-
-        return leftSpan.ParallelEquals(rightSpan);
     }
 
     public int CompareTo(DecimalTuple other) => Length.CompareTo(other.Length);
