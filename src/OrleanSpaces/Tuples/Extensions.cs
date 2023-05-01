@@ -84,8 +84,8 @@ internal static class Extensions
 
         for (; i < vLength; i++)
         {
-            ref Vector<T> vLeft = ref left.CastAsVector(i * vCount, vCount);
-            ref Vector<T> vRight = ref right.CastAsVector(i * vCount, vCount);
+            ref Vector<T> vLeft = ref CastAsVector(left, i * vCount, vCount);
+            ref Vector<T> vRight = ref CastAsVector(right, i * vCount, vCount);
 
             if (vLeft != vRight)
             {
@@ -106,10 +106,46 @@ internal static class Extensions
             return left[i] == right[i];  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        ref Vector<T> _vLeft = ref left.CastAsVector(i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
-        ref Vector<T> _vRight = ref right.CastAsVector(i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vLeft = ref CastAsVector(left, i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
+        ref Vector<T> _vRight = ref CastAsVector(right, i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
 
         return _vLeft == _vRight;
+
+        static ref Vector<T> CastAsVector(Span<T> span, int start, int length)
+        {
+            span = span.Slice(start, length);
+
+            int sLength = span.Length;
+            int vLength = Vector<T>.Count;
+
+            ref T first = ref span[0];
+
+            if (sLength == vLength)
+            {
+                return ref CastAs<T, Vector<T>>(in first);
+            }
+
+            // In cases where the length of the given Span<T> is less than the size of the Vector<T>, if we try to create a vector from the span directly,
+            // it will result in a vector which has the first N items the same as the span, but the rest will not be consisten for subsequent calls,
+            // even if a different span over a memory that contains the same values of 'T' as the first span did.
+
+            // When the span's are cast as a vector's, the hardware endianness can affect the order in which the bytes are interpreted as elements of the Vector<T>.
+            // For example, in a little-endian architecture, the least significant byte is stored first in memory, while in a big-endian architecture, the most significant byte is stored first.
+            // Therefore, if the Spans are pointing to arrays with different endianness, they will result in different Vector<T> values when casted.
+
+            // Thats why we need to create a temporary span of length equal to that of the vector length for the given type 'T',
+            // copy the contents of the original span into it, and then zero-out any remaining bytes that were not copied.
+            // This ensures that the temporary span has the correct size and is initialized properly, which allows us to create a vector from it safley.
+
+            Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
+            span.CopyTo(tempSpan);
+
+            // The purpose of this is to ensure that any elements that are left over at the end of span (i.e. remaining elements) are initialized to 'default' in tempSpan.
+            // This is necessary because the vector that is created from tempSpan may contain garbage values in its remaining elements, which could cause incorrect results when compared with another vector.
+            tempSpan[span.Length..].Clear();
+
+            return ref Unsafe.As<T, Vector<T>>(ref MemoryMarshal.GetReference(tempSpan));
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -247,40 +283,6 @@ internal static class Extensions
         int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
 
         return totalLength;
-    }
-
-    /// <summary>
-    /// Casts the given <paramref name="span"/> to a new <see cref="Vector{T}"/>.
-    /// </summary>
-    /// <param name="span">The span to cast.</param>
-    /// <param name="start">The index of the first item from <paramref name="span"/> to map into the new <see cref="Vector{T}"/>.</param>
-    /// <param name="length">The number of subsequent items starting from <paramref name="start"/> (inclusive) to map into the new <see cref="Vector{T}"/>.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref Vector<T> CastAsVector<T>(this Span<T> span, int start, int length)
-        where T : struct
-    {
-        span = span.Slice(start, length);
-
-        int sLength = span.Length;
-        int vLength = Vector<T>.Count;
-
-        ref T first = ref span[0];
-        ref Vector<T> vector = ref CastAs<T, Vector<T>>(in first);
-
-        if (sLength < vLength)
-        {
-            // in cases where the length of the given Span<T> is less than the size of the Vector<T>, if we try to create a vector from the span directly,
-            // it will result in a runtime exception due to the span being too short. Therefore, we need to create a temporary span of length equal to that
-            // of the vector length for the given type 'T', copy the contents of the original span into it, and then zero-out any remaining bytes that were not copied,
-            // this ensures that the temporary span has the correct size and is initialized properly, which allows us to create a vector from it safley.
-
-            Span<T> tempSpan = MemoryMarshal.CreateSpan(ref first, vLength);
-            span.CopyTo(tempSpan);
-            tempSpan[span.Length..].Clear();  // we slice the tempSpan from 'span.Length' to the end, and then use 'Clear' which initializes the memory in a given Span<T> to its default value.
-            vector = ref Unsafe.As<T, Vector<T>>(ref MemoryMarshal.GetReference(tempSpan));
-        }
-
-        return ref vector; // returning a reference because the size of Vector<T> is greater than the size of a pointer.
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
