@@ -16,14 +16,4 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-Console.WriteLine(new IntTuple(1, 2, 3) == new IntTuple(1, 2, 3));
-Console.WriteLine(new CharTuple('a', 'b', 'c') == new CharTuple('a', 'b', 'c'));
-
-Console.WriteLine(new StringTuple("abc") == new StringTuple("abc"));
-Console.WriteLine(new StringTuple("abc") == new StringTuple("abd"));
-Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("cbc", "cba"));
-Console.WriteLine(new StringTuple("abc", "cba") == new StringTuple("abc", "dba"));
-
-Console.WriteLine(new StringTuple("123456789", "123456789") == new StringTuple("123456789", "123456789"));
-
 Console.ReadKey();
