@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -64,7 +63,7 @@ internal static class Extensions
         int length = left.Length;
         if (length == 0)
         {
-            return true;  // no elements, therefor 'right' & 'right' are equal.
+            return true;  // no elements, therefor 'left' & 'right' are equal.
         }
 
         if (length == 1)
