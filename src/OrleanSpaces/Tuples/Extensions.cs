@@ -187,14 +187,14 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten, bool useBrackets = true)
         where T : struct, ISpanFormattable
         where TSelf : IValueTuple<T, TSelf>
     {
         charsWritten = 0;
 
         int tupleLength = tuple.Length;
-        int totalLength = CalculateTotalLength(tupleLength, maxFieldCharLength);
+        int totalLength = CalculateTotalLength(tupleLength, maxFieldCharLength, useBrackets);
 
         if (destination.Length < totalLength)
         {
@@ -204,8 +204,11 @@ internal static class Extensions
 
         if (tupleLength == 0)
         {
-            destination[charsWritten++] = '(';
-            destination[charsWritten++] = ')';
+            if (useBrackets)
+            {
+                destination[charsWritten++] = '(';
+                destination[charsWritten++] = ')';
+            }
 
             return true;
         }
@@ -216,20 +219,19 @@ internal static class Extensions
 
         if (tupleLength == 1)
         {
-            destination[charsWritten++] = '(';
+            if (useBrackets) destination[charsWritten++] = '(';
 
             if (!TryFormatField(in tuple[0], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
 
-            destination[charsWritten++] = ')';
-            destination[..(charsWritten + 1)].CopyTo(destination);
+            if (useBrackets) destination[charsWritten++] = ')';
 
             return true;
         }
 
-        destination[charsWritten++] = '(';
+        if (useBrackets) destination[charsWritten++] = '(';
 
         for (int i = 0; i < tupleLength; i++)
         {
@@ -247,7 +249,7 @@ internal static class Extensions
             }
         }
 
-        destination[charsWritten++] = ')';
+        if (useBrackets) destination[charsWritten++] = ')';
 
         return true;
 
@@ -267,12 +269,18 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength)
+    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength, bool useBrackets)
     {
-        int separatorsCount = tupleLength == 0 ? 0 : 2 * (tupleLength - 1);
-        int destinationSpanLength = tupleLength == 0 ? 2 : maxFieldCharLength * tupleLength;
-        int totalLength = tupleLength == 0 ? 2 : destinationSpanLength + separatorsCount + 2;
+        int separatorsCount = 0;
+        int destinationSpanLength = 0;
 
+        if (tupleLength > 0)
+        {
+            separatorsCount = 2 * (tupleLength - 1);
+            destinationSpanLength = maxFieldCharLength * tupleLength;
+        }
+
+        int totalLength = (useBrackets ? 2 : 0) + destinationSpanLength + separatorsCount;
         return totalLength;
     }
 

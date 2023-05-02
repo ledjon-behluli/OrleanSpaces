@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEqualityComparer<char, StringTuple>, ISpanFormattable
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>a</example>
-    internal const int MaxFieldCharLength = 1; // TODO: Look at me!
-
     private readonly string[] fields;
 
     public string this[int index] => fields[index];
@@ -69,7 +63,27 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
+    {
+        charsWritten = 0;
+
+        for (int i = 0; i < Length; i++)
+        {
+            string field = fields[i];
+
+            Span<char> fieldSpan = destination.Slice(charsWritten, field.Length);
+            CharTuple charTuple = new(field.AsSpan().ToArray());
+
+            if (!charTuple.TryFormat(CharTuple.MaxFieldCharLength, fieldSpan, out int fieldCharsWritten, useBrackets: false))
+            {
+                charsWritten = 0;
+                return false;
+            }
+
+            charsWritten += fieldCharsWritten;
+        }
+
+        return true;
+    }
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
@@ -95,4 +109,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
     }
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
+}
+
+internal ref struct StringCharBridge
+{
+    public Span<char> Chars;
+    public StringCharBridge(string s) => s.AsSpan();
 }

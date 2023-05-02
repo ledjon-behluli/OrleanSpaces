@@ -43,7 +43,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
         charsWritten = 0;
 
         int tupleLength = Length;
-        int totalLength = Extensions.CalculateTotalLength(tupleLength, MaxFieldCharLength);
+        int totalLength = Extensions.CalculateTotalLength(tupleLength, MaxFieldCharLength, useBrackets: true);
 
         if (destination.Length < totalLength)
         {
@@ -71,7 +71,6 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
             }
 
             destination[charsWritten++] = ')';
-            destination[..(charsWritten + 1)].CopyTo(destination);
 
             return true;
         }
