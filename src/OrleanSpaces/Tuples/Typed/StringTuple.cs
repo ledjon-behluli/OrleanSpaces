@@ -110,9 +110,3 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 }
-
-internal ref struct StringCharBridge
-{
-    public Span<char> Chars;
-    public StringCharBridge(string s) => s.AsSpan();
-}
