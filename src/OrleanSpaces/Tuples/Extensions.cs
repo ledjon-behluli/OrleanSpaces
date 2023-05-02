@@ -211,7 +211,8 @@ internal static class Extensions
             return true;
         }
 
-        // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples and has a finite value, well under [2 bytes (for char) * maxFieldCharLength] << 1024 bytes.
+        // Its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples,
+        // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength < 1024 bytes]
         Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
 
         if (tupleLength == 1)
