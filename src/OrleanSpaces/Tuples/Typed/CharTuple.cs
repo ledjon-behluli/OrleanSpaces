@@ -45,11 +45,8 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public bool TryFormat(Span<char> destination, out int charsWritten)
-        => this.TryFormatTuple(MaxFieldCharLength, destination, out charsWritten);
-
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => TryFormat(destination, out charsWritten);
+        => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 

@@ -188,7 +188,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormatTuple<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
         where T : struct, ISpanFormattable
         where TSelf : IValueTuple<T, TSelf>
     {
@@ -211,44 +211,43 @@ internal static class Extensions
             return true;
         }
 
-        Span<char> tupleSpan = stackalloc char[totalLength];
+        // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples and has a finite value, well under [2 bytes (for char) * maxFieldCharLength] << 1024 bytes.
         Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
 
         if (tupleLength == 1)
         {
-            tupleSpan[charsWritten++] = '(';
+            destination[charsWritten++] = '(';
 
-            if (!TryFormatField(in tuple[0], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[0], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
 
-            tupleSpan[charsWritten++] = ')';
-            tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+            destination[charsWritten++] = ')';
+            destination[..(charsWritten + 1)].CopyTo(destination);
 
             return true;
         }
 
-        tupleSpan[charsWritten++] = '(';
+        destination[charsWritten++] = '(';
 
         for (int i = 0; i < tupleLength; i++)
         {
             if (i > 0)
             {
-                tupleSpan[charsWritten++] = ',';
-                tupleSpan[charsWritten++] = ' ';
+                destination[charsWritten++] = ',';
+                destination[charsWritten++] = ' ';
 
                 fieldSpan.Clear();
             }
 
-            if (!TryFormatField(in tuple[i], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[i], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
         }
 
-        tupleSpan[charsWritten++] = ')';
-        tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+        destination[charsWritten++] = ')';
 
         return true;
 

@@ -69,7 +69,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public bool TryFormat(Span<char> destination, out int charsWritten)
-    //  => this.TryFormatTuple(MaxFieldCharLength, destination, out charsWritten);
+    //  => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
     {
         charsWritten = 0;
         return true;

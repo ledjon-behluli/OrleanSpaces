@@ -35,9 +35,9 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public bool TryFormat(Span<char> destination, out int charsWritten)
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormatTuple` and are forced
+        // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormat` and are forced
         // to implement it here. See: https://github.com/dotnet/runtime/issues/67388
 
         charsWritten = 0;
@@ -59,44 +59,42 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
             return true;
         }
 
-        Span<char> tupleSpan = stackalloc char[totalLength];
         Span<char> fieldSpan = stackalloc char[MaxFieldCharLength];
 
         if (tupleLength == 1)
         {
-            tupleSpan[charsWritten++] = '(';
+            destination[charsWritten++] = '(';
 
-            if (!TryFormatField(fields[0], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(fields[0], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
 
-            tupleSpan[charsWritten++] = ')';
-            tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+            destination[charsWritten++] = ')';
+            destination[..(charsWritten + 1)].CopyTo(destination);
 
             return true;
         }
 
-        tupleSpan[charsWritten++] = '(';
+        destination[charsWritten++] = '(';
 
         for (int i = 0; i < tupleLength; i++)
         {
             if (i > 0)
             {
-                tupleSpan[charsWritten++] = ',';
-                tupleSpan[charsWritten++] = ' ';
+                destination[charsWritten++] = ',';
+                destination[charsWritten++] = ' ';
 
                 fieldSpan.Clear();
             }
 
-            if (!TryFormatField(fields[i], tupleSpan, fieldSpan, ref charsWritten))
+            if (!TryFormatField(fields[i], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
         }
 
-        tupleSpan[charsWritten++] = ')';
-        tupleSpan[..(charsWritten + 1)].CopyTo(destination);
+        destination[charsWritten++] = ')';
 
         return true;
 
@@ -114,9 +112,6 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
             return true;
         }
     }
-
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
