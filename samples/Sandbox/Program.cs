@@ -16,4 +16,7 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
+DecimalTuple decimals = new(1, 2, 3);
+Console.WriteLine($"{decimals}");
+
 Console.ReadKey();
