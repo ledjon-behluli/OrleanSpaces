@@ -284,40 +284,40 @@ internal static class Extensions
         => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreEqual<TValue, TValueType, TComparer>(int slots, in TValueType left, in TValueType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
-        where TValue : unmanaged
-        where TValueType : struct
-        where TComparer : ITupleComparer<TValue, TValueType>
+    public static bool AreEqual<T, TTuple, TComparer>(int slots, in TTuple left, in TTuple right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
+        where T : unmanaged
+        where TTuple : struct
+        where TComparer : ITupleEqualityComparer<T, TTuple>
     {
         int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
 
-        if (totalSlots * Unsafe.SizeOf<TValue>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
+        if (totalSlots * Unsafe.SizeOf<T>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
         {
-            Span<TValue> leftSpan = stackalloc TValue[slots ];
-            Span<TValue> rightSpan = stackalloc TValue[slots];
+            Span<T> leftSpan = stackalloc T[slots];
+            Span<T> rightSpan = stackalloc T[slots];
 
             return TComparer.Equals(left, leftSpan, right, rightSpan);
         }
 
         if (totalSlots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
         {
-            TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
+            T[] buffer = ArrayPool<T>.Shared.Rent(totalSlots);
 
-            Span<TValue> leftSpan = new(buffer, 0, slots);
-            Span<TValue> rightSpan = new(buffer, slots, slots);
+            Span<T> leftSpan = new(buffer, 0, slots);
+            Span<T> rightSpan = new(buffer, slots, slots);
 
-            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
+            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<T>(s) are cleared before handing them out.
             leftSpan.Clear();
             rightSpan.Clear();
 
             bool result = TComparer.Equals(left, leftSpan, right, rightSpan);
-            ArrayPool<TValue>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<TValue>(s).
+            ArrayPool<T>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<T>(s).
 
             return result;
         }
 
-        Span<TValue> _leftSpan = new TValue[slots];
-        Span<TValue> _rightSpan = new TValue[slots];
+        Span<T> _leftSpan = new T[slots];
+        Span<T> _rightSpan = new T[slots];
 
         return TComparer.Equals(left, _leftSpan, right, _rightSpan);
     }
