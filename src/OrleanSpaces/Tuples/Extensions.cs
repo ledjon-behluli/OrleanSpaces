@@ -1,6 +1,8 @@
 ﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace OrleanSpaces.Tuples;
 
@@ -320,4 +322,41 @@ internal static class Extensions
 
         return TComparer.Equals(left, _leftSpan, right, _rightSpan);
     }
+
+    public static void RentAndRun<T>(int slots, IRentedMemoryRunner<T> runner) 
+        where T : unmanaged
+    {
+        scoped Span<T> buffer;
+
+        if (slots * Unsafe.SizeOf<T>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
+        {
+            buffer = stackalloc T[slots];
+            runner.Run(ref buffer);
+
+            return;
+        }
+
+        if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        {
+            T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
+            buffer = pooledArray.AsSpan();
+
+            runner.Run(ref buffer);
+
+            ArrayPool<T>.Shared.Return(pooledArray);
+
+            return;
+        }
+
+        T[] array = new T[slots];
+        buffer = array.AsSpan();
+
+        runner.Run(ref buffer);
+    }
+}
+
+internal interface IRentedMemoryRunner<T>
+    where T : unmanaged
+{
+    void Run(scoped ref Span<T> memory);
 }

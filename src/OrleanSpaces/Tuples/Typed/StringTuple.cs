@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System;
 using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,6 +7,12 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEqualityComparer<char, StringTuple>, ISpanFormattable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <example>a</example>
+    internal const int MaxFieldCharLength = 1;
+
     private readonly string[] fields;
 
     public string this[int index] => fields[index];
@@ -64,10 +71,11 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        destination.Clear();
+        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
         charsWritten = 0;
 
-        if (Length == 0)
+        int tupleLength = Length;
+        if (tupleLength == 0)
         {
             destination[charsWritten++] = '(';
             destination[charsWritten++] = ')';
@@ -75,58 +83,77 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
             return true;
         }
 
-        if (Length == 1)
+        int totalLength = CalculateTotalLength(in this);
+        Span<char> fieldSpan = stackalloc char[totalLength]; // TODO: Improve
+
+        if (tupleLength == 1)
         {
             destination[charsWritten++] = '(';
-            CharTuple chars = new(fields[0].AsSpan().ToArray());
 
-            if (!TryFormatChar(fields[0].Length, chars, destination, ref charsWritten))
+            if (!TryFormatField(fields[0], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
 
             destination[charsWritten++] = ')';
+
             return true;
         }
 
-        for (int i = 0; i < Length; i++)
-        {
-            destination[charsWritten++] = '(';
-            CharTuple chars = new(fields[i].AsSpan().ToArray());
+        destination[charsWritten++] = '(';
 
+        for (int i = 0; i < tupleLength; i++)
+        {
             if (i > 0)
             {
                 destination[charsWritten++] = ',';
                 destination[charsWritten++] = ' ';
+
+                fieldSpan.Clear();
             }
 
-            if (!TryFormatChar(fields[i].Length, chars, destination, ref charsWritten))
+            if (!TryFormatField(fields[i], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
-
-            destination[charsWritten++] = ')';
         }
+
+        destination[charsWritten++] = ')';
 
         return true;
 
-        static bool TryFormatChar(int fieldLength, CharTuple chars, Span<char> destination, ref int charsWritten)
+        static bool TryFormatField(string field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
         {
-            int length = Extensions.CalculateTotalLength(fieldLength, CharTuple.MaxFieldCharLength, useBrackets: false);
-            Span<char> fieldSpan = destination.Slice(charsWritten, length);
-
-            if (!chars.TryFormat(CharTuple.MaxFieldCharLength, fieldSpan, out int fieldCharsWritten, useBrackets: false))
+            if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
             {
                 charsWritten = 0;
                 return false;
             }
 
-            fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
+            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
             charsWritten += fieldCharsWritten;
 
             return true;
         }
+
+        static int CalculateTotalLength(in StringTuple tuple)
+        {
+            int totalChars = 0;
+            int length = tuple.Length;
+
+            for (int i = 0; i < length; i++)
+            {
+                totalChars += tuple[i].Length;
+            }
+
+            int separatorsCount = length == 0 ? 0 : 2 * (length - 1);
+            int totalLength = 2 + totalChars + separatorsCount;
+
+            return totalLength;
+        }
     }
+
+    // (ab, 123)
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
