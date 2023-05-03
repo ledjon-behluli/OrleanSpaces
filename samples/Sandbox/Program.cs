@@ -16,10 +16,14 @@ using System.Runtime.Intrinsics;
 //    Console.WriteLine(item);
 //}
 
-CharTuple chars = new CharTuple('a', 'b', 'c');
-Console.WriteLine($"{chars}");
+//CharTuple chars = new CharTuple('a', 'b', 'c');
+//Console.WriteLine($"{chars}");
 
-StringTuple strings = new StringTuple("a", "ab", "abc", "abcd");
-Console.WriteLine($"{strings}");
+Console.WriteLine($"{new StringTuple()}");
+Console.WriteLine($"{new StringTuple("a")}");
+Console.WriteLine($"{new StringTuple("ab")}");
+Console.WriteLine($"{new StringTuple("a", "ab")}");
+Console.WriteLine($"{new StringTuple("a", "ab", "abc")}");
+Console.WriteLine($"{new StringTuple("a", "ab", "abc", "abcd")}");
 
 Console.ReadKey();

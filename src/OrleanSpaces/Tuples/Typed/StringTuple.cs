@@ -64,25 +64,68 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
+        destination.Clear();
         charsWritten = 0;
+
+        if (Length == 0)
+        {
+            destination[charsWritten++] = '(';
+            destination[charsWritten++] = ')';
+
+            return true;
+        }
+
+        if (Length == 1)
+        {
+            destination[charsWritten++] = '(';
+            CharTuple chars = new(fields[0].AsSpan().ToArray());
+
+            if (!TryFormatChar(fields[0].Length, chars, destination, ref charsWritten))
+            {
+                return false;
+            }
+
+            destination[charsWritten++] = ')';
+            return true;
+        }
 
         for (int i = 0; i < Length; i++)
         {
-            string field = fields[i];
+            destination[charsWritten++] = '(';
+            CharTuple chars = new(fields[i].AsSpan().ToArray());
 
-            Span<char> fieldSpan = destination.Slice(charsWritten, field.Length);
-            CharTuple charTuple = new(field.AsSpan().ToArray());
+            if (i > 0)
+            {
+                destination[charsWritten++] = ',';
+                destination[charsWritten++] = ' ';
+            }
 
-            if (!charTuple.TryFormat(CharTuple.MaxFieldCharLength, fieldSpan, out int fieldCharsWritten, useBrackets: false))
+            if (!TryFormatChar(fields[i].Length, chars, destination, ref charsWritten))
+            {
+                return false;
+            }
+
+            destination[charsWritten++] = ')';
+        }
+
+        return true;
+
+        static bool TryFormatChar(int fieldLength, CharTuple chars, Span<char> destination, ref int charsWritten)
+        {
+            int length = Extensions.CalculateTotalLength(fieldLength, CharTuple.MaxFieldCharLength, useBrackets: false);
+            Span<char> fieldSpan = destination.Slice(charsWritten, length);
+
+            if (!chars.TryFormat(CharTuple.MaxFieldCharLength, fieldSpan, out int fieldCharsWritten, useBrackets: false))
             {
                 charsWritten = 0;
                 return false;
             }
 
+            fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
             charsWritten += fieldCharsWritten;
-        }
 
-        return true;
+            return true;
+        }
     }
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();

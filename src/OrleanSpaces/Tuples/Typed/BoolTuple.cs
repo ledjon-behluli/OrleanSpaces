@@ -40,16 +40,11 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
         // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormat` and are forced
         // to implement it here. See: https://github.com/dotnet/runtime/issues/67388
 
+        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
         charsWritten = 0;
 
         int tupleLength = Length;
-        int totalLength = Extensions.CalculateTotalLength(tupleLength, MaxFieldCharLength, useBrackets: true);
-
-        if (destination.Length < totalLength)
-        {
-            charsWritten = 0;
-            return false;
-        }
+        int totalLength = Extensions.CalculateTotalLength(tupleLength, MaxFieldCharLength);
 
         if (tupleLength == 0)
         {

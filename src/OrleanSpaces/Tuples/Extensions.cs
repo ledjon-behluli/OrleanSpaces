@@ -187,28 +187,20 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten, bool useBrackets = true)
+    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
         where T : struct, ISpanFormattable
         where TSelf : IValueTuple<T, TSelf>
     {
+        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
         charsWritten = 0;
 
         int tupleLength = tuple.Length;
-        int totalLength = CalculateTotalLength(tupleLength, maxFieldCharLength, useBrackets);
-
-        if (destination.Length < totalLength)
-        {
-            charsWritten = 0;
-            return false;
-        }
+        int totalLength = CalculateTotalLength(tupleLength, maxFieldCharLength);
 
         if (tupleLength == 0)
         {
-            if (useBrackets)
-            {
-                destination[charsWritten++] = '(';
-                destination[charsWritten++] = ')';
-            }
+            destination[charsWritten++] = '(';
+            destination[charsWritten++] = ')';
 
             return true;
         }
@@ -219,19 +211,19 @@ internal static class Extensions
 
         if (tupleLength == 1)
         {
-            if (useBrackets) destination[charsWritten++] = '(';
+            destination[charsWritten++] = '(';
 
             if (!TryFormatField(in tuple[0], destination, fieldSpan, ref charsWritten))
             {
                 return false;
             }
 
-            if (useBrackets) destination[charsWritten++] = ')';
+            destination[charsWritten++] = ')';
 
             return true;
         }
 
-        if (useBrackets) destination[charsWritten++] = '(';
+        destination[charsWritten++] = '(';
 
         for (int i = 0; i < tupleLength; i++)
         {
@@ -249,7 +241,7 @@ internal static class Extensions
             }
         }
 
-        if (useBrackets) destination[charsWritten++] = ')';
+        destination[charsWritten++] = ')';
 
         return true;
 
@@ -269,7 +261,7 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength, bool useBrackets)
+    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength)
     {
         int separatorsCount = 0;
         int destinationSpanLength = 0;
@@ -280,7 +272,7 @@ internal static class Extensions
             destinationSpanLength = maxFieldCharLength * tupleLength;
         }
 
-        int totalLength = (useBrackets ? 2 : 0) + destinationSpanLength + separatorsCount;
+        int totalLength = 2 + destinationSpanLength + separatorsCount;
         return totalLength;
     }
 
