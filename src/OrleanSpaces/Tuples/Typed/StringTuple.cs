@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -22,6 +23,12 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
     public static bool operator ==(StringTuple left, StringTuple right) => left.Equals(right);
     public static bool operator !=(StringTuple left, StringTuple right) => !(left == right);
+
+    public int CompareTo(StringTuple other) => Length.CompareTo(other.Length);
+
+    public override int GetHashCode() => fields.GetHashCode();
+    public override string ToString() => $"({string.Join(", ", fields)})";
+
 
     public override bool Equals(object? obj) => obj is StringTuple tuple && Equals(tuple);
 
@@ -57,16 +64,11 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 slots += 2 * thisCharLength;
             }
 
-            return Extensions.AllocateAndRun(slots, new EqualityComparer(this, other));
+            return Extensions.AllocateAndRun(slots, new Comparer(this, other));
         }
 
         return this.SequentialEquals(other);
     }
-
-    public int CompareTo(StringTuple other) => Length.CompareTo(other.Length);
-
-    public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
@@ -83,57 +85,12 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
         }
 
         int totalLength = CalculateTotalLength(in this);
-        Span<char> fieldSpan = stackalloc char[totalLength]; // TODO: Improve
+        Formatter formatter = new(this, ref destination);
 
-        if (tupleLength == 1)
-        {
-            destination[charsWritten++] = '(';
+        _ = Extensions.AllocateAndRun(totalLength, formatter); // stackalloc char[totalLength]; // TODO: Improve
 
-            if (!TryFormatField(fields[0], destination, fieldSpan, ref charsWritten))
-            {
-                return false;
-            }
 
-            destination[charsWritten++] = ')';
-
-            return true;
-        }
-
-        destination[charsWritten++] = '(';
-
-        for (int i = 0; i < tupleLength; i++)
-        {
-            if (i > 0)
-            {
-                destination[charsWritten++] = ',';
-                destination[charsWritten++] = ' ';
-
-                fieldSpan.Clear();
-            }
-
-            if (!TryFormatField(fields[i], destination, fieldSpan, ref charsWritten))
-            {
-                return false;
-            }
-        }
-
-        destination[charsWritten++] = ')';
-
-        return true;
-
-        static bool TryFormatField(string field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
-        {
-            if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
-            {
-                charsWritten = 0;
-                return false;
-            }
-
-            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
-            charsWritten += fieldCharsWritten;
-
-            return true;
-        }
+        // contine...
 
         static int CalculateTotalLength(in StringTuple tuple)
         {
@@ -156,12 +113,89 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly struct EqualityComparer : IBufferBooleanResultConsumer<char>
+    internal readonly struct Formatter : IBufferBooleanResultConsumer<char>
+    {
+        private readonly StringTuple tuple;
+
+        public Formatter(StringTuple tuple)
+        {
+            this.tuple = tuple;
+        }
+
+        public bool Consume(ref Span<char> buffer)
+        {
+            Span<char> destination;
+
+            int charsWritten = 0;
+            int tupleLength = tuple.Length;
+
+            if (tupleLength == 1)
+            {
+                destination[charsWritten++] = '(';
+
+                if (!TryFormatField(tuple[0], destination, buffer, ref charsWritten))
+                {
+                    return false;
+                }
+
+                destination[charsWritten++] = ')';
+
+                return true;
+            }
+
+            destination[charsWritten++] = '(';
+
+            for (int i = 0; i < tupleLength; i++)
+            {
+                if (i > 0)
+                {
+                    destination[charsWritten++] = ',';
+                    destination[charsWritten++] = ' ';
+
+                    buffer.Clear();
+                }
+
+                if (!TryFormatField(tuple[i], destination, buffer, ref charsWritten))
+                {
+                    return false;
+                }
+            }
+
+            destination[charsWritten++] = ')';
+
+            return true;
+
+            static bool TryFormatField(string field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
+            {
+                foreach (ref char @char in field.AsSpan())
+                {
+                    if (!@char.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
+                    {
+                        charsWritten = 0;
+                        return false;
+                    }
+                }
+
+                fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
+                charsWritten += fieldCharsWritten;
+
+                return true;
+            }
+        }
+
+        public Span<char> GetResult()
+        {
+            Span<char> chars = new();
+            return chars;
+        }
+    }
+
+    internal readonly struct Comparer : IBufferBooleanResultConsumer<char>
     {
         private readonly StringTuple left;
         private readonly StringTuple right;
 
-        public EqualityComparer(StringTuple left, StringTuple right)
+        public Comparer(StringTuple left, StringTuple right)
         {
             this.left = left;
             this.right = right;

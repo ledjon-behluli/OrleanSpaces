@@ -10,7 +10,7 @@ namespace OrleanSpaces.Tuples;
 public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
 {
     internal const string DefaultString = "{NULL}";
-    internal static readonly SpaceUnit DefaultUnit = new();
+    internal static readonly SpaceUnit Default = new();
 
     int ISpaceTuple.Length => 1;
     SpaceUnit IObjectTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();

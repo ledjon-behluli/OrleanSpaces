@@ -50,7 +50,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
             int slots = 8 * Length;  // 8x because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
 
-            return Extensions.AllocateAndRun(slots, new EqualityChecker(this, other));
+            return Extensions.AllocateAndRun(slots, new Comparer(this, other));
         }
 
         return this.SequentialEquals(other);
@@ -68,12 +68,12 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
-    readonly struct EqualityChecker : IBufferBooleanResultConsumer<int>
+    internal readonly struct Comparer : IBufferBooleanResultConsumer<int>
     {
         private readonly DecimalTuple left;
         private readonly DecimalTuple right;
 
-        public EqualityChecker(DecimalTuple left, DecimalTuple right)
+        public Comparer(DecimalTuple left, DecimalTuple right)
         {
             this.left = left;
             this.right = right;

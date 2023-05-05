@@ -18,4 +18,3 @@ internal interface IBufferUnitResultConsumer<T> : IBufferConsumer<T, SpaceUnit>
 {
 
 }
-
