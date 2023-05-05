@@ -1,8 +1,6 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace OrleanSpaces.Tuples;
 
@@ -278,74 +276,59 @@ internal static class Extensions
         return totalLength;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AllocateMemoryAndCheckEquality<TValue, TType, TComparer>(int slots, in TType left, in TType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
-        where TValue : unmanaged
-        where TType : struct
-        where TComparer : IMemoryComparer<TValue, TType>
+    //public static void OperateOn<T, TResult>(int slots, IBufferConsumer<T> consumer, out bool result)
+    //    where T : unmanaged
+    //{
+    //    if (IsStackSafe<T>(slots))
+    //    {
+    //        Span<T> buffer = stackalloc T[slots];
+    //        result = consumer.Consume(ref buffer);
+    //    }
+    //    else if (IsPoolSafe<T>(slots))
+    //    {
+    //        T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
+    //        Span<T> buffer = pooledArray.AsSpan();
+
+    //        result = consumer.Consume(ref buffer);
+
+    //        ArrayPool<T>.Shared.Return(pooledArray);
+    //    }
+    //    else
+    //    {
+    //        T[] array = new T[slots];
+    //        Span<T> buffer = array.AsSpan();
+
+    //        result = consumer.Consume(ref buffer);
+    //    }
+    //}
+
+    public static bool AllocateAndRun<T, TResult>(int slots, IBufferConsumer<T> consumer)
+      where T : unmanaged
     {
-        int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
-
-        if (IsStackSafe<TValue>(totalSlots))  
-        {
-            Span<TValue> leftSpan = stackalloc TValue[slots];
-            Span<TValue> rightSpan = stackalloc TValue[slots];
-
-            return TComparer.Equals(in left, ref leftSpan, in right, ref rightSpan);
-        }
-
-        if (IsPoolSafe<TValue>(totalSlots))
-        {
-            TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
-
-            Span<TValue> leftSpan = new(buffer, 0, slots);
-            Span<TValue> rightSpan = new(buffer, slots, slots);
-
-            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
-            leftSpan.Clear();
-            rightSpan.Clear();
-
-            bool result = TComparer.Equals(in left, ref leftSpan, in right, ref rightSpan);
-            ArrayPool<TValue>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<TValue>(s).
-
-            return result;
-        }
-
-        Span<TValue> _leftSpan = new TValue[slots];
-        Span<TValue> _rightSpan = new TValue[slots];
-
-        return TComparer.Equals(in left, ref _leftSpan, in right, ref _rightSpan);
-    }
-
-    public static void AllocateMemory<T>(int slots, IMemoryConsumer<T> consumer) 
-        where T : unmanaged
-    {
-        scoped Span<T> buffer;
+        bool result = false;
 
         if (IsStackSafe<T>(slots))
         {
-            buffer = stackalloc T[slots];
-            consumer.Consume(ref buffer);
-
-            return;
+            Span<T> buffer = stackalloc T[slots];
+            consumer.Consume(ref buffer, out result);
         }
-
-        if (IsPoolSafe<T>(slots))
+        else if (IsPoolSafe<T>(slots))
         {
             T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
-            buffer = pooledArray.AsSpan();
+            Span<T> buffer = pooledArray.AsSpan();
 
-            consumer.Consume(ref buffer);
+            consumer.Consume(ref buffer, out result);
 
             ArrayPool<T>.Shared.Return(pooledArray);
-
-            return;
+        }
+        else
+        {
+            T[] array = new T[slots];
+            Span<T> buffer = array.AsSpan();
+            consumer.Consume(ref buffer, out result);
         }
 
-        T[] array = new T[slots];
-        buffer = array.AsSpan();
-
-        consumer.Consume(ref buffer);
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
