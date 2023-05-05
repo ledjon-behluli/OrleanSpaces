@@ -276,59 +276,34 @@ internal static class Extensions
         return totalLength;
     }
 
-    //public static void OperateOn<T, TResult>(int slots, IBufferConsumer<T> consumer, out bool result)
-    //    where T : unmanaged
-    //{
-    //    if (IsStackSafe<T>(slots))
-    //    {
-    //        Span<T> buffer = stackalloc T[slots];
-    //        result = consumer.Consume(ref buffer);
-    //    }
-    //    else if (IsPoolSafe<T>(slots))
-    //    {
-    //        T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
-    //        Span<T> buffer = pooledArray.AsSpan();
-
-    //        result = consumer.Consume(ref buffer);
-
-    //        ArrayPool<T>.Shared.Return(pooledArray);
-    //    }
-    //    else
-    //    {
-    //        T[] array = new T[slots];
-    //        Span<T> buffer = array.AsSpan();
-
-    //        result = consumer.Consume(ref buffer);
-    //    }
-    //}
-
-    public static bool AllocateAndRun<T, TResult>(int slots, IBufferConsumer<T> consumer)
-      where T : unmanaged
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult AllocateAndRun<T, TResult>(int slots, IBufferConsumer<T, TResult> consumer)
+        where T : unmanaged
+        where TResult : struct
     {
-        bool result = false;
-
-        if (IsStackSafe<T>(slots))
+        if (slots * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
         {
             Span<T> buffer = stackalloc T[slots];
-            consumer.Consume(ref buffer, out result);
+            return consumer.Consume(ref buffer);
         }
-        else if (IsPoolSafe<T>(slots))
+        else if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
         {
             T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
             Span<T> buffer = pooledArray.AsSpan();
 
-            consumer.Consume(ref buffer, out result);
+            TResult result = consumer.Consume(ref buffer);
 
             ArrayPool<T>.Shared.Return(pooledArray);
+
+            return result;
         }
         else
         {
             T[] array = new T[slots];
             Span<T> buffer = array.AsSpan();
-            consumer.Consume(ref buffer, out result);
-        }
 
-        return result;
+            return consumer.Consume(ref buffer);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -336,23 +311,4 @@ internal static class Extensions
        where TIn : struct
        where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    /// <summary>
-    /// Checks wether it is safe to allocate <paramref name="slots"/> in the stack.
-    /// <para><i>It is good practice not to allocate more than 1 kilobyte of memory on the stack</i></para>
-    /// </summary>
-    /// <typeparam name="T">The type to allocate memory for, which can not contain any references.</typeparam>
-    /// <param name="slots">The number of memory slots to allocate.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsStackSafe<T>(int slots) where T : unmanaged
-        => slots * Unsafe.SizeOf<T>() <= 1024;
-
-    /// <summary>
-    /// Checks wether it is safe to allocate <paramref name="slots"/> from the <see cref="ArrayPool{T}"/>.
-    /// <para><i><see langword="1,048,576"/> is the maximum array length of <see cref="ArrayPool{T}.Shared"/></i></para>
-    /// </summary>
-    /// <typeparam name="T">The type to allocate memory for.</typeparam>
-    /// <param name="slots">The number of memory slots to allocate.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsPoolSafe<T>(int slots) => slots <= 1048576;
 }

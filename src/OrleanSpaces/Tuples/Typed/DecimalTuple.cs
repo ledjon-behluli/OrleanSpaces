@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using Orleans.Concurrency;
-using System;
+﻿using Orleans.Concurrency;
 using System.Runtime.Intrinsics;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -52,9 +49,8 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
             }
 
             int slots = 8 * Length;  // 8x because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
-            EqualityChecker checker = new(this, other);
 
-            return Extensions.AllocateAndRun(slots, checker);
+            return Extensions.AllocateAndRun(slots, new EqualityChecker(this, other));
         }
 
         return this.SequentialEquals(other);
@@ -72,7 +68,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
-    readonly struct EqualityChecker : IBufferConsumer<int>
+    readonly struct EqualityChecker : IBufferBooleanResultConsumer<int>
     {
         private readonly DecimalTuple left;
         private readonly DecimalTuple right;
@@ -83,7 +79,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
             this.right = right;
         }
 
-        public void Consume(ref Span<int> buffer, out bool? result)
+        public bool Consume(ref Span<int> buffer)
         {
             int tupleLength = left.Length;
             int bufferHalfLength = buffer.Length / 2;
@@ -97,7 +93,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
                 decimal.GetBits(right[i], rightSpan.Slice(i * 4, 4));
             }
 
-            result = leftSpan.ParallelEquals(rightSpan);
+            return leftSpan.ParallelEquals(rightSpan);
         }
     }
 }

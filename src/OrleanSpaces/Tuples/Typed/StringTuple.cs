@@ -1,11 +1,10 @@
 ﻿using Orleans.Concurrency;
-using System;
 using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : IObjectTuple<string, StringTuple>, IMemoryComparer<char, StringTuple>, ISpanFormattable
+public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -55,10 +54,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, IMemoryC
                     return false;
                 }
 
-                slots += thisCharLength;
+                slots += 2 * thisCharLength;
             }
 
-            return Extensions.AllocateMemoryAndCheckEquality<char, StringTuple, StringTuple>(slots, in this, in other);
+            return Extensions.AllocateAndRun(slots, new EqualityComparer(this, other));
         }
 
         return this.SequentialEquals(other);
@@ -153,30 +152,44 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, IMemoryC
         }
     }
 
-    // (ab, 123)
-
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static bool IMemoryComparer<char, StringTuple>.Equals(in StringTuple left, ref Span<char> leftSpan, in StringTuple right, ref Span<char> rightSpan)
+    public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
+
+    readonly struct EqualityComparer : IBufferBooleanResultConsumer<char>
     {
-        int cursor = 0;
-        int length = left.Length;
+        private readonly StringTuple left;
+        private readonly StringTuple right;
 
-        for (int i = 0; i < length; i++)
+        public EqualityComparer(StringTuple left, StringTuple right)
         {
-            ReadOnlySpan<char> thisFieldSpan = left[i].AsSpan();
-            ReadOnlySpan<char> otherFieldSpan = right.fields[i].AsSpan();
-
-            int spanLength = thisFieldSpan.Length;
-
-            thisFieldSpan.CopyTo(leftSpan.Slice(cursor, spanLength));
-            otherFieldSpan.CopyTo(rightSpan.Slice(cursor, spanLength));
-
-            cursor += spanLength;
+            this.left = left;
+            this.right = right;
         }
 
-        return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.AllocateMemoryAndCheckEquality for more details
-    }
+        public bool Consume(ref Span<char> buffer)
+        {
+            int cursor = 0;
+            int tupleLength = left.Length;
+            int bufferHalfLength = buffer.Length / 2;
 
-    public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
+            Span<char> leftSpan = buffer[..bufferHalfLength];
+            Span<char> rightSpan = buffer[bufferHalfLength..];
+
+            for (int i = 0; i < tupleLength; i++)
+            {
+                ReadOnlySpan<char> thisFieldSpan = left[i].AsSpan();
+                ReadOnlySpan<char> otherFieldSpan = right.fields[i].AsSpan();
+
+                int spanLength = thisFieldSpan.Length;
+
+                thisFieldSpan.CopyTo(leftSpan.Slice(cursor, spanLength));
+                otherFieldSpan.CopyTo(rightSpan.Slice(cursor, spanLength));
+
+                cursor += spanLength;
+            }
+
+            return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.AllocateMemoryAndCheckEquality for more details
+        }
+    }
 }
