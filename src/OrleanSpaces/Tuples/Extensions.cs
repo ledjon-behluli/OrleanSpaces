@@ -107,8 +107,8 @@ internal static class Extensions
             return left[i] == right[i];  // avoiding overhead by doing a non-vectorized equality check, as its a single operation eitherway.
         }
 
-        Vector<T> _vLeft = CastAsVector(left, i, remaining);   // vector will have [i + vCount - remaining] elements set to default(T)
-        Vector<T> _vRight = CastAsVector(right, i, remaining); // vector will have [i + vCount - remaining] elements set to default(T)
+        Vector<T> _vLeft = CastAsVector(left, i, remaining);   // vector will have [i + vCount - remaining] elements set to default(TValue)
+        Vector<T> _vRight = CastAsVector(right, i, remaining); // vector will have [i + vCount - remaining] elements set to default(TValue)
 
         return _vLeft == _vRight;
 
@@ -128,8 +128,8 @@ internal static class Extensions
             }
 
             // In cases where [sLength < vLength], if we try to create a vector from the span directly, it will result in a vector which has the first N items the same as the span,
-            // but the rest will not be consistent for subsequent calls, even if a second span over a memory that contains the same values of 'T' as the first span did.
-            // That is why we need to create a temporary span with the length equal to that of the vLength for the given type 'T', initialize all items to T.Zero a.k.a 'the default',
+            // but the rest will not be consistent for subsequent calls, even if a second span over a memory that contains the same values of 'TValue' as the first span did.
+            // That is why we need to create a temporary span with the length equal to that of the vLength for the given type 'TValue', initialize all items to TValue.Zero a.k.a 'the default',
             // proceed to copy the contents of the original span into it. This is necessary because if we created the vector directly from the original span, and since [sLength < vLength],
             // the vector may contain garbage values in its remaining elements, which could cause incorrect results when compared with another vector which may contain other garbage values.
 
@@ -279,69 +279,63 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
-        where TIn : struct
-        where TOut : struct
-        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreEqual<T, TTuple, TComparer>(int slots, in TTuple left, in TTuple right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
-        where T : unmanaged
-        where TTuple : struct
-        where TComparer : ITupleEqualityComparer<T, TTuple>
+    public static bool AllocateMemoryAndCheckEquality<TValue, TType, TComparer>(int slots, in TType left, in TType right)  // 'left' and 'right' are passed using 'in' to avoid defensive copying.
+        where TValue : unmanaged
+        where TType : struct
+        where TComparer : IMemoryComparer<TValue, TType>
     {
         int totalSlots = 2 * slots;  // 2x because we need to allocate stack memory for 'left' and 'right'
 
-        if (totalSlots * Unsafe.SizeOf<T>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
+        if (IsStackSafe<TValue>(totalSlots))  
         {
-            Span<T> leftSpan = stackalloc T[slots];
-            Span<T> rightSpan = stackalloc T[slots];
+            Span<TValue> leftSpan = stackalloc TValue[slots];
+            Span<TValue> rightSpan = stackalloc TValue[slots];
 
-            return TComparer.Equals(left, leftSpan, right, rightSpan);
+            return TComparer.Equals(in left, ref leftSpan, in right, ref rightSpan);
         }
 
-        if (totalSlots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        if (IsPoolSafe<TValue>(totalSlots))
         {
-            T[] buffer = ArrayPool<T>.Shared.Rent(totalSlots);
+            TValue[] buffer = ArrayPool<TValue>.Shared.Rent(totalSlots);
 
-            Span<T> leftSpan = new(buffer, 0, slots);
-            Span<T> rightSpan = new(buffer, slots, slots);
+            Span<TValue> leftSpan = new(buffer, 0, slots);
+            Span<TValue> rightSpan = new(buffer, slots, slots);
 
-            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<T>(s) are cleared before handing them out.
+            // since 'ArrayPool.Shared' could be used from user-code, we need to be sure that the Span<TValue>(s) are cleared before handing them out.
             leftSpan.Clear();
             rightSpan.Clear();
 
-            bool result = TComparer.Equals(left, leftSpan, right, rightSpan);
-            ArrayPool<T>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<T>(s).
+            bool result = TComparer.Equals(in left, ref leftSpan, in right, ref rightSpan);
+            ArrayPool<TValue>.Shared.Return(buffer);  // no need to clear the array, since it will be cleared by the Span<TValue>(s).
 
             return result;
         }
 
-        Span<T> _leftSpan = new T[slots];
-        Span<T> _rightSpan = new T[slots];
+        Span<TValue> _leftSpan = new TValue[slots];
+        Span<TValue> _rightSpan = new TValue[slots];
 
-        return TComparer.Equals(left, _leftSpan, right, _rightSpan);
+        return TComparer.Equals(in left, ref _leftSpan, in right, ref _rightSpan);
     }
 
-    public static void RentAndRun<T>(int slots, IRentedMemoryRunner<T> runner) 
+    public static void AllocateMemory<T>(int slots, IMemoryConsumer<T> consumer) 
         where T : unmanaged
     {
         scoped Span<T> buffer;
 
-        if (slots * Unsafe.SizeOf<T>() <= 1024)  // Its good practice not to allocate more than 1 kilobyte of memory on the stack 
+        if (IsStackSafe<T>(slots))
         {
             buffer = stackalloc T[slots];
-            runner.Run(ref buffer);
+            consumer.Consume(ref buffer);
 
             return;
         }
 
-        if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        if (IsPoolSafe<T>(slots))
         {
             T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
             buffer = pooledArray.AsSpan();
 
-            runner.Run(ref buffer);
+            consumer.Consume(ref buffer);
 
             ArrayPool<T>.Shared.Return(pooledArray);
 
@@ -351,12 +345,31 @@ internal static class Extensions
         T[] array = new T[slots];
         buffer = array.AsSpan();
 
-        runner.Run(ref buffer);
+        consumer.Consume(ref buffer);
     }
-}
 
-internal interface IRentedMemoryRunner<T>
-    where T : unmanaged
-{
-    void Run(scoped ref Span<T> memory);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
+       where TIn : struct
+       where TOut : struct
+       => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
+    /// <summary>
+    /// Checks wether it is safe to allocate <paramref name="slots"/> in the stack.
+    /// <para><i>It is good practice not to allocate more than 1 kilobyte of memory on the stack</i></para>
+    /// </summary>
+    /// <typeparam name="T">The type to allocate memory for, which can not contain any references.</typeparam>
+    /// <param name="slots">The number of memory slots to allocate.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsStackSafe<T>(int slots) where T : unmanaged
+        => slots * Unsafe.SizeOf<T>() <= 1024;
+
+    /// <summary>
+    /// Checks wether it is safe to allocate <paramref name="slots"/> from the <see cref="ArrayPool{T}"/>.
+    /// <para><i><see langword="1,048,576"/> is the maximum array length of <see cref="ArrayPool{T}.Shared"/></i></para>
+    /// </summary>
+    /// <typeparam name="T">The type to allocate memory for.</typeparam>
+    /// <param name="slots">The number of memory slots to allocate.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsPoolSafe<T>(int slots) => slots <= 1048576;
 }

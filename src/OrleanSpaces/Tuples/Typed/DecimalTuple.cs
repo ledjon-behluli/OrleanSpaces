@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ITupleEqualityComparer<int, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, IMemoryComparer<int, DecimalTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -49,7 +49,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ITuple
             }
 
             int slots = 4 * Length;  // 4x because each decimal will be decomposed into 4 ints
-            return Extensions.AreEqual<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
+            return Extensions.AllocateMemoryAndCheckEquality<int, DecimalTuple, DecimalTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
@@ -65,7 +65,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ITuple
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static bool ITupleEqualityComparer<int, DecimalTuple>.Equals(DecimalTuple left, Span<int> leftSpan, DecimalTuple right, Span<int> rightSpan)
+    static bool IMemoryComparer<int, DecimalTuple>.Equals(in DecimalTuple left, ref Span<int> leftSpan, in DecimalTuple right, ref Span<int> rightSpan)
     {
         int length = left.Length;
 

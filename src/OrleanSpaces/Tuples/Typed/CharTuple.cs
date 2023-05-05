@@ -26,7 +26,7 @@ public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattabl
 
     public bool Equals(CharTuple other)
     {
-        // Since 'char' is not a number (doesn't implement INumber<T>), we are transforming it into a type which does implement INumber<T>.
+        // Since 'char' is not a number (doesn't implement INumber<TValue>), we are transforming it into a type which does implement INumber<TValue>.
         // The sizeof(char) = 2 Bytes, therefor it can be represented by many number types, but the lowest possible (the one that provides the best parallelization)
         // number type that can fully represent any type of 'char', is 'ushort'.
 

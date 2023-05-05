@@ -5,7 +5,7 @@ using System.Numerics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEqualityComparer<char, StringTuple>, ISpanFormattable
+public readonly struct StringTuple : IObjectTuple<string, StringTuple>, IMemoryComparer<char, StringTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -58,7 +58,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
                 slots += thisCharLength;
             }
 
-            return Extensions.AreEqual<char, StringTuple, StringTuple>(slots, in this, in other);
+            return Extensions.AllocateMemoryAndCheckEquality<char, StringTuple, StringTuple>(slots, in this, in other);
         }
 
         return this.SequentialEquals(other);
@@ -157,7 +157,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-    static bool ITupleEqualityComparer<char, StringTuple>.Equals(StringTuple left, Span<char> leftSpan, StringTuple right, Span<char> rightSpan)
+    static bool IMemoryComparer<char, StringTuple>.Equals(in StringTuple left, ref Span<char> leftSpan, in StringTuple right, ref Span<char> rightSpan)
     {
         int cursor = 0;
         int length = left.Length;
@@ -175,7 +175,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ITupleEq
             cursor += spanLength;
         }
 
-        return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.AreEqual for more details
+        return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.AllocateMemoryAndCheckEquality for more details
     }
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();

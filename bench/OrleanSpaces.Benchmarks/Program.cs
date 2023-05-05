@@ -1,17 +1,17 @@
 ﻿using BenchmarkDotNet.Running;
 
-//BenchmarkRunner.Run<TypeCheckerBenchmarks>();
-//BenchmarkRunner.Run<SpaceUnitBenchmarks>();
-//BenchmarkRunner.Run<SpaceTupleBenchmarks>();
-//BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
-//BenchmarkRunner.Run<IntTupleBenchmarks>();
-//BenchmarkRunner.Run<DateTimeTupleBenchmarks>();
-//BenchmarkRunner.Run<DateTimeOffsetTupleBenchmarks>();
-//BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
-//BenchmarkRunner.Run<BoolTupleBenchmarks>();
-//BenchmarkRunner.Run<DecimalTupleBenchmarks>();
+//BenchmarkRunner.Consume<TypeCheckerBenchmarks>();
+//BenchmarkRunner.Consume<SpaceUnitBenchmarks>();
+//BenchmarkRunner.Consume<SpaceTupleBenchmarks>();
+//BenchmarkRunner.Consume<SpaceTemplateBenchmarks>();
+//BenchmarkRunner.Consume<IntTupleBenchmarks>();
+//BenchmarkRunner.Consume<DateTimeTupleBenchmarks>();
+//BenchmarkRunner.Consume<DateTimeOffsetTupleBenchmarks>();
+//BenchmarkRunner.Consume<TimeSpanTupleBenchmarks>();
+//BenchmarkRunner.Consume<BoolTupleBenchmarks>();
+//BenchmarkRunner.Consume<DecimalTupleBenchmarks>();
 BenchmarkRunner.Run<CharTupleBenchmarks>();
 
-//BenchmarkRunner.Run<TestBench>();
+//BenchmarkRunner.Consume<TestBench>();
 
 Console.ReadKey();
