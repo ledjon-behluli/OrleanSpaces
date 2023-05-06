@@ -50,7 +50,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
             int slots = 8 * Length;  // 8x because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
 
-            return BufferAllocator.Execute(slots, new Comparer(this, other));
+            return new Comparer(this, other).Execute(slots);
         }
 
         return this.SequentialEquals(other);

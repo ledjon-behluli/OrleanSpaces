@@ -1,10 +1,52 @@
-﻿using System.Numerics;
+﻿using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
 
-internal static class Extensions
+internal static class Helpers
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsSimpleType(this Type type) =>
+       type.IsPrimitive ||
+       type.IsEnum ||
+       type == typeof(string) ||
+       type == typeof(decimal) ||
+       type == typeof(DateTime) ||
+       type == typeof(DateTimeOffset) ||
+       type == typeof(TimeSpan) ||
+       type == typeof(Guid);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Execute<T>(this IBufferConsumer<T> consumer, int slots)
+       where T : unmanaged
+    {
+        if (slots * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
+        {
+            Span<T> buffer = stackalloc T[slots];
+            return consumer.Consume(ref buffer);
+        }
+        else if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        {
+            T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
+            Span<T> buffer = pooledArray.AsSpan();
+
+            bool result = consumer.Consume(ref buffer);
+
+            ArrayPool<T>.Shared.Return(pooledArray);
+
+            return result;
+        }
+        else
+        {
+            T[] array = new T[slots];
+            Span<T> buffer = array.AsSpan();
+
+            return consumer.Consume(ref buffer);
+        }
+    }
+
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool result)
         where T : unmanaged, INumber<T>

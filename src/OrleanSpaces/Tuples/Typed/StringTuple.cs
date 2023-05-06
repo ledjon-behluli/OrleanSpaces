@@ -64,7 +64,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 slots += 2 * thisCharLength;
             }
 
-            return BufferAllocator.Execute(slots, new Comparer(this, other));
+            return new Comparer(this, other).Execute(slots);
         }
 
         return this.SequentialEquals(other);
@@ -86,7 +86,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
         int totalLength = CalculateTotalLength(this);
 
-        return BufferAllocator.Execute(totalLength, new Formatter(this));
+        return new Formatter(this).Execute(totalLength);
 
         static int CalculateTotalLength(StringTuple tuple)
         {
@@ -127,7 +127,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             {
                 buffer[charsWritten++] = '(';
 
-                string field = tuple[0]; /// no allocation, as we are accessing the reference to the string field at the 0-th position, in the array.
+                string field = tuple[0];    // no allocation, as we are accessing the reference to the string field at the 0-th position in the array.
                 if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;
@@ -149,7 +149,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                     buffer[charsWritten++] = ' ';
                 }
 
-                string field = tuple[i]; /// no allocation, as we are accessing the reference to the string field at the i-th position, in the array.
+                string field = tuple[i];    // no allocation, as we are accessing the reference to the string field at the i-th position in the array.
                 if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;

@@ -41,7 +41,7 @@ public readonly struct SpaceTemplate : IObjectTuple<object, SpaceTemplate>
                 object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
 
                 Type type = obj.GetType();
-                if (!TypeChecker.IsSimpleType(type) && type != typeof(SpaceUnit) && obj is not Type)
+                if (!type.IsSimpleType() && type != typeof(SpaceUnit) && obj is not Type)
                 {
                     throw new ArgumentException($"The field at position = {i} is not a valid type.");
                 }

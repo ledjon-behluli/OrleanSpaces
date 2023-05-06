@@ -3,20 +3,20 @@ using System.Dynamic;
 
 namespace OrleanSpaces.Tests.Tuples;
 
-public class TypeCheckerTests
+public class SimpleTypeCheckingTests
 {
     [Theory]
     [MemberData(nameof(SimpleTypes))]
     public void Should_Pass(Type type)
     {
-        Assert.True(TypeChecker.IsSimpleType(type));
+        Assert.True(type.IsSimpleType());
     }
 
     [Theory]
     [MemberData(nameof(OtherTypes))]
     public void Should_Fail(Type type)
     {
-        Assert.False(TypeChecker.IsSimpleType(type));
+        Assert.False(type.IsSimpleType());
     }
 
     public static object[][] SimpleTypes() =>

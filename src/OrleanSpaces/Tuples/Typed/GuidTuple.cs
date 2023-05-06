@@ -39,8 +39,8 @@ public readonly struct GuidTuple : IValueTuple<Guid, GuidTuple>, ISpanFormattabl
                 // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
                 // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
 
-                ref Vector128<byte> vLeft = ref Extensions.CastAs<Guid, Vector128<byte>>(in fields[i]);
-                ref Vector128<byte> vRight = ref Extensions.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
+                ref Vector128<byte> vLeft = ref Helpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
+                ref Vector128<byte> vRight = ref Helpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
                  
                 if (vLeft != vRight)
                 {

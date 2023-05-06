@@ -52,7 +52,7 @@ public readonly struct SpaceTuple : IObjectTuple<object, SpaceTuple>
                 object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
 
                 Type type = obj.GetType();
-                if (!TypeChecker.IsSimpleType(type))
+                if (!type.IsSimpleType())
                 {
                     throw new ArgumentException($"The field at position = {i} is not a valid type.");
                 }
