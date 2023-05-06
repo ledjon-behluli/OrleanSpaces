@@ -40,7 +40,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
         // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormat` and are forced
         // to implement it here. See: https://github.com/dotnet/runtime/issues/67388
 
-        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
+        destination.Clear();  // we dont know if the memory represented by the span might contain garbage values, so we clear it.
         charsWritten = 0;
 
         int tupleLength = Length;
@@ -60,7 +60,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
         {
             destination[charsWritten++] = '(';
 
-            if (!TryFormatField(fields[0], destination, fieldSpan, ref charsWritten))
+            if (!TryFormatField(fields[0], fieldSpan, destination, ref charsWritten))
             {
                 return false;
             }
@@ -82,7 +82,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
                 fieldSpan.Clear();
             }
 
-            if (!TryFormatField(fields[i], destination, fieldSpan, ref charsWritten))
+            if (!TryFormatField(fields[i], fieldSpan, destination, ref charsWritten))
             {
                 return false;
             }
@@ -92,7 +92,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
 
         return true;
 
-        static bool TryFormatField(bool field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
+        static bool TryFormatField(bool field, Span<char> fieldSpan, Span<char> tupleSpan, ref int charsWritten)
         {
             if (!field.TryFormat(fieldSpan, out int fieldCharsWritten))
             {

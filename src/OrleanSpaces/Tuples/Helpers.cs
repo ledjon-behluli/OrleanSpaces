@@ -254,7 +254,7 @@ internal static class Helpers
         {
             destination[charsWritten++] = '(';
 
-            if (!TryFormatField(in tuple[0], destination, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[0], fieldSpan, destination, ref charsWritten))
             {
                 return false;
             }
@@ -276,7 +276,7 @@ internal static class Helpers
                 fieldSpan.Clear();
             }
 
-            if (!TryFormatField(in tuple[i], destination, fieldSpan, ref charsWritten))
+            if (!TryFormatField(in tuple[i], fieldSpan, destination, ref charsWritten))
             {
                 return false;
             }
@@ -286,7 +286,7 @@ internal static class Helpers
 
         return true;
 
-        static bool TryFormatField(in T field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
+        static bool TryFormatField(in T field, Span<char> fieldSpan, Span<char> destination, ref int charsWritten)
         {
             if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
             {
@@ -294,7 +294,7 @@ internal static class Helpers
                 return false;
             }
 
-            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
+            fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
             charsWritten += fieldCharsWritten;
 
             return true;
