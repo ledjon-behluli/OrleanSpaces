@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using OrleanSpaces.Tuples.Typed;
+using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -232,6 +233,7 @@ internal static class Helpers
         where T : struct, ISpanFormattable
         where TSelf : IValueTuple<T, TSelf>
     {
+        //TODO: Fix as 'destination' provided by the CLR is at most '255'
         destination.Clear();  // we dont know if the memory represented by the span might contain garbage values, so we clear it.
         charsWritten = 0;
 
@@ -302,6 +304,30 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+        where T : struct, ISpanFormattable
+        where TSelf : IValueTuple<T, TSelf>
+    {
+        charsWritten = 0;
+
+        if (tuple.Length == 0)
+        {
+            destination[charsWritten++] = '(';
+            destination[charsWritten++] = ')';
+
+            return true;
+        }
+
+        int totalLength = CalculateTotalLength(tuple.Length, maxFieldCharLength);
+        Formatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
+
+        if (destination.Length < totalLength)
+        {
+            destination = 
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength)
     {
         int separatorsCount = 0;
@@ -322,4 +348,79 @@ internal static class Helpers
        where TIn : struct
        where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+}
+
+internal struct Formatter<T, TSelf> : IBufferConsumer<char>
+    where T : struct, ISpanFormattable
+    where TSelf : IValueTuple<T, TSelf>
+{
+    private readonly int maxFieldCharLength;
+    private readonly IValueTuple<T, TSelf> tuple;
+
+    private int charsWritten;
+
+    public Formatter(IValueTuple<T, TSelf> tuple, int maxFieldCharLength, ref int charsWritten)
+    {
+        this.tuple = tuple;
+        this.maxFieldCharLength = maxFieldCharLength;
+        this.charsWritten = charsWritten;
+    }
+
+    public bool Consume(ref Span<char> buffer)
+    {
+        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
+
+        fieldSpan.Clear();
+
+        int tupleLength = tuple.Length;
+        if (tupleLength == 1)
+        {
+            buffer[charsWritten++] = '(';
+
+            if (!TryFormatField(in tuple[0], fieldSpan, buffer, ref charsWritten))
+            {
+                return false;
+            }
+
+            buffer[charsWritten++] = ')';
+
+            return true;
+        }
+
+        buffer[charsWritten++] = '(';
+
+        for (int i = 0; i < tupleLength; i++)
+        {
+            if (i > 0)
+            {
+                buffer[charsWritten++] = ',';
+                buffer[charsWritten++] = ' ';
+
+                fieldSpan.Clear();
+            }
+
+            if (!TryFormatField(in tuple[i], fieldSpan, buffer, ref charsWritten))
+            {
+                return false;
+            }
+        }
+
+        buffer[charsWritten++] = ')';
+
+        return true;
+    }
+
+    private static bool TryFormatField(in T field, Span<char> fieldSpan, Span<char> destination, ref int charsWritten)
+    {
+        if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
+        charsWritten += fieldCharsWritten;
+
+        return true;
+    }
 }
