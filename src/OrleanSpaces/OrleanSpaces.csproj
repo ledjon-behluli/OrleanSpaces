@@ -62,4 +62,8 @@
 	  <Orleans_CodeGenInputs Remove="Tuples\Typed\StringTuple.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Orleans_CodeGenInputs Remove="Tuples\BufferAllocator.cs" />
+	</ItemGroup>
+
 </Project>

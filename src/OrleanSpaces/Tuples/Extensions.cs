@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples;
@@ -277,46 +276,8 @@ internal static class Extensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult AllocateAndRun<T, TResult>(int slots, IBufferConsumer<T, TResult> consumer)
-        where T : unmanaged
-        where TResult : struct
-    {
-        if (slots * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
-        {
-            Span<T> buffer = stackalloc T[slots];
-            return consumer.Consume(ref buffer);
-        }
-        else if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
-        {
-            T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
-            Span<T> buffer = pooledArray.AsSpan();
-
-            TResult result = consumer.Consume(ref buffer);
-
-            ArrayPool<T>.Shared.Return(pooledArray);
-
-            return result;
-        }
-        else
-        {
-            T[] array = new T[slots];
-            Span<T> buffer = array.AsSpan();
-
-            return consumer.Consume(ref buffer);
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
        where TIn : struct
        where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-}
-
-internal readonly struct CharFormatter : IBufferBooleanResultConsumer<char>
-{
-    public bool Consume(ref Span<char> buffer)
-    {
-        throw new NotImplementedException();
-    }
 }

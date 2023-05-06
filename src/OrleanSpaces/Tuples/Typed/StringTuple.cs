@@ -64,7 +64,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 slots += 2 * thisCharLength;
             }
 
-            return Extensions.AllocateAndRun(slots, new Comparer(this, other));
+            return BufferAllocator.Execute(slots, new Comparer(this, other));
         }
 
         return this.SequentialEquals(other);
@@ -84,15 +84,11 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             return true;
         }
 
-        int totalLength = CalculateTotalLength(in this);
-        Formatter formatter = new(this, ref destination);
+        int totalLength = CalculateTotalLength(this);
 
-        _ = Extensions.AllocateAndRun(totalLength, formatter); // stackalloc char[totalLength]; // TODO: Improve
+        return BufferAllocator.Execute(totalLength, new Formatter(this));
 
-
-        // contine...
-
-        static int CalculateTotalLength(in StringTuple tuple)
+        static int CalculateTotalLength(StringTuple tuple)
         {
             int totalChars = 0;
             int length = tuple.Length;
@@ -113,7 +109,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    internal readonly struct Formatter : IBufferBooleanResultConsumer<char>
+    internal readonly struct Formatter : IBufferConsumer<char>
     {
         private readonly StringTuple tuple;
 
@@ -131,13 +127,13 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             {
                 buffer[charsWritten++] = '(';
 
-                ReadOnlySpan<char> fieldSpan = tuple[0].AsSpan();
-                if (!fieldSpan.TryCopyTo(buffer[charsWritten..]))
+                string field = tuple[0]; /// no allocation, as we are accessing the reference to the string field at the 0-th position, in the array.
+                if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;
                 }
 
-                charsWritten += fieldSpan.Length;
+                charsWritten += field.Length;
                 buffer[charsWritten++] = ')';
 
                 return true;
@@ -151,32 +147,24 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 {
                     buffer[charsWritten++] = ',';
                     buffer[charsWritten++] = ' ';
-
-                    buffer.Clear();
                 }
 
-                ReadOnlySpan<char> fieldSpan = tuple[i].AsSpan();
-                if (!fieldSpan.TryCopyTo(buffer[charsWritten..]))
+                string field = tuple[i]; /// no allocation, as we are accessing the reference to the string field at the i-th position, in the array.
+                if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;
                 }
 
-                charsWritten += fieldSpan.Length;
+                charsWritten += field.Length;
             }
 
             buffer[charsWritten++] = ')';
 
             return true;
         }
-
-        public Span<char> GetResult()
-        {
-            Span<char> chars = new();
-            return chars;
-        }
     }
 
-    internal readonly struct Comparer : IBufferBooleanResultConsumer<char>
+    internal readonly struct Comparer : IBufferConsumer<char>
     {
         private readonly StringTuple left;
         private readonly StringTuple right;
