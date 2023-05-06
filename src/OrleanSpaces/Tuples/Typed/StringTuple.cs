@@ -72,7 +72,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
+        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values, so we clear it.
         charsWritten = 0;
 
         int tupleLength = Length;
@@ -175,13 +175,14 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
         }
 
         public bool Consume(ref Span<char> buffer)
-        {
-            int cursor = 0;
+        {   
             int tupleLength = left.Length;
             int bufferHalfLength = buffer.Length / 2;
 
             Span<char> leftSpan = buffer[..bufferHalfLength];
             Span<char> rightSpan = buffer[bufferHalfLength..];
+
+            int cursor = 0;
 
             for (int i = 0; i < tupleLength; i++)
             {
@@ -196,7 +197,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 cursor += spanLength;
             }
 
-            return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();  // See: CharTuple.AllocateMemoryAndCheckEquality for more details
+            return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();
         }
     }
 }

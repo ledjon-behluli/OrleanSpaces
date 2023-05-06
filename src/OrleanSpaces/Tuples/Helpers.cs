@@ -232,7 +232,7 @@ internal static class Helpers
         where T : struct, ISpanFormattable
         where TSelf : IValueTuple<T, TSelf>
     {
-        destination.Clear();  // we don't know if the memory represented by the span might contain garbage values so we clear it.
+        destination.Clear();  // we dont know if the memory represented by the span might contain garbage values, so we clear it.
         charsWritten = 0;
 
         int tupleLength = tuple.Length;
