@@ -124,63 +124,49 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
 
         public bool Consume(ref Span<char> buffer)
         {
-            Span<char> destination;
-
             int charsWritten = 0;
             int tupleLength = tuple.Length;
 
             if (tupleLength == 1)
             {
-                destination[charsWritten++] = '(';
+                buffer[charsWritten++] = '(';
 
-                if (!TryFormatField(tuple[0], destination, buffer, ref charsWritten))
+                ReadOnlySpan<char> fieldSpan = tuple[0].AsSpan();
+                if (!fieldSpan.TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;
                 }
 
-                destination[charsWritten++] = ')';
+                charsWritten += fieldSpan.Length;
+                buffer[charsWritten++] = ')';
 
                 return true;
             }
 
-            destination[charsWritten++] = '(';
+            buffer[charsWritten++] = '(';
 
             for (int i = 0; i < tupleLength; i++)
             {
                 if (i > 0)
                 {
-                    destination[charsWritten++] = ',';
-                    destination[charsWritten++] = ' ';
+                    buffer[charsWritten++] = ',';
+                    buffer[charsWritten++] = ' ';
 
                     buffer.Clear();
                 }
 
-                if (!TryFormatField(tuple[i], destination, buffer, ref charsWritten))
+                ReadOnlySpan<char> fieldSpan = tuple[i].AsSpan();
+                if (!fieldSpan.TryCopyTo(buffer[charsWritten..]))
                 {
                     return false;
                 }
+
+                charsWritten += fieldSpan.Length;
             }
 
-            destination[charsWritten++] = ')';
+            buffer[charsWritten++] = ')';
 
             return true;
-
-            static bool TryFormatField(string field, Span<char> tupleSpan, Span<char> fieldSpan, ref int charsWritten)
-            {
-                foreach (ref char @char in field.AsSpan())
-                {
-                    if (!@char.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
-                    {
-                        charsWritten = 0;
-                        return false;
-                    }
-                }
-
-                fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
-                charsWritten += fieldCharsWritten;
-
-                return true;
-            }
         }
 
         public Span<char> GetResult()

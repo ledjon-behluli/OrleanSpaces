@@ -312,3 +312,11 @@ internal static class Extensions
        where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 }
+
+internal readonly struct CharFormatter : IBufferBooleanResultConsumer<char>
+{
+    public bool Consume(ref Span<char> buffer)
+    {
+        throw new NotImplementedException();
+    }
+}
