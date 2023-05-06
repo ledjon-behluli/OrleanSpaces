@@ -247,7 +247,7 @@ internal static class Helpers
         }
 
         // Its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples,
-        // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength < 1024 bytes]
+        // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
         Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
 
         if (tupleLength == 1)
