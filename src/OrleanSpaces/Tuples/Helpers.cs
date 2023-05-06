@@ -18,17 +18,17 @@ internal static class Helpers
        type == typeof(Guid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Execute<T>(this IBufferConsumer<T> consumer, int slots)
+    public static bool Execute<T>(this IBufferConsumer<T> consumer, int capacity)
        where T : unmanaged
     {
-        if (slots * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
+        if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
         {
-            Span<T> buffer = stackalloc T[slots];
+            Span<T> buffer = stackalloc T[capacity];
             return consumer.Consume(ref buffer);
         }
-        else if (slots <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        else if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
         {
-            T[] pooledArray = ArrayPool<T>.Shared.Rent(slots);
+            T[] pooledArray = ArrayPool<T>.Shared.Rent(capacity);
             Span<T> buffer = pooledArray.AsSpan();
 
             bool result = consumer.Consume(ref buffer);
@@ -39,7 +39,7 @@ internal static class Helpers
         }
         else
         {
-            T[] array = new T[slots];
+            T[] array = new T[capacity];
             Span<T> buffer = array.AsSpan();
 
             return consumer.Consume(ref buffer);
@@ -89,14 +89,14 @@ internal static class Helpers
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal slots beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal capacity beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller)
         where TIn : struct
         where TOut : unmanaged, INumber<TOut>
         => ParallelEquals(marshaller.Left, marshaller.Right);
 
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal slots beforehand.</i></remarks>
+    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal capacity beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : unmanaged, INumber<T>
@@ -138,7 +138,7 @@ internal static class Helpers
         int remaining = length - i;
         if (remaining < 1)
         {
-            return true;  // means [slots % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
+            return true;  // means [capacity % vCount = 0] therefor all elements have been compared (in parallel), and none were different (otherwise 'false' would have been returned) 
         }
 
         if (remaining == 1)

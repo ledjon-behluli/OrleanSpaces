@@ -19,11 +19,13 @@ using System.Runtime.Intrinsics;
 //CharTuple chars = new CharTuple('a', 'b', 'c');
 //Console.WriteLine($"{chars}");
 
-Console.WriteLine($"{new StringTuple()}");
-Console.WriteLine($"{new StringTuple("a")}");
-Console.WriteLine($"{new StringTuple("ab")}");
-Console.WriteLine($"{new StringTuple("a", "ab")}");
-Console.WriteLine($"{new StringTuple("a", "ab", "abc")}");
-Console.WriteLine($"{new StringTuple("a", "ab", "abc", "abcd")}");
+DecimalTuple decimals = new DecimalTuple(1, 2, 3);
+
+//Console.WriteLine($"{new StringTuple()}");
+//Console.WriteLine($"{new StringTuple("a")}");
+//Console.WriteLine($"{new StringTuple("ab")}");
+//Console.WriteLine($"{new StringTuple("a", "ab")}");
+//Console.WriteLine($"{new StringTuple("a", "ab", "abc")}");
+//Console.WriteLine($"{new StringTuple("a", "ab", "abc", "abcd")}");
 
 Console.ReadKey();

@@ -46,7 +46,7 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                 return fields[0] == other.fields[0];
             }
 
-            int slots = 0;
+            int capacity = 0;
 
             for (int i = 0; i < Length; i++)
             {
@@ -61,10 +61,10 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
                     return false;
                 }
 
-                slots += 2 * thisCharLength;
+                capacity += 2 * thisCharLength;
             }
 
-            return new Comparer(this, other).Execute(slots);
+            return new Comparer(this, other).Execute(capacity);
         }
 
         return this.SequentialEquals(other);
@@ -84,9 +84,8 @@ public readonly struct StringTuple : IObjectTuple<string, StringTuple>, ISpanFor
             return true;
         }
 
-        int totalLength = CalculateTotalLength(this);
-
-        return new Formatter(this).Execute(totalLength);
+        int capacity = CalculateTotalLength(this);
+        return new Formatter(this).Execute(capacity);
 
         static int CalculateTotalLength(StringTuple tuple)
         {
