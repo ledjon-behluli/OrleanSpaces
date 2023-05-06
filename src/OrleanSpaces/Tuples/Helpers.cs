@@ -47,7 +47,6 @@ internal static class Helpers
         }
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool result)
         where T : unmanaged, INumber<T>
@@ -244,7 +243,7 @@ internal static class Helpers
         }
 
         int totalLength = CalculateTotalLength(tuple.Length, maxFieldCharLength);
-        Formatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
+        ValueTupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
 
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
         // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
@@ -272,80 +271,4 @@ internal static class Helpers
        where TIn : struct
        where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-}
-
-internal struct Formatter<T, TSelf> : IBufferConsumer<char>
-    where T : struct, ISpanFormattable
-    where TSelf : IValueTuple<T, TSelf>
-{
-    private readonly int maxFieldCharLength;
-    private readonly IValueTuple<T, TSelf> tuple;
-
-    private int charsWritten;
-
-    public Formatter(IValueTuple<T, TSelf> tuple, int maxFieldCharLength, ref int charsWritten)
-    {
-        this.tuple = tuple;
-        this.maxFieldCharLength = maxFieldCharLength;
-        this.charsWritten = charsWritten;
-    }
-
-    public bool Consume(ref Span<char> buffer)
-    {
-        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
-
-        buffer.Clear();
-        fieldSpan.Clear();
-
-        int tupleLength = tuple.Length;
-        if (tupleLength == 1)
-        {
-            buffer[charsWritten++] = '(';
-
-            if (!TryFormatField(in tuple[0], fieldSpan, buffer, ref charsWritten))
-            {
-                return false;
-            }
-
-            buffer[charsWritten++] = ')';
-
-            return true;
-        }
-
-        buffer[charsWritten++] = '(';
-
-        for (int i = 0; i < tupleLength; i++)
-        {
-            if (i > 0)
-            {
-                buffer[charsWritten++] = ',';
-                buffer[charsWritten++] = ' ';
-
-                fieldSpan.Clear();
-            }
-
-            if (!TryFormatField(in tuple[i], fieldSpan, buffer, ref charsWritten))
-            {
-                return false;
-            }
-        }
-
-        buffer[charsWritten++] = ')';
-
-        return true;
-    }
-
-    private static bool TryFormatField(in T field, Span<char> fieldSpan, Span<char> destination, ref int charsWritten)
-    {
-        if (!field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null))
-        {
-            charsWritten = 0;
-            return false;
-        }
-
-        fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
-        charsWritten += fieldCharsWritten;
-
-        return true;
-    }
 }
