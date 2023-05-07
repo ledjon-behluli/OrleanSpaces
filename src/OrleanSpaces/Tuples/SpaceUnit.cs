@@ -7,23 +7,24 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
-public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
+//TODO: Make this a ref struct 
+public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
 {
     internal const string DefaultString = "{NULL}";
     internal static readonly SpaceUnit Default = new();
 
-    int ISpaceTuple.Length => 1;
-    SpaceUnit IObjectTuple<SpaceUnit, SpaceUnit>.this[int index] => index == 0 ? this : throw new IndexOutOfRangeException();
+    ref readonly SpaceUnit ISpaceTuple<SpaceUnit, SpaceUnit>.this[int index] => throw new NotImplementedException();
+    int ISpaceTuple<SpaceUnit, SpaceUnit>.Length => 1;
 
     /// <summary>
     /// Default and only constructor. 
     /// </summary>
     public SpaceUnit() { }
-    
+
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types are always equal to each other.")]
     public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
 
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")] 
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")]
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;
 
     /// <summary>
@@ -38,7 +39,6 @@ public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanForm
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>Always <see langword="true"/>, which means that this object is equal to any other instance of <see cref="SpaceUnit"/>.</returns>
     public bool Equals(SpaceUnit other) => true;
-
     /// <summary>
     /// Compares the current object with another object of the same type.
     /// </summary>
@@ -49,8 +49,7 @@ public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanForm
     public override int GetHashCode() => 0;
     public override string ToString() => DefaultString;
 
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "For consistency with other implementations.")]
-    public bool TryFormat(Span<char> destination, out int charsWritten)
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
         ReadOnlySpan<char> span = DefaultString.AsSpan();
 
@@ -65,9 +64,6 @@ public readonly struct SpaceUnit : IObjectTuple<SpaceUnit, SpaceUnit>, ISpanForm
 
         return true;
     }
-
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => TryFormat(destination, out charsWritten);
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 }

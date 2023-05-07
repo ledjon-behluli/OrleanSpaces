@@ -239,7 +239,7 @@ public class DateTimeTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeTuple : IValueTuple<DateTime, SequentialDateTimeTuple>
+    private readonly struct SequentialDateTimeTuple : ISpaceTuple<DateTime, SequentialDateTimeTuple>
     {
         private readonly DateTime[] fields;
 

@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : IValueTuple<char, CharTuple>, ISpanFormattable
+public readonly struct CharTuple : ISpaceTuple<char, CharTuple>, ISpanFormattable
 {
     /// <summary>
     /// 

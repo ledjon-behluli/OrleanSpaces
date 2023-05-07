@@ -238,7 +238,7 @@ public class CharTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialCharTuple : IValueTuple<char, SequentialCharTuple>
+    private readonly struct SequentialCharTuple : ISpaceTuple<char, SequentialCharTuple>
     {
         private readonly char[] fields;
 

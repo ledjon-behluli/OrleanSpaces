@@ -1,15 +1,15 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-internal struct ValueTupleFormatter<T, TSelf> : IBufferConsumer<char>
+internal struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
     where T : struct, ISpanFormattable
-    where TSelf : IValueTuple<T, TSelf>
+    where TSelf : ISpaceTuple<T, TSelf>
 {
     private readonly int maxFieldCharLength;
-    private readonly IValueTuple<T, TSelf> tuple;
+    private readonly ISpaceTuple<T, TSelf> tuple;
 
     private int charsWritten;
 
-    public ValueTupleFormatter(IValueTuple<T, TSelf> tuple, int maxFieldCharLength, ref int charsWritten)
+    public TupleFormatter(ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, ref int charsWritten)
     {
         this.tuple = tuple;
         this.maxFieldCharLength = maxFieldCharLength;
@@ -17,7 +17,9 @@ internal struct ValueTupleFormatter<T, TSelf> : IBufferConsumer<char>
     }
 
     public bool Consume(ref Span<char> buffer)
-    {
+    {   
+        buffer.Clear();  // we dont know if the memory represented by the span might comes from the runtime and it may contain garbage values, so we clear it.
+
         charsWritten = 0;
 
         if (tuple.Length == 0)

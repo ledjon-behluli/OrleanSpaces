@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -67,7 +67,7 @@ public readonly struct DecimalTuple : IValueTuple<decimal, DecimalTuple>, ISpanF
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
-    internal readonly struct Comparer : IBufferConsumer<int>
+    readonly struct Comparer : IBufferConsumer<int>
     {
         private readonly DecimalTuple left;
         private readonly DecimalTuple right;

@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct TimeSpanTuple : IValueTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
+public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
 {
     /// <summary>
     /// 

@@ -238,7 +238,7 @@ public class BoolTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialBoolTuple : IValueTuple<bool, SequentialBoolTuple>
+    private readonly struct SequentialBoolTuple : ISpaceTuple<bool, SequentialBoolTuple>
     {
         private readonly bool[] fields;
 

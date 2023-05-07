@@ -239,7 +239,7 @@ public class DecimalTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDecimalTuple : IValueTuple<decimal, SequentialDecimalTuple>
+    private readonly struct SequentialDecimalTuple : ISpaceTuple<decimal, SequentialDecimalTuple>
     {
         private readonly decimal[] fields;
 

@@ -239,7 +239,7 @@ public class TimeSpanTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialTimeSpanTuple : IValueTuple<TimeSpan, SequentialTimeSpanTuple>
+    private readonly struct SequentialTimeSpanTuple : ISpaceTuple<TimeSpan, SequentialTimeSpanTuple>
     {
         private readonly TimeSpan[] fields;
 

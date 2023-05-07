@@ -1,5 +1,4 @@
-﻿using OrleanSpaces.Tuples.Typed;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -48,9 +47,9 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this INumericValueTuple<T, TSelf> left, INumericValueTuple<T, TSelf> right, out bool result)
+    public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool result)
         where T : unmanaged, INumber<T>
-        where TSelf : INumericValueTuple<T, TSelf>
+        where TSelf : INumericTuple<T, TSelf>
     {
         result = false;
 
@@ -181,9 +180,8 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T, TSelf>(this IObjectTuple<T, TSelf> left, IObjectTuple<T, TSelf> right)
-        where T : notnull
-        where TSelf : IObjectTuple<T, TSelf>
+    public static bool SequentialEquals<TSelf>(this ISpaceTuple<TSelf> left, ISpaceTuple<TSelf> right)
+        where TSelf : ISpaceTuple<TSelf>
     {
         int length = left.Length;
         if (length != right.Length)
@@ -203,9 +201,9 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T, TSelf>(this IValueTuple<T, TSelf> left, IValueTuple<T, TSelf> right)
-         where T : struct
-         where TSelf : IValueTuple<T, TSelf>
+    public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
+         where T : notnull
+         where TSelf : ISpaceTuple<T, TSelf>
     {
         int length = left.Length;
         if (length != right.Length)
@@ -228,17 +226,18 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this IValueTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
-        where T : struct, ISpanFormattable
-        where TSelf : IValueTuple<T, TSelf>
+    public static bool TryFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+       where T : struct, ISpanFormattable
+       where TSelf : ISpaceTuple<T, TSelf>
     {
         charsWritten = 0;
         int totalLength = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
 
-        ValueTupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
+        TupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
 
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
         // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
+
         return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
     }
 

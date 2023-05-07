@@ -239,7 +239,7 @@ public class DateTimeOffsetTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeOffsetTuple : IValueTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
+    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
     {
         private readonly DateTimeOffset[] fields;
 

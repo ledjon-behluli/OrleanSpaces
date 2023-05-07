@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattable
+public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattable
 {
     /// <summary>
     /// 
@@ -37,77 +37,42 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        // Since `bool` does not implement `ISpanFormattable`, we cant use `Extensions.TryFormat` and are forced
-        // to implement it here. See: https://github.com/dotnet/runtime/issues/67388
+        // Since `bool` does not implement `ISpanFormattable` (See: https://github.com/dotnet/runtime/issues/67388),
+        // we cant use `Helpers.TryFormat`, and are forced to wrap it in a struct that implements it.
 
-        destination.Clear();  // we dont know if the memory represented by the span might contain garbage values, so we clear it.
         charsWritten = 0;
 
         int tupleLength = Length;
         int totalLength = Helpers.CalculateTotalCharLength(tupleLength, MaxFieldCharLength);
 
-        if (tupleLength == 0)
-        {
-            destination[charsWritten++] = '(';
-            destination[charsWritten++] = ')';
-
-            return true;
-        }
-
-        Span<char> fieldSpan = stackalloc char[MaxFieldCharLength];
-
-        if (tupleLength == 1)
-        {
-            destination[charsWritten++] = '(';
-
-            if (!TryFormatField(fields[0], fieldSpan, destination, ref charsWritten))
-            {
-                return false;
-            }
-
-            destination[charsWritten++] = ')';
-
-            return true;
-        }
-
-        destination[charsWritten++] = '(';
-
+        // TODO: Benchmark & try-imporove this conversion
+        SFBool[] sfBools = new SFBool[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {
-            if (i > 0)
-            {
-                destination[charsWritten++] = ',';
-                destination[charsWritten++] = ' ';
-
-                fieldSpan.Clear();
-            }
-
-            if (!TryFormatField(fields[i], fieldSpan, destination, ref charsWritten))
-            {
-                return false;
-            }
+            sfBools[i] = new(this[i]);
         }
 
-        destination[charsWritten++] = ')';
-
-        return true;
-
-        static bool TryFormatField(bool field, Span<char> fieldSpan, Span<char> tupleSpan, ref int charsWritten)
-        {
-            if (!field.TryFormat(fieldSpan, out int fieldCharsWritten))
-            {
-                charsWritten = 0;
-                return false;
-            }
-
-            fieldSpan[..fieldCharsWritten].CopyTo(tupleSpan.Slice(charsWritten, fieldCharsWritten));
-            charsWritten += fieldCharsWritten;
-
-            return true;
-        }
+        TupleFormatter<SFBool, SFBoolTuple> formatter = new(new SFBoolTuple(sfBools), MaxFieldCharLength, ref charsWritten);
+        return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
     }
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
+
+    readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool, SFBoolTuple>
+    {
+        public ref readonly SFBool this[int index] => ref Values[index];
+        public int Length => Values.Length;
+
+        public int CompareTo(SFBoolTuple other) => Length.CompareTo(other.Length);
+    }
+
+    readonly record struct SFBool(bool Value) : ISpanFormattable
+    {
+        public string ToString(string? format, IFormatProvider? formatProvider) => Value.ToString();
+
+        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            => Value.TryFormat(destination, out charsWritten);
+    }
 }
