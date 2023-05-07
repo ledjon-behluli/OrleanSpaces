@@ -15,7 +15,7 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
 
     private readonly string[] fields;
 
-    public ref string this[int index] => ref fields[index];
+    public ref readonly string this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public StringTuple() : this(Array.Empty<string>()) { }

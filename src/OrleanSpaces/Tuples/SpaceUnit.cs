@@ -7,14 +7,11 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
-//TODO: Make this a ref struct 
-public readonly struct SpaceUnit : ISpaceTuple<SpaceUnit, SpaceUnit>, ISpanFormattable
+public readonly struct SpaceUnit : ISpanFormattable, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
+    , ISpaceTuple //TODO: Consider not making this implement 'ISpaceTuple', and instead create a 'TerminationTuple'
 {
     internal const string DefaultString = "{NULL}";
     internal static readonly SpaceUnit Default = new();
-
-    ref readonly SpaceUnit ISpaceTuple<SpaceUnit, SpaceUnit>.this[int index] => throw new NotImplementedException();
-    int ISpaceTuple<SpaceUnit, SpaceUnit>.Length => 1;
 
     /// <summary>
     /// Default and only constructor. 
