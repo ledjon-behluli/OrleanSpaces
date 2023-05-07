@@ -233,16 +233,8 @@ internal static class Helpers
         where TSelf : IValueTuple<T, TSelf>
     {
         charsWritten = 0;
+        int totalLength = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
 
-        if (tuple.Length == 0)
-        {
-            destination[charsWritten++] = '(';
-            destination[charsWritten++] = ')';
-
-            return true;
-        }
-
-        int totalLength = CalculateTotalLength(tuple.Length, maxFieldCharLength);
         ValueTupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
 
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
@@ -251,7 +243,7 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateTotalLength(int tupleLength, int maxFieldCharLength)
+    public static int CalculateTotalCharLength(int tupleLength, int maxFieldCharLength)
     {
         int separatorsCount = 0;
         int destinationSpanLength = 0;

@@ -44,7 +44,7 @@ public readonly struct BoolTuple : IValueTuple<bool, BoolTuple>, ISpanFormattabl
         charsWritten = 0;
 
         int tupleLength = Length;
-        int totalLength = Helpers.CalculateTotalLength(tupleLength, MaxFieldCharLength);
+        int totalLength = Helpers.CalculateTotalCharLength(tupleLength, MaxFieldCharLength);
 
         if (tupleLength == 0)
         {

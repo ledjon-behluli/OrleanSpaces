@@ -18,7 +18,20 @@ internal struct ValueTupleFormatter<T, TSelf> : IBufferConsumer<char>
 
     public bool Consume(ref Span<char> buffer)
     {
-        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
+        charsWritten = 0;
+
+        if (tuple.Length == 0)
+        {
+            buffer[charsWritten++] = '(';
+            buffer[charsWritten++] = ')';
+
+            return true;
+        }
+
+        // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples,
+        // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
+
+        Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
 
         buffer.Clear();
         fieldSpan.Clear();
