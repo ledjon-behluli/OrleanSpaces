@@ -86,7 +86,7 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
         }
 
         TupleFormatter<SFString, SFStringTuple> formatter = new(new SFStringTuple(sfStrings), MaxFieldCharLength, ref charsWritten);
-        return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
+        return formatter.TryFormat(totalLength, destination);
 
         static int CalculateTotalLength(StringTuple tuple)
         {

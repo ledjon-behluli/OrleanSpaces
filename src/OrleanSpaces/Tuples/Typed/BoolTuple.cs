@@ -53,7 +53,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
         }
 
         TupleFormatter<SFBool, SFBoolTuple> formatter = new(new SFBoolTuple(sfBools), MaxFieldCharLength, ref charsWritten);
-        return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
+        return formatter.TryFormat(totalLength, destination);
     }
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
