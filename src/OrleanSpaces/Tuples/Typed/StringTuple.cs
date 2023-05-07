@@ -1,4 +1,5 @@
-﻿using Orleans.Concurrency;
+﻿using Newtonsoft.Json.Linq;
+using Orleans.Concurrency;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
@@ -74,9 +75,17 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
     {
         charsWritten = 0;
 
+        int tupleLength = Length;
         int totalLength = CalculateTotalLength(this);
-        TupleFormatter<string, StringTuple> formatter = new(this, MaxFieldCharLength, ref charsWritten);
 
+        // TODO: Benchmark & try-imporove this conversion
+        SFString[] sfStrings = new SFString[tupleLength];
+        for (int i = 0; i < tupleLength; i++)
+        {
+            sfStrings[i] = new(this[i]);
+        }
+
+        TupleFormatter<SFString, SFStringTuple> formatter = new(new SFStringTuple(sfStrings), MaxFieldCharLength, ref charsWritten);
         return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
 
         static int CalculateTotalLength(StringTuple tuple)
@@ -96,96 +105,36 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
         }
     }
 
-    //bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-    //{
-    //    destination.Clear();  // we don't know if the memory represented by the span might contain garbage values, so we clear it.
-    //    charsWritten = 0;
-
-    //    int tupleLength = Length;
-    //    if (tupleLength == 0)
-    //    {
-    //        destination[charsWritten++] = '(';
-    //        destination[charsWritten++] = ')';
-
-    //        return true;
-    //    }
-
-    //    int capacity = CalculateTotalLength(this);
-    //    return new Formatter(this).Execute(capacity);
-
-    //    static int CalculateTotalLength(StringTuple tuple)
-    //    {
-    //        int totalChars = 0;
-    //        int length = tuple.Length;
-
-    //        for (int i = 0; i < length; i++)
-    //        {
-    //            totalChars += tuple[i].Length;
-    //        }
-
-    //        int separatorsCount = length == 0 ? 0 : 2 * (length - 1);
-    //        int totalLength = 2 + totalChars + separatorsCount;
-
-    //        return totalLength;
-    //    }
-    //}
-
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly struct Formatter : IBufferConsumer<char>
+    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString, SFStringTuple>
     {
-        private readonly StringTuple tuple;
+        public ref readonly SFString this[int index] => ref Values[index];
+        public int Length => Values.Length;
 
-        public Formatter(StringTuple tuple)
+        public int CompareTo(SFStringTuple other) => Length.CompareTo(other.Length);
+    }
+
+    readonly record struct SFString(string Value) : ISpanFormattable
+    {
+        public string ToString(string? format, IFormatProvider? formatProvider) => Value;
+
+        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
         {
-            this.tuple = tuple;
-        }
+            ReadOnlySpan<char> chars = Value.AsSpan();
 
-        public bool Consume(ref Span<char> buffer)
-        {
-            int charsWritten = 0;
-            int tupleLength = tuple.Length;
-
-            if (tupleLength == 1)
+            if (chars.TryCopyTo(destination))
             {
-                buffer[charsWritten++] = '(';
-
-                string field = tuple[0];    // no allocation, as we are accessing the reference to the string field at the 0-th position in the array.
-                if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
-                {
-                    return false;
-                }
-
-                charsWritten += field.Length;
-                buffer[charsWritten++] = ')';
-
+                charsWritten = chars.Length;
                 return true;
             }
-
-            buffer[charsWritten++] = '(';
-
-            for (int i = 0; i < tupleLength; i++)
+            else
             {
-                if (i > 0)
-                {
-                    buffer[charsWritten++] = ',';
-                    buffer[charsWritten++] = ' ';
-                }
-
-                string field = tuple[i];    // no allocation, as we are accessing the reference to the string field at the i-th position in the array.
-                if (!field.AsSpan().TryCopyTo(buffer[charsWritten..]))
-                {
-                    return false;
-                }
-
-                charsWritten += field.Length;
+                charsWritten = 0;
+                return false;
             }
-
-            buffer[charsWritten++] = ')';
-
-            return true;
         }
     }
 

@@ -180,27 +180,6 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<TSelf>(this ISpaceTuple<TSelf> left, ISpaceTuple<TSelf> right)
-        where TSelf : ISpaceTuple<TSelf>
-    {
-        int length = left.Length;
-        if (length != right.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < length; i++)
-        {
-            if (!left[i].Equals(right[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
          where T : notnull
          where TSelf : ISpaceTuple<T, TSelf>
@@ -238,6 +217,17 @@ internal static class Helpers
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
         // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
 
+        return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool TryFormat<T, TSelf>(this TupleFormatter<T, TSelf> formatter, int totalLength, Span<char> destination)
+       where T : struct, ISpanFormattable
+       where TSelf : ISpaceTuple<T, TSelf>
+    {
+        // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
+        // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
+        
         return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
     }
 
