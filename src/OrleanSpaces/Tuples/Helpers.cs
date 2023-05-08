@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -194,9 +195,7 @@ internal static class Helpers
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
         // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
 
-        bool result = destination.Length < totalLength ? formatter.Execute(totalLength, out charsWritten) : formatter.Consume(ref destination, out charsWritten);
-        charsWritten--;
-        return result;
+        return destination.Length < totalLength ? formatter.Execute(totalLength, out charsWritten) : formatter.Consume(ref destination, out charsWritten);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
