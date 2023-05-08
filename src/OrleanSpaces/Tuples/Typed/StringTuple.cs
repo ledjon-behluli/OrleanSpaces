@@ -78,7 +78,6 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
         int tupleLength = Length;
         int totalLength = CalculateTotalLength(this);
 
-        // TODO: Benchmark & try-imporove this conversion
         SFString[] sfStrings = new SFString[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {

@@ -45,7 +45,6 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
         int tupleLength = Length;
         int totalLength = Helpers.CalculateTotalCharLength(tupleLength, MaxFieldCharLength);
 
-        // TODO: Benchmark & try-imporove this conversion
         SFBool[] sfBools = new SFBool[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {
