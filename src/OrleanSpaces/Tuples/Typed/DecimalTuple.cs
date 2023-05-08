@@ -49,7 +49,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanF
             }
 
             int capacity = 8 * Length;  // 8x because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
-            return new Comparer(this, other).Execute(capacity);
+            return new Comparer(this, other).Execute(capacity, out _);
         }
 
         return this.SequentialEquals(other);
@@ -78,8 +78,10 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanF
             this.right = right;
         }
 
-        public bool Consume(ref Span<int> buffer)
+        public bool Consume(ref Span<int> buffer, out int _)
         {
+            _ = 0;
+
             int tupleLength = left.Length;
             int bufferHalfLength = buffer.Length / 2;
 

@@ -3,5 +3,5 @@
 internal interface IBufferConsumer<T>
     where T : unmanaged
 {
-    bool Consume(ref Span<T> buffer);
+    bool Consume(ref Span<T> buffer, out int charsWritten);
 }

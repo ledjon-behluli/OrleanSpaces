@@ -65,7 +65,7 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
                 capacity += 2 * thisCharLength;
             }
 
-            return new Comparer(this, other).Execute(capacity);
+            return new Comparer(this, other).Execute(capacity, out _);
         }
 
         return this.SequentialEquals(other);
@@ -73,8 +73,6 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        charsWritten = 0;
-
         int tupleLength = Length;
         int totalLength = CalculateTotalLength(this);
 
@@ -84,8 +82,8 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
             sfStrings[i] = new(this[i]);
         }
 
-        TupleFormatter<SFString, SFStringTuple> formatter = new(new SFStringTuple(sfStrings), MaxFieldCharLength, ref charsWritten);
-        return formatter.TryFormat(totalLength, destination);
+        TupleFormatter<SFString, SFStringTuple> formatter = new(new SFStringTuple(sfStrings), MaxFieldCharLength);
+        return formatter.TryFormat(totalLength, destination, out charsWritten);
 
         static int CalculateTotalLength(StringTuple tuple)
         {
@@ -148,8 +146,10 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
             this.right = right;
         }
 
-        public bool Consume(ref Span<char> buffer)
-        {   
+        public bool Consume(ref Span<char> buffer, out int _)
+        {
+            _ = 0;
+
             int tupleLength = left.Length;
             int bufferHalfLength = buffer.Length / 2;
 

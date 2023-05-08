@@ -18,35 +18,6 @@ internal static class Helpers
        type == typeof(Guid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Execute<T>(this IBufferConsumer<T> consumer, int capacity)
-       where T : unmanaged
-    {
-        if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
-        {
-            Span<T> buffer = stackalloc T[capacity];
-            return consumer.Consume(ref buffer);
-        }
-        else if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
-        {
-            T[] pooledArray = ArrayPool<T>.Shared.Rent(capacity);
-            Span<T> buffer = pooledArray.AsSpan();
-
-            bool result = consumer.Consume(ref buffer);
-
-            ArrayPool<T>.Shared.Return(pooledArray);
-
-            return result;
-        }
-        else
-        {
-            T[] array = new T[capacity];
-            Span<T> buffer = array.AsSpan();
-
-            return consumer.Consume(ref buffer);
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool result)
         where T : unmanaged, INumber<T>
         where TSelf : INumericTuple<T, TSelf>
@@ -209,23 +180,52 @@ internal static class Helpers
        where T : struct, ISpanFormattable
        where TSelf : ISpaceTuple<T, TSelf>
     {
-        charsWritten = 0;
-        
         int totalLength = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
-        TupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength, ref charsWritten);
+        TupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength);
 
-        return formatter.TryFormat(totalLength, destination);
+        return formatter.TryFormat(totalLength, destination, out charsWritten);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this TupleFormatter<T, TSelf> formatter, int totalLength, Span<char> destination)
+    public static bool TryFormat<T, TSelf>(this TupleFormatter<T, TSelf> formatter, int totalLength, Span<char> destination, out int charsWritten)
        where T : struct, ISpanFormattable
        where TSelf : ISpaceTuple<T, TSelf>
     {
         // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
         // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
-        
-        return destination.Length < totalLength ? formatter.Execute(totalLength) : formatter.Consume(ref destination);
+
+        bool result = destination.Length < totalLength ? formatter.Execute(totalLength, out charsWritten) : formatter.Consume(ref destination, out charsWritten);
+        charsWritten--;
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Execute<T>(this IBufferConsumer<T> consumer, int capacity, out int charsWritten)
+       where T : unmanaged
+    {
+        if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
+        {
+            Span<T> buffer = stackalloc T[capacity];
+            return consumer.Consume(ref buffer, out charsWritten);
+        }
+        else if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        {
+            T[] pooledArray = ArrayPool<T>.Shared.Rent(capacity);
+            Span<T> buffer = pooledArray.AsSpan();
+
+            bool result = consumer.Consume(ref buffer, out charsWritten);
+
+            ArrayPool<T>.Shared.Return(pooledArray);
+
+            return result;
+        }
+        else
+        {
+            T[] array = new T[capacity];
+            Span<T> buffer = array.AsSpan();
+
+            return consumer.Consume(ref buffer, out charsWritten);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

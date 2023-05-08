@@ -40,8 +40,6 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
         // Since `bool` does not implement `ISpanFormattable` (See: https://github.com/dotnet/runtime/issues/67388),
         // we cant use `Helpers.TryFormat`, and are forced to wrap it in a struct that implements it.
 
-        charsWritten = 0;
-
         int tupleLength = Length;
         int totalLength = Helpers.CalculateTotalCharLength(tupleLength, MaxFieldCharLength);
 
@@ -51,8 +49,8 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
             sfBools[i] = new(this[i]);
         }
 
-        TupleFormatter<SFBool, SFBoolTuple> formatter = new(new SFBoolTuple(sfBools), MaxFieldCharLength, ref charsWritten);
-        return formatter.TryFormat(totalLength, destination);
+        TupleFormatter<SFBool, SFBoolTuple> formatter = new(new SFBoolTuple(sfBools), MaxFieldCharLength);
+        return formatter.TryFormat(totalLength, destination, out charsWritten);
     }
 
     string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();

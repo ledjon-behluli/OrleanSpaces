@@ -9,14 +9,7 @@
 //    Console.WriteLine(item);
 //}
 
-//CharTuple chars = new CharTuple('a', 'b', 'c');
-//Console.WriteLine($"{chars}");
-
-// 2 + 50 + (2 * 49)
-
-//Span<char> span = stackalloc char[250]; // 150
-
-Console.WriteLine($"{new IntTuple(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)}");
+//Console.WriteLine($"{new IntTuple(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)}");
 
 Console.WriteLine($"{new IntTuple(
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

@@ -1,27 +1,23 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-internal struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
+internal readonly struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
     where T : struct, ISpanFormattable
     where TSelf : ISpaceTuple<T, TSelf>
 {
     private readonly int maxFieldCharLength;
     private readonly ISpaceTuple<T, TSelf> tuple;
 
-    private int charsWritten;
-
-    public TupleFormatter(ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, ref int charsWritten)
+    public TupleFormatter(ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength)
     {
         this.tuple = tuple;
         this.maxFieldCharLength = maxFieldCharLength;
-        this.charsWritten = charsWritten;
     }
 
-    public bool Consume(ref Span<char> buffer)
-    {   
-        buffer.Clear();  // we dont know if the memory represented by the span might comes from the runtime and it may contain garbage values, so we clear it.
-
+    public bool Consume(ref Span<char> buffer, out int charsWritten)
+    {
         charsWritten = 0;
-
+        buffer.Clear();  // we dont know if the memory represented by the span might comes from the runtime and it may contain garbage values, so we clear it.
+        
         if (tuple.Length == 0)
         {
             buffer[charsWritten++] = '(';
@@ -34,8 +30,6 @@ internal struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
         // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
 
         Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
-
-        buffer.Clear();
         fieldSpan.Clear();
 
         int tupleLength = tuple.Length;
