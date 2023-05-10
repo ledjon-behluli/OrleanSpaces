@@ -37,7 +37,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        // Since `bool` does not implement `ISpanFormattable` (See: https://github.com/dotnet/runtime/issues/67388),
+        // Since `bool` does not implement `ISpanFormattable` (see: https://github.com/dotnet/runtime/issues/67388),
         // we cant use `Helpers.TryFormat`, and are forced to wrap it in a struct that implements it.
 
         int tupleLength = Length;

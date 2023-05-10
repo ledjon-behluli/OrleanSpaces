@@ -16,7 +16,7 @@ internal readonly struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
     public bool Consume(ref Span<char> buffer, out int charsWritten)
     {
         charsWritten = 0;
-        buffer.Clear();  // we dont know if the memory represented by the span might comes from the runtime and it may contain garbage values, so we clear it.
+        buffer.Clear(); // we dont know if the memory represented by the span might comes from the runtime and it may contain garbage values, so we clear it.
         
         if (tuple.Length == 0)
         {
@@ -26,10 +26,7 @@ internal readonly struct TupleFormatter<T, TSelf> : IBufferConsumer<char>
             return true;
         }
 
-        // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples,
-        // and has a finite value: [2 bytes (since 'char') * maxFieldCharLength <= 1024 bytes]
-
-        Span<char> fieldSpan = stackalloc char[maxFieldCharLength];
+        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value well below 1Kb
         fieldSpan.Clear();
 
         int tupleLength = tuple.Length;

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Orleans.Concurrency;
-using System.Diagnostics.CodeAnalysis;
+﻿using Orleans.Concurrency;
 using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -29,7 +27,6 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>, ISpanForm
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
-
 
     public override bool Equals(object? obj) => obj is StringTuple tuple && Equals(tuple);
 
