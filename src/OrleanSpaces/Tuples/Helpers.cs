@@ -1,8 +1,6 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -60,13 +58,6 @@ internal static class Helpers
         result = ParallelEquals(marshaller.Left, marshaller.Right);
         return true;
     }
-
-    /// <remarks><i>Ensure the <see cref="NumericMarshaller{TIn, TOut}.Left"/> and <see cref="NumericMarshaller{TIn, TOut}.Right"/> are of equal capacity beforehand.</i></remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller)
-        where TIn : struct
-        where TOut : unmanaged, INumber<TOut>
-        => ParallelEquals(marshaller.Left, marshaller.Right);
 
     /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal capacity beforehand.</i></remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

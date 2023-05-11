@@ -148,7 +148,8 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>
                 cursor += spanLength;
             }
 
-            return new NumericMarshaller<char, ushort>(leftSpan, rightSpan).ParallelEquals();
+            NumericMarshaller<char, ushort> marshaller = new(leftSpan, rightSpan);
+            return marshaller.Left.ParallelEquals(marshaller.Right);
         }
     }
 }

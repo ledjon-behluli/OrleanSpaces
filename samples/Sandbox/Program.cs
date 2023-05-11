@@ -2,8 +2,6 @@
 using OrleanSpaces.Tuples.Typed;
 using System.Runtime.CompilerServices;
 
-#region Test
-
 //Span<char> chars = stackalloc char[48];
 //bool result = new IntTuple(1, 1, 1).TryFormat(chars, out int w);
 
@@ -14,6 +12,30 @@ using System.Runtime.CompilerServices;
 //}
 
 
+Do(IntEnum.A);
+Do(LongEnum.A);
+Do(ByteEnum.A);
+
 Console.ReadKey();
 
-#endregion
+static void Do<T>(T obj) where T : unmanaged, Enum
+{
+    TypeCode underlyingType = Type.GetTypeCode(typeof(T));
+    Console.WriteLine($"The underlying type of {typeof(T).Name} is {underlyingType}");
+}
+
+
+public enum IntEnum
+{
+    A
+}
+
+public enum LongEnum : long
+{
+    A
+}
+
+public enum ByteEnum : byte
+{
+    A
+}

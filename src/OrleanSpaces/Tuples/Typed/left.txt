@@ -1,2 +1,2 @@
-Left: char, string, Enum
+Left: Enum
 ToDo: Add support for 'nint' & 'nuint'
