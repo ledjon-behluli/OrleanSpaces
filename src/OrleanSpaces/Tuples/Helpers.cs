@@ -240,20 +240,20 @@ internal static class Helpers
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity, out int charsWritten)
+    public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity)
        where T : unmanaged
     {
         if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
         {
             Span<T> buffer = stackalloc T[capacity];
-            return consumer.Consume(ref buffer, out charsWritten);
+            return consumer.Consume(ref buffer);
         }
         else
         {
             T[] array = Allocate<T>(capacity, out bool rented);
             Span<T> buffer = array.AsSpan();
 
-            bool result = consumer.Consume(ref buffer, out charsWritten);
+            bool result = consumer.Consume(ref buffer);
 
             if (rented)
             {
