@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples;
 
@@ -177,29 +178,69 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength, Span<char> destination, out int charsWritten)
+    public static ReadOnlySpan<char> AsSpan<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength)
        where T : struct, ISpanFormattable
        where TSelf : ISpaceTuple<T, TSelf>
     {
-        int totalLength = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
-        TupleFormatter<T, TSelf> formatter = new(tuple, maxFieldCharLength);
+        int capacity = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
+        char[] array = Allocate<char>(capacity, out bool rented);
 
-        return formatter.TryFormat(totalLength, destination, out charsWritten);
+        Span<char> buffer = array.AsSpan();
+
+        int index = 0;
+        buffer.Clear(); // we dont know if the memory represented by the span might contain garbage values, so we clear it.
+
+        if (tuple.Length == 0)
+        {
+            buffer[index++] = '(';
+            buffer[index++] = ')';
+        }
+
+        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value well below 1Kb
+        fieldSpan.Clear();
+
+        int tupleLength = tuple.Length;
+        if (tupleLength == 1)
+        {
+            buffer[index++] = '(';
+            FormatField(in tuple[0], fieldSpan, buffer, ref index);
+            buffer[index++] = ')';
+        }
+
+        buffer[index++] = '(';
+
+        for (int i = 0; i < tupleLength; i++)
+        {
+            if (i > 0)
+            {
+                buffer[index++] = ',';
+                buffer[index++] = ' ';
+                fieldSpan.Clear();
+            }
+
+            FormatField(in tuple[i], fieldSpan, buffer, ref index);
+        }
+
+        buffer[index++] = ')';
+
+        if (rented)
+        {
+            ArrayPool<char>.Shared.Return(array);
+        }
+
+        return buffer[..index];
+
+        static void FormatField(in T field, Span<char> fieldSpan, Span<char> destination, ref int charsWritten)
+        {
+            _ = field.TryFormat(fieldSpan, out int fieldCharsWritten, default, null);
+            fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
+            charsWritten += fieldCharsWritten;
+        }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryFormat<T, TSelf>(this TupleFormatter<T, TSelf> formatter, int totalLength, Span<char> destination, out int charsWritten)
-       where T : struct, ISpanFormattable
-       where TSelf : ISpaceTuple<T, TSelf>
-    {
-        // Depending on how large 'totalLength' is, the 'destination' which gets allocated from the runtime may not have enough capacity to accomodate the formatting
-        // of the tupe. In this case we use the 'Execute<T>' method which will make sure to allocate the right amount of memory efficiently and execute the formatting logic.
-
-        return destination.Length < totalLength ? formatter.Execute(totalLength, out charsWritten) : formatter.Consume(ref destination, out charsWritten);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Execute<T>(this IBufferConsumer<T> consumer, int capacity, out int charsWritten)
+    public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity, out int charsWritten)
        where T : unmanaged
     {
         if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
@@ -207,23 +248,34 @@ internal static class Helpers
             Span<T> buffer = stackalloc T[capacity];
             return consumer.Consume(ref buffer, out charsWritten);
         }
-        else if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        else
         {
-            T[] pooledArray = ArrayPool<T>.Shared.Rent(capacity);
-            Span<T> buffer = pooledArray.AsSpan();
+            T[] array = Allocate<T>(capacity, out bool rented);
+            Span<T> buffer = array.AsSpan();
 
             bool result = consumer.Consume(ref buffer, out charsWritten);
 
-            ArrayPool<T>.Shared.Return(pooledArray);
+            if (rented)
+            {
+                ArrayPool<T>.Shared.Return(array);
+            }
 
             return result;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T[] Allocate<T>(int capacity, out bool rented)
+    {
+        if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
+        {
+            rented = true;
+            return ArrayPool<T>.Shared.Rent(capacity);
+        }
         else
         {
-            T[] array = new T[capacity];
-            Span<T> buffer = array.AsSpan();
-
-            return consumer.Consume(ref buffer, out charsWritten);
+            rented = false;
+            return new T[capacity];
         }
     }
 

@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISpanFormattable
+public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>
 {
     /// <summary>
     /// 
@@ -35,10 +35,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, ISp
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
-
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }

@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Tuples.Typed;
+﻿using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Typed;
 using System.Runtime.CompilerServices;
 
 #region Test
@@ -12,9 +13,9 @@ using System.Runtime.CompilerServices;
 //    Console.WriteLine(item);
 //}
 
-//Console.WriteLine($"{new IntTuple(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)}");
+var a = new IntTuple(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-IntTuple intT = new IntTuple(
+var b = new IntTuple(
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -24,15 +25,9 @@ IntTuple intT = new IntTuple(
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-decimal orderAmount = 10.2322m;
-Console.WriteLine($"You owe: {orderAmount:C}");
+ReadOnlySpan<char> sa = a.AsSpan();
+ReadOnlySpan<char> sb = b.AsSpan();
 
-Console.WriteLine($"{intT:C}");
-
-
-//Console.WriteLine(string.Format("{0}", intT));
-Console.WriteLine(intT.Format());
-Console.WriteLine($"{intT}");
 
 //Console.WriteLine($"{new IntTuple(1, 10, 100)}");
 //Console.WriteLine($"{new BoolTuple(true, false, true)}");
@@ -44,5 +39,7 @@ Console.WriteLine($"{intT}");
 //Console.WriteLine($"{new StringTuple("a", "ab")}");
 //Console.WriteLine($"{new StringTuple("a", "ab", "abc")}");
 //Console.WriteLine($"{new StringTuple("a", "ab", "abc", "abcd")}");
+
+Console.ReadKey();
 
 #endregion

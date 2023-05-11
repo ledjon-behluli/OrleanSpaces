@@ -11,4 +11,6 @@ public interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, ICompar
 {
     ref readonly T this[int index] { get; }
     int Length { get; }
+
+    ReadOnlySpan<char> AsSpan();
 }

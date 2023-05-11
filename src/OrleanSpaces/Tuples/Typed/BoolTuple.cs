@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattable
+public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
 {
     /// <summary>
     /// 
@@ -35,13 +35,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
+
+    public ReadOnlySpan<char> AsSpan()
     {
         // Since `bool` does not implement `ISpanFormattable` (see: https://github.com/dotnet/runtime/issues/67388),
-        // we cant use `Helpers.TryFormat`, and are forced to wrap it in a struct that implements it.
+        // we cant use `Helpers.AsSpan`, and are forced to wrap it in a struct that implements it.
 
         int tupleLength = Length;
-        int totalLength = Helpers.CalculateTotalCharLength(tupleLength, MaxFieldCharLength);
 
         SFBool[] sfBools = new SFBool[tupleLength];
         for (int i = 0; i < tupleLength; i++)
@@ -49,18 +50,15 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, ISpanFormattabl
             sfBools[i] = new(this[i]);
         }
 
-        TupleFormatter<SFBool, SFBoolTuple> formatter = new(new SFBoolTuple(sfBools), MaxFieldCharLength);
-        return formatter.TryFormat(totalLength, destination, out charsWritten);
+        return new SFBoolTuple(sfBools).AsSpan(MaxFieldCharLength);
     }
-
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
-
-    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
 
     readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool, SFBoolTuple>
     {
         public ref readonly SFBool this[int index] => ref Values[index];
         public int Length => Values.Length;
+
+        public ReadOnlySpan<char> AsSpan() => new();
 
         public int CompareTo(SFBoolTuple other) => Length.CompareTo(other.Length);
     }

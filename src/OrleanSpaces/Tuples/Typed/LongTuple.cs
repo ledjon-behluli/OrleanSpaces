@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct LongTuple : INumericTuple<long, LongTuple>, ISpanFormattable
+public readonly struct LongTuple : INumericTuple<long, LongTuple>
 {
     /// <summary>
     /// 
@@ -33,10 +33,7 @@ public readonly struct LongTuple : INumericTuple<long, LongTuple>, ISpanFormatta
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
-
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }

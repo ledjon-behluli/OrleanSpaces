@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanFormattable
+public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
 {
     /// <summary>
     /// 
@@ -49,7 +49,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanF
             }
 
             int capacity = 8 * Length;  // 8x because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
-            return new Comparer(this, other).Execute(capacity, out _);
+            return new Comparer(this, other).AllocateAndExecute(capacity, out _);
         }
 
         return this.SequentialEquals(other);
@@ -60,10 +60,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>, ISpanF
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => this.TryFormat(MaxFieldCharLength, destination, out charsWritten);
-
-    string IFormattable.ToString(string? format, IFormatProvider? formatProvider) => ToString();
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
