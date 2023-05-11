@@ -88,7 +88,7 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>
         public ref readonly SFString this[int index] => ref Values[index];
         public int Length => Values.Length;
 
-        public ReadOnlySpan<char> AsSpan() => new();
+        public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
 
         public int CompareTo(SFStringTuple other) => Length.CompareTo(other.Length);
     }

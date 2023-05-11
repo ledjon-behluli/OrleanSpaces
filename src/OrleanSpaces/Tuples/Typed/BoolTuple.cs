@@ -58,7 +58,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
         public ref readonly SFBool this[int index] => ref Values[index];
         public int Length => Values.Length;
 
-        public ReadOnlySpan<char> AsSpan() => new();
+        public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
 
         public int CompareTo(SFBoolTuple other) => Length.CompareTo(other.Length);
     }

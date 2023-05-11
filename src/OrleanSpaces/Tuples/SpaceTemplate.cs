@@ -126,4 +126,8 @@ public readonly struct SpaceTemplate : ISpaceTuple<object, SpaceTemplate>
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
+
+    public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+
+    public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
 }
