@@ -40,7 +40,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
 
         if (Length == 1)
         {
-            return this[0] == other[0];
+            return this[0].Equals(other[0]);
         }
 
         if (!Vector.IsHardwareAccelerated)
@@ -48,17 +48,18 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
             return this.SequentialEquals(other);
         }
 
-        switch (typeCode)
+        return typeCode switch
         {
-            case TypeCode.Byte: return AreParallelEquals<byte>(in this, in other);
-            case TypeCode.SByte: return AreParallelEquals<sbyte>(in this, in other);
-            case TypeCode.Int16: return AreParallelEquals<short>(in this, in other);
-            case TypeCode.UInt16: return AreParallelEquals<ushort>(in this, in other);
-            case TypeCode.Int32: return AreParallelEquals<int>(in this, in other);
-            case TypeCode.UInt32: return AreParallelEquals<uint>(in this, in other);
-            case TypeCode.Int64: return AreParallelEquals<long>(in this, in other);
-            case TypeCode.UInt64: return AreParallelEquals<ulong>(in this, in other);
-        }
+            TypeCode.Byte => AreParallelEquals<byte>(in this, in other),
+            TypeCode.SByte => AreParallelEquals<sbyte>(in this, in other),
+            TypeCode.Int16 => AreParallelEquals<short>(in this, in other),
+            TypeCode.UInt16 => AreParallelEquals<ushort>(in this, in other),
+            TypeCode.Int32 => AreParallelEquals<int>(in this, in other),
+            TypeCode.UInt32 => AreParallelEquals<uint>(in this, in other),
+            TypeCode.Int64 => AreParallelEquals<long>(in this, in other),
+            TypeCode.UInt64 => AreParallelEquals<ulong>(in this, in other),
+            _ => throw new NotSupportedException() // will never reach this, because an enum can only "inherit" from the above types.
+        };
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
