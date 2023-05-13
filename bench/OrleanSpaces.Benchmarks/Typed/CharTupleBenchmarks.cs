@@ -250,6 +250,7 @@ public class CharTupleBenchmarks
 
         public bool Equals(SequentialCharTuple other) => this.SequentialEquals(other);
         public int CompareTo(SequentialCharTuple other) => throw new NotImplementedException();
+        public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 
     #endregion

@@ -1,13 +1,13 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples;
 
 [ShortRunJob] //TODO: Remove
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.Declared)]
-public class TimeSpanTupleBenchmarks
+public class EnumTupleBenchmarks
 {
     private const int iterations = 100_000;
 

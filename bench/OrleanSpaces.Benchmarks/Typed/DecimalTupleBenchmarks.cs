@@ -251,6 +251,7 @@ public class DecimalTupleBenchmarks
 
         public bool Equals(SequentialDecimalTuple other) => this.SequentialEquals(other);
         public int CompareTo(SequentialDecimalTuple other) => throw new NotImplementedException();
+        public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 
     #endregion

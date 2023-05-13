@@ -251,6 +251,7 @@ public class DateTimeTupleBenchmarks
 
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);
         public int CompareTo(SequentialDateTimeTuple other) => throw new NotImplementedException();
+        public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 
     #endregion

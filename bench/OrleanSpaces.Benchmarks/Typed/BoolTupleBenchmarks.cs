@@ -250,6 +250,7 @@ public class BoolTupleBenchmarks
 
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
         public int CompareTo(SequentialBoolTuple other) => throw new NotImplementedException();
+        public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 
     #endregion
