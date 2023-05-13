@@ -10,6 +10,7 @@ using OrleanSpaces.Tuples;
 public class EnumTupleBenchmarks
 {
     private const int iterations = 100_000;
+    private enum MyEnum : byte { A = 0 }
 
     #region Instantiation
 
@@ -18,17 +19,17 @@ public class EnumTupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
             _ = new SpaceTuple(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
     }
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateTimeSpanTuple()
+    public void InstantiateEnumTuple()
     {
         for (int i = 0; i < iterations; i++)
-            _ = new TimeSpanTuple(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            _ = new EnumTuple<MyEnum>(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
     }
 
     #endregion
@@ -40,17 +41,17 @@ public class EnumTupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            SpaceTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero);
+            SpaceTuple tuple = new(MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "XS"), Benchmark]
-    public void XS_TimeSpanTuple()
+    public void XS_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
@@ -60,17 +61,17 @@ public class EnumTupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            SpaceTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            SpaceTuple tuple = new(MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "S"), Benchmark]
-    public void S_TimeSpanTuple()
+    public void S_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
@@ -80,17 +81,17 @@ public class EnumTupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            SpaceTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            SpaceTuple tuple = new(MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "M"), Benchmark]
-    public void M_TimeSpanTuple()
+    public void M_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
             tuple.Equals(tuple);
         }
     }
@@ -101,22 +102,21 @@ public class EnumTupleBenchmarks
         for (int i = 0; i < iterations; i++)
         {
             SpaceTuple tuple = new(
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+               MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+               MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "L"), Benchmark]
-    public void L_TimeSpanTuple()
+    public void L_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
-
+            EnumTuple<MyEnum> tuple = new(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
@@ -128,25 +128,25 @@ public class EnumTupleBenchmarks
         for (int i = 0; i < iterations; i++)
         {
             SpaceTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "XL"), Benchmark]
-    public void XL_TimeSpanTuple()
+    public void XL_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
@@ -158,33 +158,33 @@ public class EnumTupleBenchmarks
         for (int i = 0; i < iterations; i++)
         {
             SpaceTuple tuple = new(
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
     [BenchmarkCategory("Equality", "XXL"), Benchmark]
-    public void XXL_TimeSpanTuple()
+    public void XXL_EnumTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
@@ -200,57 +200,57 @@ public class EnumTupleBenchmarks
         for (int i = 0; i < iterations; i++)
         {
             SpaceTuple tuple = new(
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-               TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
-    [BenchmarkCategory("Equality Type", "Sequential TimeSpanTuple"), Benchmark]
-    public void SequentialTimeSpanTupleEquality()
+    [BenchmarkCategory("Equality Type", "Sequential EnumTuple"), Benchmark]
+    public void SequentialEnumTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
-            SequentialTimeSpanTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            SequentialEnumTuple tuple = new(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
-    [BenchmarkCategory("Equality Type", "Parallel TimeSpanTuple"), Benchmark]
-    public void ParallelTimeSpanTupleEquality()
+    [BenchmarkCategory("Equality Type", "Parallel EnumTuple"), Benchmark]
+    public void ParallelEnumTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
-            TimeSpanTuple tuple = new(
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero,
-                TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero, TimeSpan.Zero);
+            EnumTuple<MyEnum> tuple = new(
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A,
+                MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A, MyEnum.A);
 
             tuple.Equals(tuple);
         }
     }
 
-    private readonly struct SequentialTimeSpanTuple : ISpaceTuple<TimeSpan, SequentialTimeSpanTuple>
+    private readonly struct SequentialEnumTuple : ISpaceTuple<MyEnum, SequentialEnumTuple>
     {
-        private readonly TimeSpan[] fields;
+        private readonly MyEnum[] fields;
 
-        public ref readonly TimeSpan this[int index] => ref fields[index];
+        public ref readonly MyEnum this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialTimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }
-        public SequentialTimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;
+        public SequentialEnumTuple() : this(Array.Empty<MyEnum>()) { }
+        public SequentialEnumTuple(params MyEnum[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialTimeSpanTuple other) => throw new NotImplementedException();
+        public bool Equals(SequentialEnumTuple other) => this.SequentialEquals(other);
+        public int CompareTo(SequentialEnumTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

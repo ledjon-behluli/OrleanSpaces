@@ -18,7 +18,7 @@ public class TestBench
     {
         for (int i = 0; i < Iterations; i++)
         {
-            _ = new IntTuple(1, 1, 1, 1);
+         
         }
     }
 
@@ -28,7 +28,7 @@ public class TestBench
         Span<char> span = stackalloc char[48];
         for (int i = 0; i < Iterations; i++)
         {
-            _ = new IntTuple(1, 1, 1, 1).TryFormat(span, out _);
+            
         }
     }
 }

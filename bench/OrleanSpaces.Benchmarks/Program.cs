@@ -10,7 +10,8 @@
 //BenchmarkRunner.Consume<TimeSpanTupleBenchmarks>();
 //BenchmarkRunner.Consume<BoolTupleBenchmarks>();
 //BenchmarkRunner.Consume<DecimalTupleBenchmarks>();
-BenchmarkRunner.Run<CharTupleBenchmarks>();
+//BenchmarkRunner.Run<CharTupleBenchmarks>();
+BenchmarkRunner.Run<EnumTupleBenchmarks>();
 
 //BenchmarkRunner.Consume<TestBench>();
 
