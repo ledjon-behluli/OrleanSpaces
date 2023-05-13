@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -15,17 +16,12 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
     internal const int MaxFieldCharLength = 11;  // since the underlying type is an 'int', we will use the value.
 
     private readonly T[] fields;
-    private readonly TypeCode typeCode;
 
     public ref readonly T this[int index] => ref fields[index];
     public int Length => fields.Length;
 
     public EnumTuple() : this(Array.Empty<T>()) { }
-    public EnumTuple(params T[] fields)
-    {
-        this.fields = fields;
-        this.typeCode = Type.GetTypeCode(typeof(T));
-    }
+    public EnumTuple(params T[] fields) => this.fields = fields;
 
     public static bool operator ==(EnumTuple<T> left, EnumTuple<T> right) => left.Equals(right);
     public static bool operator !=(EnumTuple<T> left, EnumTuple<T> right) => !(left == right);
@@ -48,7 +44,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
             return this.SequentialEquals(other);
         }
 
-        return typeCode switch
+        return Type.GetTypeCode(typeof(T)) switch
         {
             TypeCode.Byte => AreParallelEquals<byte>(in this, in other),
             TypeCode.SByte => AreParallelEquals<sbyte>(in this, in other),
