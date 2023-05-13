@@ -1,2 +1,0 @@
-Left: Enum
-ToDo: Add support for 'nint' & 'nuint'
