@@ -32,40 +32,40 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>
 
     public bool Equals(StringTuple other)
     {
-        if (Vector.IsHardwareAccelerated)
+        if (Length != other.Length)
         {
-            if (Length != other.Length)
+            return false;
+        }
+
+        if (Length == 1)
+        {
+            return this[0] == other[0];
+        }
+
+        if (!Vector.IsHardwareAccelerated)
+        {
+            return this.SequentialEquals(other);
+        }
+
+        int capacity = 0;
+
+        for (int i = 0; i < Length; i++)
+        {
+            int thisCharLength = this[i].Length;
+            int otherCharLength = other.fields[i].Length;
+
+            if (thisCharLength != otherCharLength)
             {
+                // If the number of chars found in 'fields[i]' and 'other.fields[i]' are different, we dont need to perform any further equality checks
+                // as its evident that the tuples are different. For example: ("a", "b", "c") != ("a", "bb", "c")
+
                 return false;
             }
 
-            if (Length == 1)
-            {
-                return fields[0] == other.fields[0];
-            }
-
-            int capacity = 0;
-
-            for (int i = 0; i < Length; i++)
-            {
-                int thisCharLength = this[i].Length;
-                int otherCharLength = other.fields[i].Length;
-
-                if (thisCharLength != otherCharLength)
-                {
-                    // If the number of chars found in 'fields[i]' and 'other.fields[i]' are different, we dont need to perform any further equality checks
-                    // as its evident that the tuples are different. For example: ("a", "b", "c") != ("a", "bb", "c")
-
-                    return false;
-                }
-
-                capacity += 2 * thisCharLength;
-            }
-
-            return new Comparer(this, other).AllocateAndExecute(capacity);
+            capacity += 2 * thisCharLength;
         }
 
-        return this.SequentialEquals(other);
+        return new Comparer(this, other).AllocateAndExecute(capacity);
     }
 
     public ReadOnlySpan<char> AsSpan()

@@ -1,4 +1,6 @@
 ﻿using Orleans.Concurrency;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -31,42 +33,40 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
     public override bool Equals(object? obj) => obj is EnumTuple<T> tuple && Equals(tuple);
     public bool Equals(EnumTuple<T> other)
     {
-        bool parallelizable = false;
-        bool equal = false;
+        if (Length != other.Length)
+        {
+            return false;
+        }
+
+        if (Length == 1)
+        {
+            return this[0] == other[0];
+        }
+
+        if (!Vector.IsHardwareAccelerated)
+        {
+            return this.SequentialEquals(other);
+        }
 
         switch (typeCode)
         {
-            case TypeCode.Byte:
-            case TypeCode.SByte:
-                {
-                    NumericMarshaller<T, byte> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-                    parallelizable = marshaller.TryParallelEquals(out equal);
-                }
-                break;
-            case TypeCode.Int16:
-            case TypeCode.UInt16:
-                {
-                    NumericMarshaller<T, int> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-                    parallelizable = marshaller.TryParallelEquals(out equal);
-                }
-                break;
-            case TypeCode.Int32:
-            case TypeCode.UInt32:
-                {
-                    NumericMarshaller<T, int> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-                    parallelizable = marshaller.TryParallelEquals(out equal);
-                }
-                break;
-            case TypeCode.Int64:
-            case TypeCode.UInt64:
-                {
-                    NumericMarshaller<T, int> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-                    parallelizable = marshaller.TryParallelEquals(out equal);
-                }
-                break;
+            case TypeCode.Byte: return AreParallelEquals<byte>(in this, in other);
+            case TypeCode.SByte: return AreParallelEquals<sbyte>(in this, in other);
+            case TypeCode.Int16: return AreParallelEquals<short>(in this, in other);
+            case TypeCode.UInt16: return AreParallelEquals<ushort>(in this, in other);
+            case TypeCode.Int32: return AreParallelEquals<int>(in this, in other);
+            case TypeCode.UInt32: return AreParallelEquals<uint>(in this, in other);
+            case TypeCode.Int64: return AreParallelEquals<long>(in this, in other);
+            case TypeCode.UInt64: return AreParallelEquals<ulong>(in this, in other);
         }
-        
-        return parallelizable ? equal : this.SequentialEquals(other);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool AreParallelEquals<TOut>(in EnumTuple<T> left, in EnumTuple<T> right)
+        where TOut : unmanaged, INumber<TOut>
+    {
+        NumericMarshaller<T, TOut> marshaller = new(left.fields.AsSpan(), right.fields.AsSpan());
+        return marshaller.Left.ParallelEquals(marshaller.Right);
     }
 
     public int CompareTo(EnumTuple<T> other) => Length.CompareTo(other.Length);

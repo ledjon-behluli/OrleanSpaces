@@ -28,7 +28,7 @@ public readonly struct CharTuple : ISpaceTuple<char, CharTuple>
     {
         // Since 'char' is not a number (doesn't implement INumber<>), we are transforming it into a type which does implement INumber<>.
         // The sizeof(char) = 2 Bytes, therefor it can be represented by many number types, but the lowest possible (the one that provides the best parallelization)
-        // number type that can fully represent any type of 'char', is 'ushort'.
+        // number type that can safley represent any type of 'char', is 'ushort'. This is because the range of 'char' is U+0000 to U+FFFF.
 
         // In systems where 128-bit vector operations are subject to hardware acceleration, a total of 8 operations can be performed on 'ushort's
         //      128 / (2 * 8) = 128 / 16 = 8  --> means: we can compare 8 chars at the same time!

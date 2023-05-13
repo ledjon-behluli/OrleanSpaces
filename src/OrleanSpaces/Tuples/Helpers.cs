@@ -59,7 +59,12 @@ internal static class Helpers
         return true;
     }
 
-    /// <remarks><i>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are of equal capacity beforehand.</i></remarks>
+    /// <remarks>
+    /// <list type="bullet">
+    /// <item><description>Ensure the <see cref="Span{T}.Length"/>(s) of <paramref name="left"/> and <paramref name="right"/> are equal beforehand.</description></item>
+    /// <item><description>Ensure <see cref="Vector.IsHardwareAccelerated"/> is <see langword="true"/> beforehand.</description></item>
+    /// </list>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ParallelEquals<T>(this Span<T> left, Span<T> right)
         where T : unmanaged, INumber<T>

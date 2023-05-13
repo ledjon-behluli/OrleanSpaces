@@ -27,31 +27,31 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, GuidTuple>
 
     public bool Equals(GuidTuple other)
     {
-        if (Vector128.IsHardwareAccelerated)
+        if (Length != other.Length)
         {
-            if (Length != other.Length)
+            return false;
+        }
+
+        if (!Vector128.IsHardwareAccelerated)
+        {
+            return this.SequentialEquals(other);
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
+            // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
+
+            ref Vector128<byte> vLeft = ref Helpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
+            ref Vector128<byte> vRight = ref Helpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
+
+            if (vLeft != vRight)
             {
                 return false;
             }
-
-            for (int i = 0; i < Length; i++)
-            {
-                // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
-                // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
-
-                ref Vector128<byte> vLeft = ref Helpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
-                ref Vector128<byte> vRight = ref Helpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
-                 
-                if (vLeft != vRight)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
-        return this.SequentialEquals(other);
+        return true;
     }
 
     public int CompareTo(GuidTuple other) => Length.CompareTo(other.Length);
