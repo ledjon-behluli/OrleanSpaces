@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct LongTuple : INumericTuple<long, LongTuple>
+public readonly struct Int64Tuple : INumericTuple<long, Int64Tuple>
 {
     /// <summary>
     /// 
@@ -16,19 +16,19 @@ public readonly struct LongTuple : INumericTuple<long, LongTuple>
     public ref readonly long this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<long> INumericTuple<long, LongTuple>.Fields => fields.AsSpan();
+    Span<long> INumericTuple<long, Int64Tuple>.Fields => fields.AsSpan();
 
-    public LongTuple() : this(Array.Empty<long>()) { }
-    public LongTuple(params long[] fields) => this.fields = fields;
+    public Int64Tuple() : this(Array.Empty<long>()) { }
+    public Int64Tuple(params long[] fields) => this.fields = fields;
 
-    public static bool operator ==(LongTuple left, LongTuple right) => left.Equals(right);
-    public static bool operator !=(LongTuple left, LongTuple right) => !(left == right);
+    public static bool operator ==(Int64Tuple left, Int64Tuple right) => left.Equals(right);
+    public static bool operator !=(Int64Tuple left, Int64Tuple right) => !(left == right);
 
-    public override bool Equals(object? obj) => obj is LongTuple tuple && Equals(tuple);
-    public bool Equals(LongTuple other)
+    public override bool Equals(object? obj) => obj is Int64Tuple tuple && Equals(tuple);
+    public bool Equals(Int64Tuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
-    public int CompareTo(LongTuple other) => Length.CompareTo(other.Length);
+    public int CompareTo(Int64Tuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

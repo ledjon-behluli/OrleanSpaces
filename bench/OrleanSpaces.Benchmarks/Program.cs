@@ -1,18 +1,19 @@
 ﻿using BenchmarkDotNet.Running;
 
-//BenchmarkRunner.Consume<TypeCheckerBenchmarks>();
-//BenchmarkRunner.Consume<SpaceUnitBenchmarks>();
-//BenchmarkRunner.Consume<SpaceTupleBenchmarks>();
-//BenchmarkRunner.Consume<SpaceTemplateBenchmarks>();
-//BenchmarkRunner.Consume<IntTupleBenchmarks>();
-//BenchmarkRunner.Consume<DateTimeTupleBenchmarks>();
-//BenchmarkRunner.Consume<DateTimeOffsetTupleBenchmarks>();
-//BenchmarkRunner.Consume<TimeSpanTupleBenchmarks>();
-//BenchmarkRunner.Consume<BoolTupleBenchmarks>();
-//BenchmarkRunner.Consume<DecimalTupleBenchmarks>();
+//BenchmarkRunner.Run<TypeCheckerBenchmarks>();
+//BenchmarkRunner.Run<SpaceUnitBenchmarks>();
+//BenchmarkRunner.Run<SpaceTupleBenchmarks>();
+//BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
+//BenchmarkRunner.Run<DateTimeTupleBenchmarks>();
+//BenchmarkRunner.Run<DateTimeOffsetTupleBenchmarks>();
+//BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
 //BenchmarkRunner.Run<CharTupleBenchmarks>();
 //BenchmarkRunner.Run<EnumTupleBenchmarks>();
+//BenchmarkRunner.Run<BoolTupleBenchmarks>();
+//BenchmarkRunner.Run<DecimalTupleBenchmarks>();
+//BenchmarkRunner.Run<IntPtrTupleBenchmarks>();
+//BenchmarkRunner.Run<Int16TupleBenchmarks>();
 
-//BenchmarkRunner.Consume<TestBench>();
+//BenchmarkRunner.Run<TestBench>();
 
 Console.ReadKey();

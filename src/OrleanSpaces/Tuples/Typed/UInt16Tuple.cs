@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>
+public readonly struct UInt16Tuple : INumericTuple<ushort, UInt16Tuple>
 {
     /// <summary>
     /// 
@@ -16,19 +16,19 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>
     public ref readonly ushort this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<ushort> INumericTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
+    Span<ushort> INumericTuple<ushort, UInt16Tuple>.Fields => fields.AsSpan();
 
-    public UShortTuple() : this(Array.Empty<ushort>()) { }
-    public UShortTuple(params ushort[] fields) => this.fields = fields;
+    public UInt16Tuple() : this(Array.Empty<ushort>()) { }
+    public UInt16Tuple(params ushort[] fields) => this.fields = fields;
 
-    public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
-    public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
+    public static bool operator ==(UInt16Tuple left, UInt16Tuple right) => left.Equals(right);
+    public static bool operator !=(UInt16Tuple left, UInt16Tuple right) => !(left == right);
 
-    public override bool Equals(object? obj) => obj is UShortTuple tuple && Equals(tuple);
-    public bool Equals(UShortTuple other) 
+    public override bool Equals(object? obj) => obj is UInt16Tuple tuple && Equals(tuple);
+    public bool Equals(UInt16Tuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
-    public int CompareTo(UShortTuple other) => Length.CompareTo(other.Length);
+    public int CompareTo(UInt16Tuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
