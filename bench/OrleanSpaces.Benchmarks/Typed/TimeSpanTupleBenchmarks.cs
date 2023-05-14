@@ -246,7 +246,6 @@ public class TimeSpanTupleBenchmarks
         public ref readonly TimeSpan this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialTimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }
         public SequentialTimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);

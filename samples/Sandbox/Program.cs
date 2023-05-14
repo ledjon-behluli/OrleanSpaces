@@ -15,8 +15,8 @@ using System.Runtime.CompilerServices;
 //Int128 ii = new(18446744073709551615, 18446744073709551615);
 //Int128 i = 18446744073709551615;
 
-Int128Tuple i1 = new(Int128.MaxValue);
-Int128Tuple i2 = new(Int128.MaxValue);
+Long2Tuple i1 = new(Int128.MaxValue);
+Long2Tuple i2 = new(Int128.MaxValue);
 
 Console.WriteLine(i1 == i2);
 

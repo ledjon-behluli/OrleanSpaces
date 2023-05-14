@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct Int128Tuple : INumericTuple<Int128, Int128Tuple>
+public readonly struct Long2Tuple : INumericTuple<Int128, Long2Tuple>
 {
     /// <summary>
     /// 
@@ -20,16 +20,16 @@ public readonly struct Int128Tuple : INumericTuple<Int128, Int128Tuple>
     public ref readonly Int128 this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<Int128> INumericTuple<Int128, Int128Tuple>.Fields => fields.AsSpan();
+    Span<Int128> INumericTuple<Int128, Long2Tuple>.Fields => fields.AsSpan();
 
-    public Int128Tuple() : this(Array.Empty<Int128>()) { }
-    public Int128Tuple(params Int128[] fields) => this.fields = fields;
+    public Long2Tuple() : this(Array.Empty<Int128>()) { }
+    public Long2Tuple(params Int128[] fields) => this.fields = fields;
 
-    public static bool operator ==(Int128Tuple left, Int128Tuple right) => left.Equals(right);
-    public static bool operator !=(Int128Tuple left, Int128Tuple right) => !(left == right);
+    public static bool operator ==(Long2Tuple left, Long2Tuple right) => left.Equals(right);
+    public static bool operator !=(Long2Tuple left, Long2Tuple right) => !(left == right);
 
-    public override bool Equals(object? obj) => obj is Int128Tuple tuple && Equals(tuple);
-    public bool Equals(Int128Tuple other)
+    public override bool Equals(object? obj) => obj is Long2Tuple tuple && Equals(tuple);
+    public bool Equals(Long2Tuple other)
     {
         if (Length != other.Length)
         {
@@ -44,7 +44,7 @@ public readonly struct Int128Tuple : INumericTuple<Int128, Int128Tuple>
         return new Comparer(this, other).AllocateAndExecute(2 * Size * Length);
     }
 
-    public int CompareTo(Int128Tuple other) => Length.CompareTo(other.Length);
+    public int CompareTo(Long2Tuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
@@ -55,10 +55,10 @@ public readonly struct Int128Tuple : INumericTuple<Int128, Int128Tuple>
 
     readonly struct Comparer : IBufferConsumer<byte>
     {
-        private readonly Int128Tuple left;
-        private readonly Int128Tuple right;
+        private readonly Long2Tuple left;
+        private readonly Long2Tuple right;
 
-        public Comparer(Int128Tuple left, Int128Tuple right)
+        public Comparer(Long2Tuple left, Long2Tuple right)
         {
             this.left = left;
             this.right = right;

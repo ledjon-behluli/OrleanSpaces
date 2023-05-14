@@ -9,14 +9,14 @@ public class SimpleTypeCheckingTests
     [MemberData(nameof(SimpleTypes))]
     public void Should_Pass(Type type)
     {
-        Assert.True(type.IsSimpleType());
+        Assert.True(type.IsSupportedType());
     }
 
     [Theory]
     [MemberData(nameof(OtherTypes))]
     public void Should_Fail(Type type)
     {
-        Assert.False(type.IsSimpleType());
+        Assert.False(type.IsSupportedType());
     }
 
     public static object[][] SimpleTypes() =>

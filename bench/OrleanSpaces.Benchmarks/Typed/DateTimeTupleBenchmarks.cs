@@ -246,7 +246,6 @@ public class DateTimeTupleBenchmarks
         public ref readonly DateTime this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialDateTimeTuple() : this(Array.Empty<DateTime>()) { }
         public SequentialDateTimeTuple(params DateTime[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);

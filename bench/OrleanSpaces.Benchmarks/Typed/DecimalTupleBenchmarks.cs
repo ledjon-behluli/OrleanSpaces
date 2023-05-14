@@ -246,7 +246,6 @@ public class DecimalTupleBenchmarks
         public ref readonly decimal this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialDecimalTuple() : this(Array.Empty<decimal>()) { }
         public SequentialDecimalTuple(params decimal[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDecimalTuple other) => this.SequentialEquals(other);

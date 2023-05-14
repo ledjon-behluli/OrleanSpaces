@@ -245,7 +245,6 @@ public class BoolTupleBenchmarks
         public ref readonly bool this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialBoolTuple() : this(Array.Empty<bool>()) { }
         public SequentialBoolTuple(params bool[] fields) => this.fields = fields;
 
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);

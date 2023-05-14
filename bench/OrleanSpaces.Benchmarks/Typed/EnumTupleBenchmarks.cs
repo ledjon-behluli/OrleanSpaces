@@ -246,7 +246,6 @@ public class EnumTupleBenchmarks
         public ref readonly MyEnum this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialEnumTuple() : this(Array.Empty<MyEnum>()) { }
         public SequentialEnumTuple(params MyEnum[] fields) => this.fields = fields;
 
         public bool Equals(SequentialEnumTuple other) => this.SequentialEquals(other);

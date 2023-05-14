@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 internal static class Helpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsSimpleType(this Type type) =>
+    public static bool IsSupportedType(this Type type) =>
        type.IsPrimitive ||
        type.IsEnum ||
        type == typeof(string) ||
@@ -15,7 +15,8 @@ internal static class Helpers
        type == typeof(DateTime) ||
        type == typeof(DateTimeOffset) ||
        type == typeof(TimeSpan) ||
-       type == typeof(Guid);
+       type == typeof(Guid) ||
+       type == typeof(Int128);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool result)
