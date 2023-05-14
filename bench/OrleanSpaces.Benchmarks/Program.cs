@@ -11,9 +11,8 @@
 //BenchmarkRunner.Run<EnumTupleBenchmarks>();
 //BenchmarkRunner.Run<BoolTupleBenchmarks>();
 //BenchmarkRunner.Run<DecimalTupleBenchmarks>();
-//BenchmarkRunner.Run<IntPtrTupleBenchmarks>();
 //BenchmarkRunner.Run<Int16TupleBenchmarks>();
 
-//BenchmarkRunner.Run<TestBench>();
+BenchmarkRunner.Run<TestBench>();
 
 Console.ReadKey();

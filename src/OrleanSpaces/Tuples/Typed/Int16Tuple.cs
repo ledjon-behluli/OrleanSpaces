@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
