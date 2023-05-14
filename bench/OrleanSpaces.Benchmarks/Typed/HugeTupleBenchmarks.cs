@@ -7,7 +7,7 @@ using OrleanSpaces.Tuples.Typed;
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.Declared)]
-public class Long2TupleBenchmarks
+public class HugeTupleBenchmarks
 {
     private const int iterations = 100_000;
 
@@ -26,7 +26,7 @@ public class Long2TupleBenchmarks
     public void InstantiateLong2Tuple()
     {
         for (int i = 0; i < iterations; i++)
-            _ = new Long2Tuple(
+            _ = new HugeTuple(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
     }
@@ -50,7 +50,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(Int128.MaxValue, Int128.MaxValue);
+            HugeTuple tuple = new(Int128.MaxValue, Int128.MaxValue);
             tuple.Equals(tuple);
         }
     }
@@ -70,7 +70,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
+            HugeTuple tuple = new(Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
             tuple.Equals(tuple);
         }
     }
@@ -90,7 +90,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
+            HugeTuple tuple = new(Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
             tuple.Equals(tuple);
         }
     }
@@ -113,7 +113,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(
+            HugeTuple tuple = new(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue);
 
@@ -142,7 +142,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(
+            HugeTuple tuple = new(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
@@ -176,7 +176,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(
+            HugeTuple tuple = new(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
@@ -229,7 +229,7 @@ public class Long2TupleBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            Long2Tuple tuple = new(
+            HugeTuple tuple = new(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,

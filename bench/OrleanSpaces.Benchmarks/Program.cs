@@ -12,7 +12,7 @@
 //BenchmarkRunner.Run<BoolTupleBenchmarks>();
 //BenchmarkRunner.Run<DecimalTupleBenchmarks>();
 //BenchmarkRunner.Run<IntTupleBenchmarks>();
-BenchmarkRunner.Run<Long2TupleBenchmarks>();
+//BenchmarkRunner.Run<HugeTupleBenchmarks>();
 
 //BenchmarkRunner.Run<TestBench>();
 

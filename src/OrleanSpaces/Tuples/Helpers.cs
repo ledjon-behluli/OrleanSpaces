@@ -12,11 +12,12 @@ internal static class Helpers
        type.IsEnum ||
        type == typeof(string) ||
        type == typeof(decimal) ||
+       type == typeof(Int128) ||
+       type == typeof(UInt128) ||
        type == typeof(DateTime) ||
        type == typeof(DateTimeOffset) ||
        type == typeof(TimeSpan) ||
-       type == typeof(Guid) ||
-       type == typeof(Int128);
+       type == typeof(Guid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool result)
@@ -179,7 +180,7 @@ internal static class Helpers
        where T : struct, ISpanFormattable
        where TSelf : ISpaceTuple<T, TSelf>
     {
-        int capacity = CalculateTotalCharLength(tuple.Length, maxFieldCharLength);
+        int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = Allocate<char>(capacity, out bool rented);
 
         Span<char> buffer = array.AsSpan();
@@ -233,6 +234,21 @@ internal static class Helpers
             fieldSpan[..fieldCharsWritten].CopyTo(destination.Slice(charsWritten, fieldCharsWritten));
             charsWritten += fieldCharsWritten;
         }
+
+        static int GetCharCount(int tupleLength, int maxFieldCharLength)
+        {
+            int separatorsCount = 0;
+            int destinationSpanLength = 0;
+
+            if (tupleLength > 0)
+            {
+                separatorsCount = 2 * (tupleLength - 1);
+                destinationSpanLength = maxFieldCharLength * tupleLength;
+            }
+
+            int totalLength = 2 + destinationSpanLength + separatorsCount;
+            return totalLength;
+        }
     }
 
 
@@ -274,22 +290,6 @@ internal static class Helpers
             rented = false;
             return new T[capacity];
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CalculateTotalCharLength(int tupleLength, int maxFieldCharLength)
-    {
-        int separatorsCount = 0;
-        int destinationSpanLength = 0;
-
-        if (tupleLength > 0)
-        {
-            separatorsCount = 2 * (tupleLength - 1);
-            destinationSpanLength = maxFieldCharLength * tupleLength;
-        }
-
-        int totalLength = 2 + destinationSpanLength + separatorsCount;
-        return totalLength;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
