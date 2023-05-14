@@ -45,7 +45,7 @@ public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>
             return this.SequentialEquals(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(2 * Size * Length);
+        return new Comparer(this, other).AllocateAndExecute(2 * ByteCount * Length);
     }
 
     public int CompareTo(HugeTuple other) => Length.CompareTo(other.Length);

@@ -12,12 +12,4 @@ using System.Runtime.CompilerServices;
 //    Console.WriteLine(item);
 //}
 
-//Int128 ii = new(18446744073709551615, 18446744073709551615);
-//Int128 i = 18446744073709551615;
-
-HugeTuple i1 = new(Int128.MaxValue);
-HugeTuple i2 = new(Int128.MaxValue);
-
-Console.WriteLine(i1 == i2);
-
 Console.ReadKey();

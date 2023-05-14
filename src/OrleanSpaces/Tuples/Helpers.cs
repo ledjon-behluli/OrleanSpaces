@@ -186,40 +186,45 @@ internal static class Helpers
         Span<char> buffer = array.AsSpan();
 
         int index = 0;
+        int tupleLength = tuple.Length;
+
         buffer.Clear(); // we dont know if the memory represented by the span might contain garbage values, so we clear it.
 
-        if (tuple.Length == 0)
+        if (tupleLength == 0)
         {
             buffer[index++] = '(';
             buffer[index++] = ')';
         }
-
-        Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value well below 1Kb
-        fieldSpan.Clear();
-
-        int tupleLength = tuple.Length;
-        if (tupleLength == 1)
+        else
         {
-            buffer[index++] = '(';
-            FormatField(in tuple[0], fieldSpan, buffer, ref index);
-            buffer[index++] = ')';
-        }
+            Span<char> fieldSpan = stackalloc char[maxFieldCharLength]; // its safe to allocate memory on the stack because the maxFieldCharLength is a constant on all tuples, and has a finite value well below 1Kb
+            fieldSpan.Clear();
 
-        buffer[index++] = '(';
-
-        for (int i = 0; i < tupleLength; i++)
-        {
-            if (i > 0)
+            if (tupleLength == 1)
             {
-                buffer[index++] = ',';
-                buffer[index++] = ' ';
-                fieldSpan.Clear();
+                buffer[index++] = '(';
+                FormatField(in tuple[0], fieldSpan, buffer, ref index);
+                buffer[index++] = ')';
             }
+            else
+            {
+                buffer[index++] = '(';
 
-            FormatField(in tuple[i], fieldSpan, buffer, ref index);
+                for (int i = 0; i < tupleLength; i++)
+                {
+                    if (i > 0)
+                    {
+                        buffer[index++] = ',';
+                        buffer[index++] = ' ';
+                        fieldSpan.Clear();
+                    }
+
+                    FormatField(in tuple[i], fieldSpan, buffer, ref index);
+                }
+
+                buffer[index++] = ')';
+            }
         }
-
-        buffer[index++] = ')';
 
         if (rented)
         {
