@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> 
+public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
     /// <summary>
@@ -86,14 +86,12 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>>
 
     public ReadOnlySpan<T>.Enumerator GetEnumerator() => new ReadOnlySpan<T>(fields).GetEnumerator();
 
-    readonly record struct SFEnumTuple(params SFEnum[] Values) : ISpaceTuple<SFEnum, SFEnumTuple>
+    readonly record struct SFEnumTuple(params SFEnum[] Values) : ISpaceTuple<SFEnum>
     {
         public ref readonly SFEnum this[int index] => ref Values[index];
         public int Length => Values.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-
-        public int CompareTo(SFEnumTuple other) => Length.CompareTo(other.Length);
     }
 
     readonly record struct SFEnum(int Value) : ISpanFormattable
