@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>
+public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>, IComparable<HugeTuple>
 {
     /// <summary>
     /// 
@@ -24,7 +24,7 @@ public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>
     public ref readonly Int128 this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<Int128> INumericTuple<Int128, HugeTuple>.Fields => fields.AsSpan();
+    Span<Int128> INumericTuple<Int128>.Fields => fields.AsSpan();
 
     public HugeTuple() : this(Array.Empty<Int128>()) { }
     public HugeTuple(params Int128[] fields) => this.fields = fields;

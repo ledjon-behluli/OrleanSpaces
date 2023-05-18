@@ -238,7 +238,7 @@ public class BoolTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialBoolTuple : ISpaceTuple<bool, SequentialBoolTuple>
+    private readonly struct SequentialBoolTuple : ISpaceTuple<bool>, IEquatable<SequentialBoolTuple>
     {
         private readonly bool[] fields;
 
@@ -248,7 +248,6 @@ public class BoolTupleBenchmarks
         public SequentialBoolTuple(params bool[] fields) => this.fields = fields;
 
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialBoolTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

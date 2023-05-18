@@ -23,7 +23,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateLong2Tuple()
+    public void InstantiateHugeTuple()
     {
         for (int i = 0; i < iterations; i++)
             _ = new HugeTuple(
@@ -46,7 +46,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "XS"), Benchmark]
-    public void XS_Long2Tuple()
+    public void XS_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -66,7 +66,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "S"), Benchmark]
-    public void S_Long2Tuple()
+    public void S_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -86,7 +86,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "M"), Benchmark]
-    public void M_Long2Tuple()
+    public void M_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -109,7 +109,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "L"), Benchmark]
-    public void L_Long2Tuple()
+    public void L_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -138,7 +138,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "XL"), Benchmark]
-    public void XL_Long2Tuple()
+    public void XL_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -172,7 +172,7 @@ public class HugeTupleBenchmarks
     }
 
     [BenchmarkCategory("Equality", "XXL"), Benchmark]
-    public void XXL_Long2Tuple()
+    public void XXL_HugeTuple()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -209,12 +209,12 @@ public class HugeTupleBenchmarks
         }
     }
 
-    [BenchmarkCategory("Equality Type", "Sequential Long2Tuple"), Benchmark]
-    public void SequentialLong2TupleEquality()
+    [BenchmarkCategory("Equality Type", "Sequential HugeTuple"), Benchmark]
+    public void SequentialHugeTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
-            SequentialLong2Tuple tuple = new(
+            SequentialHugeTuple tuple = new(
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
                 Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue, Int128.MaxValue,
@@ -224,8 +224,8 @@ public class HugeTupleBenchmarks
         }
     }
 
-    [BenchmarkCategory("Equality Type", "Parallel Long2Tuple"), Benchmark]
-    public void ParallelLong2TupleEquality()
+    [BenchmarkCategory("Equality Type", "Parallel HugeTuple"), Benchmark]
+    public void ParallelHugeTupleEquality()
     {
         for (int i = 0; i < iterations; i++)
         {
@@ -239,17 +239,16 @@ public class HugeTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialLong2Tuple : ISpaceTuple<Int128, SequentialLong2Tuple>
+    private readonly struct SequentialHugeTuple : ISpaceTuple<Int128>, IEquatable<SequentialHugeTuple>
     {
         private readonly Int128[] fields;
 
         public ref readonly Int128 this[int index] => ref fields[index];
         public int Length => fields.Length;
 
-        public SequentialLong2Tuple(params Int128[] fields) => this.fields = fields;
+        public SequentialHugeTuple(params Int128[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialLong2Tuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialLong2Tuple other) => throw new NotImplementedException();
+        public bool Equals(SequentialHugeTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

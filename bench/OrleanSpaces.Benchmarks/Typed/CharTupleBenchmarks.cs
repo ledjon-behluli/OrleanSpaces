@@ -238,7 +238,7 @@ public class CharTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialCharTuple : ISpaceTuple<char, SequentialCharTuple>
+    private readonly struct SequentialCharTuple : ISpaceTuple<char>, IEquatable<SequentialCharTuple>
     {
         private readonly char[] fields;
 
@@ -248,7 +248,6 @@ public class CharTupleBenchmarks
         public SequentialCharTuple(params char[] fields) => this.fields = fields;
 
         public bool Equals(SequentialCharTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialCharTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

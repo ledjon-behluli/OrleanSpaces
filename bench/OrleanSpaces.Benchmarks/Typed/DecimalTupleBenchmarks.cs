@@ -239,7 +239,7 @@ public class DecimalTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDecimalTuple : ISpaceTuple<decimal, SequentialDecimalTuple>
+    private readonly struct SequentialDecimalTuple : ISpaceTuple<decimal>, IEquatable<SequentialDecimalTuple>
     {
         private readonly decimal[] fields;
 
@@ -249,7 +249,6 @@ public class DecimalTupleBenchmarks
         public SequentialDecimalTuple(params decimal[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDecimalTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialDecimalTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

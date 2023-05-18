@@ -239,7 +239,7 @@ public class EnumTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialEnumTuple : ISpaceTuple<MyEnum, SequentialEnumTuple>
+    private readonly struct SequentialEnumTuple : ISpaceTuple<MyEnum>, IEquatable<SequentialEnumTuple>
     {
         private readonly MyEnum[] fields;
 
@@ -249,7 +249,6 @@ public class EnumTupleBenchmarks
         public SequentialEnumTuple(params MyEnum[] fields) => this.fields = fields;
 
         public bool Equals(SequentialEnumTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialEnumTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

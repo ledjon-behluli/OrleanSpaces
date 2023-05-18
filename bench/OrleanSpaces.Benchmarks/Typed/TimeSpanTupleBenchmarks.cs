@@ -239,7 +239,7 @@ public class TimeSpanTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialTimeSpanTuple : ISpaceTuple<TimeSpan, SequentialTimeSpanTuple>
+    private readonly struct SequentialTimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<SequentialTimeSpanTuple>
     {
         private readonly TimeSpan[] fields;
 
@@ -249,7 +249,6 @@ public class TimeSpanTupleBenchmarks
         public SequentialTimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialTimeSpanTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

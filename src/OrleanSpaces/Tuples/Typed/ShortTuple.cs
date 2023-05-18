@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct ShortTuple : INumericTuple<short, ShortTuple>
+public readonly struct ShortTuple : INumericTuple<short>, IEquatable<ShortTuple>, IComparable<ShortTuple>
 {
     /// <summary>
     /// 
@@ -17,7 +17,7 @@ public readonly struct ShortTuple : INumericTuple<short, ShortTuple>
     public ref readonly short this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<short> INumericTuple<short, ShortTuple>.Fields => fields.AsSpan();
+    Span<short> INumericTuple<short>.Fields => fields.AsSpan();
 
     public ShortTuple() : this(Array.Empty<short>()) { }
     public ShortTuple(params short[] fields) => this.fields = fields;

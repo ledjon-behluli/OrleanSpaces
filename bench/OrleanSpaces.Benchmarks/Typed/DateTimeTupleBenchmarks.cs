@@ -239,7 +239,7 @@ public class DateTimeTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeTuple : ISpaceTuple<DateTime, SequentialDateTimeTuple>
+    private readonly struct SequentialDateTimeTuple : ISpaceTuple<DateTime>, IEquatable<SequentialDateTimeTuple>
     {
         private readonly DateTime[] fields;
 
@@ -249,7 +249,6 @@ public class DateTimeTupleBenchmarks
         public SequentialDateTimeTuple(params DateTime[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialDateTimeTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

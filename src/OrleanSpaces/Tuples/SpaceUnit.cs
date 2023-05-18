@@ -44,4 +44,7 @@ public readonly struct SpaceUnit : IEquatable<SpaceUnit>, IComparable<SpaceUnit>
 
     public override int GetHashCode() => 0;
     public override string ToString() => DefaultString;
+
+    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<pending>")]
+    public static implicit operator int(SpaceUnit unit) => 0;
 }

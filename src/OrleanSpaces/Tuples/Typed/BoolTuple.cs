@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
+public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, IComparable<BoolTuple>
 {
     /// <summary>
     /// 
@@ -53,14 +53,12 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>
         return new SFBoolTuple(sfBools).AsSpan(MaxFieldCharLength);
     }
 
-    readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool, SFBoolTuple>
+    readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool>
     {
         public ref readonly SFBool this[int index] => ref Values[index];
         public int Length => Values.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-
-        public int CompareTo(SFBoolTuple other) => Length.CompareTo(other.Length);
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable

@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DecimalTuple>
+public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>, IComparable<DecimalTuple>
 {
     /// <summary>
     /// 

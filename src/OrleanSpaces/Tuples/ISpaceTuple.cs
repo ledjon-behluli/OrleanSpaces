@@ -5,9 +5,8 @@ public interface ISpaceTuple
 
 }
 
-public interface ISpaceTuple<T, TSelf> : ISpaceTuple, IEquatable<TSelf>, IComparable<TSelf>
+public interface ISpaceTuple<T> : ISpaceTuple 
     where T : notnull
-    where TSelf : ISpaceTuple<T, TSelf>
 {
     ref readonly T this[int index] { get; }
     int Length { get; }

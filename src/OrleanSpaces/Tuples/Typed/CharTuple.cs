@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : ISpaceTuple<char, CharTuple>
+public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, IComparable<CharTuple>
 {
     /// <summary>
     /// 

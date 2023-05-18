@@ -239,7 +239,7 @@ public class DateTimeOffsetTupleBenchmarks
         }
     }
 
-    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, SequentialDateTimeOffsetTuple>
+    private readonly struct SequentialDateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquatable<SequentialDateTimeOffsetTuple>
     {
         private readonly DateTimeOffset[] fields;
 
@@ -249,7 +249,6 @@ public class DateTimeOffsetTupleBenchmarks
         public SequentialDateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals(other);
-        public int CompareTo(SequentialDateTimeOffsetTuple other) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
     }
 

@@ -20,9 +20,8 @@ internal static class Helpers
        type == typeof(Guid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TSelf>(this INumericTuple<T, TSelf> left, INumericTuple<T, TSelf> right, out bool result)
+    public static bool TryParallelEquals<T>(this INumericTuple<T> left, INumericTuple<T> right, out bool result)
         where T : unmanaged, INumber<T>
-        where TSelf : INumericTuple<T, TSelf>
     {
         result = false;
 
@@ -151,9 +150,8 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T, TSelf>(this ISpaceTuple<T, TSelf> left, ISpaceTuple<T, TSelf> right)
+    public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
          where T : notnull
-         where TSelf : ISpaceTuple<T, TSelf>
     {
         int length = left.Length;
         if (length != right.Length)
@@ -176,9 +174,8 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> AsSpan<T, TSelf>(this ISpaceTuple<T, TSelf> tuple, int maxFieldCharLength)
+    public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
        where T : struct, ISpanFormattable
-       where TSelf : ISpaceTuple<T, TSelf>
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = Allocate<char>(capacity, out bool rented);

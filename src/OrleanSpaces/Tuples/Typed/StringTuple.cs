@@ -4,7 +4,7 @@ using System.Numerics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : ISpaceTuple<string, StringTuple>
+public readonly struct StringTuple : ISpaceTuple<string>, IEquatable<StringTuple>, IComparable<StringTuple>
 {
     /// <summary>
     /// 
@@ -83,14 +83,12 @@ public readonly struct StringTuple : ISpaceTuple<string, StringTuple>
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString, SFStringTuple>
+    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
     {
         public ref readonly SFString this[int index] => ref Values[index];
         public int Length => Values.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-
-        public int CompareTo(SFStringTuple other) => Length.CompareTo(other.Length);
     }
 
     readonly record struct SFString(string Value) : ISpanFormattable
