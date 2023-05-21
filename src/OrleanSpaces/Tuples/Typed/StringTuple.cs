@@ -16,27 +16,7 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
     private readonly string[] fields;
 
     public ref readonly string this[int index] => ref fields[index];
-    ref readonly char ISpaceTuple<char>.this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            for (int i = 0; i < Length; i++)
-            {
-                ReadOnlySpan<char> span = fields[i].AsSpan();
-                if (index < span.Length)
-                {
-                    return ref span[index];
-                }
-                else
-                {
-                    index -= span.Length;
-                }
-            }
-
-            throw new IndexOutOfRangeException();
-        }
-    }
+    ref readonly char ISpaceTuple<char>.this[int index] => ref AsSpan()[index];
 
     public int Length => fields.Length;
 
