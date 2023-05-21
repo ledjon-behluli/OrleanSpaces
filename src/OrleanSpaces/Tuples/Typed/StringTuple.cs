@@ -1,10 +1,11 @@
 ﻿using Orleans.Concurrency;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : ISpaceTuple<string>, IEquatable<StringTuple>, IComparable<StringTuple>
+public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>, IComparable<StringTuple>
 {
     /// <summary>
     /// 
@@ -15,6 +16,28 @@ public readonly struct StringTuple : ISpaceTuple<string>, IEquatable<StringTuple
     private readonly string[] fields;
 
     public ref readonly string this[int index] => ref fields[index];
+    ref readonly char ISpaceTuple<char>.this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                ReadOnlySpan<char> span = fields[i].AsSpan();
+                if (index < span.Length)
+                {
+                    return ref span[index];
+                }
+                else
+                {
+                    index -= span.Length;
+                }
+            }
+
+            throw new IndexOutOfRangeException();
+        }
+    }
+
     public int Length => fields.Length;
 
     public StringTuple() : this(Array.Empty<string>()) { }

@@ -7,11 +7,11 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTuple : ISpaceTuple<object>, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
+public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
     private readonly object[] fields;
 
-    public ref readonly object this[int index] => ref fields[index];
+    public readonly object this[int index] => fields[index];
     public int Length => fields.Length;
 
     private static readonly SpaceTuple @null = new();

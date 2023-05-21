@@ -151,7 +151,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
-         where T : notnull
+         where T : struct
     {
         int length = left.Length;
         if (length != right.Length)
@@ -165,6 +165,26 @@ internal static class Helpers
             ref readonly T iRight = ref right[i];
 
             if (!iLeft.Equals(iRight))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool SequentialEquals(this ISpaceTuple left, ISpaceTuple right)
+    {
+        int length = left.Length;
+        if (length != right.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            if (!left.Equals(right))
             {
                 return false;
             }

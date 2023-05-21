@@ -3,6 +3,12 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
+public interface ISpaceAgent<T>
+    where T : struct, ISpaceTuple<T>
+{
+    Task WriteAsync(T tuple);
+}
+
 public interface ISpaceAgent
 {
     /// <summary>

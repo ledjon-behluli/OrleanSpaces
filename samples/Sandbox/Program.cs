@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Tuples;
+﻿using OrleanSpaces;
+using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -11,5 +12,9 @@ using System.Runtime.CompilerServices;
 //    item = 1;
 //    Console.WriteLine(item);
 //}
+
+string[] a = { "a", "b", "c" };
+
+var aa = a[3];
 
 Console.ReadKey();

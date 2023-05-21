@@ -12,6 +12,9 @@ public readonly struct SpaceUnit : ISpaceTuple, IEquatable<SpaceUnit>, IComparab
     internal const string DefaultString = "{NULL}";
     internal static readonly SpaceUnit Default = new();
 
+    public int Length => throw new NotImplementedException();
+    public object this[int index] => throw new NotImplementedException();
+
     /// <summary>
     /// Default and only constructor. 
     /// </summary>
