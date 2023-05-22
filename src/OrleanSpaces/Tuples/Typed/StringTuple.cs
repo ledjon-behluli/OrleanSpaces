@@ -1,21 +1,43 @@
 ﻿using Orleans.Concurrency;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
 public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>, IComparable<StringTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>a</example>
-    internal const int MaxFieldCharLength = 1;
-
     private readonly string[] fields;
 
     public ref readonly string this[int index] => ref fields[index];
-    ref readonly char ISpaceTuple<char>.this[int index] => ref AsSpan()[index];
+
+    /// <exception cref="IndexOutOfRangeException"></exception>
+    ref readonly char ISpaceTuple<char>.this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                if (index < fields[i].Length)
+                {
+                    ReadOnlySpan<char> span = fields[i].AsSpan();
+
+                    ref char firstItem = ref MemoryMarshal.GetReference(span);
+                    ref char item = ref Unsafe.Add(ref firstItem, index);
+
+                    return ref item;
+                }
+                else
+                {
+                    index -= fields[i].Length;
+                }
+            }
+
+            throw new IndexOutOfRangeException();
+        }
+    }
 
     public int Length => fields.Length;
 
@@ -49,9 +71,10 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
             return this.SequentialEquals(other);
         }
 
+        int tupleLength = Length;
         int capacity = 0;
 
-        for (int i = 0; i < Length; i++)
+        for (int i = 0; i < tupleLength; i++)
         {
             int thisCharLength = this[i].Length;
             int otherCharLength = other.fields[i].Length;
@@ -73,14 +96,19 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
     public ReadOnlySpan<char> AsSpan()
     {
         int tupleLength = Length;
+        int maxCapacity = 0;
 
         SFString[] sfStrings = new SFString[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {
             sfStrings[i] = new(this[i]);
+            if (sfStrings[i].Value.Length > maxCapacity)
+            {
+                maxCapacity = sfStrings[i].Value.Length;
+            }
         }
 
-        return new SFStringTuple(sfStrings).AsSpan(MaxFieldCharLength);
+        return new SFStringTuple(sfStrings).AsSpan(maxCapacity);
     }
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();

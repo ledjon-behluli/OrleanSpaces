@@ -4,17 +4,12 @@ using OrleanSpaces.Tuples.Typed;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-//Span<char> chars = stackalloc char[48];
-//bool result = new IntTuple(1, 1, 1).TryFormat(chars, out int w);
+StringTuple a = new("abc", "123");
+//var aaa = a.AsSpan();
 
-//foreach (ref readonly int item in new IntTuple(1, 1, 1))
-//{
-//    item = 1;
-//    Console.WriteLine(item);
-//}
+Console.WriteLine(a[0]);
+Console.WriteLine(((ISpaceTuple<char>)a)[0]);
+Console.WriteLine(((ISpaceTuple<char>)a)[4]);
 
-string[] a = { "a", "b", "c" };
-
-var aa = a[3];
 
 Console.ReadKey();
