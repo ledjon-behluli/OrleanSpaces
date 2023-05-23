@@ -6,8 +6,15 @@ public interface ISpaceTuple
     int Length { get; }
 }
 
-public interface ISpaceTuple<T>
+public interface ITyped<T> 
     where T : struct
+{
+
+}
+
+public interface ISpaceTuple<T, TSelf> : ITyped<TSelf>
+    where T : struct
+    where TSelf : struct, ITyped<TSelf>
 {
     ref readonly T this[int index] { get; }
     int Length { get; }

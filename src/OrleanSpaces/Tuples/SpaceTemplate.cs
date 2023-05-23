@@ -7,7 +7,9 @@ namespace OrleanSpaces.Tuples;
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
+public readonly struct SpaceTemplate : ISpaceTuple, 
+    IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>,
+    IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
     private readonly object[] fields;
 
@@ -51,6 +53,9 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
         }
     }
 
+    public bool Equals(SpaceTuple tuple) => Matches(tuple);
+    public int CompareTo(SpaceTuple tuple) => Length.CompareTo(tuple.Length);
+
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
     /// </summary>
@@ -60,6 +65,7 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
     /// <paramref name="tuple"/> at the same index</i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(SpaceTuple tuple)
     {
+        //TODO: Remove matches and add logic to 'Equals(SpaceTuple tuple)'
         if (tuple.Length != Length)
         {
             return false;
