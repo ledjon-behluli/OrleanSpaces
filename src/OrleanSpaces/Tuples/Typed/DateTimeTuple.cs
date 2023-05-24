@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTimeTuple>, IComparable<DateTimeTuple>
+public readonly struct DateTimeTuple : ISpaceTuple<DateTime, DateTimeTuple>, IEquatable<DateTimeTuple>, IComparable<DateTimeTuple>
 {
     /// <summary>
     /// 

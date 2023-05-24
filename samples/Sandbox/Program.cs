@@ -4,8 +4,9 @@ using OrleanSpaces.Tuples.Typed;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-ISpaceAgent<BoolTuple> spaceAgent = null;
+ISpaceAgent<BoolTuple, BoolTemplate> spaceAgent = null;
 
-spaceAgent.WriteAsync()
+var a = spaceAgent.WriteAsync(new(true, false));
+spaceAgent.PeekAsync(new(true, new SpaceUnit(), false));
 
 Console.ReadKey();

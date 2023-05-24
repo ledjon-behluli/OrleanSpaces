@@ -7,9 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTemplate : ISpaceTuple, 
-    IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>,
-    IEquatable<SpaceTuple>, IComparable<SpaceTuple>
+public readonly struct SpaceTemplate : IEquatable<SpaceTemplate>, IComparable<SpaceTemplate>
 {
     private readonly object[] fields;
 
@@ -53,9 +51,6 @@ public readonly struct SpaceTemplate : ISpaceTuple,
         }
     }
 
-    public bool Equals(SpaceTuple tuple) => Matches(tuple);
-    public int CompareTo(SpaceTuple tuple) => Length.CompareTo(tuple.Length);
-
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
     /// </summary>
@@ -65,7 +60,6 @@ public readonly struct SpaceTemplate : ISpaceTuple,
     /// <paramref name="tuple"/> at the same index</i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(SpaceTuple tuple)
     {
-        //TODO: Remove matches and add logic to 'Equals(SpaceTuple tuple)'
         if (tuple.Length != Length)
         {
             return false;
@@ -121,7 +115,23 @@ public readonly struct SpaceTemplate : ISpaceTuple,
     /// </summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SpaceTemplate other) => this.SequentialEquals(other);
+    public bool Equals(SpaceTemplate other)
+    {
+        if (length != other.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            if (!this.Equals(other))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Compares the current object with another object of the same type.

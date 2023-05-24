@@ -151,7 +151,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
-         where T : struct
+        where T : struct
     {
         int length = left.Length;
         if (length != right.Length)
@@ -195,7 +195,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
-       where T : struct, ISpanFormattable
+        where T : struct, ISpanFormattable
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = Allocate<char>(capacity, out bool rented);

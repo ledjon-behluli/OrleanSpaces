@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
+public readonly struct UHugeTuple : INumericTuple<UInt128, UHugeTuple>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
 {
     /// <summary>
     /// 
@@ -23,7 +23,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public ref readonly UInt128 this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<UInt128> INumericTuple<UInt128>.Fields => fields.AsSpan();
+    Span<UInt128> INumericTuple<UInt128, UHugeTuple>.Fields => fields.AsSpan();
 
     public UHugeTuple() : this(Array.Empty<UInt128>()) { }
     public UHugeTuple(params UInt128[] fields) => this.fields = fields;

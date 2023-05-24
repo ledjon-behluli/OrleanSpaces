@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>, IComparable<ULongTuple>
+public readonly struct ULongTuple : INumericTuple<ulong, ULongTuple>, IEquatable<ULongTuple>, IComparable<ULongTuple>
 {
     /// <summary>
     /// 
@@ -16,7 +16,7 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public ref readonly ulong this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<ulong> INumericTuple<ulong>.Fields => fields.AsSpan();
+    Span<ulong> INumericTuple<ulong, ULongTuple>.Fields => fields.AsSpan();
 
     public ULongTuple() : this(Array.Empty<ulong>()) { }
     public ULongTuple(params ulong[] fields) => this.fields = fields;

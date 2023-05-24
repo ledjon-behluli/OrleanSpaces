@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
+public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
     /// <summary>

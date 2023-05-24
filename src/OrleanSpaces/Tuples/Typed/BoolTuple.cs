@@ -1,9 +1,11 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces.Tuples;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, IEquatable<BoolTuple>, IComparable<BoolTuple>
+public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, IComparable<BoolTuple>
 {
     /// <summary>
     /// 
@@ -68,4 +70,24 @@ public readonly struct BoolTuple : ISpaceTuple<bool, BoolTuple>, IEquatable<Bool
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
             => Value.TryFormat(destination, out charsWritten);
     }
+}
+
+[Immutable]
+public readonly struct SpaceBool
+{
+    public readonly bool Value;
+
+    public SpaceBool(bool value) => Value = value;
+
+    public static implicit operator SpaceBool(bool value) => new(value);
+    public static implicit operator bool(SpaceBool value) => value.Value;
+}
+
+[Immutable]
+public readonly struct BoolTemplate : ISpaceTemplate<BoolTuple>
+{
+    private readonly SpaceBool[] fields;
+
+    public BoolTemplate([AllowNull] params SpaceBool[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceBool[1] { new SpaceUnit() } : fields;
 }

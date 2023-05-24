@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>, IComparable<GuidTuple>
+public readonly struct GuidTuple : ISpaceTuple<Guid, DateTimeTuple>, IEquatable<GuidTuple>, IComparable<GuidTuple>
 {
     /// <summary>
     /// 

@@ -6,14 +6,14 @@ using System.Runtime.InteropServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>, IComparable<StringTuple>
+public readonly struct StringTuple : ISpaceTuple<char, StringTuple>, IEquatable<StringTuple>, IComparable<StringTuple>
 {
     private readonly string[] fields;
 
     public ref readonly string this[int index] => ref fields[index];
 
     /// <exception cref="IndexOutOfRangeException"></exception>
-    ref readonly char ISpaceTuple<char>.this[int index]
+    ref readonly char ISpaceTuple<char, StringTuple>.this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -113,7 +113,7 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
+    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString, SFStringTuple>
     {
         public ref readonly SFString this[int index] => ref Values[index];
         public int Length => Values.Length;

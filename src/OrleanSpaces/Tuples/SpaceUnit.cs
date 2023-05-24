@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces.Tuples.Typed;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
@@ -49,5 +50,5 @@ public readonly struct SpaceUnit : ISpaceTuple, IEquatable<SpaceUnit>, IComparab
     public override string ToString() => DefaultString;
 
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<pending>")]
-    public static implicit operator int(SpaceUnit unit) => 0;
+    public static implicit operator SpaceBool(SpaceUnit unit) => true;
 }
