@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTuple>, IComparable<UShortTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>65535</example>
-    internal const int MaxFieldCharLength = 5;
-
     private readonly ushort[] fields;
 
     public ref readonly ushort this[int index] => ref fields[index];
@@ -34,7 +28,7 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
 
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }

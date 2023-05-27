@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>, IComparable<LongTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-9223372036854775808</example>
-    internal const int MaxFieldCharLength = 20;
-
     private readonly long[] fields;
 
     public ref readonly long this[int index] => ref fields[index];
@@ -34,7 +28,7 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>, I
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Long);
 
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }

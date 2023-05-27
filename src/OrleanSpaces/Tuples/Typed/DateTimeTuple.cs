@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTimeTuple>, IComparable<DateTimeTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>12/31/9999 11:59:59 PM</example>
-    internal const int MaxFieldCharLength = 22;
-
     private readonly DateTime[] fields;
 
     public ref readonly DateTime this[int index] => ref fields[index];
@@ -36,7 +30,7 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
 
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }

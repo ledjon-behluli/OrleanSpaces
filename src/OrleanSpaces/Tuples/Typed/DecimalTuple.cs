@@ -7,12 +7,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>, IComparable<DecimalTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-79228162514264337593543950335</example>
-    internal const int MaxFieldCharLength = 30;
-
     private readonly decimal[] fields;
 
     public ref readonly decimal this[int index] => ref fields[index];
@@ -60,7 +54,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
 
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 

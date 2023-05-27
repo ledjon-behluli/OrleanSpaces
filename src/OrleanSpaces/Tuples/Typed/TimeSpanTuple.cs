@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>, IComparable<TimeSpanTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-10675199.02:48:05.4775808</example>
-    internal const int MaxFieldCharLength = 26;
-
     private readonly TimeSpan[] fields;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
@@ -36,7 +30,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_TimeSpan);
 
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }

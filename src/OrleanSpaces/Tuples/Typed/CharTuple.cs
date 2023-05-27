@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, IComparable<CharTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>a</example>
-    internal const int MaxFieldCharLength = 1;
-
     private readonly char[] fields;
 
     public ref readonly char this[int index] => ref fields[index];
@@ -46,7 +40,7 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, ICo
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
 
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }

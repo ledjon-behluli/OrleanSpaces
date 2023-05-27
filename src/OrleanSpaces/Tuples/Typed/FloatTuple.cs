@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>, IComparable<FloatTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-3.4028235E+38</example>
-    internal const int MaxFieldCharLength = 24;
-
     private readonly float[] fields;
 
     public ref readonly float this[int index] => ref fields[index];
@@ -34,7 +28,7 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
 
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }

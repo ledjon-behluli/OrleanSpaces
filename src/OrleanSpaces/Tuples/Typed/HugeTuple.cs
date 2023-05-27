@@ -9,17 +9,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>, IComparable<HugeTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-170141183460469231731687303715884105728</example>
-    internal const int MaxFieldCharLength = 40;
-
-    /// <summary>
-    /// Maximum value can be represented by this number of bytes.
-    /// </summary>
-    internal const int ByteCount = 16;
-
     private readonly Int128[] fields;
     
     public ref readonly Int128 this[int index] => ref fields[index];
@@ -46,7 +35,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>,
             return this.SequentialEquals(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(2 * ByteCount * Length);
+        return new Comparer(this, other).AllocateAndExecute(32 * Length); // 32 because 2 x 16, where 16 is the maximum value can be represented by this number of bytes.
     }
 
     public int CompareTo(HugeTuple other) => Length.CompareTo(other.Length);
@@ -54,7 +43,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>,
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
 
     public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128>(fields).GetEnumerator();
 

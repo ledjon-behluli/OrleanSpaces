@@ -8,17 +8,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>170141183460469231731687303715884105728</example>
-    internal const int MaxFieldCharLength = 39;
-
-    /// <summary>
-    /// Maximum value can be represented by this number of bytes.
-    /// </summary>
-    internal const int ByteCount = 16;
-
     private readonly UInt128[] fields;
 
     public ref readonly UInt128 this[int index] => ref fields[index];
@@ -45,7 +34,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
             return this.SequentialEquals(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(2 * ByteCount * Length);
+        return new Comparer(this, other).AllocateAndExecute(32 * Length); // 32 because 2 x 16, where 16 is the maximum value can be represented by this number of bytes.
     }
 
     public int CompareTo(UHugeTuple other) => Length.CompareTo(other.Length);
@@ -53,7 +42,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
 
     public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
 

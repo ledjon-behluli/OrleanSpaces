@@ -6,12 +6,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>, IComparable<SByteTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-128</example>
-    internal const int MaxFieldCharLength = 4;
-
     private readonly sbyte[] fields;
 
     public ref readonly sbyte this[int index] => ref fields[index];
@@ -34,7 +28,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
 
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }

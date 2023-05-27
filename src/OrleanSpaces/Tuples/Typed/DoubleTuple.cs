@@ -6,18 +6,12 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTuple>, IComparable<DoubleTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-1.7976931348623157E+308</example>
-    internal const int MaxFieldCharLength = 24;
-
     private readonly double[] fields;
 
     public ref readonly double this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<double> INumericTuple<double, DoubleTuple>.Fields => fields.AsSpan();
+    Span<double> INumericTuple<double>.Fields => fields.AsSpan();
 
     public DoubleTuple() : this(Array.Empty<double>()) { }
     public DoubleTuple(params double[] fields) => this.fields = fields;
@@ -34,7 +28,7 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Double);
 
     public ReadOnlySpan<double>.Enumerator GetEnumerator() => new ReadOnlySpan<double>(fields).GetEnumerator();
 }

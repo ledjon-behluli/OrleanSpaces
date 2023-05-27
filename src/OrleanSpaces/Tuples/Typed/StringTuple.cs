@@ -97,19 +97,19 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
     public ReadOnlySpan<char> AsSpan()
     {
         int tupleLength = Length;
-        int maxCapacity = 0;
+        int maxFieldCharLength = 0;
 
         SFString[] sfStrings = new SFString[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {
             sfStrings[i] = new(this[i]);
-            if (sfStrings[i].Value.Length > maxCapacity)
+            if (sfStrings[i].Value.Length > maxFieldCharLength)
             {
-                maxCapacity = sfStrings[i].Value.Length;
+                maxFieldCharLength = sfStrings[i].Value.Length;
             }
         }
 
-        return new SFStringTuple(sfStrings).AsSpan(maxCapacity);
+        return new SFStringTuple(sfStrings).AsSpan(maxFieldCharLength);
     }
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();

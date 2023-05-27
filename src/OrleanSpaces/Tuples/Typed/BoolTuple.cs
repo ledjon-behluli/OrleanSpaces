@@ -7,12 +7,6 @@ namespace OrleanSpaces.Tuples.Typed;
 [Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, IComparable<BoolTuple>
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>False</example>
-    internal const int MaxFieldCharLength = 5;
-
     private readonly bool[] fields;
 
     public ref readonly bool this[int index] => ref fields[index];
@@ -52,7 +46,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
             sfBools[i] = new(this[i]);
         }
 
-        return new SFBoolTuple(sfBools).AsSpan(MaxFieldCharLength);
+        return new SFBoolTuple(sfBools).AsSpan(Constants.MaxFieldCharLength_Bool);
     }
 
     readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool>
