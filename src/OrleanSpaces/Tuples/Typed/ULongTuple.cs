@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct ULongTuple : INumericTuple<ulong, ULongTuple>, IEquatable<ULongTuple>, IComparable<ULongTuple>
+public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>, IComparable<ULongTuple>
 {
     /// <summary>
     /// 
@@ -16,7 +17,7 @@ public readonly struct ULongTuple : INumericTuple<ulong, ULongTuple>, IEquatable
     public ref readonly ulong this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<ulong> INumericTuple<ulong, ULongTuple>.Fields => fields.AsSpan();
+    Span<ulong> INumericTuple<ulong>.Fields => fields.AsSpan();
 
     public ULongTuple() : this(Array.Empty<ulong>()) { }
     public ULongTuple(params ulong[] fields) => this.fields = fields;
@@ -36,4 +37,26 @@ public readonly struct ULongTuple : INumericTuple<ulong, ULongTuple>, IEquatable
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceULong
+{
+    public readonly ulong Value;
+
+    internal static readonly SpaceULong Default = new();
+
+    public SpaceULong(ulong value) => Value = value;
+
+    public static implicit operator SpaceULong(ulong value) => new(value);
+    public static implicit operator ulong(SpaceULong value) => value.Value;
+}
+
+[Immutable]
+public readonly struct ULongTemplate : ISpaceTemplate<ULongTuple>
+{
+    private readonly SpaceULong[] fields;
+
+    public ULongTemplate([AllowNull] params SpaceULong[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceULong[1] { new SpaceUnit() } : fields;
 }

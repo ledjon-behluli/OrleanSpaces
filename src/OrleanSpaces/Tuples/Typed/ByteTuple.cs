@@ -39,11 +39,12 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>, I
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }
 
-
 [Immutable]
 public readonly struct SpaceByte
 {
     public readonly byte Value;
+
+    internal static readonly SpaceByte Default = new();
 
     public SpaceByte(byte value) => Value = value;
 

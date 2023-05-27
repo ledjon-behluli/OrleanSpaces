@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTimeOffsetTuple>, IEquatable<DateTimeOffsetTuple>, IComparable<DateTimeOffsetTuple>
+public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquatable<DateTimeOffsetTuple>, IComparable<DateTimeOffsetTuple>
 {
     /// <summary>
     /// 
@@ -38,4 +39,26 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset, DateTim
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceDateTimeOffset
+{
+    public readonly DateTimeOffset Value;
+
+    internal static readonly SpaceDateTimeOffset Default = new();
+
+    public SpaceDateTimeOffset(DateTimeOffset value) => Value = value;
+
+    public static implicit operator SpaceDateTimeOffset(DateTimeOffset value) => new(value);
+    public static implicit operator DateTimeOffset(SpaceDateTimeOffset value) => value.Value;
+}
+
+[Immutable]
+public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffsetTuple>
+{
+    private readonly SpaceDateTimeOffset[] fields;
+
+    public DateTimeOffsetTemplate([AllowNull] params SpaceDateTimeOffset[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceDateTimeOffset[1] { new SpaceUnit() } : fields;
 }

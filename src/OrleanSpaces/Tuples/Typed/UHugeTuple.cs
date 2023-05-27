@@ -1,11 +1,12 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UHugeTuple : INumericTuple<UInt128, UHugeTuple>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
+public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
 {
     /// <summary>
     /// 
@@ -23,7 +24,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128, UHugeTuple>, IEquatab
     public ref readonly UInt128 this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<UInt128> INumericTuple<UInt128, UHugeTuple>.Fields => fields.AsSpan();
+    Span<UInt128> INumericTuple<UInt128>.Fields => fields.AsSpan();
 
     public UHugeTuple() : this(Array.Empty<UInt128>()) { }
     public UHugeTuple(params UInt128[] fields) => this.fields = fields;
@@ -91,4 +92,26 @@ public readonly struct UHugeTuple : INumericTuple<UInt128, UHugeTuple>, IEquatab
                 value.WriteLittleEndian(destination.Slice(index, index + ByteCount)) :
                 value.WriteBigEndian(destination.Slice(index, index + ByteCount));
     }
+}
+
+[Immutable]
+public readonly struct SpaceUHuge
+{
+    public readonly UInt128 Value;
+
+    internal static readonly SpaceUHuge Default = new();
+
+    public SpaceUHuge(UInt128 value) => Value = value;
+
+    public static implicit operator SpaceUHuge(UInt128 value) => new(value);
+    public static implicit operator UInt128(SpaceUHuge value) => value.Value;
+}
+
+[Immutable]
+public readonly struct UHugeTemplate : ISpaceTemplate<UHugeTuple>
+{
+    private readonly SpaceUHuge[] fields;
+
+    public UHugeTemplate([AllowNull] params SpaceUHuge[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceUHuge[1] { new SpaceUnit() } : fields;
 }

@@ -1,10 +1,11 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal, DateTimeTuple>, IEquatable<DecimalTuple>, IComparable<DecimalTuple>
+public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>, IComparable<DecimalTuple>
 {
     /// <summary>
     /// 
@@ -91,4 +92,26 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal, DateTimeTuple>, IEqua
             return leftSpan.ParallelEquals(rightSpan);
         }
     }
+}
+
+[Immutable]
+public readonly struct SpaceDecimal
+{
+    public readonly decimal Value;
+
+    internal static readonly SpaceDecimal Default = new();
+
+    public SpaceDecimal(decimal value) => Value = value;
+
+    public static implicit operator SpaceDecimal(decimal value) => new(value);
+    public static implicit operator decimal(SpaceDecimal value) => value.Value;
+}
+
+[Immutable]
+public readonly struct DecimalTemplate : ISpaceTemplate<DecimalTuple>
+{
+    private readonly SpaceDecimal[] fields;
+
+    public DecimalTemplate([AllowNull] params SpaceDecimal[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceDecimal[1] { new SpaceUnit() } : fields;
 }

@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, IEquatable<UShortTuple>, IComparable<UShortTuple>
+public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTuple>, IComparable<UShortTuple>
 {
     /// <summary>
     /// 
@@ -16,7 +17,7 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, IEquata
     public ref readonly ushort this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<ushort> INumericTuple<ushort, UShortTuple>.Fields => fields.AsSpan();
+    Span<ushort> INumericTuple<ushort>.Fields => fields.AsSpan();
 
     public UShortTuple() : this(Array.Empty<ushort>()) { }
     public UShortTuple(params ushort[] fields) => this.fields = fields;
@@ -36,4 +37,26 @@ public readonly struct UShortTuple : INumericTuple<ushort, UShortTuple>, IEquata
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceUShort
+{
+    public readonly ushort Value;
+
+    internal static readonly SpaceUShort Default = new();
+
+    public SpaceUShort(ushort value) => Value = value;
+
+    public static implicit operator SpaceUShort(ushort value) => new(value);
+    public static implicit operator ushort(SpaceUShort value) => value.Value;
+}
+
+[Immutable]
+public readonly struct UShortTemplate : ISpaceTemplate<UShortTuple>
+{
+    private readonly SpaceUShort[] fields;
+
+    public UShortTemplate([AllowNull] params SpaceUShort[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceUShort[1] { new SpaceUnit() } : fields;
 }

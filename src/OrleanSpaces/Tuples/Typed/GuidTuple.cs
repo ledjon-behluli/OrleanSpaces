@@ -1,10 +1,11 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct GuidTuple : ISpaceTuple<Guid, DateTimeTuple>, IEquatable<GuidTuple>, IComparable<GuidTuple>
+public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>, IComparable<GuidTuple>
 {
     /// <summary>
     /// 
@@ -62,4 +63,26 @@ public readonly struct GuidTuple : ISpaceTuple<Guid, DateTimeTuple>, IEquatable<
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceGuid
+{
+    public readonly Guid Value;
+
+    internal static readonly SpaceGuid Default = new();
+
+    public SpaceGuid(Guid value) => Value = value;
+
+    public static implicit operator SpaceGuid(Guid value) => new(value);
+    public static implicit operator Guid(SpaceGuid value) => value.Value;
+}
+
+[Immutable]
+public readonly struct GuidTemplate : ISpaceTemplate<GuidTuple>
+{
+    private readonly SpaceGuid[] fields;
+
+    public GuidTemplate([AllowNull] params SpaceGuid[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceGuid[1] { new SpaceUnit() } : fields;
 }

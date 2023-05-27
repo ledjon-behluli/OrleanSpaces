@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,14 +7,14 @@ using System.Runtime.InteropServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct StringTuple : ISpaceTuple<char, StringTuple>, IEquatable<StringTuple>, IComparable<StringTuple>
+public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>, IComparable<StringTuple>
 {
     private readonly string[] fields;
 
     public ref readonly string this[int index] => ref fields[index];
 
     /// <exception cref="IndexOutOfRangeException"></exception>
-    ref readonly char ISpaceTuple<char, StringTuple>.this[int index]
+    ref readonly char ISpaceTuple<char>.this[int index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
@@ -113,7 +114,7 @@ public readonly struct StringTuple : ISpaceTuple<char, StringTuple>, IEquatable<
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString, SFStringTuple>
+    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
     {
         public ref readonly SFString this[int index] => ref Values[index];
         public int Length => Values.Length;
@@ -180,4 +181,26 @@ public readonly struct StringTuple : ISpaceTuple<char, StringTuple>, IEquatable<
             return marshaller.Left.ParallelEquals(marshaller.Right);
         }
     }
+}
+
+[Immutable]
+public readonly struct SpaceString
+{
+    public readonly string Value;
+
+    internal static readonly SpaceString Default = new();
+
+    public SpaceString(string value) => Value = value;
+
+    public static implicit operator SpaceString(string value) => new(value);
+    public static implicit operator string(SpaceString value) => value.Value;
+}
+
+[Immutable]
+public readonly struct StringTemplate : ISpaceTemplate<StringTuple>
+{
+    private readonly SpaceString[] fields;
+
+    public StringTemplate([AllowNull] params SpaceString[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceString[1] { new SpaceUnit() } : fields;
 }

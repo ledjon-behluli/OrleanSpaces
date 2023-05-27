@@ -174,26 +174,6 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals(this ISpaceTuple left, ISpaceTuple right)
-    {
-        int length = left.Length;
-        if (length != right.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < length; i++)
-        {
-            if (!left.Equals(right))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
         where T : struct, ISpanFormattable
     {

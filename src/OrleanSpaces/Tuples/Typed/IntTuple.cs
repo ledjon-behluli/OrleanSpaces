@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct IntTuple : INumericTuple<int, IntTuple>, IEquatable<IntTuple>, IComparable<IntTuple>
+public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, IComparable<IntTuple>
 {
     /// <summary>
     /// 
@@ -16,7 +17,7 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, IEquatable<IntTu
     public ref readonly int this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<int> INumericTuple<int, IntTuple>.Fields => fields.AsSpan();
+    Span<int> INumericTuple<int>.Fields => fields.AsSpan();
 
     public IntTuple() : this(Array.Empty<int>()) { }
     public IntTuple(params int[] fields) => this.fields = fields;
@@ -36,4 +37,26 @@ public readonly struct IntTuple : INumericTuple<int, IntTuple>, IEquatable<IntTu
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceInt
+{
+    public readonly int Value;
+
+    internal static readonly SpaceInt Default = new();
+
+    public SpaceInt(int value) => Value = value;
+
+    public static implicit operator SpaceInt(int value) => new(value);
+    public static implicit operator int(SpaceInt value) => value.Value;
+}
+
+[Immutable]
+public readonly struct IntTemplate : ISpaceTemplate<IntTuple>
+{
+    private readonly SpaceInt[] fields;
+
+    public IntTemplate([AllowNull] params SpaceInt[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceInt[1] { new SpaceUnit() } : fields;
 }

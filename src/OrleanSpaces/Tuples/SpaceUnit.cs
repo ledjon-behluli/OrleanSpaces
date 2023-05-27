@@ -49,6 +49,26 @@ public readonly struct SpaceUnit : ISpaceTuple, IEquatable<SpaceUnit>, IComparab
     public override int GetHashCode() => 0;
     public override string ToString() => DefaultString;
 
-    public static implicit operator SpaceBool(SpaceUnit _) => false;
-    public static implicit operator SpaceByte(SpaceUnit _) => 0;
+    public static implicit operator SpaceBool(SpaceUnit _) => SpaceBool.Default;
+    public static implicit operator SpaceChar(SpaceUnit _) => SpaceChar.Default;
+    public static implicit operator SpaceByte(SpaceUnit _) => SpaceByte.Default;
+    public static implicit operator SpaceSByte(SpaceUnit _) => SpaceSByte.Default;
+    public static implicit operator SpaceShort(SpaceUnit _) => SpaceShort.Default;
+    public static implicit operator SpaceFloat(SpaceUnit _) => SpaceFloat.Default;
+    public static implicit operator SpaceInt(SpaceUnit _) => SpaceInt.Default;
+    public static implicit operator SpaceLong(SpaceUnit _) => SpaceLong.Default;
+    public static implicit operator SpaceHuge(SpaceUnit _) => SpaceHuge.Default;
+    public static implicit operator SpaceUShort(SpaceUnit _) => SpaceUShort.Default;
+    public static implicit operator SpaceUInt(SpaceUnit _) => SpaceUInt.Default;
+    public static implicit operator SpaceULong(SpaceUnit _) => SpaceULong.Default;
+    public static implicit operator SpaceUHuge(SpaceUnit _) => SpaceUHuge.Default;
+    public static implicit operator SpaceDouble(SpaceUnit _) => SpaceDouble.Default;
+    public static implicit operator SpaceDecimal(SpaceUnit _) => SpaceDecimal.Default;
+    public static implicit operator SpaceTimeSpan(SpaceUnit _) => SpaceTimeSpan.Default;
+    public static implicit operator SpaceDateTime(SpaceUnit _) => SpaceDateTime.Default;
+    public static implicit operator SpaceDateTimeOffset(SpaceUnit _) => SpaceDateTimeOffset.Default;
+    public static implicit operator SpaceGuid(SpaceUnit _) => SpaceGuid.Default;
+    public static implicit operator SpaceString(SpaceUnit _) => SpaceString.Default;
+
+    public static implicit operator SpaceEnum<byte>(SpaceUnit _) => ...;
 }

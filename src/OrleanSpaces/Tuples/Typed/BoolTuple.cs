@@ -77,6 +77,8 @@ public readonly struct SpaceBool
 {
     public readonly bool Value;
 
+    internal static readonly SpaceBool Default = new();
+
     public SpaceBool(bool value) => Value = value;
 
     public static implicit operator SpaceBool(bool value) => new(value);

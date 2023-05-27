@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, IEquatable<TimeSpanTuple>, IComparable<TimeSpanTuple>
+public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>, IComparable<TimeSpanTuple>
 {
     /// <summary>
     /// 
@@ -38,4 +39,26 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan, TimeSpanTuple>, IEq
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceTimeSpan
+{
+    public readonly TimeSpan Value;
+
+    internal static readonly SpaceTimeSpan Default = new();
+
+    public SpaceTimeSpan(TimeSpan value) => Value = value;
+
+    public static implicit operator SpaceTimeSpan(TimeSpan value) => new(value);
+    public static implicit operator TimeSpan(SpaceTimeSpan value) => value.Value;
+}
+
+[Immutable]
+public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpanTuple>
+{
+    private readonly SpaceTimeSpan[] fields;
+
+    public TimeSpanTemplate([AllowNull] params SpaceTimeSpan[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceTimeSpan[1] { new SpaceUnit() } : fields;
 }

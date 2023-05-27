@@ -1,12 +1,12 @@
 ﻿using Orleans.Concurrency;
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
+public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
     /// <summary>
@@ -54,7 +54,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> , IEquatable<
             TypeCode.UInt32 => AreParallelEquals<uint>(in this, in other),
             TypeCode.Int64 => AreParallelEquals<long>(in this, in other),
             TypeCode.UInt64 => AreParallelEquals<ulong>(in this, in other),
-            _ => throw new NotSupportedException() // will never reach this, because an enum can only "inherit" from the above types.
+            _ => throw new NotSupportedException()
         };
     }
 
@@ -78,7 +78,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> , IEquatable<
         SFEnum[] sfEnums = new SFEnum[tupleLength];
         for (int i = 0; i < tupleLength; i++)
         {
-            sfEnums[i] = new(Helpers.CastAs<T, int>(in this[i]));
+            sfEnums[i] = new(this[i]);
         }
 
         return new SFEnumTuple(sfEnums).AsSpan(MaxFieldCharLength);
@@ -94,11 +94,48 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T, EnumTuple<T>> , IEquatable<
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
     }
 
-    readonly record struct SFEnum(int Value) : ISpanFormattable
+    readonly record struct SFEnum(T Value) : ISpanFormattable
     {
         public string ToString(string? format, IFormatProvider? formatProvider) => Value.ToString();
 
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-            => Value.TryFormat(destination, out charsWritten);
+        {
+            charsWritten = 0;
+
+            return Type.GetTypeCode(typeof(T)) switch
+            {
+                TypeCode.Byte => Helpers.CastAs<T, byte>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.SByte => Helpers.CastAs<T, sbyte>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int16 => Helpers.CastAs<T, short>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt16 => Helpers.CastAs<T, ushort>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int32 => Helpers.CastAs<T, int>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt32 => Helpers.CastAs<T, uint>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int64 => Helpers.CastAs<T, long>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt64 => Helpers.CastAs<T, ulong>(Value).TryFormat(destination, out charsWritten),
+                _ => false
+            };
+        }
     }
+}
+
+[Immutable]
+public readonly struct SpaceEnum<T>
+     where T : unmanaged, Enum
+{
+    public readonly T Value;
+
+    public SpaceEnum(T value) => Value = value;
+
+    public static implicit operator SpaceEnum<T>(T value) => new(value);
+    public static implicit operator T(SpaceEnum<T> value) => value.Value;
+}
+
+[Immutable]
+public readonly struct EnumTemplate<T> : ISpaceTemplate<EnumTuple<T>>
+    where T : unmanaged, Enum
+{
+    private readonly SpaceEnum<T>[] fields;
+
+    public EnumTemplate([AllowNull] params SpaceEnum<T>[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceEnum<T>[1] { new SpaceUnit() } : fields;
 }

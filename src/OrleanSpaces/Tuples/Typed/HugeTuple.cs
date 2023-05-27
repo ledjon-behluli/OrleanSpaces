@@ -1,12 +1,13 @@
 ﻿using Orleans.Concurrency;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>, IEquatable<HugeTuple>, IComparable<HugeTuple>
+public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>, IComparable<HugeTuple>
 {
     /// <summary>
     /// 
@@ -24,7 +25,7 @@ public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>, IEquatable<
     public ref readonly Int128 this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    Span<Int128> INumericTuple<Int128, HugeTuple>.Fields => fields.AsSpan();
+    Span<Int128> INumericTuple<Int128>.Fields => fields.AsSpan();
 
     public HugeTuple() : this(Array.Empty<Int128>()) { }
     public HugeTuple(params Int128[] fields) => this.fields = fields;
@@ -92,4 +93,26 @@ public readonly struct HugeTuple : INumericTuple<Int128, HugeTuple>, IEquatable<
                 value.WriteLittleEndian(destination.Slice(index, index + ByteCount)) :
                 value.WriteBigEndian(destination.Slice(index, index + ByteCount));
     }
+}
+
+[Immutable]
+public readonly struct SpaceHuge
+{
+    public readonly Int128 Value;
+
+    internal static readonly SpaceHuge Default = new();
+
+    public SpaceHuge(Int128 value) => Value = value;
+
+    public static implicit operator SpaceHuge(Int128 value) => new(value);
+    public static implicit operator Int128(SpaceHuge value) => value.Value;
+}
+
+[Immutable]
+public readonly struct HugeTemplate : ISpaceTemplate<HugeTuple>
+{
+    private readonly SpaceHuge[] fields;
+
+    public HugeTemplate([AllowNull] params SpaceHuge[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceHuge[1] { new SpaceUnit() } : fields;
 }

@@ -1,9 +1,10 @@
 ﻿using Orleans.Concurrency;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DoubleTuple : INumericTuple<double, DoubleTuple>, IEquatable<DoubleTuple>, IComparable<DoubleTuple>
+public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTuple>, IComparable<DoubleTuple>
 {
     /// <summary>
     /// 
@@ -36,4 +37,26 @@ public readonly struct DoubleTuple : INumericTuple<double, DoubleTuple>, IEquata
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(MaxFieldCharLength);
 
     public ReadOnlySpan<double>.Enumerator GetEnumerator() => new ReadOnlySpan<double>(fields).GetEnumerator();
+}
+
+[Immutable]
+public readonly struct SpaceDouble
+{
+    public readonly double Value;
+
+    internal static readonly SpaceDouble Default = new();
+
+    public SpaceDouble(double value) => Value = value;
+
+    public static implicit operator SpaceDouble(double value) => new(value);
+    public static implicit operator double(SpaceDouble value) => value.Value;
+}
+
+[Immutable]
+public readonly struct DoubleTemplate : ISpaceTemplate<DoubleTuple>
+{
+    private readonly SpaceDouble[] fields;
+
+    public DoubleTemplate([AllowNull] params SpaceDouble[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceDouble[1] { new SpaceUnit() } : fields;
 }
