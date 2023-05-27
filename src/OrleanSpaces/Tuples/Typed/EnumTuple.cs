@@ -9,12 +9,6 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <example>-2147483648</example>
-    internal const int MaxFieldCharLength = 11;  // since the underlying type is an 'int', we will use the value.
-
     private readonly T[] fields;
 
     public ref readonly T this[int index] => ref fields[index];
@@ -81,7 +75,20 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
             sfEnums[i] = new(this[i]);
         }
 
-        return new SFEnumTuple(sfEnums).AsSpan(MaxFieldCharLength);
+        int maxFieldCharLength = Type.GetTypeCode(typeof(T)) switch
+        {
+            TypeCode.Byte => Constants.MaxFieldCharLength_Byte,
+            TypeCode.SByte => Constants.MaxFieldCharLength_SByte,
+            TypeCode.Int16 => Constants.MaxFieldCharLength_Short,
+            TypeCode.UInt16 => Constants.MaxFieldCharLength_UShort,
+            TypeCode.Int32 => Constants.MaxFieldCharLength_Int,
+            TypeCode.UInt32 => Constants.MaxFieldCharLength_UInt,
+            TypeCode.Int64 => Constants.MaxFieldCharLength_Long,
+            TypeCode.UInt64 => Constants.MaxFieldCharLength_ULong,
+            _ => throw new NotSupportedException()
+        };
+
+        return new SFEnumTuple(sfEnums).AsSpan(maxFieldCharLength);
     }
 
     public ReadOnlySpan<T>.Enumerator GetEnumerator() => new ReadOnlySpan<T>(fields).GetEnumerator();
@@ -98,11 +105,8 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
     {
         public string ToString(string? format, IFormatProvider? formatProvider) => Value.ToString();
 
-        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        {
-            charsWritten = 0;
-
-            return Type.GetTypeCode(typeof(T)) switch
+        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
+            => Type.GetTypeCode(typeof(T)) switch
             {
                 TypeCode.Byte => Helpers.CastAs<T, byte>(Value).TryFormat(destination, out charsWritten),
                 TypeCode.SByte => Helpers.CastAs<T, sbyte>(Value).TryFormat(destination, out charsWritten),
@@ -112,9 +116,8 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
                 TypeCode.UInt32 => Helpers.CastAs<T, uint>(Value).TryFormat(destination, out charsWritten),
                 TypeCode.Int64 => Helpers.CastAs<T, long>(Value).TryFormat(destination, out charsWritten),
                 TypeCode.UInt64 => Helpers.CastAs<T, ulong>(Value).TryFormat(destination, out charsWritten),
-                _ => false
+                _ => throw new NotSupportedException()
             };
-        }
     }
 }
 
