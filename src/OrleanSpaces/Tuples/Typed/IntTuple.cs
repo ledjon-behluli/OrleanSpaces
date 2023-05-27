@@ -29,7 +29,6 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Int);
-
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
 }
 
@@ -37,20 +36,48 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
 public readonly struct SpaceInt
 {
     public readonly int Value;
+    
+    internal readonly bool IsPlaceholder;
 
-    internal static readonly SpaceInt Default = new();
+    public static readonly SpaceInt Unit = new();
 
-    public SpaceInt(int value) => Value = value;
+    public SpaceInt()
+    {
+        Value = default;
+        IsPlaceholder = true;
+    }
+
+    public SpaceInt(int value)
+    {
+        Value = value;
+        IsPlaceholder = false;
+    }
 
     public static implicit operator SpaceInt(int value) => new(value);
     public static implicit operator int(SpaceInt value) => value.Value;
 }
 
 [Immutable]
-public readonly struct IntTemplate : ISpaceTemplate<IntTuple>
+public readonly struct IntTemplate : ISpaceTemplate<int, IntTuple>
 {
     private readonly SpaceInt[] fields;
 
+    public int Length => fields.Length;
+
+    public ref readonly int this[int index] => ref fields[index].Value;
+
     public IntTemplate([AllowNull] params SpaceInt[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceInt[1] { new SpaceUnit() } : fields;
+        => this.fields = fields == null || fields.Length == 0 ? new SpaceInt[1] { SpaceInt.Unit } : fields;
+
+    public bool Matches(IntTuple tuple)
+    {
+        int[] _fields = new int[Length];
+        for (int i = 0; i < Length; i++)
+        {
+            _fields[i] = fields[i].IsPlaceholder ? tuple[i] : this[i];
+        }
+
+        IntTuple thisTuple = new(_fields);
+        return thisTuple.Equals(tuple);
+    }
 }

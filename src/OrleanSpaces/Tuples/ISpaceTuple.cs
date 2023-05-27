@@ -12,8 +12,6 @@ public interface ISpaceTuple<T> : ISpaceTuple
 {
     ref readonly T this[int index] { get; }
     int Length { get; }
-
-    ReadOnlySpan<char> AsSpan();
 }
 
 internal interface INumericTuple<T> : ISpaceTuple<T>
@@ -22,8 +20,9 @@ internal interface INumericTuple<T> : ISpaceTuple<T>
     Span<T> Fields { get; }
 }
 
-public interface ISpaceTemplate<T>
-    where T : struct, ISpaceTuple
+public interface ISpaceTemplate<TValue, TTuple> : ISpaceTuple<TValue>
+    where TValue : struct
+    where TTuple : struct, ISpaceTuple
 {
-
+  
 }
