@@ -47,10 +47,18 @@ public readonly struct SpaceByte
 }
 
 [Immutable]
-public readonly struct ByteTemplate : ISpaceTemplate<ByteTuple>
+public readonly struct ByteTemplate : ISpaceTemplate<byte>
 {
-    private readonly SpaceByte[] fields;
+    private readonly byte?[] fields;
 
-    public ByteTemplate([AllowNull] params SpaceByte[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceByte[1] { new SpaceUnit() } : fields;
+    public ref readonly byte? this[int index] => ref fields[index];
+    public int Length => fields.Length;
+
+    public ByteTemplate([AllowNull] params byte?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new byte?[1] { null } : fields;
+
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<byte>
+        => Helpers.Matches(this, tuple);
+
+    ISpaceTuple<byte> ISpaceTemplate<byte>.Create(byte[] fields) => new ByteTuple(fields);
 }
