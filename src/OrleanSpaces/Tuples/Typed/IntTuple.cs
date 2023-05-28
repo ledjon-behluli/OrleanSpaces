@@ -33,7 +33,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
 }
 
 [Immutable]
-public readonly struct IntTemplate : ISpaceTemplate<int>, ITupleFactory<int>
+public readonly struct IntTemplate : ISpaceTemplate<int>
 {
     private readonly int?[] fields;
 
@@ -43,8 +43,8 @@ public readonly struct IntTemplate : ISpaceTemplate<int>, ITupleFactory<int>
     public IntTemplate([AllowNull] params int?[] fields)
         => this.fields = fields == null || fields.Length == 0 ? new int?[1] { null } : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) 
-        where TTuple : ISpaceTuple<int> => this.Matches(this, tuple);
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int> 
+        => Helpers.Matches(this, tuple);
 
-    public ISpaceTuple<int> Create(int[] fields) => new IntTuple(fields);
+    ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
 }

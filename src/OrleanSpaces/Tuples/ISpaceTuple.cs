@@ -26,5 +26,7 @@ public interface ISpaceTemplate<T>
     ref readonly T? this[int index] { get; }
     int Length { get; }
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
+    bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
+
+    internal ISpaceTuple<T> Create(T[] fields);
 }

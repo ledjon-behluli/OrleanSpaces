@@ -174,7 +174,7 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T>(this ISpaceTemplate<T> template, ITupleFactory<T> factory, ISpaceTuple<T> tuple)
+    public static bool Matches<T>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
         where T : struct
     {
         int length = template.Length;
@@ -189,7 +189,7 @@ internal static class Helpers
             fields[i] = template[i] is { } value ? value : tuple[i];
         }
 
-        ISpaceTuple<T> templateTuple = factory.Create(fields);
+        ISpaceTuple<T> templateTuple = template.Create(fields);
         bool result = templateTuple.Equals(tuple);
 
         if (rented)

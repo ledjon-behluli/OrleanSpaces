@@ -70,7 +70,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
 public readonly struct BoolTemplate : ISpaceTemplate<bool>
 {
     private readonly bool?[] fields;
+    public ref readonly bool? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
     public BoolTemplate([AllowNull] params bool?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceBool[1] { new SpaceUnit() } : fields;
+        => this.fields = fields == null || fields.Length == 0 ? new bool?[1] { null } : fields;
+
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool> 
+        => Helpers.Matches(this, tuple);
+
+    ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
 }
