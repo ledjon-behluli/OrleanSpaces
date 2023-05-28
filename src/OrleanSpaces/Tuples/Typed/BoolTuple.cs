@@ -67,23 +67,10 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
 }
 
 [Immutable]
-public readonly struct SpaceBool
+public readonly struct BoolTemplate : ISpaceTemplate<bool>
 {
-    public readonly bool Value;
+    private readonly bool?[] fields;
 
-    internal static readonly SpaceBool Default = new();
-
-    public SpaceBool(bool value) => Value = value;
-
-    public static implicit operator SpaceBool(bool value) => new(value);
-    public static implicit operator bool(SpaceBool value) => value.Value;
-}
-
-[Immutable]
-public readonly struct BoolTemplate : ISpaceTemplate<BoolTuple>
-{
-    private readonly SpaceBool[] fields;
-
-    public BoolTemplate([AllowNull] params SpaceBool[] fields)
+    public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields == null || fields.Length == 0 ? new SpaceBool[1] { new SpaceUnit() } : fields;
 }

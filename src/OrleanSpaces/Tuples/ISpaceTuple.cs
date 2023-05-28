@@ -20,9 +20,11 @@ internal interface INumericTuple<T> : ISpaceTuple<T>
     Span<T> Fields { get; }
 }
 
-public interface ISpaceTemplate<TValue, TTuple> : ISpaceTuple<TValue>
-    where TValue : struct
-    where TTuple : struct, ISpaceTuple
+public interface ISpaceTemplate<T>
+    where T : struct
 {
-  
+    ref readonly T? this[int index] { get; }
+    int Length { get; }
+
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
 }

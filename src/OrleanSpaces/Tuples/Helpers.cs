@@ -174,6 +174,33 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Matches<T>(this ISpaceTemplate<T> template, ITupleFactory<T> factory, ISpaceTuple<T> tuple)
+        where T : struct
+    {
+        int length = template.Length;
+        if (length != tuple.Length)
+        {
+            return false;
+        }
+
+        T[] fields = Allocate<T>(length, out bool rented);
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = template[i] is { } value ? value : tuple[i];
+        }
+
+        ISpaceTuple<T> templateTuple = factory.Create(fields);
+        bool result = templateTuple.Equals(tuple);
+
+        if (rented)
+        {
+            ArrayPool<T>.Shared.Return(fields);
+        }
+
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
         where T : struct, ISpanFormattable
     {

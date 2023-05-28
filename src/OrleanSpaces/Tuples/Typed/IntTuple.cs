@@ -33,51 +33,18 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
 }
 
 [Immutable]
-public readonly struct SpaceInt
+public readonly struct IntTemplate : ISpaceTemplate<int>, ITupleFactory<int>
 {
-    public readonly int Value;
-    
-    internal readonly bool IsPlaceholder;
+    private readonly int?[] fields;
 
-    public static readonly SpaceInt Unit = new();
-
-    public SpaceInt()
-    {
-        Value = default;
-        IsPlaceholder = true;
-    }
-
-    public SpaceInt(int value)
-    {
-        Value = value;
-        IsPlaceholder = false;
-    }
-
-    public static implicit operator SpaceInt(int value) => new(value);
-    public static implicit operator int(SpaceInt value) => value.Value;
-}
-
-[Immutable]
-public readonly struct IntTemplate : ISpaceTemplate<int, IntTuple>
-{
-    private readonly SpaceInt[] fields;
-
+    public ref readonly int? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public ref readonly int this[int index] => ref fields[index].Value;
+    public IntTemplate([AllowNull] params int?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new int?[1] { null } : fields;
 
-    public IntTemplate([AllowNull] params SpaceInt[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceInt[1] { SpaceInt.Unit } : fields;
+    public bool Matches<TTuple>(TTuple tuple) 
+        where TTuple : ISpaceTuple<int> => this.Matches(this, tuple);
 
-    public bool Matches(IntTuple tuple)
-    {
-        int[] _fields = new int[Length];
-        for (int i = 0; i < Length; i++)
-        {
-            _fields[i] = fields[i].IsPlaceholder ? tuple[i] : this[i];
-        }
-
-        IntTuple thisTuple = new(_fields);
-        return thisTuple.Equals(tuple);
-    }
+    public ISpaceTuple<int> Create(int[] fields) => new IntTuple(fields);
 }
