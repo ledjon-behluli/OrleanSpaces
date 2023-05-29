@@ -70,6 +70,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
 public readonly struct BoolTemplate : ISpaceTemplate<bool>
 {
     private readonly bool?[] fields;
+
     public ref readonly bool? this[int index] => ref fields[index];
     public int Length => fields.Length;
 

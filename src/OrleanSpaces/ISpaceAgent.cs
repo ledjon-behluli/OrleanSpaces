@@ -3,20 +3,6 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
-public interface ISpaceAgent<T>
-    where T : struct
-{
-    Task WriteAsync<TTuple>(TTuple tuple)
-        where TTuple : ISpaceTuple<T>;
-
-    ValueTask EvaluateAsync<TTuple>(Func<Task<TTuple>> evaluation) 
-        where TTuple : ISpaceTuple<T>;
-    
-    ValueTask<TTuple> PeekAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
-}
-
 public interface ISpaceAgent
 {
     /// <summary>
@@ -32,6 +18,8 @@ public interface ISpaceAgent
     /// <param name="observerId">The ID obtained from calling <see cref="Subscribe"/>.</param>
     /// <remarks><i>Method is idempotant.</i></remarks>
     void Unsubscribe(Guid observerId);
+
+    Task WriteAsync<T>(T tuple) where T : ISpaceTuple;
 
     /// <summary>
     /// Directly writes the <paramref name="tuple"/> in the space.

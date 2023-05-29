@@ -34,23 +34,18 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
 }
 
 [Immutable]
-public readonly struct SpaceDouble
+public readonly struct DoubleTemplate : ISpaceTemplate<double>
 {
-    public readonly double Value;
+    private readonly double?[] fields;
 
-    internal static readonly SpaceDouble Default = new();
+    public ref readonly double? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceDouble(double value) => Value = value;
+    public DoubleTemplate([AllowNull] params double?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new double?[1] { null } : fields;
 
-    public static implicit operator SpaceDouble(double value) => new(value);
-    public static implicit operator double(SpaceDouble value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<double>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct DoubleTemplate : ISpaceTemplate<DoubleTuple>
-{
-    private readonly SpaceDouble[] fields;
-
-    public DoubleTemplate([AllowNull] params SpaceDouble[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceDouble[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<double> ISpaceTemplate<double>.Create(double[] fields) => new DoubleTuple(fields);
 }

@@ -6,7 +6,8 @@ using System.Runtime.CompilerServices;
 
 ISpaceAgent spaceAgent = null;
 
-spaceAgent.WriteAsync<int, IntTuple>(new IntTuple());
+spaceAgent.WriteAsync<SpaceTuple>(new SpaceTuple());
+spaceAgent.WriteAsync(new IntTuple());
 
 BoolTemplate template = new();
 ISpaceTemplate<bool> spaceTemplate = template;

@@ -89,23 +89,18 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
 }
 
 [Immutable]
-public readonly struct SpaceDecimal
+public readonly struct DecimalTemplate : ISpaceTemplate<decimal>
 {
-    public readonly decimal Value;
+    private readonly decimal?[] fields;
 
-    internal static readonly SpaceDecimal Default = new();
+    public ref readonly decimal? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceDecimal(decimal value) => Value = value;
+    public DecimalTemplate([AllowNull] params decimal?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new decimal?[1] { null } : fields;
 
-    public static implicit operator SpaceDecimal(decimal value) => new(value);
-    public static implicit operator decimal(SpaceDecimal value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct DecimalTemplate : ISpaceTemplate<DecimalTuple>
-{
-    private readonly SpaceDecimal[] fields;
-
-    public DecimalTemplate([AllowNull] params SpaceDecimal[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceDecimal[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<decimal> ISpaceTemplate<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
 }

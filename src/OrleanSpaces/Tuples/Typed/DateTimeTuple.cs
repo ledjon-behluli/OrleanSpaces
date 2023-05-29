@@ -36,23 +36,18 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
 }
 
 [Immutable]
-public readonly struct SpaceDateTime
+public readonly struct DateTimeTemplate : ISpaceTemplate<DateTime>
 {
-    public readonly DateTime Value;
+    private readonly DateTime?[] fields;
 
-    internal static readonly SpaceDateTime Default = new();
+    public ref readonly DateTime? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceDateTime(DateTime value) => Value = value;
+    public DateTimeTemplate([AllowNull] params DateTime?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new DateTime?[1] { null } : fields;
 
-    public static implicit operator SpaceDateTime(DateTime value) => new(value);
-    public static implicit operator DateTime(SpaceDateTime value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTime>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct DateTimeTemplate : ISpaceTemplate<DateTimeTuple>
-{
-    private readonly SpaceDateTime[] fields;
-
-    public DateTimeTemplate([AllowNull] params SpaceDateTime[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceDateTime[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<DateTime> ISpaceTemplate<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
 }

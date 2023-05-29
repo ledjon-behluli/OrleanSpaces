@@ -12,6 +12,9 @@ public static class Constants
 
     internal const int MaxStackSize = 1024;
 
+    internal const int ByteCount_Int128 = 16;                   // maximum value can be represented by this number of bytes.
+    internal const int ByteCount_UInt128 = 16;                  // maximum value can be represented by this number of bytes.
+
     internal const int MaxFieldCharLength_Bool = 5;             // False
     internal const int MaxFieldCharLength_Char = 1;             // a
     internal const int MaxFieldCharLength_Byte = 3;             // 255

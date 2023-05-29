@@ -60,23 +60,18 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>, ICo
 }
 
 [Immutable]
-public readonly struct SpaceGuid
+public readonly struct GuidTemplate : ISpaceTemplate<Guid>
 {
-    public readonly Guid Value;
+    private readonly Guid?[] fields;
 
-    internal static readonly SpaceGuid Default = new();
+    public ref readonly Guid? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceGuid(Guid value) => Value = value;
+    public GuidTemplate([AllowNull] params Guid?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new Guid?[1] { null } : fields;
 
-    public static implicit operator SpaceGuid(Guid value) => new(value);
-    public static implicit operator Guid(SpaceGuid value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Guid>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct GuidTemplate : ISpaceTemplate<GuidTuple>
-{
-    private readonly SpaceGuid[] fields;
-
-    public GuidTemplate([AllowNull] params SpaceGuid[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceGuid[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<Guid> ISpaceTemplate<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
 }

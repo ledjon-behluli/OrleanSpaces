@@ -34,23 +34,18 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
 }
 
 [Immutable]
-public readonly struct SpaceULong
+public readonly struct ULongTemplate : ISpaceTemplate<ulong>
 {
-    public readonly ulong Value;
+    private readonly ulong?[] fields;
 
-    internal static readonly SpaceULong Default = new();
+    public ref readonly ulong? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceULong(ulong value) => Value = value;
+    public ULongTemplate([AllowNull] params ulong?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new ulong?[1] { null } : fields;
 
-    public static implicit operator SpaceULong(ulong value) => new(value);
-    public static implicit operator ulong(SpaceULong value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<ulong>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct ULongTemplate : ISpaceTemplate<ULongTuple>
-{
-    private readonly SpaceULong[] fields;
-
-    public ULongTemplate([AllowNull] params SpaceULong[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceULong[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<ulong> ISpaceTemplate<ulong>.Create(ulong[] fields) => new ULongTuple(fields);
 }

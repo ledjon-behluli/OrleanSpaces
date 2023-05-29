@@ -34,24 +34,19 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 }
 
 [Immutable]
-public readonly struct SpaceSByte
+public readonly struct SByteTemplate : ISpaceTemplate<sbyte>
 {
-    public readonly sbyte Value;
+    private readonly sbyte?[] fields;
 
-    internal static readonly SpaceSByte Default = new();
+    public ref readonly sbyte? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceSByte(sbyte value) => Value = value;
+    public SByteTemplate([AllowNull] params sbyte?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new sbyte?[1] { null } : fields;
 
-    public static implicit operator SpaceSByte(sbyte value) => new(value);
-    public static implicit operator sbyte(SpaceSByte value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<sbyte>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct SByteTemplate : ISpaceTemplate<SByteTuple>
-{
-    private readonly SpaceSByte[] fields;
-
-    public SByteTemplate([AllowNull] params SpaceSByte[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceSByte[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<sbyte> ISpaceTemplate<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
 }
 

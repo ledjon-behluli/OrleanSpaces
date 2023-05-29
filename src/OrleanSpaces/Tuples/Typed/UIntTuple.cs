@@ -34,23 +34,18 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>, I
 }
 
 [Immutable]
-public readonly struct SpaceUInt
+public readonly struct UIntTemplate : ISpaceTemplate<uint>
 {
-    public readonly uint Value;
+    private readonly uint?[] fields;
 
-    internal static readonly SpaceUInt Default = new();
+    public ref readonly uint? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceUInt(uint value) => Value = value;
+    public UIntTemplate([AllowNull] params uint?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new uint?[1] { null } : fields;
 
-    public static implicit operator SpaceUInt(uint value) => new(value);
-    public static implicit operator uint(SpaceUInt value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<uint>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct UIntTemplate : ISpaceTemplate<UIntTuple>
-{
-    private readonly SpaceUInt[] fields;
-
-    public UIntTemplate([AllowNull] params SpaceUInt[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceUInt[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<uint> ISpaceTemplate<uint>.Create(uint[] fields) => new UIntTuple(fields);
 }

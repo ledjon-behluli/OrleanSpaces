@@ -34,23 +34,18 @@ public readonly struct ShortTuple : INumericTuple<short>, IEquatable<ShortTuple>
 }
 
 [Immutable]
-public readonly struct SpaceShort
+public readonly struct ShortTemplate : ISpaceTemplate<short>
 {
-    public readonly short Value;
+    private readonly short?[] fields;
 
-    internal static readonly SpaceShort Default = new();
+    public ref readonly short? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceShort(short value) => Value = value;
+    public ShortTemplate([AllowNull] params short?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new short?[1] { null } : fields;
 
-    public static implicit operator SpaceShort(short value) => new(value);
-    public static implicit operator short(SpaceShort value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<short>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct ShortTemplate : ISpaceTemplate<ShortTuple>
-{
-    private readonly SpaceShort[] fields;
-
-    public ShortTemplate([AllowNull] params SpaceShort[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceShort[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<short> ISpaceTemplate<short>.Create(short[] fields) => new ShortTuple(fields);
 }

@@ -34,19 +34,6 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>, I
 }
 
 [Immutable]
-public readonly struct SpaceByte
-{
-    public readonly byte Value;
-
-    internal static readonly SpaceByte Default = new();
-
-    public SpaceByte(byte value) => Value = value;
-
-    public static implicit operator SpaceByte(byte value) => new(value);
-    public static implicit operator byte(SpaceByte value) => value.Value;
-}
-
-[Immutable]
 public readonly struct ByteTemplate : ISpaceTemplate<byte>
 {
     private readonly byte?[] fields;

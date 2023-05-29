@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -36,23 +37,18 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
 }
 
 [Immutable]
-public readonly struct SpaceDateTimeOffset
+public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
 {
-    public readonly DateTimeOffset Value;
+    private readonly DateTimeOffset?[] fields;
 
-    internal static readonly SpaceDateTimeOffset Default = new();
+    public ref readonly DateTimeOffset? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceDateTimeOffset(DateTimeOffset value) => Value = value;
+    public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new DateTimeOffset?[1] { null } : fields;
 
-    public static implicit operator SpaceDateTimeOffset(DateTimeOffset value) => new(value);
-    public static implicit operator DateTimeOffset(SpaceDateTimeOffset value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTimeOffset>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffsetTuple>
-{
-    private readonly SpaceDateTimeOffset[] fields;
-
-    public DateTimeOffsetTemplate([AllowNull] params SpaceDateTimeOffset[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceDateTimeOffset[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<DateTimeOffset> ISpaceTemplate<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
 }

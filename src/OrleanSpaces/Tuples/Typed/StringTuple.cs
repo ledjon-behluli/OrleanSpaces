@@ -114,35 +114,6 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
-    {
-        public ref readonly SFString this[int index] => ref Values[index];
-        public int Length => Values.Length;
-
-        public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-    }
-
-    readonly record struct SFString(string Value) : ISpanFormattable
-    {
-        public string ToString(string? format, IFormatProvider? formatProvider) => Value;
-
-        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        {
-            ReadOnlySpan<char> chars = Value.AsSpan();
-
-            if (chars.TryCopyTo(destination))
-            {
-                charsWritten = chars.Length;
-                return true;
-            }
-            else
-            {
-                charsWritten = 0;
-                return false;
-            }
-        }
-    }
-
     readonly struct Comparer : IBufferConsumer<char>
     {
         private readonly StringTuple left;
@@ -184,23 +155,81 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
 }
 
 [Immutable]
-public readonly struct SpaceString
+public readonly struct StringTemplate : ISpaceTemplate<char>
 {
-    public readonly string Value;
+    private readonly string?[] fields;
 
-    internal static readonly SpaceString Default = new();
+    public ref readonly string? this[int index] => ref fields[index];
 
-    public SpaceString(string value) => Value = value;
+    /// <exception cref="IndexOutOfRangeException"></exception>
+    ref readonly char? ISpaceTemplate<char>.this[int index]
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                if (fields[i] is { } field)
+                {
+                    if (index < field.Length)
+                    {
+                        ReadOnlySpan<char> span = fields[i].AsSpan();
 
-    public static implicit operator SpaceString(string value) => new(value);
-    public static implicit operator string(SpaceString value) => value.Value;
+                        ref char firstItem = ref MemoryMarshal.GetReference(span);
+                        ref char item = ref Unsafe.Add(ref firstItem, index);
+
+                        return ref item;
+                    }
+                    else
+                    {
+                        index -= field.Length;
+                    }
+                }
+            }
+
+            throw new IndexOutOfRangeException();
+        }
+    }
+
+    public int Length => fields.Length;
+
+    public StringTemplate([AllowNull] params string?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new string?[1] { null } : fields;
+
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<char>
+    {
+
+    }
+
+    ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields) => throw new NotImplementedException();
 }
 
-[Immutable]
-public readonly struct StringTemplate : ISpaceTemplate<StringTuple>
-{
-    private readonly SpaceString[] fields;
 
-    public StringTemplate([AllowNull] params SpaceString[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceString[1] { new SpaceUnit() } : fields;
+internal readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
+{
+    public ref readonly SFString this[int index] => ref Values[index];
+    public int Length => Values.Length;
+
+    public static ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+}
+
+internal readonly record struct SFString(string Value) : ISpanFormattable
+{
+    public string ToString(string? format, IFormatProvider? formatProvider) => Value;
+
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        ReadOnlySpan<char> chars = Value.AsSpan();
+
+        if (chars.TryCopyTo(destination))
+        {
+            charsWritten = chars.Length;
+            return true;
+        }
+        else
+        {
+            charsWritten = 0;
+            return false;
+        }
+    }
 }

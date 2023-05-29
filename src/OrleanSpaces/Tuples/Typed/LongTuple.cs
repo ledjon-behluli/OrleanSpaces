@@ -34,23 +34,18 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>, I
 }
 
 [Immutable]
-public readonly struct SpaceLong
+public readonly struct LongTemplate : ISpaceTemplate<long>
 {
-    public readonly long Value;
+    private readonly long?[] fields;
 
-    internal static readonly SpaceLong Default = new();
+    public ref readonly long? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceLong(long value) => Value = value;
+    public LongTemplate([AllowNull] params long?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new long?[1] { null } : fields;
 
-    public static implicit operator SpaceLong(long value) => new(value);
-    public static implicit operator long(SpaceLong value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<long>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct LongTemplate : ISpaceTemplate<LongTuple>
-{
-    private readonly SpaceLong[] fields;
-
-    public LongTemplate([AllowNull] params SpaceLong[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceLong[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<long> ISpaceTemplate<long>.Create(long[] fields) => new LongTuple(fields);
 }

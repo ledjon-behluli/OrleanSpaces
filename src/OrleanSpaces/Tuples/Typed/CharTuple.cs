@@ -46,23 +46,18 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, ICo
 }
 
 [Immutable]
-public readonly struct SpaceChar
+public readonly struct CharTemplate : ISpaceTemplate<char>
 {
-    public readonly char Value;
+    private readonly char?[] fields;
 
-    internal static readonly SpaceChar Default = new();
+    public ref readonly char? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceChar(char value) => Value = value;
+    public CharTemplate([AllowNull] params char?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new char?[1] { null } : fields;
 
-    public static implicit operator SpaceChar(char value) => new(value);
-    public static implicit operator char(SpaceChar value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<char>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct CharTemplate : ISpaceTemplate<CharTuple>
-{
-    private readonly SpaceChar[] fields;
-
-    public CharTemplate([AllowNull] params SpaceChar[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceChar[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields) => new CharTuple(fields);
 }

@@ -34,7 +34,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
             return this.SequentialEquals(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(32 * Length); // 32 because 2 x 16, where 16 is the maximum value can be represented by this number of bytes.
+        return new Comparer(this, other).AllocateAndExecute(2 * Constants.ByteCount_UInt128 * Length);
     }
 
     public int CompareTo(UHugeTuple other) => Length.CompareTo(other.Length);
@@ -78,29 +78,24 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
         private static void WriteTo<T>(int index, ref Span<byte> destination, in T value)
             where T : IBinaryInteger<T> =>
             _ = BitConverter.IsLittleEndian ?
-                value.WriteLittleEndian(destination.Slice(index, index + ByteCount)) :
-                value.WriteBigEndian(destination.Slice(index, index + ByteCount));
+                value.WriteLittleEndian(destination.Slice(index, index + Constants.ByteCount_UInt128)) :
+                value.WriteBigEndian(destination.Slice(index, index + Constants.ByteCount_UInt128));
     }
 }
 
 [Immutable]
-public readonly struct SpaceUHuge
+public readonly struct UHugeTemplate : ISpaceTemplate<UInt128>
 {
-    public readonly UInt128 Value;
+    private readonly UInt128?[] fields;
 
-    internal static readonly SpaceUHuge Default = new();
+    public ref readonly UInt128? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceUHuge(UInt128 value) => Value = value;
+    public UHugeTemplate([AllowNull] params UInt128?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new UInt128?[1] { null } : fields;
 
-    public static implicit operator SpaceUHuge(UInt128 value) => new(value);
-    public static implicit operator UInt128(SpaceUHuge value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<UInt128>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct UHugeTemplate : ISpaceTemplate<UHugeTuple>
-{
-    private readonly SpaceUHuge[] fields;
-
-    public UHugeTemplate([AllowNull] params SpaceUHuge[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceUHuge[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<UInt128> ISpaceTemplate<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
 }

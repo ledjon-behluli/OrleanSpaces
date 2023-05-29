@@ -35,7 +35,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>,
             return this.SequentialEquals(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(32 * Length); // 32 because 2 x 16, where 16 is the maximum value can be represented by this number of bytes.
+        return new Comparer(this, other).AllocateAndExecute(2 * Constants.ByteCount_Int128 * Length);
     }
 
     public int CompareTo(HugeTuple other) => Length.CompareTo(other.Length);
@@ -79,29 +79,24 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>,
         private static void WriteTo<T>(int index, ref Span<byte> destination, in T value)
             where T : IBinaryInteger<T> => 
             _ = BitConverter.IsLittleEndian ?
-                value.WriteLittleEndian(destination.Slice(index, index + ByteCount)) :
-                value.WriteBigEndian(destination.Slice(index, index + ByteCount));
+                value.WriteLittleEndian(destination.Slice(index, index + Constants.ByteCount_Int128)) :
+                value.WriteBigEndian(destination.Slice(index, index + Constants.ByteCount_Int128));
     }
 }
 
 [Immutable]
-public readonly struct SpaceHuge
+public readonly struct HugeTemplate : ISpaceTemplate<Int128>
 {
-    public readonly Int128 Value;
+    private readonly Int128?[] fields;
 
-    internal static readonly SpaceHuge Default = new();
+    public ref readonly Int128? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceHuge(Int128 value) => Value = value;
+    public HugeTemplate([AllowNull] params Int128?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new Int128?[1] { null } : fields;
 
-    public static implicit operator SpaceHuge(Int128 value) => new(value);
-    public static implicit operator Int128(SpaceHuge value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Int128>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct HugeTemplate : ISpaceTemplate<HugeTuple>
-{
-    private readonly SpaceHuge[] fields;
-
-    public HugeTemplate([AllowNull] params SpaceHuge[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceHuge[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<Int128> ISpaceTemplate<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
 }

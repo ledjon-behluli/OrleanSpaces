@@ -34,23 +34,18 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
 }
 
 [Immutable]
-public readonly struct SpaceFloat
+public readonly struct FloatTemplate : ISpaceTemplate<float>
 {
-    public readonly float Value;
+    private readonly float?[] fields;
 
-    internal static readonly SpaceFloat Default = new();
+    public ref readonly float? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceFloat(float value) => Value = value;
+    public FloatTemplate([AllowNull] params float?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new float?[1] { null } : fields;
 
-    public static implicit operator SpaceFloat(float value) => new(value);
-    public static implicit operator float(SpaceFloat value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<float>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct FloatTemplate : ISpaceTemplate<FloatTuple>
-{
-    private readonly SpaceFloat[] fields;
-
-    public FloatTemplate([AllowNull] params SpaceFloat[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceFloat[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<float> ISpaceTemplate<float>.Create(float[] fields) => new FloatTuple(fields);
 }

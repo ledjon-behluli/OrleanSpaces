@@ -36,23 +36,18 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
 }
 
 [Immutable]
-public readonly struct SpaceTimeSpan
+public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
 {
-    public readonly TimeSpan Value;
+    private readonly TimeSpan?[] fields;
 
-    internal static readonly SpaceTimeSpan Default = new();
+    public ref readonly TimeSpan? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
-    public SpaceTimeSpan(TimeSpan value) => Value = value;
+    public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new TimeSpan?[1] { null } : fields;
 
-    public static implicit operator SpaceTimeSpan(TimeSpan value) => new(value);
-    public static implicit operator TimeSpan(SpaceTimeSpan value) => value.Value;
-}
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<TimeSpan>
+        => Helpers.Matches(this, tuple);
 
-[Immutable]
-public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpanTuple>
-{
-    private readonly SpaceTimeSpan[] fields;
-
-    public TimeSpanTemplate([AllowNull] params SpaceTimeSpan[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceTimeSpan[1] { new SpaceUnit() } : fields;
+    ISpaceTuple<TimeSpan> ISpaceTemplate<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
 }

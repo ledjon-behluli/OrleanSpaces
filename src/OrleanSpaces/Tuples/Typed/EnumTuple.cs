@@ -122,23 +122,19 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
 }
 
 [Immutable]
-public readonly struct SpaceEnum<T>
-     where T : unmanaged, Enum
-{
-    public readonly T Value;
-
-    public SpaceEnum(T value) => Value = value;
-
-    public static implicit operator SpaceEnum<T>(T value) => new(value);
-    public static implicit operator T(SpaceEnum<T> value) => value.Value;
-}
-
-[Immutable]
-public readonly struct EnumTemplate<T> : ISpaceTemplate<EnumTuple<T>>
+public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
     where T : unmanaged, Enum
 {
-    private readonly SpaceEnum<T>[] fields;
+    private readonly T?[] fields;
 
-    public EnumTemplate([AllowNull] params SpaceEnum<T>[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new SpaceEnum<T>[1] { new SpaceUnit() } : fields;
+    public ref readonly T? this[int index] => ref fields[index];
+    public int Length => fields.Length;
+
+    public EnumTemplate([AllowNull] params T?[] fields)
+        => this.fields = fields == null || fields.Length == 0 ? new T?[1] { null } : fields;
+
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>
+        => Helpers.Matches(this, tuple);
+
+    ISpaceTuple<T> ISpaceTemplate<T>.Create(T[] fields) => new EnumTuple<T>(fields);
 }
