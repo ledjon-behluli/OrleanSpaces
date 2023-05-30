@@ -220,6 +220,8 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
                         ref char firstItem = ref MemoryMarshal.GetReference(span);
                         ref char item = ref Unsafe.Add(ref firstItem, index);
 
+                        var a = item.ToString();
+
                         return ref Helpers.CastAs<char, char?>(in item);
                     }
                     else

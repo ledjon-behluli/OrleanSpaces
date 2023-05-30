@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTuple : IEquatable<SpaceTuple>, IComparable<SpaceTuple>
+public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
 {
     private readonly object[] fields;
 
@@ -78,7 +78,7 @@ public readonly struct SpaceTuple : IEquatable<SpaceTuple>, IComparable<SpaceTup
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTuple other)
     {
-        if (length != other.Length)
+        if (Length != other.Length)
         {
             return false;
         }

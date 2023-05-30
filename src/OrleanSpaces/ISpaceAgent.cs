@@ -19,7 +19,7 @@ public interface ISpaceAgent
     /// <remarks><i>Method is idempotant.</i></remarks>
     void Unsubscribe(Guid observerId);
 
-    Task WriteAsync<T>(T tuple) where T : ISpaceTuple;
+    //Task WriteAsync<T>(T tuple) where T : ISpaceTuple;
 
     /// <summary>
     /// Directly writes the <paramref name="tuple"/> in the space.

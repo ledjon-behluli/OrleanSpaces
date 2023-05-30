@@ -4,12 +4,13 @@ using OrleanSpaces.Tuples.Typed;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-ISpaceAgent spaceAgent = null;
+StringTuple tuple = new("aa", "11", "xx");
 
-spaceAgent.WriteAsync<SpaceTuple>(new SpaceTuple());
-spaceAgent.WriteAsync(new IntTuple());
+StringTemplate template1 = new("aa", "11", "xx");
+StringTemplate template2 = new("aa", null, "xx");
 
-BoolTemplate template = new();
-ISpaceTemplate<bool> spaceTemplate = template;
+
+template1.Matches(tuple);
+template2.Matches(tuple);
 
 Console.ReadKey();

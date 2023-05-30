@@ -175,7 +175,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Matches<T>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
-        where T : struct
+        where T : unmanaged
     {
         int length = template.Length;
         if (length != tuple.Length)
