@@ -324,6 +324,5 @@ internal static class Helpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
        where TIn : struct
-       where TOut : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 }

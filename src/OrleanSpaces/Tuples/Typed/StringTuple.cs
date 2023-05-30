@@ -220,9 +220,7 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
                         ref char firstItem = ref MemoryMarshal.GetReference(span);
                         ref char item = ref Unsafe.Add(ref firstItem, index);
 
-                        return ref Unsafe.NullRef<char?>();
-
-                        //return ref item;
+                        return ref Helpers.CastAs<char, char?>(in item);
                     }
                     else
                     {
@@ -231,7 +229,7 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
                 }
             }
 
-            throw new IndexOutOfRangeException();
+            return ref Unsafe.NullRef<char?>();
         }
     }
     int ISpaceTemplate<char>.Length
