@@ -36,7 +36,7 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
                 }
             }
 
-            throw new IndexOutOfRangeException();
+            return ref Unsafe.NullRef<char>();
         }
     }
     int ISpaceTuple<char>.Length
@@ -202,6 +202,7 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
     private readonly string?[] fields;
 
     public ref readonly string? this[int index] => ref fields[index];
+    public int Length => fields.Length;
 
     ref readonly char? ISpaceTemplate<char>.this[int index]
     {
@@ -214,12 +215,14 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
                 {
                     if (index < field.Length)
                     {
-                        ReadOnlySpan<char> span = fields[i].AsSpan();
+                        ReadOnlySpan<char> span = field.AsSpan();
 
                         ref char firstItem = ref MemoryMarshal.GetReference(span);
                         ref char item = ref Unsafe.Add(ref firstItem, index);
 
-                        return ref item;
+                        return ref Unsafe.NullRef<char?>();
+
+                        //return ref item;
                     }
                     else
                     {
@@ -246,8 +249,6 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
             return charLength;
         }
     }
-
-    public int Length => fields.Length;
 
     public StringTemplate([AllowNull] params string?[] fields)
         => this.fields = fields == null || fields.Length == 0 ? new string?[1] { null } : fields;
