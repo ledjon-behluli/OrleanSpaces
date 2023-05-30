@@ -256,6 +256,6 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
 
     ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields)
     {
-        return new StringTuple("aaa");
+        return new StringTuple("aaa"); // TODO: Test me!
     }
 }

@@ -117,7 +117,7 @@ public readonly struct SpaceTemplate : IEquatable<SpaceTemplate>, IComparable<Sp
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTemplate other)
     {
-        if (length != other.Length)
+        if (Length != other.Length)
         {
             return false;
         }
