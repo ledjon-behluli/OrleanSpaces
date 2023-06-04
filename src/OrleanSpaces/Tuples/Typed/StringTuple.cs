@@ -225,14 +225,9 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
 
                         ref char firstItem = ref MemoryMarshal.GetReference(span);
                         ref char item = ref Unsafe.Add(ref firstItem, index);
-                        ref char? nItem = ref Unsafe.As<char, char?>(ref item);
+                        char? temp = item;
 
-                        var aa = nItem.ToString();
-
-                        ref char? nullableItem = ref Helpers.CastAs<char, char?>(in item);
-                        ref char? result = ref Unsafe.Add(ref nullableItem, -1);
-
-                        return ref result;
+                        return ref Unsafe.AsRef(in temp);
                     }
                     else
                     {
@@ -268,6 +263,6 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
 
     ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields)
     {
-        return new StringTuple("aaa"); // TODO: Test me!
+        return new StringTuple(fields); // TODO: Test me!
     }
 }

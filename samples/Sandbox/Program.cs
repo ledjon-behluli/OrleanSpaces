@@ -1,8 +1,4 @@
-﻿using OrleanSpaces;
-using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Typed;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Tuples.Typed;
 
 StringTuple tuple = new("12", "34", "56");
 
