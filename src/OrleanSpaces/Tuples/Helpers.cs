@@ -41,7 +41,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParallelEquals<TIn, TOut>(this NumericMarshaller<TIn, TOut> marshaller, out bool result)
-        where TIn : struct
+        where TIn : unmanaged
         where TOut : unmanaged, INumber<TOut>
     {
         result = false;
@@ -151,7 +151,7 @@ internal static class Helpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
-        where T : struct
+        where T : unmanaged
     {
         int length = left.Length;
         if (length != right.Length)
@@ -201,8 +201,15 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
+    public static ReadOnlySpan<char> AsSpan<T>(this IManagedTuple<T> tuple, int maxFieldCharLength)
         where T : struct, ISpanFormattable
+    { 
+        return AsSpan<T>(tuple, maxFieldCharLength);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
+        where T : unmanaged, ISpanFormattable
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = Allocate<char>(capacity, out bool rented);

@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 namespace OrleanSpaces.Tuples;
 
 internal readonly ref struct NumericMarshaller<TIn, TOut>
-    where TIn : struct
-    where TOut : struct, INumber<TOut>
+    where TIn : unmanaged
+    where TOut : unmanaged, INumber<TOut>
 {
     public readonly Span<TOut> Left;
     public readonly Span<TOut> Right;

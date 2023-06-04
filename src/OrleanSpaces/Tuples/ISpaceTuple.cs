@@ -8,20 +8,14 @@ public interface ISpaceTuple
 }
 
 public interface ISpaceTuple<T> : ISpaceTuple
-    where T : struct
+    where T : unmanaged
 {
     ref readonly T this[int index] { get; }
     int Length { get; }
 }
 
-internal interface INumericTuple<T> : ISpaceTuple<T>
-    where T : struct, INumber<T>
-{
-    Span<T> Fields { get; }
-}
-
 public interface ISpaceTemplate<T>
-    where T : struct
+    where T : unmanaged
 {
     ref readonly T? this[int index] { get; }
     int Length { get; }
@@ -29,4 +23,16 @@ public interface ISpaceTemplate<T>
     bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
 
     internal ISpaceTuple<T> Create(T[] fields);
+}
+
+internal interface IManagedTuple<T>
+    where T : struct
+{
+    ISpaceTuple<H> GetSpaceTuple<H>() where H : unmanaged;
+}
+
+internal interface INumericTuple<T> : ISpaceTuple<T>
+    where T : unmanaged, INumber<T>
+{
+    Span<T> Fields { get; }
 }

@@ -1,4 +1,5 @@
-﻿using Orleans.Concurrency;
+﻿using Newtonsoft.Json.Linq;
+using Orleans.Concurrency;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -127,12 +128,17 @@ public readonly struct StringTuple : ISpaceTuple<char>, IEquatable<StringTuple>,
 
     public ReadOnlySpan<string>.Enumerator GetEnumerator() => new ReadOnlySpan<string>(fields).GetEnumerator();
 
-    readonly record struct SFStringTuple(params SFString[] Values) : ISpaceTuple<SFString>
+    readonly record struct SFStringTuple(params SFString[] Values) : IManagedTuple<SFString>
     {
         public ref readonly SFString this[int index] => ref Values[index];
         public int Length => Values.Length;
 
         public static ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+
+        public ISpaceTuple<H> GetSpaceTuple<H>() where H : unmanaged
+        {
+            throw new NotImplementedException();
+        }
     }
 
     readonly record struct SFString(string Value) : ISpanFormattable
@@ -219,10 +225,14 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
 
                         ref char firstItem = ref MemoryMarshal.GetReference(span);
                         ref char item = ref Unsafe.Add(ref firstItem, index);
+                        ref char? nItem = ref Unsafe.As<char, char?>(ref item);
 
-                        var a = item.ToString();
+                        var aa = nItem.ToString();
 
-                        return ref Helpers.CastAs<char, char?>(in item);
+                        ref char? nullableItem = ref Helpers.CastAs<char, char?>(in item);
+                        ref char? result = ref Unsafe.Add(ref nullableItem, -1);
+
+                        return ref result;
                     }
                     else
                     {

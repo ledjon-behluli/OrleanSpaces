@@ -4,13 +4,9 @@ using OrleanSpaces.Tuples.Typed;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-StringTuple tuple = new("aa", "11", "xx");
+StringTuple tuple = new("12", "34", "56");
 
-StringTemplate template1 = new("aa", "11", "xx");
-StringTemplate template2 = new("aa", null, "xx");
-
-
+StringTemplate template1 = new("12", "34", "56");
 template1.Matches(tuple);
-template2.Matches(tuple);
 
 Console.ReadKey();
