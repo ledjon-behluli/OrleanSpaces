@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Orleans.Concurrency;
+﻿using Orleans.Concurrency;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -263,6 +262,6 @@ public readonly struct StringTemplate : ISpaceTemplate<char>
 
     ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields)
     {
-        return new StringTuple(fields); // TODO: Test me!
+        return new StringTuple("a"); // TODO: Test me!
     }
 }

@@ -183,7 +183,7 @@ internal static class Helpers
             return false;
         }
 
-        T[] fields = Allocate<T>(length, out bool rented);
+        T[] fields = ArrayPool<T>.Shared.Rent(length);
         for (int i = 0; i < length; i++)
         {
             fields[i] = template[i] is { } value ? value : tuple[i];
@@ -191,12 +191,8 @@ internal static class Helpers
 
         ISpaceTuple<T> templateTuple = template.Create(fields);
         bool result = templateTuple.Equals(tuple);
-
-        if (rented)
-        {
-            ArrayPool<T>.Shared.Return(fields);
-        }
-
+        ArrayPool<T>.Shared.Return(fields);
+        
         return result;
     }
 
@@ -212,7 +208,7 @@ internal static class Helpers
         where T : unmanaged, ISpanFormattable
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
-        char[] array = Allocate<char>(capacity, out bool rented);
+        char[] array = ArrayPool<char>.Shared.Rent(capacity);
 
         Span<char> buffer = array.AsSpan();
 
@@ -257,10 +253,7 @@ internal static class Helpers
             }
         }
 
-        if (rented)
-        {
-            ArrayPool<char>.Shared.Return(array);
-        }
+        ArrayPool<char>.Shared.Return(array);
 
         return buffer[..index];
 
@@ -287,7 +280,6 @@ internal static class Helpers
         }
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity)
        where T : unmanaged
@@ -299,32 +291,14 @@ internal static class Helpers
         }
         else
         {
-            T[] array = Allocate<T>(capacity, out bool rented);
+            T[] array = ArrayPool<T>.Shared.Rent(capacity);
             Span<T> buffer = array.AsSpan();
 
             bool result = consumer.Consume(ref buffer);
-
-            if (rented)
-            {
-                ArrayPool<T>.Shared.Return(array);
-            }
+            
+            ArrayPool<T>.Shared.Return(array);
 
             return result;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T[] Allocate<T>(int capacity, out bool rented)
-    {
-        if (capacity <= 1048576)  // 1,048,576 is the maximum array length of ArrayPool.Shared
-        {
-            rented = true;
-            return ArrayPool<T>.Shared.Rent(capacity);
-        }
-        else
-        {
-            rented = false;
-            return new T[capacity];
         }
     }
 
