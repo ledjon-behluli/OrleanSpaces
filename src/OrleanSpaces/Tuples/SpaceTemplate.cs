@@ -7,11 +7,11 @@ namespace OrleanSpaces.Tuples;
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, IComparable<SpaceTemplate> //TODO: Remove - IEquatable<SpaceTemplate>, IComparable<SpaceTemplate> 
+public readonly struct SpaceTemplate : ISpaceTuple
 {
-    private readonly object[] fields;
+    private readonly object?[] fields;
 
-    public readonly object this[int index] => fields[index];
+    public readonly object? this[int index] => fields[index];
     public int Length => fields.Length;
 
     /// <summary>
@@ -30,7 +30,7 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
     {
         if (fields == null || fields.Length == 0)
         {
-            this.fields = new object[1] { new SpaceUnit() };
+            this.fields = new object?[1] { null };
         }
         else
         {
@@ -38,12 +38,13 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
 
             for (int i = 0; i < fields.Length; i++)
             {
-                object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
-
-                Type type = obj.GetType();
-                if (!type.IsSupportedType() && type != typeof(SpaceUnit) && obj is not Type)
+                object? obj = fields[i];
+                if (obj != null)
                 {
-                    throw new ArgumentException($"The field at position = {i} is not a valid type.");
+                    if (!obj.GetType().IsSupportedType() && obj is not Type)
+                    {
+                        throw new ArgumentException($"The field at position = {i} is not a valid type.");
+                    }
                 }
 
                 this.fields[i] = obj;
@@ -67,9 +68,9 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
 
         for (int i = 0; i < tuple.Length; i++)
         {
-            if (this[i] is not SpaceUnit)
+            if (this[i] is { } field)
             {
-                if (this[i] is Type templateType)
+                if (field is Type templateType)
                 {
                     if (!templateType.Equals(tuple[i].GetType()))
                     {
@@ -78,7 +79,7 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
                 }
                 else
                 {
-                    if (!this[i].Equals(tuple[i]))
+                    if (!field.Equals(tuple[i]))
                     {
                         return false;
                     }
@@ -101,49 +102,7 @@ public readonly struct SpaceTemplate : ISpaceTuple, IEquatable<SpaceTemplate>, I
         return new(fields);
     }
 
-    public static bool operator ==(SpaceTemplate left, SpaceTemplate right) => left.Equals(right);
-    public static bool operator !=(SpaceTemplate left, SpaceTemplate right) => !(left == right);
-
-    /// <summary>
-    /// Determines whether the specified <see cref="object"/> is equal to this instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTemplate)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals(object? obj) => obj is SpaceTemplate template && Equals(template);
-    /// <summary>
-    /// Determines whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of ticks, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SpaceTemplate other)
-    {
-        if (Length != other.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < Length; i++)
-        {
-            if (!this.Equals(other))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Compares the current object with another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
-    public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
-
-    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
-    public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-
-    public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
+    public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();
 }

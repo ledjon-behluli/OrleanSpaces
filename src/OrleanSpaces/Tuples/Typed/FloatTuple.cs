@@ -48,4 +48,6 @@ public readonly struct FloatTemplate : ISpaceTemplate<float>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<float> ISpaceTemplate<float>.Create(float[] fields) => new FloatTuple(fields);
+
+    public ReadOnlySpan<float?>.Enumerator GetEnumerator() => new ReadOnlySpan<float?>(fields).GetEnumerator();
 }

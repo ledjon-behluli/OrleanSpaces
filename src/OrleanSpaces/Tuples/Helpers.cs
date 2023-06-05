@@ -1,6 +1,11 @@
-﻿using System.Buffers;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrleanSpaces.Tuples;
 
@@ -183,7 +188,7 @@ internal static class Helpers
             return false;
         }
 
-        T[] fields = ArrayPool<T>.Shared.Rent(length);
+        T[] fields = new T[length];
         for (int i = 0; i < length; i++)
         {
             fields[i] = template[i] is { } value ? value : tuple[i];
@@ -191,16 +196,8 @@ internal static class Helpers
 
         ISpaceTuple<T> templateTuple = template.Create(fields);
         bool result = templateTuple.Equals(tuple);
-        ArrayPool<T>.Shared.Return(fields);
-        
-        return result;
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> AsSpan<T>(this IManagedTuple<T> tuple, int maxFieldCharLength)
-        where T : struct, ISpanFormattable
-    { 
-        return AsSpan<T>(tuple, maxFieldCharLength);
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

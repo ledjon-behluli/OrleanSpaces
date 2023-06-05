@@ -12,6 +12,9 @@ public interface ISpaceTuple<T> : ISpaceTuple
 {
     ref readonly T this[int index] { get; }
     int Length { get; }
+
+    ReadOnlySpan<char> AsSpan();
+    ReadOnlySpan<T>.Enumerator GetEnumerator();
 }
 
 public interface ISpaceTemplate<T>
@@ -21,14 +24,9 @@ public interface ISpaceTemplate<T>
     int Length { get; }
 
     bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
+    ReadOnlySpan<T?>.Enumerator GetEnumerator();
 
     internal ISpaceTuple<T> Create(T[] fields);
-}
-
-internal interface IManagedTuple<T>
-    where T : struct
-{
-    ISpaceTuple<H> GetSpaceTuple<H>() where H : unmanaged;
 }
 
 internal interface INumericTuple<T> : ISpaceTuple<T>
