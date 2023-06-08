@@ -3,6 +3,36 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
+public interface ISpaceAgent<T>
+    where T : unmanaged
+{
+    Task WriteAsync<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
+
+    ValueTask EvaluateAsync<TTuple>(Func<Task<TTuple>> evaluation) where TTuple : ISpaceTuple;
+
+    ValueTask<TTuple> PeekAsync<TTuple, TTemplate>(TTemplate template)
+        where TTuple : ISpaceTuple<T>
+        where TTemplate : ISpaceTemplate<T>;
+
+    ValueTask PeekAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
+        where TTuple : ISpaceTuple<T>
+        where TTemplate : ISpaceTemplate<T>;
+
+    ValueTask<TTuple> PopAsync<TTuple, TTemplate>(TTemplate template)
+        where TTuple : ISpaceTuple<T>
+        where TTemplate : ISpaceTemplate<T>;
+
+    ValueTask PopAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
+        where TTuple : ISpaceTuple<T>
+        where TTemplate : ISpaceTemplate<T>;
+
+    ValueTask<IEnumerable<TTuple>> ScanAsync<TTuple, TTemplate>(TTemplate template)
+        where TTuple : ISpaceTuple<T>
+        where TTemplate : ISpaceTemplate<T>;
+
+    ValueTask<int> CountAsync<TTemplate>(TTemplate template) where TTemplate : ISpaceTemplate<T>;
+}
+
 public interface ISpaceAgent
 {
     /// <summary>
@@ -25,8 +55,6 @@ public interface ISpaceAgent
     /// <param name="tuple">Any non-<see cref="SpaceTuple.Null"/>.</param>
     /// <remarks><i>Analogous to the "OUT" operation in the tuple space paradigm.</i></remarks>
     Task WriteAsync(SpaceTuple tuple);
-    Task WriteAsync<T>(T tuple) where T : ISpaceTuple;
-
     /// <summary>
     /// Indirectly writes a <see cref="SpaceTuple"/> in the space.
     /// <list type="number">
@@ -37,8 +65,6 @@ public interface ISpaceAgent
     /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Null"/>.</param>
     /// <remarks><i>Analogous to the "EVAL" operation in the tuple space paradigm.</i></remarks>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
-    ValueTask EvaluateAsync<T>(Func<Task<T>> evaluation) where T : ISpaceTuple;
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -50,10 +76,6 @@ public interface ISpaceAgent
     /// <remarks><i>Analogous to the "RDP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
-    ValueTask<TTuple> PeekAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple
-        where TTemplate : ISpaceTemplate;
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -68,10 +90,6 @@ public interface ISpaceAgent
     /// <para><i>Analogous to the "RD" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
-    ValueTask PeekAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
-        where TTuple : ISpaceTuple
-        where TTemplate : ISpaceTemplate;
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -83,10 +101,6 @@ public interface ISpaceAgent
     /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
     /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
     ValueTask<SpaceTuple> PopAsync(SpaceTemplate template);
-    ValueTask<TTuple> PopAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple
-        where TTemplate : ISpaceTemplate;
-
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
@@ -101,18 +115,12 @@ public interface ISpaceAgent
     /// <para><i>Analogous to the "IN" operation in the tuple space paradigm.</i></para>
     /// </remarks>
     ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
-    ValueTask PopAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
-       where TTuple : ISpaceTuple
-       where TTemplate : ISpaceTemplate;
-
     /// <summary>
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
     /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
-    ValueTask<IEnumerable<TTuple>> ScanAsync<TTuple, TTemplate>(TTemplate template);
-
     /// <summary>
     /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
     /// </summary>
@@ -122,5 +130,4 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
     ValueTask<int> CountAsync(SpaceTemplate template);
-    ValueTask<int> CountAsync<T>(T template) where T : ISpaceTemplate;
 }
