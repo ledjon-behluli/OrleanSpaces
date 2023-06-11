@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces.Tuples;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -10,6 +11,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
 
     public ref readonly int this[int index] => ref fields[index];
     public int Length => fields.Length;
+    public static IntTuple Empty => new();
 
     Span<int> INumericTuple<int>.Fields => fields.AsSpan();
 
@@ -20,7 +22,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>, ICom
     public static bool operator !=(IntTuple left, IntTuple right) => !(left == right);
 
     public override bool Equals(object? obj) => obj is IntTuple tuple && Equals(tuple);
-    public bool Equals(IntTuple other) 
+    public bool Equals(IntTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public int CompareTo(IntTuple other) => Length.CompareTo(other.Length);
@@ -43,8 +45,10 @@ public readonly struct IntTemplate : ISpaceTemplate<int>
     public IntTemplate([AllowNull] params int?[] fields)
         => this.fields = fields == null || fields.Length == 0 ? new int?[1] { null } : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int> 
+    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
+
+    public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
 }

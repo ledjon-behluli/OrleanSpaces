@@ -8,9 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces;
+namespace OrleanSpaces.Agents;
 
-internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ISpaceTuple>
+internal sealed partial class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ISpaceTuple>
 {
     private readonly IClusterClient client;
     private readonly EvaluationChannel evaluationChannel;
@@ -86,7 +86,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ISp
             await WriteAsync(spaceTuple);
             return;
         }
-        
+
         if (tuple is SpaceTemplate spaceTemplate)
         {
             _ = await PopAsync(spaceTemplate);

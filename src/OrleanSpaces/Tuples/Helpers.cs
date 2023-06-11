@@ -1,11 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrleanSpaces.Tuples;
 
@@ -303,4 +299,32 @@ internal static class Helpers
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
        where TIn : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ThrowIfNotBeingConsumed(this IConsumable consumable, [CallerMemberName] string? methodName = null)
+    {
+        if (!consumable.IsBeingConsumed)
+        {
+            throw new InvalidOperationException(
+                $"The method '{methodName}' is not available due to '{consumable.GetType().Name}' not having an active consumer. " +
+                "This due to the client application not having started the generic host.");
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TTuple FindTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
+        where T : unmanaged
+        where TTuple : struct, ISpaceTuple<T>
+        where TTemplate : struct, ISpaceTemplate<T>
+    {
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple))
+            {
+                return tuple;
+            }
+        }
+
+        return default;
+    }
 }

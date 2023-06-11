@@ -1,4 +1,6 @@
-﻿namespace OrleanSpaces;
+﻿using OrleanSpaces.Agents;
+
+namespace OrleanSpaces;
 
 internal sealed class SpaceAgentProvider : ISpaceAgentProvider
 {

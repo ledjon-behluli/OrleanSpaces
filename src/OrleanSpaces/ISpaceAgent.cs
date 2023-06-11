@@ -3,34 +3,26 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
-public interface ISpaceAgent<T>
+public interface ISpaceAgent<T, TTuple, TTemplate>
     where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+    where TTemplate : ISpaceTemplate<T>
 {
-    Task WriteAsync<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
+    Task WriteAsync(TTuple tuple);
 
-    ValueTask EvaluateAsync<TTuple>(Func<Task<TTuple>> evaluation) where TTuple : ISpaceTuple;
+    ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation);
 
-    ValueTask<TTuple> PeekAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
+    ValueTask<TTuple> PeekAsync(TTemplate template);
 
-    ValueTask PeekAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
+    ValueTask PeekAsync(TTemplate template, Func<TTuple, Task> callback);
 
-    ValueTask<TTuple> PopAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
+    ValueTask<TTuple> PopAsync(TTemplate template);
 
-    ValueTask PopAsync<TTuple, TTemplate>(TTemplate template, Func<TTuple, Task> callback)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
+    ValueTask PopAsync(TTemplate template, Func<TTuple, Task> callback);
 
-    ValueTask<IEnumerable<TTuple>> ScanAsync<TTuple, TTemplate>(TTemplate template)
-        where TTuple : ISpaceTuple<T>
-        where TTemplate : ISpaceTemplate<T>;
+    ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template);
 
-    ValueTask<int> CountAsync<TTemplate>(TTemplate template) where TTemplate : ISpaceTemplate<T>;
+    ValueTask<int> CountAsync(TTemplate template);
 }
 
 public interface ISpaceAgent

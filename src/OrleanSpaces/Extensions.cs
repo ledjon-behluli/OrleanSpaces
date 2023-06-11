@@ -5,6 +5,7 @@ using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Continuations;
 using Microsoft.Extensions.DependencyInjection;
+using OrleanSpaces.Agents;
 
 namespace OrleanSpaces;
 

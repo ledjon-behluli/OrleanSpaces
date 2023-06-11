@@ -58,4 +58,8 @@
 	  <Orleans_CodeGenInputs Remove="Tuples\ISpaceTemplate.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Grains\" />
+	</ItemGroup>
+
 </Project>
