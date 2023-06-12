@@ -8,6 +8,7 @@ using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
+using System;
 
 namespace OrleanSpaces.Agents;
 
@@ -89,6 +90,18 @@ internal sealed class IntAgent :
     #endregion
 
     #region ISpaceAgent
+
+    public Guid Subscribe(ISpaceObserver<int, IntTuple, IntTemplate> observer)
+    {
+        observerChannel.ThrowIfNotBeingConsumed();
+        return observerRegistry.Add(observer);
+    }
+
+    public void Unsubscribe(Guid observerId)
+    {
+        observerChannel.ThrowIfNotBeingConsumed();
+        observerRegistry.Remove(observerId);
+    }
 
     public Task WriteAsync(IntTuple tuple) => grain.AddAsync(tuple);
 

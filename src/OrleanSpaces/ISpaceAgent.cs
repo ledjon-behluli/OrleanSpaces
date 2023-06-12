@@ -102,19 +102,18 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
+    Guid Subscribe(ISpaceObserver<T, TTuple, TTemplate> observer);
+    void Unsubscribe(Guid observerId);
+
     Task WriteAsync(TTuple tuple);
-
     ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation);
-
+    
     ValueTask<TTuple> PeekAsync(TTemplate template);
-
     ValueTask PeekAsync(TTemplate template, Func<TTuple, Task> callback);
-
+    
     ValueTask<TTuple> PopAsync(TTemplate template);
-
     ValueTask PopAsync(TTemplate template, Func<TTuple, Task> callback);
 
     ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template);
-
     ValueTask<int> CountAsync();
 }
