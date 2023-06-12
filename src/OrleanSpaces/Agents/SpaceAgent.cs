@@ -69,23 +69,31 @@ internal sealed class SpaceAgent :
         await observerChannel.TupleWriter.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
-            await callbackChannel.TupleWriter.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.Tuple);
         }
     }
 
     Task IAsyncObserver<StreamAction<SpaceTuple>>.OnCompletedAsync() => Task.CompletedTask;
     Task IAsyncObserver<StreamAction<SpaceTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 
-
     #endregion
 
     #region ITupleRouter
 
-    Task ITupleRouter.RouteAsync(SpaceTuple tuple)
-        => WriteAsync(tuple);
+    async Task ITupleRouter.RouteAsync(ISpaceElement element)
+    {
+        if (element is SpaceTuple tuple)
+        {
+            await WriteAsync(tuple);
+        }
 
-    async ValueTask ITupleRouter.RouteAsync(SpaceTemplate template)
-        => await PopAsync(template);
+        if (element is SpaceTemplate template)
+        {
+            await PopAsync(template);
+        }
+
+        Helpers.ThrowNotSupported(element);
+    }
 
     #endregion
 
@@ -115,7 +123,7 @@ internal sealed class SpaceAgent :
             throw new ArgumentNullException(nameof(evaluation));
         }
 
-        return evaluationChannel.TupleWriter.WriteAsync(evaluation);
+        return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)

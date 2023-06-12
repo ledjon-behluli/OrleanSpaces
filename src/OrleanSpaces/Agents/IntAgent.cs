@@ -8,34 +8,33 @@ using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
-using System;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription("IntStream")]
 internal sealed class IntAgent :
     ISpaceAgent<int, IntTuple, IntTemplate>,
-    ITupleRouter<int, IntTuple, IntTemplate>,
-    IAsyncObserver<StreamAction<IntTuple>>
+    IAsyncObserver<StreamAction<IntTuple>>,
+    ITupleRouter
 {
     private readonly List<IntTuple> tuples = new();
 
     private readonly IClusterClient client;
-    private readonly EvaluationChannel<int, IntTuple, IntTemplate> evaluationChannel;
-    private readonly CallbackChannel<int, IntTuple, IntTemplate> callbackChannel;
-    private readonly ObserverChannel<int, IntTuple, IntTemplate> observerChannel;
-    private readonly CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry;
-    private readonly ObserverRegistry<int, IntTuple, IntTemplate> observerRegistry;
+    private readonly EvaluationChannel evaluationChannel;
+    private readonly CallbackChannel callbackChannel;
+    private readonly ObserverChannel observerChannel;
+    private readonly CallbackRegistry callbackRegistry;
+    private readonly ObserverRegistry observerRegistry;
 
     [AllowNull] private IIntGrain grain;
 
     public IntAgent(
         IClusterClient client,
-        EvaluationChannel<int, IntTuple, IntTemplate> evaluationChannel,
-        CallbackChannel<int, IntTuple, IntTemplate> callbackChannel,
-        ObserverChannel<int, IntTuple, IntTemplate> observerChannel,
-        CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry,
-        ObserverRegistry<int, IntTuple, IntTemplate> observerRegistry)
+        EvaluationChannel evaluationChannel,
+        CallbackChannel callbackChannel,
+        ObserverChannel observerChannel,
+        CallbackRegistry callbackRegistry,
+        ObserverRegistry observerRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
@@ -70,7 +69,7 @@ internal sealed class IntAgent :
         await observerChannel.TupleWriter.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
-            await callbackChannel.TupleWriter.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.Tuple);
         }
     }
 
@@ -81,11 +80,20 @@ internal sealed class IntAgent :
 
     #region ITupleRouter
 
-    Task ITupleRouter<int, IntTuple, IntTemplate>.RouteAsync(IntTuple tuple)
-        => WriteAsync(tuple);
+    async Task ITupleRouter.RouteAsync(ISpaceElement element)
+    {
+        if (element is IntTuple tuple)
+        {
+            await WriteAsync(tuple);
+        }
 
-    async ValueTask ITupleRouter<int, IntTuple, IntTemplate>.RouteAsync(IntTemplate template)
-        => await PopAsync(template);
+        if (element is IntTemplate template)
+        {
+            await PopAsync(template);
+        }
+
+        Helpers.ThrowNotSupported(element);
+    }
 
     #endregion
 
@@ -93,13 +101,13 @@ internal sealed class IntAgent :
 
     public Guid Subscribe(ISpaceObserver<int, IntTuple, IntTemplate> observer)
     {
-        observerChannel.ThrowIfNotBeingConsumed();
+        Helpers.ThrowIfNotBeingConsumed(observerChannel);
         return observerRegistry.Add(observer);
     }
 
     public void Unsubscribe(Guid observerId)
     {
-        observerChannel.ThrowIfNotBeingConsumed();
+        Helpers.ThrowIfNotBeingConsumed(observerChannel);
         observerRegistry.Remove(observerId);
     }
 
@@ -107,14 +115,14 @@ internal sealed class IntAgent :
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
-        evaluationChannel.ThrowIfNotBeingConsumed();
+        Helpers.ThrowIfNotBeingConsumed(evaluationChannel);
 
         if (evaluation == null)
         {
             throw new ArgumentNullException(nameof(evaluation));
         }
 
-        return evaluationChannel.TupleWriter.WriteAsync(evaluation);
+        return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
     public ValueTask<IntTuple> PeekAsync(IntTemplate template)
@@ -125,7 +133,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PeekAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        callbackChannel.ThrowIfNotBeingConsumed();
+        Helpers.ThrowIfNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {
@@ -159,7 +167,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PopAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        callbackChannel.ThrowIfNotBeingConsumed();
+        Helpers.ThrowIfNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {

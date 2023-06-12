@@ -1,11 +1,6 @@
 ﻿namespace OrleanSpaces.Tuples;
 
-public interface ISpaceTemplate
-{
-
-}
-
-public interface ISpaceTemplate<T> : ISpaceTemplate
+public interface ISpaceTemplate<T> : ISpaceElement
     where T : unmanaged
 {
     ref readonly T? this[int index] { get; }

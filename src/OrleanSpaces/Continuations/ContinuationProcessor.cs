@@ -20,7 +20,7 @@ internal sealed class ContinuationProcessor : BackgroundService
     {
         channel.IsBeingConsumed = true;
 
-        await foreach (ISpaceTuple tuple in channel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (ISpaceElement tuple in channel.Reader.ReadAllAsync(cancellationToken))
         {
             await router.RouteAsync(tuple);
         }

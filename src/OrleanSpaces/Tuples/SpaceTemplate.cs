@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTemplate : ISpaceTuple
+public readonly struct SpaceTemplate : ISpaceElement
 {
     private readonly object?[] fields;
 

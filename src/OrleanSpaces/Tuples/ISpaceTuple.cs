@@ -2,12 +2,7 @@
 
 namespace OrleanSpaces.Tuples;
 
-public interface ISpaceTuple
-{
-   
-}
-
-public interface ISpaceTuple<T> : ISpaceTuple
+public interface ISpaceTuple<T> : ISpaceElement
     where T : unmanaged
 {
     ref readonly T this[int index] { get; }

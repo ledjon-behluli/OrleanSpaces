@@ -301,7 +301,7 @@ internal static class Helpers
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ThrowIfNotBeingConsumed(this IConsumable consumable, [CallerMemberName] string? methodName = null)
+    public static void ThrowIfNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
     {
         if (!consumable.IsBeingConsumed)
         {
@@ -310,6 +310,10 @@ internal static class Helpers
                 "This due to the client application not having started the generic host.");
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ThrowNotSupported(ISpaceElement element)
+        => throw new NotSupportedException($"The element of type '{element.GetType().FullName}' is not supported");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TTuple FindTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
