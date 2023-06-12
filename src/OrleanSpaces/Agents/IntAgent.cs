@@ -7,14 +7,15 @@ using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed partial class IntAgent :
+[ImplicitStreamSubscription("IntStream")]
+internal sealed class IntAgent :
     ISpaceAgent<int, IntTuple, IntTemplate>,
     ITupleRouter<int, IntTuple, IntTemplate>,
-    IAsyncObserver<IntTuple>,
-    IAsyncObserver<IntTemplate>
+    IAsyncObserver<StreamAction<IntTuple>>
 {
     private readonly List<IntTuple> tuples = new();
 
@@ -54,34 +55,26 @@ internal sealed partial class IntAgent :
 
         if (observerChannel.IsBeingConsumed)
         {
-            var streamId = await grain.ListenAsync();
             var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var tupleStream = provider.GetStream<IntTuple>(streamId, Constants.IntTupleStream);
-            var templateStream = provider.GetStream<IntTemplate>(streamId, Constants.IntTupleStream);
+            var stream = provider.GetStream<StreamAction<IntTuple>>(Guid.Empty, "IntStream");
 
-            await tupleStream.SubscribeAsync(this);
-            await templateStream.SubscribeAsync(this);
+            await stream.SubscribeAsync(this);
         }
     }
 
     #region IAsyncObserver
 
-    async Task IAsyncObserver<IntTuple>.OnNextAsync(IntTuple tuple, StreamSequenceToken token)
+    async Task IAsyncObserver<StreamAction<IntTuple>>.OnNextAsync(StreamAction<IntTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.TupleWriter.WriteAsync(tuple);
-        await callbackChannel.TupleWriter.WriteAsync(tuple);
+        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
+        if (action.Type == StreamActionType.Added)
+        {
+            await callbackChannel.TupleWriter.WriteAsync(action.Tuple);
+        }
     }
 
-    async Task IAsyncObserver<IntTemplate>.OnNextAsync(IntTemplate template, StreamSequenceToken token)
-    {
-        await observerChannel.TemplateWriter.WriteAsync(template);
-    }
-
-    Task IAsyncObserver<IntTuple>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<IntTemplate>.OnCompletedAsync() => Task.CompletedTask;
-
-    Task IAsyncObserver<IntTuple>.OnErrorAsync(Exception e) => Task.CompletedTask;
-    Task IAsyncObserver<IntTemplate>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    Task IAsyncObserver<StreamAction<IntTuple>>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<StreamAction<IntTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 
     #endregion
 
@@ -176,9 +169,9 @@ internal sealed partial class IntAgent :
     }
 
     public ValueTask<IEnumerable<IntTuple>> ScanAsync(IntTemplate template)
-        => new(tuples.FindAllTuple<int, IntTuple, IntTemplate>(template));
+        => new(tuples.FindAllTuples<int, IntTuple, IntTemplate>(template));
 
-    public ValueTask<int> CountAsync(IntTemplate template) => new(tuples.Count);
+    public ValueTask<int> CountAsync() => new(tuples.Count);
 
     #endregion
 }

@@ -7,15 +7,18 @@ using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
+using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed partial class SpaceAgent : 
+[ImplicitStreamSubscription("SpaceStream")]
+internal sealed class SpaceAgent : 
     ISpaceAgent, 
     ITupleRouter, 
-    IAsyncObserver<SpaceTuple>,
-    IAsyncObserver<SpaceTemplate>
+    IAsyncObserver<StreamAction<SpaceTuple>>
 {
+    private readonly List<SpaceTuple> tuples = new();
+
     private readonly IClusterClient client;
     private readonly EvaluationChannel evaluationChannel;
     private readonly CallbackChannel callbackChannel;
@@ -52,9 +55,8 @@ internal sealed partial class SpaceAgent :
 
         if (observerChannel.IsBeingConsumed)
         {
-            var streamId = await grain.ListenAsync();
             var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var stream = provider.GetStream<ISpaceTuple>(streamId, Constants.TupleStream);
+            var stream = provider.GetStream<StreamAction<SpaceTuple>>(Guid.Empty, "SpaceStream");
 
             await stream.SubscribeAsync(this);
         }
@@ -62,47 +64,28 @@ internal sealed partial class SpaceAgent :
 
     #region IAsyncObserver
 
-    async Task IAsyncObserver<SpaceTuple>.OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
+    async Task IAsyncObserver<StreamAction<SpaceTuple>>.OnNextAsync(StreamAction<SpaceTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.TupleWriter.WriteAsync(tuple);
-        await callbackChannel.TupleWriter.WriteAsync(tuple);
+        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
+        if (action.Type == StreamActionType.Added)
+        {
+            await callbackChannel.TupleWriter.WriteAsync(action.Tuple);
+        }
     }
 
-    async Task IAsyncObserver<SpaceTemplate>.OnNextAsync(SpaceTemplate template, StreamSequenceToken token)
-    {
-        await observerChannel.TemplateWriter.WriteAsync(template);
-    }
-
-    Task IAsyncObserver<SpaceTuple>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<SpaceTemplate>.OnCompletedAsync() => Task.CompletedTask;
-
-    Task IAsyncObserver<SpaceTuple>.OnErrorAsync(Exception e) => Task.CompletedTask;
-    Task IAsyncObserver<SpaceTemplate>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    Task IAsyncObserver<StreamAction<SpaceTuple>>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<StreamAction<SpaceTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 
 
     #endregion
 
     #region ITupleRouter
 
-    public async Task RouteAsync(ISpaceTuple tuple)
-    {
-        if (tuple == null)
-        {
-            throw new ArgumentNullException(nameof(tuple));
-        }
+    Task ITupleRouter.RouteAsync(SpaceTuple tuple)
+        => WriteAsync(tuple);
 
-        if (tuple is SpaceTuple spaceTuple)
-        {
-            await WriteAsync(spaceTuple);
-            return;
-        }
-
-        if (tuple is SpaceTemplate spaceTemplate)
-        {
-            _ = await PopAsync(spaceTemplate);
-            return;
-        }
-    }
+    async ValueTask ITupleRouter.RouteAsync(SpaceTemplate template)
+        => await PopAsync(template);
 
     #endregion
 
@@ -121,7 +104,7 @@ internal sealed partial class SpaceAgent :
     }
 
     public Task WriteAsync(SpaceTuple tuple)
-        => grain.WriteAsync(tuple);
+        => grain.AddAsync(tuple);
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
@@ -132,11 +115,14 @@ internal sealed partial class SpaceAgent :
             throw new ArgumentNullException(nameof(evaluation));
         }
 
-        return evaluationChannel.Writer.WriteAsync(evaluation);
+        return evaluationChannel.TupleWriter.WriteAsync(evaluation);
     }
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-        => grain.PeekAsync(template);
+    {
+        SpaceTuple tuple = FindTuple(template);
+        return new(tuple);
+    }
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -147,9 +133,9 @@ internal sealed partial class SpaceAgent :
             throw new ArgumentNullException(nameof(callback));
         }
 
-        SpaceTuple tuple = await grain.PeekAsync(template);
+        SpaceTuple tuple = FindTuple(template);
 
-        if (!tuple.IsNull)
+        if (tuple != SpaceTuple.Empty)
         {
             await callback(tuple);
         }
@@ -159,8 +145,18 @@ internal sealed partial class SpaceAgent :
         }
     }
 
-    public ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
-            => grain.PopAsync(template);
+    public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
+    {
+        SpaceTuple tuple = FindTuple(template);
+
+        if (tuple != SpaceTuple.Empty)
+        {
+            await grain.RemoveAsync(tuple);
+            tuples.Remove(tuple);
+        }
+
+        return tuple;
+    }
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -171,9 +167,9 @@ internal sealed partial class SpaceAgent :
             throw new ArgumentNullException(nameof(callback));
         }
 
-        SpaceTuple tuple = await grain.PopAsync(template);
+        SpaceTuple tuple = FindTuple(template);
 
-        if (!tuple.IsNull)
+        if (tuple != SpaceTuple.Empty)
         {
             await callback(tuple);
         }
@@ -184,13 +180,21 @@ internal sealed partial class SpaceAgent :
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
-        => grain.ScanAsync(template);
+    {
+        List<SpaceTuple> result = new();
 
-    public ValueTask<int> CountAsync()
-        => grain.CountAsync(null);
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple))
+            {
+                result.Add(tuple);
+            }
+        }
 
-    public ValueTask<int> CountAsync(SpaceTemplate template)
-        => grain.CountAsync(template);
+        return new(result);
+    }
+
+    public ValueTask<int> CountAsync() => new(tuples.Count);
 
     private static void ThrowIfNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
     {
@@ -200,6 +204,19 @@ internal sealed partial class SpaceAgent :
                 $"The method '{methodName}' is not available due to '{consumable.GetType().Name}' not having an active consumer. " +
                 "This due to the client application not having started the generic host.");
         }
+    }
+
+    private SpaceTuple FindTuple(SpaceTemplate template)
+    {
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple))
+            {
+                return tuple;
+            }
+        }
+
+        return SpaceTuple.Empty;
     }
 
     #endregion

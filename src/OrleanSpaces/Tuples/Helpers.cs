@@ -329,7 +329,7 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TTuple> FindAllTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
+    public static List<TTuple> FindAllTuples<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
         where T : unmanaged
         where TTuple : struct, ISpaceTuple<T>
         where TTemplate : struct, ISpaceTemplate<T>

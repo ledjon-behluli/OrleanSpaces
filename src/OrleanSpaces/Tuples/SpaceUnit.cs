@@ -1,5 +1,4 @@
 ﻿using Orleans.Concurrency;
-using OrleanSpaces.Tuples.Typed;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
@@ -22,7 +21,7 @@ public readonly struct SpaceUnit : ISpaceTuple, IEquatable<SpaceUnit>, IComparab
     public SpaceUnit() { }
 
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types are always equal to each other.")]
-    public static bool operator ==(SpaceUnit _, SpaceUnit right) => true;
+    public static bool operator ==(SpaceUnit left, SpaceUnit right) => true;
 
     [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Two SpaceUnit types can never be not equal to each other.")]
     public static bool operator !=(SpaceUnit left, SpaceUnit right) => false;

@@ -4,7 +4,8 @@ namespace OrleanSpaces.Continuations;
 
 internal interface ITupleRouter
 {
-    Task RouteAsync(ISpaceTuple tuple);
+    Task RouteAsync(SpaceTuple tuple);
+    ValueTask RouteAsync(SpaceTemplate template);
 }
 
 

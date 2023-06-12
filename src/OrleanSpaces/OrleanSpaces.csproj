@@ -59,7 +59,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Grains\" />
+	  <Orleans_CodeGenInputs Remove="Tuples\TupleStreamAction.cs" />
 	</ItemGroup>
 
 </Project>

@@ -14,16 +14,10 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>, ICompar
     public readonly object this[int index] => fields[index];
     public int Length => fields.Length;
 
-    private static readonly SpaceTuple @null = new();
     /// <summary>
     /// Represents a <see cref="SpaceTuple"/> with a single field of type <see cref="SpaceUnit"/>.
     /// </summary>
-    public static ref readonly SpaceTuple Null => ref @null;
-
-    /// <summary>
-    /// Checks wether this instance is a <see cref="Null"/>.
-    /// </summary>
-    public bool IsNull => Equals(Null);
+    public static SpaceTuple Empty => new();
 
     /// <summary>
     /// Default constructor which always instantiates a <see cref="Null"/>. 
