@@ -86,7 +86,7 @@ public abstract class SpaceObserver<T, TTuple, TTemplate> : ISpaceObserver<T, TT
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
-    private EventType type = EventType.Nothing;
+    protected internal EventType type = EventType.Nothing;
 
     /// <summary>
     /// Configures the derived class to listen to specific events.
@@ -95,7 +95,7 @@ public abstract class SpaceObserver<T, TTuple, TTemplate> : ISpaceObserver<T, TT
     /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
     protected void ListenTo(EventType type) => this.type = type;
 
-    internal async ValueTask NotifyAsync(ISpaceTuple tuple, CancellationToken cancellationToken)
+    internal async ValueTask NotifyAsync(TTuple tuple, CancellationToken cancellationToken)
     {
         if (tuple is SpaceTuple spaceTuple && type.HasFlag(Expansions))
         {
@@ -121,7 +121,7 @@ public abstract class SpaceObserver<T, TTuple, TTemplate> : ISpaceObserver<T, TT
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
-    protected enum EventType
+    protected internal enum EventType
     {
         /// <summary>
         /// Specifies that the observer is not interested in any kind of events.
