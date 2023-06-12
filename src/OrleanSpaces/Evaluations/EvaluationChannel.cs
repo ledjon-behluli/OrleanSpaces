@@ -5,13 +5,19 @@ namespace OrleanSpaces.Evaluations;
 
 internal sealed class EvaluationChannel : IConsumable
 {
-    private readonly Channel<Func<Task<SpaceTuple>>> channel 
-        = Channel.CreateUnbounded<Func<Task<SpaceTuple>>>(new() { SingleReader = true });
-
     public bool IsBeingConsumed { get; set; }
 
-    public ChannelReader<Func<Task<SpaceTuple>>> Reader => channel.Reader;
-    public ChannelWriter<Func<Task<SpaceTuple>>> Writer => channel.Writer;
+    private readonly Channel<Func<Task<SpaceTuple>>> tupleChannel 
+        = Channel.CreateUnbounded<Func<Task<SpaceTuple>>>(new() { SingleReader = true });
+
+    private readonly Channel<Func<Task<SpaceTemplate>>> templateChannel
+       = Channel.CreateUnbounded<Func<Task<SpaceTemplate>>>(new() { SingleReader = true });
+
+    public ChannelReader<Func<Task<SpaceTuple>>> TupleReader => tupleChannel.Reader;
+    public ChannelWriter<Func<Task<SpaceTuple>>> TupleWriter => tupleChannel.Writer;
+
+    public ChannelReader<Func<Task<SpaceTemplate>>> TemplateReader => templateChannel.Reader;
+    public ChannelWriter<Func<Task<SpaceTemplate>>> TemplateWriter => templateChannel.Writer;
 }
 
 internal sealed class EvaluationChannel<T, TTuple, TTemplate> : IConsumable

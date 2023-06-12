@@ -5,13 +5,19 @@ namespace OrleanSpaces.Observers;
 
 internal sealed class ObserverChannel : IConsumable
 {
-    private readonly Channel<ISpaceTuple> channel = 
-        Channel.CreateUnbounded<ISpaceTuple>(new() { SingleReader = true });
-
     public bool IsBeingConsumed { get; set; }
 
-    public ChannelReader<ISpaceTuple> Reader => channel.Reader;
-    public ChannelWriter<ISpaceTuple> Writer => channel.Writer;
+    private readonly Channel<SpaceTuple> tupleChannel = 
+        Channel.CreateUnbounded<SpaceTuple>(new() { SingleReader = true });
+
+    private readonly Channel<SpaceTemplate> templateChannel =
+        Channel.CreateUnbounded<SpaceTemplate>(new() { SingleReader = true });
+
+    public ChannelReader<SpaceTuple> TupleReader => tupleChannel.Reader;
+    public ChannelWriter<SpaceTuple> TupleWriter => tupleChannel.Writer;
+
+    public ChannelReader<SpaceTemplate> TemplateReader => templateChannel.Reader;
+    public ChannelWriter<SpaceTemplate> TemplateWriter => templateChannel.Writer;
 }
 
 internal sealed class ObserverChannel<T, TTuple, TTemplate> : IConsumable

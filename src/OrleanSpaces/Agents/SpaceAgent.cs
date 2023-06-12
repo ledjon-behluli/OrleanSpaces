@@ -10,7 +10,11 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed partial class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObserver<ISpaceTuple>
+internal sealed partial class SpaceAgent : 
+    ISpaceAgent, 
+    ITupleRouter, 
+    IAsyncObserver<SpaceTuple>,
+    IAsyncObserver<SpaceTemplate>
 {
     private readonly IClusterClient client;
     private readonly EvaluationChannel evaluationChannel;
@@ -44,7 +48,7 @@ internal sealed partial class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObse
             await client.Connect();
         }
 
-        grain = client.GetGrain<ISpaceGrain>(Constants.SpaceGrainId);
+        grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
         if (observerChannel.IsBeingConsumed)
         {
@@ -58,17 +62,23 @@ internal sealed partial class SpaceAgent : ISpaceAgent, ITupleRouter, IAsyncObse
 
     #region IAsyncObserver
 
-    public async Task OnNextAsync(ISpaceTuple tuple, StreamSequenceToken token)
+    async Task IAsyncObserver<SpaceTuple>.OnNextAsync(SpaceTuple tuple, StreamSequenceToken token)
     {
-        await observerChannel.Writer.WriteAsync(tuple);
-        if (tuple is SpaceTuple spaceTuple)
-        {
-            await callbackChannel.Writer.WriteAsync(spaceTuple);
-        }
+        await observerChannel.TupleWriter.WriteAsync(tuple);
+        await callbackChannel.TupleWriter.WriteAsync(tuple);
     }
 
-    public Task OnCompletedAsync() => Task.CompletedTask;
-    public Task OnErrorAsync(Exception e) => Task.CompletedTask;
+    async Task IAsyncObserver<SpaceTemplate>.OnNextAsync(SpaceTemplate template, StreamSequenceToken token)
+    {
+        await observerChannel.TemplateWriter.WriteAsync(template);
+    }
+
+    Task IAsyncObserver<SpaceTuple>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<SpaceTemplate>.OnCompletedAsync() => Task.CompletedTask;
+
+    Task IAsyncObserver<SpaceTuple>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    Task IAsyncObserver<SpaceTemplate>.OnErrorAsync(Exception e) => Task.CompletedTask;
+
 
     #endregion
 

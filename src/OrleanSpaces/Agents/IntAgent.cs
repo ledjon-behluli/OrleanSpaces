@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
@@ -23,8 +22,8 @@ internal sealed partial class IntAgent :
     private readonly EvaluationChannel<int, IntTuple, IntTemplate> evaluationChannel;
     private readonly CallbackChannel<int, IntTuple, IntTemplate> callbackChannel;
     private readonly ObserverChannel<int, IntTuple, IntTemplate> observerChannel;
-    private readonly CallbackRegistry callbackRegistry;
-    private readonly ObserverRegistry observerRegistry;
+    private readonly CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry;
+    private readonly ObserverRegistry<int, IntTuple, IntTemplate> observerRegistry;
 
     [AllowNull] private IIntGrain grain;
 
@@ -33,8 +32,8 @@ internal sealed partial class IntAgent :
         EvaluationChannel<int, IntTuple, IntTemplate> evaluationChannel,
         CallbackChannel<int, IntTuple, IntTemplate> callbackChannel,
         ObserverChannel<int, IntTuple, IntTemplate> observerChannel,
-        CallbackRegistry callbackRegistry,
-        ObserverRegistry observerRegistry)
+        CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry,
+        ObserverRegistry<int, IntTuple, IntTemplate> observerRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
@@ -42,6 +41,27 @@ internal sealed partial class IntAgent :
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (!client.IsInitialized)
+        {
+            await client.Connect();
+        }
+
+        grain = client.GetGrain<IIntGrain>(Guid.Empty);
+
+        if (observerChannel.IsBeingConsumed)
+        {
+            var streamId = await grain.ListenAsync();
+            var provider = client.GetStreamProvider(Constants.PubSubProvider);
+            var tupleStream = provider.GetStream<IntTuple>(streamId, Constants.IntTupleStream);
+            var templateStream = provider.GetStream<IntTemplate>(streamId, Constants.IntTupleStream);
+
+            await tupleStream.SubscribeAsync(this);
+            await templateStream.SubscribeAsync(this);
+        }
     }
 
     #region IAsyncObserver
@@ -52,9 +72,9 @@ internal sealed partial class IntAgent :
         await callbackChannel.TupleWriter.WriteAsync(tuple);
     }
 
-    async Task IAsyncObserver<IntTemplate>.OnNextAsync(IntTemplate tuple, StreamSequenceToken token)
+    async Task IAsyncObserver<IntTemplate>.OnNextAsync(IntTemplate template, StreamSequenceToken token)
     {
-        await observerChannel.TemplateWriter.WriteAsync(tuple);
+        await observerChannel.TemplateWriter.WriteAsync(template);
     }
 
     Task IAsyncObserver<IntTuple>.OnCompletedAsync() => Task.CompletedTask;
@@ -77,7 +97,7 @@ internal sealed partial class IntAgent :
 
     #region ISpaceAgent
 
-    public Task WriteAsync(IntTuple tuple) => grain.WriteAsync(tuple);
+    public Task WriteAsync(IntTuple tuple) => grain.AddAsync(tuple);
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
@@ -94,7 +114,7 @@ internal sealed partial class IntAgent :
     public ValueTask<IntTuple> PeekAsync(IntTemplate template)
     {
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
-        return ValueTask.FromResult(tuple);
+        return new(tuple);
     }
 
     public async ValueTask PeekAsync(IntTemplate template, Func<IntTuple, Task> callback)
@@ -146,6 +166,7 @@ internal sealed partial class IntAgent :
         {
             await callback(tuple);
             await grain.RemoveAsync(tuple);
+
             tuples.Remove(tuple);
         }
         else
@@ -155,9 +176,7 @@ internal sealed partial class IntAgent :
     }
 
     public ValueTask<IEnumerable<IntTuple>> ScanAsync(IntTemplate template)
-    {
-        throw new NotImplementedException();
-    }
+        => new(tuples.FindAllTuple<int, IntTuple, IntTemplate>(template));
 
     public ValueTask<int> CountAsync(IntTemplate template) => new(tuples.Count);
 

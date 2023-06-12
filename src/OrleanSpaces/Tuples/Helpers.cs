@@ -327,4 +327,23 @@ internal static class Helpers
 
         return default;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static List<TTuple> FindAllTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
+        where T : unmanaged
+        where TTuple : struct, ISpaceTuple<T>
+        where TTemplate : struct, ISpaceTemplate<T>
+    {
+        List<TTuple> result = new();
+
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple))
+            {
+                result.Add(tuple);
+            }
+        }
+
+        return result;
+    }
 }
