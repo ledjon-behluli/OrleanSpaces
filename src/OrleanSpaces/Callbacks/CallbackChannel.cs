@@ -10,9 +10,6 @@ internal sealed class CallbackChannel : IConsumable
     private readonly Channel<SpaceTuple> tupleChannel = 
         Channel.CreateUnbounded<SpaceTuple>(new() { SingleReader = true });
 
-    private readonly Channel<SpaceTemplate> templateChannel =
-        Channel.CreateUnbounded<SpaceTemplate>(new() { SingleReader = true });
-
     public ChannelReader<SpaceTuple> TupleReader => tupleChannel.Reader;
     public ChannelWriter<SpaceTuple> TupleWriter => tupleChannel.Writer;
 
