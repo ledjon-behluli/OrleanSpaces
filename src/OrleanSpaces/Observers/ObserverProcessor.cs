@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Observers;
 
@@ -39,57 +38,6 @@ internal sealed class ObserverProcessor : BackgroundService
     }
 
     private async Task NotifyAsync(SpaceObserver observer, ISpaceTuple tuple, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await observer.NotifyAsync(tuple, cancellationToken);
-        }
-        catch
-        {
-            lifetime.StopApplication();
-        }
-    }
-}
-
-internal sealed class ObserverProcessor<T, TTuple, TTemplate> : BackgroundService
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
-{
-    private readonly IHostApplicationLifetime lifetime;
-    private readonly ObserverRegistry<T, TTuple, TTemplate> registry;
-    private readonly ObserverChannel<T, TTuple, TTemplate> channel;
-
-    public ObserverProcessor(
-        IHostApplicationLifetime lifetime,
-        ObserverRegistry<T, TTuple, TTemplate> registry,
-        ObserverChannel<T, TTuple, TTemplate> channel)
-    {
-        this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
-        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
-        this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-    {
-        channel.IsBeingConsumed = true;
-
-        await foreach (TTuple tuple in channel.TupleReader.ReadAllAsync(cancellationToken))
-        {
-            List<Task> tasks = new();
-
-            foreach (SpaceObserver<T, TTuple, TTemplate> observer in registry.Observers)
-            {
-                tasks.Add(NotifyAsync(observer, tuple, cancellationToken));
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        channel.IsBeingConsumed = false;
-    }
-
-    private async Task NotifyAsync(SpaceObserver<T, TTuple, TTemplate> observer, TTuple tuple, CancellationToken cancellationToken)
     {
         try
         {

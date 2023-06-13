@@ -66,7 +66,7 @@ internal sealed class IntAgent :
 
     async Task IAsyncObserver<StreamAction<IntTuple>>.OnNextAsync(StreamAction<IntTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
+        await observerChannel.Writer.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
             await callbackChannel.Writer.WriteAsync(action.Tuple);

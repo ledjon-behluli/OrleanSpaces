@@ -66,7 +66,7 @@ internal sealed class SpaceAgent :
 
     async Task IAsyncObserver<StreamAction<SpaceTuple>>.OnNextAsync(StreamAction<SpaceTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
+        await observerChannel.Writer.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
             await callbackChannel.Writer.WriteAsync(action.Tuple);
