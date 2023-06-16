@@ -5,14 +5,22 @@ using System.Data;
 
 namespace OrleanSpaces.Callbacks;
 
-internal sealed class CallbackRegistry
+internal interface ICallbackRegistry<TTuple, TTemplate>
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
-    private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
+    void Add(TTemplate template, CallbackEntry<TTuple> entry);
+    IEnumerable<CallbackEntry<TTuple>> Take(TTuple tuple);
+}
 
-    public ReadOnlyDictionary<SpaceTemplate, ReadOnlyCollection<CallbackEntry>> Entries =>
+internal sealed class CallbackRegistry : ICallbackRegistry<SpaceTuple, SpaceTemplate>
+{
+    private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry<SpaceTuple>>> entries = new();
+
+    public ReadOnlyDictionary<SpaceTemplate, ReadOnlyCollection<CallbackEntry<SpaceTuple>>> Entries =>
         new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
 
-    public void Add(SpaceTemplate template, CallbackEntry entry)
+    public void Add(SpaceTemplate template, CallbackEntry<SpaceTuple> entry)
     {
         if (!entries.ContainsKey(template))
         {
@@ -22,7 +30,7 @@ internal sealed class CallbackRegistry
         entries[template].Add(entry);
     }
 
-    public IEnumerable<CallbackEntry> Take(SpaceTuple tuple)
+    public IEnumerable<CallbackEntry<SpaceTuple>> Take(SpaceTuple tuple)
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {
@@ -39,17 +47,17 @@ internal sealed class CallbackRegistry
     }
 }
 
-internal sealed class CallbackRegistry<T, TTuple, TTemplate> 
+internal sealed class CallbackRegistry<T, TTuple, TTemplate> : ICallbackRegistry<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
-    private readonly ConcurrentDictionary<TTemplate, List<CallbackEntry<T, TTuple>>> entries = new();
+    private readonly ConcurrentDictionary<TTemplate, List<CallbackEntry<TTuple>>> entries = new();
 
-    public ReadOnlyDictionary<TTemplate, ReadOnlyCollection<CallbackEntry<T, TTuple>>> Entries =>
+    public ReadOnlyDictionary<TTemplate, ReadOnlyCollection<CallbackEntry<TTuple>>> Entries =>
         new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
 
-    public void Add(TTemplate template, CallbackEntry<T, TTuple> entry)
+    public void Add(TTemplate template, CallbackEntry<TTuple> entry)
     {
         if (!entries.ContainsKey(template))
         {
@@ -59,7 +67,7 @@ internal sealed class CallbackRegistry<T, TTuple, TTemplate>
         entries[template].Add(entry);
     }
 
-    public IEnumerable<CallbackEntry<T, TTuple>> Take(TTuple tuple)
+    public IEnumerable<CallbackEntry<TTuple>> Take(TTuple tuple)
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {

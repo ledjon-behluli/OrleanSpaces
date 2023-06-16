@@ -14,9 +14,8 @@ internal sealed class CallbackEntry
     }
 }
 
-internal sealed class CallbackEntry<T, TTuple>
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
+internal sealed class CallbackEntry<TTuple>
+    where TTuple : ISpaceTuple
 {
     public Func<TTuple, Task> Callback { get; }
     public bool IsContinuable { get; }

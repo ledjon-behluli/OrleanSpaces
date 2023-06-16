@@ -10,7 +10,8 @@ internal sealed class CallbackProcessor : BackgroundService
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel callbackChannel;
     private readonly ContinuationChannel continuationChannel;
-    
+    private readonly IEnumerable<CallbackRegistry<>>
+        
     public CallbackProcessor(
         IHostApplicationLifetime lifetime,
         CallbackRegistry registry,
