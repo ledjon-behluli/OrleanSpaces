@@ -67,8 +67,8 @@ public static class Extensions
 
         services.AddHostedService<CallbackProcessor>();
         services.AddHostedService<EvaluationProcessor>();
-        services.AddHostedService<ContinuationProcessor>();
-        services.AddHostedService<ObserverProcessor>();
+        services.AddHostedService<TupleContinuationProcessor>();
+        services.AddHostedService<TupleObserverProcessor>();
 
         return services;
     }

@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -310,10 +309,6 @@ internal static class Helpers
                 "This due to the client application not having started the generic host.");
         }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ThrowNotSupported(ISpaceElement element)
-        => throw new NotSupportedException($"The element of type '{element.GetType().FullName}' is not supported");
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TTuple FindTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)

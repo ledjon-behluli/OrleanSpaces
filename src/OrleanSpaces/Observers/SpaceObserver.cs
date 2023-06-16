@@ -16,24 +16,19 @@ public abstract class SpaceObserver : ISpaceObserver
     /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
     protected void ListenTo(EventType type) => this.type = type;
 
-    internal async ValueTask NotifyAsync(ISpaceTuple tuple, CancellationToken cancellationToken)
+    internal async ValueTask NotifyAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        if (tuple is SpaceTuple spaceTuple && type.HasFlag(Expansions))
+        if (type.HasFlag(Expansions))
         {
-            await OnExpansionAsync(spaceTuple, cancellationToken);
-            return;
+            await OnExpansionAsync(tuple, cancellationToken);
         }
+    }
 
-        if (tuple is SpaceTemplate template && type.HasFlag(Contractions))
+    internal async ValueTask NotifyAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    { 
+        if (type.HasFlag(Contractions))
         {
             await OnContractionAsync(template, cancellationToken);
-            return;
-        }
-
-        if (tuple is SpaceUnit && type.HasFlag(Flattenings))
-        {
-            await OnFlatteningAsync(cancellationToken);
-            return;
         }
     }
 
@@ -42,7 +37,7 @@ public abstract class SpaceObserver : ISpaceObserver
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
-    protected enum EventType
+    protected internal enum EventType
     {
         /// <summary>
         /// Specifies that the observer is not interested in any kind of events.

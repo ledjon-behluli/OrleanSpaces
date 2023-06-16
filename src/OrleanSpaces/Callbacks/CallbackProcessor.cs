@@ -27,7 +27,7 @@ internal sealed class CallbackProcessor : BackgroundService
     {
         callbackChannel.IsBeingConsumed = true;
 
-        await foreach (ISpaceElement tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (SpaceTuple tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
 
@@ -42,14 +42,14 @@ internal sealed class CallbackProcessor : BackgroundService
         callbackChannel.IsBeingConsumed = false;
     }
 
-    private async Task CallbackAsync(CallbackEntry entry, ISpaceElement element, CancellationToken cancellationToken)
+    private async Task CallbackAsync(CallbackEntry entry, SpaceTuple tuple, CancellationToken cancellationToken)
     {
         try
         {
-            await entry.Callback(element);
+            await entry.Callback(tuple);
             if (entry.IsContinuable)
             {
-                await continuationChannel.Writer.WriteAsync(element, cancellationToken);
+                await continuationChannel.TemplateWriter.WriteAsync((SpaceTemplate)tuple, cancellationToken);
             }
         }
         catch

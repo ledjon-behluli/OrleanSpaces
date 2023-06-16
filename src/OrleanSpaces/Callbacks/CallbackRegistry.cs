@@ -7,12 +7,12 @@ namespace OrleanSpaces.Callbacks;
 
 internal sealed class CallbackRegistry
 {
-    private readonly ConcurrentDictionary<ISpaceElement, List<CallbackEntry>> entries = new();
+    private readonly ConcurrentDictionary<SpaceTemplate, List<CallbackEntry>> entries = new();
 
-    public ReadOnlyDictionary<ISpaceElement, ReadOnlyCollection<CallbackEntry>> Entries =>
+    public ReadOnlyDictionary<SpaceTemplate, ReadOnlyCollection<CallbackEntry>> Entries =>
         new(entries.ToDictionary(k => k.Key, v => v.Value.AsReadOnly()));
 
-    public void Add(ISpaceElement template, CallbackEntry entry)
+    public void Add(SpaceTemplate template, CallbackEntry entry)
     {
         if (!entries.ContainsKey(template))
         {
@@ -22,7 +22,7 @@ internal sealed class CallbackRegistry
         entries[template].Add(entry);
     }
 
-    public IEnumerable<CallbackEntry> Take(ISpaceElement tuple)
+    public IEnumerable<CallbackEntry> Take(SpaceTuple tuple)
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
         {

@@ -66,7 +66,7 @@ internal sealed class SpaceAgent :
 
     async Task IAsyncObserver<StreamAction<SpaceTuple>>.OnNextAsync(StreamAction<SpaceTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.Writer.WriteAsync(action.Tuple);
+        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
             await callbackChannel.Writer.WriteAsync(action.Tuple);
@@ -80,20 +80,8 @@ internal sealed class SpaceAgent :
 
     #region ITupleRouter
 
-    async Task ITupleRouter.RouteAsync(ISpaceElement element)
-    {
-        if (element is SpaceTuple tuple)
-        {
-            await WriteAsync(tuple);
-        }
-
-        if (element is SpaceTemplate template)
-        {
-            await PopAsync(template);
-        }
-
-        Helpers.ThrowNotSupported(element);
-    }
+    Task ITupleRouter.RouteAsync(SpaceTuple tuple) => WriteAsync(tuple);
+    async ValueTask ITupleRouter.RouteAsync(SpaceTemplate template) => await PopAsync(template);
 
     #endregion
 

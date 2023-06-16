@@ -7,9 +7,22 @@ internal sealed class CallbackChannel : IConsumable
 {
     public bool IsBeingConsumed { get; set; }
 
-    private readonly Channel<ISpaceElement> channel = 
-        Channel.CreateUnbounded<ISpaceElement>(new() { SingleReader = true });
+    private readonly Channel<SpaceTuple> channel = 
+        Channel.CreateUnbounded<SpaceTuple>(new() { SingleReader = true });
 
-    public ChannelReader<ISpaceElement> Reader => channel.Reader;
-    public ChannelWriter<ISpaceElement> Writer => channel.Writer;
+    public ChannelReader<SpaceTuple> Reader => channel.Reader;
+    public ChannelWriter<SpaceTuple> Writer => channel.Writer;
+}
+
+internal sealed class CallbackChannel<T, TTuple> : IConsumable
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+{
+    public bool IsBeingConsumed { get; set; }
+
+    private readonly Channel<TTuple> channel =
+        Channel.CreateUnbounded<TTuple>(new() { SingleReader = true });
+
+    public ChannelReader<TTuple> Reader => channel.Reader;
+    public ChannelWriter<TTuple> Writer => channel.Writer;
 }

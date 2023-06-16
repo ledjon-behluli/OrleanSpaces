@@ -24,12 +24,12 @@ internal sealed class EvaluationProcessor : BackgroundService
     {
         evaluationChannel.IsBeingConsumed = true;
 
-        await foreach (var evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (Func<Task<SpaceTuple>> evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
                 SpaceTuple tuple = await evaluation();
-                await continuationChannel.Writer.WriteAsync(tuple, cancellationToken);
+                await continuationChannel.TupleWriter.WriteAsync(tuple, cancellationToken);
             }
             catch
             {

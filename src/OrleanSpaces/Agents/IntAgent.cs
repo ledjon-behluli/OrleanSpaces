@@ -14,15 +14,15 @@ namespace OrleanSpaces.Agents;
 [ImplicitStreamSubscription("IntStream")]
 internal sealed class IntAgent :
     ISpaceAgent<int, IntTuple, IntTemplate>,
-    IAsyncObserver<StreamAction<IntTuple>>,
-    ITupleRouter
+    ITupleRouter<int, IntTuple, IntTemplate>,
+    IAsyncObserver<StreamAction<IntTuple>>
 {
     private readonly List<IntTuple> tuples = new();
 
     private readonly IClusterClient client;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly CallbackChannel callbackChannel;
-    private readonly ObserverChannel observerChannel;
+    private readonly EvaluationChannel<int, IntTuple> evaluationChannel;
+    private readonly CallbackChannel<int, IntTuple> callbackChannel;
+    private readonly ObserverChannel<int, IntTuple, IntTemplate> observerChannel;
     private readonly CallbackRegistry callbackRegistry;
     private readonly ObserverRegistry observerRegistry;
 
@@ -30,9 +30,9 @@ internal sealed class IntAgent :
 
     public IntAgent(
         IClusterClient client,
-        EvaluationChannel evaluationChannel,
-        CallbackChannel callbackChannel,
-        ObserverChannel observerChannel,
+        EvaluationChannel<int, IntTuple> evaluationChannel,
+        CallbackChannel<int, IntTuple> callbackChannel,
+        ObserverChannel<int, IntTuple, IntTemplate> observerChannel,
         CallbackRegistry callbackRegistry,
         ObserverRegistry observerRegistry)
     {
@@ -66,7 +66,7 @@ internal sealed class IntAgent :
 
     async Task IAsyncObserver<StreamAction<IntTuple>>.OnNextAsync(StreamAction<IntTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.Writer.WriteAsync(action.Tuple);
+        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
         if (action.Type == StreamActionType.Added)
         {
             await callbackChannel.Writer.WriteAsync(action.Tuple);
@@ -80,20 +80,8 @@ internal sealed class IntAgent :
 
     #region ITupleRouter
 
-    async Task ITupleRouter.RouteAsync(ISpaceElement element)
-    {
-        if (element is IntTuple tuple)
-        {
-            await WriteAsync(tuple);
-        }
-
-        if (element is IntTemplate template)
-        {
-            await PopAsync(template);
-        }
-
-        Helpers.ThrowNotSupported(element);
-    }
+    Task ITupleRouter<int, IntTuple, IntTemplate>.RouteAsync(IntTuple tuple) => WriteAsync(tuple);
+    async ValueTask ITupleRouter<int, IntTuple, IntTemplate>.RouteAsync(IntTemplate template) => await PopAsync(template);
 
     #endregion
 
