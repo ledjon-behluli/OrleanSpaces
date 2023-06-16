@@ -13,9 +13,9 @@ namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription("SpaceStream")]
 internal sealed class SpaceAgent : 
-    ISpaceAgent, 
-    ITupleRouter, 
-    IAsyncObserver<StreamAction<SpaceTuple>>
+    ISpaceAgent,
+    IAsyncObserver<StreamAction<SpaceTuple>>,
+    ITupleRouter
 {
     private readonly List<SpaceTuple> tuples = new();
 
@@ -80,8 +80,8 @@ internal sealed class SpaceAgent :
 
     #region ITupleRouter
 
-    Task ITupleRouter.RouteAsync(SpaceTuple tuple) => WriteAsync(tuple);
-    async ValueTask ITupleRouter.RouteAsync(SpaceTemplate template) => await PopAsync(template);
+    Task ITupleRouter.RouteAsync(ISpaceTuple tuple) => WriteAsync((SpaceTuple)tuple);
+    async ValueTask ITupleRouter.RouteAsync(ISpaceTemplate template) => await PopAsync((SpaceTemplate)template);
 
     #endregion
 

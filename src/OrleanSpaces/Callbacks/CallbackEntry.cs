@@ -13,3 +13,17 @@ internal sealed class CallbackEntry
         IsContinuable = isContinuable;
     }
 }
+
+internal sealed class CallbackEntry<T, TTuple>
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+{
+    public Func<TTuple, Task> Callback { get; }
+    public bool IsContinuable { get; }
+
+    public CallbackEntry(Func<TTuple, Task> callback, bool isContinuable)
+    {
+        Callback = callback;
+        IsContinuable = isContinuable;
+    }
+}
