@@ -4,16 +4,18 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Evaluations;
 
-internal sealed class EvaluationProcessor : BackgroundService
+internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     private readonly IHostApplicationLifetime lifetime;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly ContinuationChannel continuationChannel;
+    private readonly EvaluationChannel<TTuple> evaluationChannel;
+    private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public EvaluationProcessor(
         IHostApplicationLifetime lifetime,
-        EvaluationChannel evaluationChannel,
-        ContinuationChannel continuationChannel)
+        EvaluationChannel<TTuple> evaluationChannel,
+        ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {
         this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
@@ -24,11 +26,11 @@ internal sealed class EvaluationProcessor : BackgroundService
     {
         evaluationChannel.IsBeingConsumed = true;
 
-        await foreach (Func<Task<SpaceTuple>> evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (Func<Task<TTuple>> evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
             {
-                SpaceTuple tuple = await evaluation();
+                TTuple tuple = await evaluation();
                 await continuationChannel.TupleWriter.WriteAsync(tuple, cancellationToken);
             }
             catch

@@ -1,80 +1,23 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Win32;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Callbacks;
 
-internal sealed class CallbackProcessor : BackgroundService
+internal sealed class CallbackProcessor<TTuple, TTemplate> : BackgroundService
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     private readonly IHostApplicationLifetime lifetime;
-    private readonly CallbackRegistry registry;
-    private readonly CallbackChannel callbackChannel;
-    private readonly ContinuationChannel continuationChannel;
-        
-    public CallbackProcessor(
-        IHostApplicationLifetime lifetime,
-        CallbackRegistry registry,
-        CallbackChannel callbackChannel,
-        ContinuationChannel continuationChannel)
-    {
-        this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
-        this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
-        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-        this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-    {
-        callbackChannel.IsBeingConsumed = true;
-
-        await foreach (SpaceTuple tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
-        {
-            List<Task> tasks = new();
-
-            foreach (CallbackEntry entry in registry.Take(tuple))
-            {
-                tasks.Add(CallbackAsync(entry, tuple, cancellationToken));
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        callbackChannel.IsBeingConsumed = false;
-    }
-
-    private async Task CallbackAsync(CallbackEntry entry, SpaceTuple tuple, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await entry.Callback(tuple);
-            if (entry.IsContinuable)
-            {
-                await continuationChannel.TemplateWriter.WriteAsync((SpaceTemplate)tuple, cancellationToken);
-            }
-        }
-        catch
-        {
-            lifetime.StopApplication();
-        }
-    }
-}
-
-internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundService
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
-{
-    private readonly IHostApplicationLifetime lifetime;
-    private readonly CallbackChannel<T, TTuple> callbackChannel;
-    private readonly CallbackRegistry<T, TTuple, TTemplate> registry;
-    private readonly ContinuationChannel<T, TTuple, TTemplate> continuationChannel;
+    private readonly CallbackChannel<TTuple> callbackChannel;
+    private readonly CallbackRegistry<TTuple, TTemplate> registry;
+    private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public CallbackProcessor(
         IHostApplicationLifetime lifetime,
-        CallbackChannel<T, TTuple> callbackChannel,
-        CallbackRegistry<T, TTuple, TTemplate> registry,
-        ContinuationChannel<T, TTuple, TTemplate> continuationChannel)
+        CallbackChannel<TTuple> callbackChannel,
+        CallbackRegistry<TTuple, TTemplate> registry,
+        ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {
         this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -90,7 +33,7 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
         {
             List<Task> tasks = new();
 
-            foreach (CallbackEntry<T, TTuple> entry in registry.Take(tuple))
+            foreach (CallbackEntry<TTuple> entry in registry.Take(tuple))
             {
                 tasks.Add(CallbackAsync(entry, tuple, cancellationToken));
             }
@@ -101,14 +44,14 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
         callbackChannel.IsBeingConsumed = false;
     }
 
-    private async Task CallbackAsync(CallbackEntry<T, TTuple> entry, TTuple tuple, CancellationToken cancellationToken)
+    private async Task CallbackAsync(CallbackEntry<TTuple> entry, TTuple tuple, CancellationToken cancellationToken)
     {
         try
         {
             await entry.Callback(tuple);
             if (entry.IsContinuable)
             {
-                await continuationChannel.TemplateWriter.WriteAsync<TTemplate>(tuple.ToTemplate(), cancellationToken);
+                await continuationChannel.TemplateWriter.WriteAsync(tuple.AsTemplate<TTemplate>(), cancellationToken);
             }
         }
         catch

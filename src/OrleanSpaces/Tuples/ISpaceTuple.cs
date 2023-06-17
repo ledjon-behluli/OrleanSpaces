@@ -2,18 +2,19 @@
 
 namespace OrleanSpaces.Tuples;
 
-public interface ISpaceTuple { }
+public interface ISpaceTuple
+{
+    int Length { get; }
+    internal T AsTemplate<T>() where T : ISpaceTemplate;
+}
 
 public interface ISpaceTuple<T> : ISpaceTuple
     where T : unmanaged
 {
     ref readonly T this[int index] { get; }
-    int Length { get; }
 
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
-
-    internal ISpaceTemplate<T> ToTemplate();
 }
 
 internal interface INumericTuple<T> : ISpaceTuple<T>
