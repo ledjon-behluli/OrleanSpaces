@@ -14,27 +14,27 @@ namespace OrleanSpaces.Agents;
 [ImplicitStreamSubscription("SpaceStream")]
 internal sealed class SpaceAgent : 
     ISpaceAgent,
-    IAsyncObserver<StreamAction<SpaceTuple>>,
-    ITupleRouter
+    ITupleRouter<SpaceTuple, SpaceTemplate>,
+    IAsyncObserver<StreamAction<SpaceTuple>>
 {
     private readonly List<SpaceTuple> tuples = new();
 
     private readonly IClusterClient client;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly CallbackChannel callbackChannel;
-    private readonly ObserverChannel observerChannel;
-    private readonly CallbackRegistry callbackRegistry;
-    private readonly ObserverRegistry observerRegistry;
+    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
+    private readonly CallbackChannel<SpaceTuple> callbackChannel;
+    private readonly ObserverChannel<SpaceTuple, SpaceTemplate> observerChannel;
+    private readonly CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry;
+    private readonly ObserverRegistry<SpaceTuple, SpaceTemplate> observerRegistry;
 
     [AllowNull] private ISpaceGrain grain;
 
     public SpaceAgent(
         IClusterClient client,
-        EvaluationChannel evaluationChannel,
-        CallbackChannel callbackChannel,
-        ObserverChannel observerChannel,
-        CallbackRegistry callbackRegistry,
-        ObserverRegistry observerRegistry)
+        EvaluationChannel<SpaceTuple> evaluationChannel,
+        CallbackChannel<SpaceTuple> callbackChannel,
+        ObserverChannel<SpaceTuple, SpaceTemplate> observerChannel,
+        CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry,
+        ObserverRegistry<SpaceTuple, SpaceTemplate> observerRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
@@ -80,14 +80,14 @@ internal sealed class SpaceAgent :
 
     #region ITupleRouter
 
-    Task ITupleRouter.RouteAsync(ISpaceTuple tuple) => WriteAsync((SpaceTuple)tuple);
-    async ValueTask ITupleRouter.RouteAsync(ISpaceTemplate template) => await PopAsync((SpaceTemplate)template);
+    Task ITupleRouter<SpaceTuple, SpaceTemplate>.RouteAsync(SpaceTuple tuple) => WriteAsync(tuple);
+    async ValueTask ITupleRouter<SpaceTuple, SpaceTemplate>.RouteAsync(SpaceTemplate template) => await PopAsync(template);
 
     #endregion
 
     #region ISpaceAgent
 
-    public Guid Subscribe(ISpaceObserver observer)
+    public Guid Subscribe(ISpaceObserver<SpaceTuple, SpaceTemplate> observer)
     {
         ThrowIfNotBeingConsumed(observerChannel);
         return observerRegistry.Add(observer);

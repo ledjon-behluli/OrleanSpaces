@@ -25,10 +25,9 @@ public interface ISpaceObserver
     Task OnFlatteningAsync(CancellationToken cancellationToken = default);
 }
 
-public interface ISpaceObserver<T, TTuple, TTemplate>
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
+public interface ISpaceObserver<TTuple, TTemplate>
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     /// <summary>
     /// Occurs whenever a <see cref="TTuple"/> is written in the space.

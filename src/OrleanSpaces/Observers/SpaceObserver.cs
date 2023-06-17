@@ -76,10 +76,9 @@ public abstract class SpaceObserver : ISpaceObserver
 /// <summary>
 /// A base class which provides dynamic observation capabilities.
 /// </summary>
-public abstract class SpaceObserver<T, TTuple, TTemplate> : ISpaceObserver<T, TTuple, TTemplate>
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
+public abstract class SpaceObserver<TTuple, TTemplate> : ISpaceObserver<TTuple, TTemplate>
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     protected internal EventType type = EventType.Nothing;
 

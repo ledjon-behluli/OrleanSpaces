@@ -3,19 +3,21 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Continuations;
 
-internal sealed class ContinuationChannel : IConsumable
+internal sealed class ContinuationChannel<TTuple, TTemplate> : IConsumable
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     public bool IsBeingConsumed { get; set; }
 
-    private readonly Channel<ISpaceTuple> tupleChannel = 
-        Channel.CreateUnbounded<ISpaceTuple>(new() { SingleReader = true });
+    private readonly Channel<TTuple> tupleChannel =
+        Channel.CreateUnbounded<TTuple>(new() { SingleReader = true });
 
-    private readonly Channel<ISpaceTemplate> templateChannel =
-        Channel.CreateUnbounded<ISpaceTemplate>(new() { SingleReader = true });
+    private readonly Channel<TTemplate> templateChannel =
+        Channel.CreateUnbounded<TTemplate>(new() { SingleReader = true });
 
-    public ChannelReader<ISpaceTuple> TupleReader => tupleChannel.Reader;
-    public ChannelWriter<ISpaceTuple> TupleWriter => tupleChannel.Writer;
+    public ChannelReader<TTuple> TupleReader => tupleChannel.Reader;
+    public ChannelWriter<TTuple> TupleWriter => tupleChannel.Writer;
 
-    public ChannelReader<ISpaceTemplate> TemplateReader => templateChannel.Reader;
-    public ChannelWriter<ISpaceTemplate> TemplateWriter => templateChannel.Writer;
+    public ChannelReader<TTemplate> TemplateReader => templateChannel.Reader;
+    public ChannelWriter<TTemplate> TemplateWriter => templateChannel.Writer;
 }
