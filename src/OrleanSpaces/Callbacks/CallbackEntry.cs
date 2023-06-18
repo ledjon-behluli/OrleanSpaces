@@ -2,11 +2,11 @@
 
 namespace OrleanSpaces.Callbacks;
 
-internal sealed class CallbackEntry<T>
+internal readonly struct CallbackEntry<T>
     where T : ISpaceTuple
 {
-    public Func<T, Task> Callback { get; }
-    public bool IsContinuable { get; }
+    public readonly Func<T, Task> Callback;
+    public readonly bool IsContinuable;
 
     public CallbackEntry(Func<T, Task> callback, bool isContinuable)
     {

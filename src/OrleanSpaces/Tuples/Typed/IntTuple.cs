@@ -51,4 +51,18 @@ public readonly struct IntTemplate : ISpaceTemplate<int>
     ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
 
     public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
+
+
+    public static implicit operator IntTemplate(IntTuple tuple)
+    {
+        int length = tuple.Length;
+        int[] fields = new int[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
+        return new IntTuple(fields);
+    }
 }

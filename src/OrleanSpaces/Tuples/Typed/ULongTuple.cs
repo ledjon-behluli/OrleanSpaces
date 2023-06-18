@@ -48,4 +48,6 @@ public readonly struct ULongTemplate : ISpaceTemplate<ulong>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<ulong> ISpaceTemplate<ulong>.Create(ulong[] fields) => new ULongTuple(fields);
+
+    public ReadOnlySpan<ulong?>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong?>(fields).GetEnumerator();
 }

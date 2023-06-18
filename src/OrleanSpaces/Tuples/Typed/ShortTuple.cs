@@ -48,4 +48,6 @@ public readonly struct ShortTemplate : ISpaceTemplate<short>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<short> ISpaceTemplate<short>.Create(short[] fields) => new ShortTuple(fields);
+
+    public ReadOnlySpan<short?>.Enumerator GetEnumerator() => new ReadOnlySpan<short?>(fields).GetEnumerator();
 }

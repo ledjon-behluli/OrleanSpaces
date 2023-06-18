@@ -48,4 +48,6 @@ public readonly struct ByteTemplate : ISpaceTemplate<byte>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<byte> ISpaceTemplate<byte>.Create(byte[] fields) => new ByteTuple(fields);
+
+    public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();
 }

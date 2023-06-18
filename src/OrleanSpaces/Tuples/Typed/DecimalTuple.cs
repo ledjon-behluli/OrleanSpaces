@@ -103,4 +103,6 @@ public readonly struct DecimalTemplate : ISpaceTemplate<decimal>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<decimal> ISpaceTemplate<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
+
+    public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
 }

@@ -9,13 +9,13 @@ internal sealed class CallbackProcessor<TTuple, TTemplate> : BackgroundService
     where TTemplate : ISpaceTemplate
 {
     private readonly IHostApplicationLifetime lifetime;
-    private readonly CallbackChannel<TTuple> callbackChannel;
+    private readonly CallbackChannel<TTuple, TTemplate> callbackChannel;
     private readonly CallbackRegistry<TTuple, TTemplate> registry;
     private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public CallbackProcessor(
         IHostApplicationLifetime lifetime,
-        CallbackChannel<TTuple> callbackChannel,
+        CallbackChannel<TTuple, TTemplate> callbackChannel,
         CallbackRegistry<TTuple, TTemplate> registry,
         ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {
@@ -29,13 +29,13 @@ internal sealed class CallbackProcessor<TTuple, TTemplate> : BackgroundService
     {
         callbackChannel.IsBeingConsumed = true;
 
-        await foreach (TTuple tuple in callbackChannel.Reader.ReadAllAsync(cancellationToken))
+        await foreach (CallbackPair<TTuple, TTemplate> pair in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
 
-            foreach (CallbackEntry<TTuple> entry in registry.Take(tuple))
+            foreach (CallbackEntry<TTuple> entry in registry.Take(pair.Tuple))
             {
-                tasks.Add(CallbackAsync(entry, tuple, cancellationToken));
+                tasks.Add(CallbackAsync(pair, entry, cancellationToken));
             }
 
             await Task.WhenAll(tasks);
@@ -44,14 +44,14 @@ internal sealed class CallbackProcessor<TTuple, TTemplate> : BackgroundService
         callbackChannel.IsBeingConsumed = false;
     }
 
-    private async Task CallbackAsync(CallbackEntry<TTuple> entry, TTuple tuple, CancellationToken cancellationToken)
+    private async Task CallbackAsync(CallbackPair<TTuple, TTemplate> pair, CallbackEntry<TTuple> entry, CancellationToken cancellationToken)
     {
         try
         {
-            await entry.Callback(tuple);
+            await entry.Callback(pair.Tuple);
             if (entry.IsContinuable)
             {
-                await continuationChannel.TemplateWriter.WriteAsync(tuple.AsTemplate<TTemplate>(), cancellationToken);
+                await continuationChannel.TemplateWriter.WriteAsync(pair.Template, cancellationToken);
             }
         }
         catch

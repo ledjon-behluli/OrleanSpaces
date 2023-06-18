@@ -54,9 +54,9 @@ internal sealed class IntAgent :
 
     private readonly IClusterClient client;
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
-    private readonly CallbackChannel<IntTuple> callbackChannel;
     private readonly ObserverChannel<IntTuple> observerChannel;
     private readonly ObserverRegistry<IntTuple> observerRegistry;
+    private readonly CallbackChannel<IntTuple, IntTemplate> callbackChannel;
     private readonly CallbackRegistry<IntTuple, IntTemplate> callbackRegistry;
 
     [AllowNull] private IIntGrain grain;
@@ -64,16 +64,16 @@ internal sealed class IntAgent :
     public IntAgent(
         IClusterClient client,
         EvaluationChannel<IntTuple> evaluationChannel,
-        CallbackChannel<IntTuple> callbackChannel,
         ObserverChannel<IntTuple> observerChannel,   
         ObserverRegistry<IntTuple> observerRegistry,
+        CallbackChannel<IntTuple, IntTemplate> callbackChannel,
         CallbackRegistry<IntTuple, IntTemplate> callbackRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
-        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
+        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
@@ -102,7 +102,7 @@ internal sealed class IntAgent :
         await observerChannel.Writer.WriteAsync(action);
         if (action.Type == TupleActionType.Added)
         {
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
         }
     }
 

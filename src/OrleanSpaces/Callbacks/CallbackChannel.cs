@@ -3,14 +3,15 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Callbacks;
 
-internal sealed class CallbackChannel<T> : IConsumable
-    where T : ISpaceTuple
+internal sealed class CallbackChannel<TTuple, TTemplate> : IConsumable
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     public bool IsBeingConsumed { get; set; }
 
-    private readonly Channel<T> channel =
-        Channel.CreateUnbounded<T>(new() { SingleReader = true });
+    private readonly Channel<CallbackPair<TTuple, TTemplate>> channel =
+        Channel.CreateUnbounded<CallbackPair<TTuple, TTemplate>>(new() { SingleReader = true });
 
-    public ChannelReader<T> Reader => channel.Reader;
-    public ChannelWriter<T> Writer => channel.Writer;
+    public ChannelReader<CallbackPair<TTuple, TTemplate>> Reader => channel.Reader;
+    public ChannelWriter<CallbackPair<TTuple, TTemplate>> Writer => channel.Writer;
 }

@@ -60,4 +60,6 @@ public readonly struct CharTemplate : ISpaceTemplate<char>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields) => new CharTuple(fields);
+
+    public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();
 }

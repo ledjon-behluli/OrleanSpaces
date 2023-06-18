@@ -5,7 +5,6 @@ namespace OrleanSpaces.Tuples;
 public interface ISpaceTuple
 {
     int Length { get; }
-    internal T AsTemplate<T>() where T : ISpaceTemplate;
 }
 
 public interface ISpaceTuple<T> : ISpaceTuple

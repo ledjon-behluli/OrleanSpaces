@@ -50,4 +50,6 @@ public readonly struct DateTimeTemplate : ISpaceTemplate<DateTime>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<DateTime> ISpaceTemplate<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
+
+    public ReadOnlySpan<DateTime?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime?>(fields).GetEnumerator();
 }

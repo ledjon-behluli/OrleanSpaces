@@ -54,9 +54,9 @@ internal sealed class SpaceAgent :
 
     private readonly IClusterClient client;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
-    private readonly CallbackChannel<SpaceTuple> callbackChannel;
     private readonly ObserverChannel<SpaceTuple> observerChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
+    private readonly CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel;
     private readonly CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry;
 
     [AllowNull] private ISpaceGrain grain;
@@ -64,9 +64,9 @@ internal sealed class SpaceAgent :
     public SpaceAgent(
         IClusterClient client,
         EvaluationChannel<SpaceTuple> evaluationChannel,
-        CallbackChannel<SpaceTuple> callbackChannel,
         ObserverChannel<SpaceTuple> observerChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
+        CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel,
         CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
@@ -102,7 +102,7 @@ internal sealed class SpaceAgent :
         await observerChannel.Writer.WriteAsync(action);
         if (action.Type == TupleActionType.Added)
         {
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
         }
     }
 

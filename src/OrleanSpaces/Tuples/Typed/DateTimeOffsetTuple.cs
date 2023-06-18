@@ -51,4 +51,6 @@ public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<DateTimeOffset> ISpaceTemplate<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
+
+    public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
 }

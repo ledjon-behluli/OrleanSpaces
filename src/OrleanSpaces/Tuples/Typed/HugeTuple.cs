@@ -99,4 +99,6 @@ public readonly struct HugeTemplate : ISpaceTemplate<Int128>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<Int128> ISpaceTemplate<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
+
+    public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();
 }

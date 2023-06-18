@@ -60,19 +60,21 @@ public static class Extensions
         services.AddSingleton<CallbackRegistry<SpaceTuple, SpaceTemplate>>();
         services.AddSingleton<ObserverRegistry<SpaceTuple>>();
 
-        services.AddSingleton<CallbackChannel<SpaceTuple>>();
+        
         services.AddSingleton<EvaluationChannel<SpaceTuple>>();
-        services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
         services.AddSingleton<ObserverChannel<SpaceTuple>>();
+        services.AddSingleton<CallbackChannel<SpaceTuple, SpaceTemplate>>();
+        services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
 
         services.AddSingleton<SpaceAgent>();
         services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
         services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
 
+        services.AddHostedService<ObserverProcessor<SpaceTuple>>();
         services.AddHostedService<CallbackProcessor<SpaceTuple, SpaceTemplate>>();
         services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
         services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
-        services.AddHostedService<ObserverProcessor<SpaceTuple>>();
+      
 
         #endregion
 
@@ -80,21 +82,21 @@ public static class Extensions
 
         services.AddSingleton<CallbackRegistry<IntTuple, IntTemplate>>();
         services.AddSingleton<ObserverRegistry<IntTuple>>();
-
-        services.AddSingleton<CallbackChannel<IntTuple>>();
+      
         services.AddSingleton<EvaluationChannel<IntTuple>>();
-        services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
         services.AddSingleton<ObserverChannel<IntTuple>>();
+        services.AddSingleton<CallbackChannel<IntTuple, IntTemplate>>();
+        services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
 
         services.AddSingleton<IntAgent>();
         services.AddSingleton<ITupleRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
-        services.AddSingleton<IIntAgentProvider, IntAgentProvider>();
+        services.AddSingleton<ISpaceAgentProvider<int, IntTuple, IntTemplate>, IntAgentProvider>();
 
+        services.AddHostedService<ObserverProcessor<IntTuple>>();
         services.AddHostedService<CallbackProcessor<IntTuple, IntTemplate>>();
         services.AddHostedService<EvaluationProcessor<IntTuple, IntTemplate>>();
         services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
-        services.AddHostedService<ObserverProcessor<IntTuple>>();
-
+      
         #endregion
 
         return services;

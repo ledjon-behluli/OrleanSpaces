@@ -98,4 +98,6 @@ public readonly struct UHugeTemplate : ISpaceTemplate<UInt128>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<UInt128> ISpaceTemplate<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
+
+    public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128?>(fields).GetEnumerator();
 }

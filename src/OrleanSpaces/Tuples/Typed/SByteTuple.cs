@@ -48,5 +48,7 @@ public readonly struct SByteTemplate : ISpaceTemplate<sbyte>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<sbyte> ISpaceTemplate<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+
+    public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();
 }
 

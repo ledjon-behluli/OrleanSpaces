@@ -49,12 +49,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
         return new SFBoolTuple(sfBools).AsSpan(Constants.MaxFieldCharLength_Bool);
     }
 
-    readonly record struct SFBoolTuple(params SFBool[] Values) : ISpaceTuple<SFBool>
+    readonly record struct SFBoolTuple(params SFBool[] Fields) : ISpaceTuple<SFBool>
     {
-        public ref readonly SFBool this[int index] => ref Values[index];
-        public int Length => Values.Length;
+        public ref readonly SFBool this[int index] => ref Fields[index];
+        public int Length => Fields.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+
+        public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable
@@ -81,4 +83,6 @@ public readonly struct BoolTemplate : ISpaceTemplate<bool>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
+
+    public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
 }

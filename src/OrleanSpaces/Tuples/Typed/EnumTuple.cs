@@ -93,12 +93,14 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
 
     public ReadOnlySpan<T>.Enumerator GetEnumerator() => new ReadOnlySpan<T>(fields).GetEnumerator();
 
-    readonly record struct SFEnumTuple(params SFEnum[] Values) : ISpaceTuple<SFEnum>
+    readonly record struct SFEnumTuple(params SFEnum[] Fields) : ISpaceTuple<SFEnum>
     {
-        public ref readonly SFEnum this[int index] => ref Values[index];
-        public int Length => Values.Length;
+        public ref readonly SFEnum this[int index] => ref Fields[index];
+        public int Length => Fields.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+
+        public ReadOnlySpan<SFEnum>.Enumerator GetEnumerator() => new ReadOnlySpan<SFEnum>(Fields).GetEnumerator();
     }
 
     readonly record struct SFEnum(T Value) : ISpanFormattable
@@ -137,4 +139,6 @@ public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<T> ISpaceTemplate<T>.Create(T[] fields) => new EnumTuple<T>(fields);
+
+    public ReadOnlySpan<T?>.Enumerator GetEnumerator() => new ReadOnlySpan<T?>(fields).GetEnumerator();
 }

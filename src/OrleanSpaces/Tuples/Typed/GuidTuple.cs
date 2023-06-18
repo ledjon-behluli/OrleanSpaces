@@ -74,4 +74,6 @@ public readonly struct GuidTemplate : ISpaceTemplate<Guid>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<Guid> ISpaceTemplate<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
+
+    public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
 }

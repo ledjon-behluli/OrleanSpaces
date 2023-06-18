@@ -50,4 +50,6 @@ public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
         => Helpers.Matches(this, tuple);
 
     ISpaceTuple<TimeSpan> ISpaceTemplate<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
+
+    public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();
 }
