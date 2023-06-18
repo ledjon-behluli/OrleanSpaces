@@ -17,7 +17,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<SpaceGrainState> space;
 
-    [AllowNull] private IAsyncStream<StreamAction<SpaceTuple>> stream;
+    [AllowNull] private IAsyncStream<TupleAction<SpaceTuple>> stream;
 
     public SpaceGrain([PersistentState("SpaceGrain", "SpaceGrainStore")] IPersistentState<SpaceGrainState> space)
     {
@@ -27,7 +27,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     public override Task OnActivateAsync()
     {
         var provider = GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<StreamAction<SpaceTuple>>(this.GetPrimaryKey(), "SpaceStream");
+        stream = provider.GetStream<TupleAction<SpaceTuple>>(this.GetPrimaryKey(), "SpaceStream");
 
         return base.OnActivateAsync();
     }
@@ -42,7 +42,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         space.State.Tuples.Add(tuple);
 
         await space.WriteStateAsync();
-        await stream.OnNextAsync(new(tuple, StreamActionType.Added));
+        await stream.OnNextAsync(new(tuple, TupleActionType.Added));
     }
 
     public async Task RemoveAsync(SpaceTuple tuple)
@@ -53,7 +53,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
             space.State.Tuples.Remove(storedTuple);
 
             await space.WriteStateAsync();
-            await stream.OnNextAsync(new(tuple, StreamActionType.Removed));
+            await stream.OnNextAsync(new(tuple, TupleActionType.Removed));
         }
     }
 

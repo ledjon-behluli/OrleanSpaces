@@ -3,21 +3,14 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
-internal sealed class ObserverChannel<TTuple, TTemplate> : IConsumable
-    where TTuple : ISpaceTuple
-    where TTemplate : ISpaceTemplate
+internal sealed class ObserverChannel<T> : IConsumable
+    where T : ISpaceTuple
 {
     public bool IsBeingConsumed { get; set; }
 
-    private readonly Channel<TTuple> tupleChannel =
-        Channel.CreateUnbounded<TTuple>(new() { SingleReader = true });
+    private readonly Channel<TupleAction<T>> tupleChannel =
+        Channel.CreateUnbounded<TupleAction<T>>(new() { SingleReader = true });
 
-    private readonly Channel<TTemplate> templateChannel =
-        Channel.CreateUnbounded<TTemplate>(new() { SingleReader = true });
-
-    public ChannelReader<TTuple> TupleReader => tupleChannel.Reader;
-    public ChannelWriter<TTuple> TupleWriter => tupleChannel.Writer;
-
-    public ChannelReader<TTemplate> TemplateReader => templateChannel.Reader;
-    public ChannelWriter<TTemplate> TemplateWriter => templateChannel.Writer;
+    public ChannelReader<TupleAction<T>> Reader => tupleChannel.Reader;
+    public ChannelWriter<TupleAction<T>> Writer => tupleChannel.Writer;
 }

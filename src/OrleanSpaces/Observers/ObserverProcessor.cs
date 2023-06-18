@@ -3,18 +3,17 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Observers;
 
-internal sealed class TupleObserverProcessor<TTuple, TTemplate> : BackgroundService
-    where TTuple : ISpaceTuple
-    where TTemplate : ISpaceTemplate
+internal sealed class ObserverProcessor<T> : BackgroundService
+    where T : ISpaceTuple
 {
     private readonly IHostApplicationLifetime lifetime;
-    private readonly ObserverRegistry<TTuple, TTemplate> registry;
-    private readonly ObserverChannel<TTuple, TTemplate> channel;
+    private readonly ObserverChannel<T> channel;
+    private readonly ObserverRegistry<T> registry;
 
-    public TupleObserverProcessor(
+    public ObserverProcessor(
         IHostApplicationLifetime lifetime,
-        ObserverRegistry<TTuple, TTemplate> registry,
-        ObserverChannel<TTuple, TTemplate> channel)
+        ObserverChannel<T> channel,
+        ObserverRegistry<T> registry)
     {
         this.lifetime = lifetime ?? throw new ArgumentNullException(nameof(lifetime));
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -25,14 +24,13 @@ internal sealed class TupleObserverProcessor<TTuple, TTemplate> : BackgroundServ
     {
         channel.IsBeingConsumed = true;
 
-        // TODO: Look at 'ContinuationProcessor.cs' and perform same here to reader from TupleReader & TemplateReader
-        await foreach (TTuple tuple in channel.TupleReader.ReadAllAsync(cancellationToken))
+        await foreach (TupleAction<T> action in channel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
 
-            foreach (SpaceObserver<TTuple, TTemplate> observer in registry.Observers)
+            foreach (SpaceObserver<T> observer in registry.Observers)
             {
-                tasks.Add(NotifyAsync(observer, tuple, cancellationToken));
+                tasks.Add(NotifyAsync(observer, action, cancellationToken));
             }
             
             await Task.WhenAll(tasks);
@@ -41,11 +39,11 @@ internal sealed class TupleObserverProcessor<TTuple, TTemplate> : BackgroundServ
         channel.IsBeingConsumed = false;
     }
 
-    private async Task NotifyAsync(SpaceObserver<TTuple, TTemplate> observer, TTuple tuple, CancellationToken cancellationToken)
+    private async Task NotifyAsync(SpaceObserver<T> observer, TupleAction<T> action, CancellationToken cancellationToken)
     {
         try
         {
-            await observer.NotifyAsync(tuple, cancellationToken);
+            await observer.NotifyAsync(action, cancellationToken);
         }
         catch
         {

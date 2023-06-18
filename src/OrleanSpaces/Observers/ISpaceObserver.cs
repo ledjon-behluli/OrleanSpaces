@@ -2,26 +2,25 @@
 
 namespace OrleanSpaces.Observers;
 
-public interface ISpaceObserver<TTuple, TTemplate>
-    where TTuple : ISpaceTuple
-    where TTemplate : ISpaceTemplate
+public interface ISpaceObserver<T>
+    where T : ISpaceTuple
 {
     /// <summary>
-    /// Occurs whenever a <see cref="TTuple"/> is written in the space.
+    /// Occurs whenever a <see cref="T"/> is written in the space.
     /// </summary>
     /// <param name="tuple">The written tuple.</param>
     /// <param name="cancellationToken">A token used to propagate cancellations.</param>
-    Task OnExpansionAsync(TTuple tuple, CancellationToken cancellationToken = default);
+    Task OnExpansionAsync(T tuple, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Occurs whenever a <see cref="TTuple"/> is removed from the space.
+    /// Occurs whenever a <see cref="T"/> is removed from the space.
     /// </summary>
-    /// <param name="template">The template that was used to remove the tuple.</param>
+    /// <param name="tuple">The tuple that was removed.</param>
     ///<param name="cancellationToken">A token used to propagate cancellations.</param>
-    Task OnContractionAsync(TTemplate template, CancellationToken cancellationToken = default);
+    Task OnContractionAsync(T tuple, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Occurs whenever the space contains zero <see cref="TTuple"/>'s.
+    /// Occurs whenever the space contains zero <see cref="T"/>'s.
     /// </summary>
     /// <param name="cancellationToken">A token used to propagate cancellations.</param>
     Task OnFlatteningAsync(CancellationToken cancellationToken = default);

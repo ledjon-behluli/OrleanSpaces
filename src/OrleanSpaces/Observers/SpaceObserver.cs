@@ -5,9 +5,8 @@ namespace OrleanSpaces.Observers;
 /// <summary>
 /// A base class which provides dynamic observation capabilities.
 /// </summary>
-public abstract class SpaceObserver<TTuple, TTemplate> : ISpaceObserver<TTuple, TTemplate>
-    where TTuple : ISpaceTuple
-    where TTemplate : ISpaceTemplate
+public abstract class SpaceObserver<T> : ISpaceObserver<T>
+    where T : ISpaceTuple
 {
     protected internal EventType type = EventType.Nothing;
 
@@ -18,25 +17,29 @@ public abstract class SpaceObserver<TTuple, TTemplate> : ISpaceObserver<TTuple, 
     /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
     protected void ListenTo(EventType type) => this.type = type;
 
-    internal async ValueTask NotifyAsync<T>(T item, CancellationToken cancellationToken) where T : struct
+    internal async ValueTask NotifyAsync(TupleAction<T> action, CancellationToken cancellationToken)
     {
-        if (item is TTuple tuple && type.HasFlag(Expansions))
+        if (action.Type == TupleActionType.Added && type.HasFlag(Expansions))
         {
-            await OnExpansionAsync(tuple, cancellationToken);
+            await OnExpansionAsync(action.Tuple, cancellationToken);
             return;
         }
 
-        if (item is TTemplate template && type.HasFlag(Contractions))
+        if (action.Type == TupleActionType.Removed && type.HasFlag(Contractions))
         {
-            await OnContractionAsync(template, cancellationToken);
+            await OnContractionAsync(action.Tuple, cancellationToken);
             return;
         }
 
-        await OnFlatteningAsync(cancellationToken);
+        if (action.Type == TupleActionType.Cleaned && type.HasFlag(Contractions))
+        {
+            await OnFlatteningAsync(cancellationToken);
+            return;
+        }
     }
 
-    public virtual Task OnExpansionAsync(TTuple tuple, CancellationToken cancellationToken) => Task.CompletedTask;
-    public virtual Task OnContractionAsync(TTemplate template, CancellationToken cancellationToken) => Task.CompletedTask;
+    public virtual Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    public virtual Task OnContractionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]

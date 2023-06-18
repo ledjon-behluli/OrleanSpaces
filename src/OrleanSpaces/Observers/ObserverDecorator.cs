@@ -2,23 +2,22 @@
 
 namespace OrleanSpaces.Observers;
 
-internal sealed class ObserverDecorator<TTuple, TTemplate> : SpaceObserver<TTuple, TTemplate>
-    where TTuple : ISpaceTuple
-    where TTemplate : ISpaceTemplate
+internal sealed class ObserverDecorator<T> : SpaceObserver<T>
+    where T : ISpaceTuple
 {
-    private readonly ISpaceObserver<TTuple, TTemplate> observer;
+    private readonly ISpaceObserver<T> observer;
 
-    public ObserverDecorator(ISpaceObserver<TTuple, TTemplate> observer)
+    public ObserverDecorator(ISpaceObserver<T> observer)
     {
         this.observer = observer;
         ListenTo(Everything);
     }
 
-    public override Task OnExpansionAsync(TTuple tuple, CancellationToken cancellationToken) =>
+    public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) =>
         observer.OnExpansionAsync(tuple, cancellationToken);
 
-    public override Task OnContractionAsync(TTemplate template, CancellationToken cancellationToken) =>
-        observer.OnContractionAsync(template, cancellationToken);
+    public override Task OnContractionAsync(T tuple, CancellationToken cancellationToken) =>
+        observer.OnContractionAsync(tuple, cancellationToken);
 
     public override Task OnFlatteningAsync(CancellationToken cancellationToken) =>
         observer.OnFlatteningAsync(cancellationToken);

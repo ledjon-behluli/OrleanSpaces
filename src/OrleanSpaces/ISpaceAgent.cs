@@ -11,7 +11,7 @@ public interface ISpaceAgent
     /// <param name="observer">Any space observer.</param>
     /// <remarks><i>Method is idempotant.</i></remarks>
     /// <returns>An ID that can be used to <see cref="Unsubscribe"/>.</returns>
-    Guid Subscribe(ISpaceObserver<SpaceTuple, SpaceTemplate> observer);
+    Guid Subscribe(ISpaceObserver<SpaceTuple> observer);
     /// <summary>
     /// Removes the observer with the corresponding <paramref name="observerId"/>.
     /// </summary>
@@ -102,7 +102,7 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
-    Guid Subscribe(ISpaceObserver<TTuple, TTemplate> observer);
+    Guid Subscribe(ISpaceObserver<TTuple> observer);
     void Unsubscribe(Guid observerId);
 
     Task WriteAsync(TTuple tuple);

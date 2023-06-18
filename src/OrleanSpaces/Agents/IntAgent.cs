@@ -15,16 +15,16 @@ namespace OrleanSpaces.Agents;
 internal sealed class IntAgent : 
     ISpaceAgent<int, IntTuple, IntTemplate>, 
     ITupleRouter<IntTuple, IntTemplate>,
-    IAsyncObserver<StreamAction<IntTuple>>
+    IAsyncObserver<TupleAction<IntTuple>>
 {
     private readonly List<IntTuple> tuples = new();
 
     private readonly IClusterClient client;
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
     private readonly CallbackChannel<IntTuple> callbackChannel;
-    private readonly ObserverChannel<IntTuple, IntTemplate> observerChannel;
+    private readonly ObserverChannel<IntTuple> observerChannel;
+    private readonly ObserverRegistry<IntTuple> observerRegistry;
     private readonly CallbackRegistry<IntTuple, IntTemplate> callbackRegistry;
-    private readonly ObserverRegistry<IntTuple, IntTemplate> observerRegistry;
 
     [AllowNull] private IIntGrain grain;
 
@@ -32,16 +32,16 @@ internal sealed class IntAgent :
         IClusterClient client,
         EvaluationChannel<IntTuple> evaluationChannel,
         CallbackChannel<IntTuple> callbackChannel,
-        ObserverChannel<IntTuple, IntTemplate> observerChannel,
-        CallbackRegistry<IntTuple, IntTemplate> callbackRegistry,
-        ObserverRegistry<IntTuple, IntTemplate> observerRegistry)
+        ObserverChannel<IntTuple> observerChannel,   
+        ObserverRegistry<IntTuple> observerRegistry,
+        CallbackRegistry<IntTuple, IntTemplate> callbackRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
-        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
+        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
     public async Task InitializeAsync()
@@ -56,7 +56,7 @@ internal sealed class IntAgent :
         if (observerChannel.IsBeingConsumed)
         {
             var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var stream = provider.GetStream<StreamAction<IntTuple>>(Guid.Empty, "IntStream");
+            var stream = provider.GetStream<TupleAction<IntTuple>>(Guid.Empty, "IntStream");
 
             await stream.SubscribeAsync(this);
         }
@@ -64,17 +64,17 @@ internal sealed class IntAgent :
 
     #region IAsyncObserver
 
-    async Task IAsyncObserver<StreamAction<IntTuple>>.OnNextAsync(StreamAction<IntTuple> action, StreamSequenceToken token)
+    async Task IAsyncObserver<TupleAction<IntTuple>>.OnNextAsync(TupleAction<IntTuple> action, StreamSequenceToken token)
     {
-        await observerChannel.TupleWriter.WriteAsync(action.Tuple);
-        if (action.Type == StreamActionType.Added)
+        await observerChannel.Writer.WriteAsync(action);
+        if (action.Type == TupleActionType.Added)
         {
             await callbackChannel.Writer.WriteAsync(action.Tuple);
         }
     }
 
-    Task IAsyncObserver<StreamAction<IntTuple>>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<StreamAction<IntTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    Task IAsyncObserver<TupleAction<IntTuple>>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<TupleAction<IntTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 
     #endregion
 
@@ -87,7 +87,7 @@ internal sealed class IntAgent :
 
     #region ISpaceAgent
 
-    public Guid Subscribe(ISpaceObserver<IntTuple, IntTemplate> observer)
+    public Guid Subscribe(ISpaceObserver<IntTuple> observer)
     {
         Helpers.ThrowIfNotBeingConsumed(observerChannel);
         return observerRegistry.Add(observer);
