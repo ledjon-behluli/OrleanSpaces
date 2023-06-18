@@ -6,6 +6,8 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Continuations;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Agents;
+using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Typed;
 
 namespace OrleanSpaces;
 
@@ -53,22 +55,47 @@ public static class Extensions
 
     private static IServiceCollection AddClientServices(this IServiceCollection services)
     {
-        services.AddSingleton<CallbackRegistry>();
-        services.AddSingleton<ObserverRegistry>();
+        #region Generic
 
-        services.AddSingleton<CallbackChannel>();
-        services.AddSingleton<EvaluationChannel>();
-        services.AddSingleton<ContinuationChannel>();
-        services.AddSingleton<ObserverChannel>();
+        services.AddSingleton<CallbackRegistry<SpaceTuple, SpaceTemplate>>();
+        services.AddSingleton<ObserverRegistry<SpaceTuple>>();
+
+        services.AddSingleton<CallbackChannel<SpaceTuple>>();
+        services.AddSingleton<EvaluationChannel<SpaceTuple>>();
+        services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
+        services.AddSingleton<ObserverChannel<SpaceTuple>>();
 
         services.AddSingleton<SpaceAgent>();
-        services.AddSingleton<ITupleRouter>(sp => sp.GetRequiredService<SpaceAgent>());
+        services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
         services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
 
-        services.AddHostedService<CallbackProcessor>();
-        services.AddHostedService<EvaluationProcessor>();
-        services.AddHostedService<TupleContinuationProcessor>();
-        services.AddHostedService<TupleObserverProcessor>();
+        services.AddHostedService<CallbackProcessor<SpaceTuple, SpaceTemplate>>();
+        services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
+        services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
+        services.AddHostedService<ObserverProcessor<SpaceTuple>>();
+
+        #endregion
+
+        #region Int
+
+        services.AddSingleton<CallbackRegistry<IntTuple, IntTemplate>>();
+        services.AddSingleton<ObserverRegistry<IntTuple>>();
+
+        services.AddSingleton<CallbackChannel<IntTuple>>();
+        services.AddSingleton<EvaluationChannel<IntTuple>>();
+        services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
+        services.AddSingleton<ObserverChannel<IntTuple>>();
+
+        services.AddSingleton<IntAgent>();
+        services.AddSingleton<ITupleRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
+        services.AddSingleton<IIntAgentProvider, IntAgentProvider>();
+
+        services.AddHostedService<CallbackProcessor<IntTuple, IntTemplate>>();
+        services.AddHostedService<EvaluationProcessor<IntTuple, IntTemplate>>();
+        services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
+        services.AddHostedService<ObserverProcessor<IntTuple>>();
+
+        #endregion
 
         return services;
     }

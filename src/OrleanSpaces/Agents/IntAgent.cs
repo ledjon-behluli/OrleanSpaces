@@ -11,6 +11,39 @@ using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
 
+internal sealed class IntAgentProvider : ISpaceAgentProvider<int, IntTuple, IntTemplate>
+{
+    private static readonly SemaphoreSlim semaphore = new(1, 1);
+
+    private readonly IntAgent agent;
+    private bool initialized;
+
+    public IntAgentProvider(IntAgent agent)
+    {
+        this.agent = agent;
+    }
+
+    public async ValueTask<ISpaceAgent<int, IntTuple, IntTemplate>> GetAsync()
+    {
+        await semaphore.WaitAsync();
+
+        try
+        {
+            if (!initialized)
+            {
+                await agent.InitializeAsync();
+                initialized = true;
+            }
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+
+        return agent;
+    }
+}
+
 [ImplicitStreamSubscription("IntStream")]
 internal sealed class IntAgent : 
     ISpaceAgent<int, IntTuple, IntTemplate>, 
