@@ -250,6 +250,7 @@ public class HugeTupleBenchmarks
 
         public bool Equals(SequentialHugeTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
+        public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }
 
     #endregion

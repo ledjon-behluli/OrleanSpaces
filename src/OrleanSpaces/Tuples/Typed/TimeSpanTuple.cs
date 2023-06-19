@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>, IComparable<TimeSpanTuple>
+public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>
 {
     private readonly TimeSpan[] fields;
 
@@ -24,8 +24,6 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
         NumericMarshaller<TimeSpan, long> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
         return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
     }
-
-    public int CompareTo(TimeSpanTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

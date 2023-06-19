@@ -102,6 +102,47 @@ public readonly struct SpaceTemplate : ISpaceTemplate
         return new(fields);
     }
 
+    public static bool operator ==(SpaceTemplate left, SpaceTemplate right) => left.Equals(right);
+    public static bool operator !=(SpaceTemplate left, SpaceTemplate right) => !(left == right);
+
+    /// <summary>
+    /// Determines whether the specified <see cref="object"/> is equal to this instance.
+    /// </summary>
+    /// <param name="obj">The object to compare with the current instance.</param>
+    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTemplate)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
+    public override bool Equals(object? obj) => obj is SpaceTemplate template && Equals(template);
+    /// <summary>
+    /// Determines whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of fields, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
+    public bool Equals(SpaceTemplate other)
+    {
+        if (Length != other.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            if (!this[i].Equals(other[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Compares the current object with another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
+    public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
+
+    public override int GetHashCode() => fields.GetHashCode();
+
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();

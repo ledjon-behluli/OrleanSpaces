@@ -57,10 +57,9 @@ public static class Extensions
     {
         #region Generic
 
-        services.AddSingleton<CallbackRegistry<SpaceTuple, SpaceTemplate>>();
         services.AddSingleton<ObserverRegistry<SpaceTuple>>();
+        services.AddSingleton<CallbackRegistry>();
 
-        
         services.AddSingleton<EvaluationChannel<SpaceTuple>>();
         services.AddSingleton<ObserverChannel<SpaceTuple>>();
         services.AddSingleton<CallbackChannel<SpaceTuple, SpaceTemplate>>();
@@ -70,8 +69,8 @@ public static class Extensions
         services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
         services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
 
+        services.AddHostedService<CallbackProcessor>();
         services.AddHostedService<ObserverProcessor<SpaceTuple>>();
-        services.AddHostedService<CallbackProcessor<SpaceTuple, SpaceTemplate>>();
         services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
         services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
       
@@ -80,9 +79,9 @@ public static class Extensions
 
         #region Int
 
-        services.AddSingleton<CallbackRegistry<IntTuple, IntTemplate>>();
         services.AddSingleton<ObserverRegistry<IntTuple>>();
-      
+        services.AddSingleton<CallbackRegistry<int, IntTuple, IntTemplate>>();
+
         services.AddSingleton<EvaluationChannel<IntTuple>>();
         services.AddSingleton<ObserverChannel<IntTuple>>();
         services.AddSingleton<CallbackChannel<IntTuple, IntTemplate>>();
@@ -93,7 +92,7 @@ public static class Extensions
         services.AddSingleton<ISpaceAgentProvider<int, IntTuple, IntTemplate>, IntAgentProvider>();
 
         services.AddHostedService<ObserverProcessor<IntTuple>>();
-        services.AddHostedService<CallbackProcessor<IntTuple, IntTemplate>>();
+        services.AddHostedService<CallbackProcessor<int, IntTuple, IntTemplate>>();
         services.AddHostedService<EvaluationProcessor<IntTuple, IntTemplate>>();
         services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
       

@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [Immutable]
-public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>, IComparable<SpaceTuple>
+public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
     private readonly object[] fields;
 
@@ -88,17 +88,9 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>, ICompar
         return true;
     }
 
-    /// <summary>
-    /// Compares the current object with another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
-    public int CompareTo(SpaceTuple other) => Length.CompareTo(other.Length);
-
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
     public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-    
     public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
 }

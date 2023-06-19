@@ -57,7 +57,7 @@ internal sealed class IntAgent :
     private readonly ObserverChannel<IntTuple> observerChannel;
     private readonly ObserverRegistry<IntTuple> observerRegistry;
     private readonly CallbackChannel<IntTuple, IntTemplate> callbackChannel;
-    private readonly CallbackRegistry<IntTuple, IntTemplate> callbackRegistry;
+    private readonly CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry;
 
     [AllowNull] private IIntGrain grain;
 
@@ -67,7 +67,7 @@ internal sealed class IntAgent :
         ObserverChannel<IntTuple> observerChannel,   
         ObserverRegistry<IntTuple> observerRegistry,
         CallbackChannel<IntTuple, IntTemplate> callbackChannel,
-        CallbackRegistry<IntTuple, IntTemplate> callbackRegistry)
+        CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));

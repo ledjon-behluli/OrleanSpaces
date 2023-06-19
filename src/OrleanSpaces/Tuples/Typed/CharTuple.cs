@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, IComparable<CharTuple>
+public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
 {
     private readonly char[] fields;
 
@@ -34,8 +34,6 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>, ICo
         NumericMarshaller<char, ushort> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
         return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
     }
-
-    public int CompareTo(CharTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

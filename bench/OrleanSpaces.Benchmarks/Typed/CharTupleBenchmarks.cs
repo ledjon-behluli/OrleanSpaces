@@ -249,6 +249,7 @@ public class CharTupleBenchmarks
 
         public bool Equals(SequentialCharTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
+        public ReadOnlySpan<char>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }
 
     #endregion

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>, IComparable<UIntTuple>
+public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
 {
     private readonly uint[] fields;
 
@@ -22,8 +22,6 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>, I
     public override bool Equals(object? obj) => obj is UIntTuple tuple && Equals(tuple);
     public bool Equals(UIntTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
-
-    public int CompareTo(UIntTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

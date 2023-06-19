@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>, IComparable<UHugeTuple>
+public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>
 {
     private readonly UInt128[] fields;
 
@@ -36,8 +36,6 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
 
         return new Comparer(this, other).AllocateAndExecute(2 * Constants.ByteCount_UInt128 * Length);
     }
-
-    public int CompareTo(UHugeTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

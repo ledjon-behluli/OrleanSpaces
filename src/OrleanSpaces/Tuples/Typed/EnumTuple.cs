@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>, IComparable<EnumTuple<T>>
+public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
     private readonly T[] fields;
@@ -59,8 +59,6 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>,
         NumericMarshaller<T, TOut> marshaller = new(left.fields.AsSpan(), right.fields.AsSpan());
         return marshaller.Left.ParallelEquals(marshaller.Right);
     }
-
-    public int CompareTo(EnumTuple<T> other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

@@ -53,28 +53,28 @@ internal sealed class SpaceAgent :
     private readonly List<SpaceTuple> tuples = new();
 
     private readonly IClusterClient client;
+    private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverChannel<SpaceTuple> observerChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel;
-    private readonly CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry;
-
+  
     [AllowNull] private ISpaceGrain grain;
 
     public SpaceAgent(
         IClusterClient client,
+        CallbackRegistry callbackRegistry,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverChannel<SpaceTuple> observerChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
-        CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel,
-        CallbackRegistry<SpaceTuple, SpaceTemplate> callbackRegistry)
+        CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
-        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
     public async Task InitializeAsync()

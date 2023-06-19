@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>, IComparable<HugeTuple>
+public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 {
     private readonly Int128[] fields;
     
@@ -37,8 +37,6 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>,
 
         return new Comparer(this, other).AllocateAndExecute(2 * Constants.ByteCount_Int128 * Length);
     }
-
-    public int CompareTo(HugeTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

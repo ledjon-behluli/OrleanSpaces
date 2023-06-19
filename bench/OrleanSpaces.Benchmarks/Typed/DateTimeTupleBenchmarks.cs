@@ -250,6 +250,7 @@ public class DateTimeTupleBenchmarks
 
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
+        public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }
 
     #endregion

@@ -250,6 +250,7 @@ public class EnumTupleBenchmarks
 
         public bool Equals(SequentialEnumTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
+        public ReadOnlySpan<MyEnum>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }
 
     #endregion

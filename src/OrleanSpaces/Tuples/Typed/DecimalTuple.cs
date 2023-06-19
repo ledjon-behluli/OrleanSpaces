@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>, IComparable<DecimalTuple>
+public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
 {
     private readonly decimal[] fields;
 
@@ -48,8 +48,6 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
 
         return new Comparer(this, other).AllocateAndExecute(8 * Length); // 8 x Length, because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
     }
-
-    public int CompareTo(DecimalTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

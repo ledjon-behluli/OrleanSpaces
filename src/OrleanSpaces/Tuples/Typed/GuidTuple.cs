@@ -5,7 +5,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>, IComparable<GuidTuple>
+public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 {
     private readonly Guid[] fields;
 
@@ -48,8 +48,6 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>, ICo
 
         return true;
     }
-
-    public int CompareTo(GuidTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Typed;
 
 [Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, IComparable<BoolTuple>
+public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 {
     private readonly bool[] fields;
 
@@ -25,8 +25,6 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
         NumericMarshaller<bool, byte> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
         return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
     }
-
-    public int CompareTo(BoolTuple other) => Length.CompareTo(other.Length);
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
@@ -55,7 +53,6 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>, ICo
         public int Length => Fields.Length;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
-
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
     }
 
