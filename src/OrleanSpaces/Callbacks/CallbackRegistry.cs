@@ -23,7 +23,7 @@ internal sealed class CallbackRegistry<TTuple, TTemplate>
 
         entries[template].Add(entry);
     }
-
+    
     public IEnumerable<CallbackEntry<TTuple>> Take(TTuple tuple)
     {
         foreach (var pair in entries.Where(x => x.Key.Length == tuple.Length))
