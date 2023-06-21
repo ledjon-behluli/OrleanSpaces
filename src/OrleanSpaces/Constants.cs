@@ -4,6 +4,8 @@ public static class Constants
 {
     public const string PubSubProvider = "PubSubProvider";
     public const string PubSubStore = "PubSubStore";
+    public const string SpaceStorage = "SpaceStorage";
+    public const string IntStorage = "IntStorage";
 
     internal const int MaxStackSize = 1024;
 
