@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -45,7 +46,7 @@ public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
         => this.fields = fields == null || fields.Length == 0 ? new TimeSpan?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<TimeSpan>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<TimeSpan> ISpaceTemplate<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
 

@@ -98,7 +98,7 @@ public readonly struct DecimalTemplate : ISpaceTemplate<decimal>
         => this.fields = fields == null || fields.Length == 0 ? new decimal?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<decimal> ISpaceTemplate<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
 

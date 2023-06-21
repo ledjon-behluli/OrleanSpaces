@@ -6,7 +6,6 @@ using OrleanSpaces.Observers;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
-using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
@@ -122,13 +121,13 @@ internal sealed class IntAgent :
 
     public Guid Subscribe(ISpaceObserver<IntTuple> observer)
     {
-        Helpers.ThrowIfNotBeingConsumed(observerChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
         return observerRegistry.Add(observer);
     }
 
     public void Unsubscribe(Guid observerId)
     {
-        Helpers.ThrowIfNotBeingConsumed(observerChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
         observerRegistry.Remove(observerId);
     }
 
@@ -136,7 +135,7 @@ internal sealed class IntAgent :
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
-        Helpers.ThrowIfNotBeingConsumed(evaluationChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(evaluationChannel);
 
         if (evaluation == null)
         {
@@ -154,7 +153,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PeekAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        Helpers.ThrowIfNotBeingConsumed(callbackChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {
@@ -188,7 +187,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PopAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        Helpers.ThrowIfNotBeingConsumed(callbackChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {

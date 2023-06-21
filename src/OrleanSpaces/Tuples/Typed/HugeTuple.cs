@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -94,7 +95,7 @@ public readonly struct HugeTemplate : ISpaceTemplate<Int128>
         => this.fields = fields == null || fields.Length == 0 ? new Int128?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Int128>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<Int128> ISpaceTemplate<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
 

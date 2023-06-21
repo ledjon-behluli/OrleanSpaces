@@ -1,10 +1,12 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using OrleanSpaces;
+using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tuples;
+namespace OrleanSpaces;
 
-internal static class Helpers
+internal static class TupleHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsSupportedType(this Type type) =>
@@ -35,7 +37,7 @@ internal static class Helpers
             return false;
         }
 
-        result = ParallelEquals(left.Fields, right.Fields);
+        result = left.Fields.ParallelEquals(right.Fields);
         return true;
     }
 
@@ -56,7 +58,7 @@ internal static class Helpers
             return false;
         }
 
-        result = ParallelEquals(marshaller.Left, marshaller.Right);
+        result = marshaller.Left.ParallelEquals(marshaller.Right);
         return true;
     }
 
@@ -144,7 +146,7 @@ internal static class Helpers
             Span<T> tempSpan = stackalloc T[vLength];
             tempSpan.Fill(T.Zero);
             span.CopyTo(tempSpan);
-            
+
             return CastAs<T, Vector<T>>(in tempSpan[0]);
         }
     }
@@ -287,7 +289,7 @@ internal static class Helpers
             Span<T> buffer = array.AsSpan();
 
             bool result = consumer.Consume(ref buffer);
-            
+
             ArrayPool<T>.Shared.Return(array);
 
             return result;
@@ -298,17 +300,6 @@ internal static class Helpers
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
        where TIn : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ThrowIfNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
-    {
-        if (!consumable.IsBeingConsumed)
-        {
-            throw new InvalidOperationException(
-                $"The method '{methodName}' is not available due to '{consumable.GetType().Name}' not having an active consumer. " +
-                "This due to the client application not having started the generic host.");
-        }
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TTuple FindTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)

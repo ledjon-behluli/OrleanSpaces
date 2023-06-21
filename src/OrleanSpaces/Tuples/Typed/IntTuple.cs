@@ -1,5 +1,5 @@
 ﻿using Orleans.Concurrency;
-using OrleanSpaces.Tuples;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -9,9 +9,10 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
 {
     private readonly int[] fields;
 
+    internal static IntTuple Empty => new();
+
     public ref readonly int this[int index] => ref fields[index];
     public int Length => fields.Length;
-    public static IntTuple Empty => new();
 
     Span<int> INumericTuple<int>.Fields => fields.AsSpan();
 
@@ -44,7 +45,7 @@ public readonly struct IntTemplate : ISpaceTemplate<int>
         => this.fields = fields == null || fields.Length == 0 ? new int?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
 

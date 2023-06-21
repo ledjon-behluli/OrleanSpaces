@@ -37,8 +37,8 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
             // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
             // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
 
-            ref Vector128<byte> vLeft = ref Helpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
-            ref Vector128<byte> vRight = ref Helpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
+            ref Vector128<byte> vLeft = ref TupleHelpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
+            ref Vector128<byte> vRight = ref TupleHelpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
 
             if (vLeft != vRight)
             {
@@ -69,7 +69,7 @@ public readonly struct GuidTemplate : ISpaceTemplate<Guid>
         => this.fields = fields == null || fields.Length == 0 ? new Guid?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Guid>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<Guid> ISpaceTemplate<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
 

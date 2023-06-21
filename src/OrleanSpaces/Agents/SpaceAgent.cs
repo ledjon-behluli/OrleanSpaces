@@ -122,13 +122,13 @@ internal sealed class SpaceAgent :
 
     public Guid Subscribe(ISpaceObserver<SpaceTuple> observer)
     {
-        ThrowIfNotBeingConsumed(observerChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
         return observerRegistry.Add(observer);
     }
 
     public void Unsubscribe(Guid observerId)
     {
-        ThrowIfNotBeingConsumed(observerChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
         observerRegistry.Remove(observerId);
     }
 
@@ -137,7 +137,7 @@ internal sealed class SpaceAgent :
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
-        ThrowIfNotBeingConsumed(evaluationChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(evaluationChannel);
 
         if (evaluation == null)
         {
@@ -155,7 +155,7 @@ internal sealed class SpaceAgent :
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        ThrowIfNotBeingConsumed(callbackChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {
@@ -189,7 +189,7 @@ internal sealed class SpaceAgent :
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        ThrowIfNotBeingConsumed(callbackChannel);
+        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
 
         if (callback == null)
         {
@@ -224,16 +224,6 @@ internal sealed class SpaceAgent :
     }
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
-
-    private static void ThrowIfNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
-    {
-        if (!consumable.IsBeingConsumed)
-        {
-            throw new InvalidOperationException(
-                $"The method '{methodName}' is not available due to '{consumable.GetType().Name}' not having an active consumer. " +
-                "This due to the client application not having started the generic host.");
-        }
-    }
 
     private SpaceTuple FindTuple(SpaceTemplate template)
     {

@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -43,7 +44,7 @@ public readonly struct UIntTemplate : ISpaceTemplate<uint>
         => this.fields = fields == null || fields.Length == 0 ? new uint?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<uint>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<uint> ISpaceTemplate<uint>.Create(uint[] fields) => new UIntTuple(fields);
 

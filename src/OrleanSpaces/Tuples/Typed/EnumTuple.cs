@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -108,14 +109,14 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) 
             => Type.GetTypeCode(typeof(T)) switch
             {
-                TypeCode.Byte => Helpers.CastAs<T, byte>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.SByte => Helpers.CastAs<T, sbyte>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.Int16 => Helpers.CastAs<T, short>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.UInt16 => Helpers.CastAs<T, ushort>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.Int32 => Helpers.CastAs<T, int>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.UInt32 => Helpers.CastAs<T, uint>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.Int64 => Helpers.CastAs<T, long>(Value).TryFormat(destination, out charsWritten),
-                TypeCode.UInt64 => Helpers.CastAs<T, ulong>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Byte => TupleHelpers.CastAs<T, byte>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.SByte => TupleHelpers.CastAs<T, sbyte>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int16 => TupleHelpers.CastAs<T, short>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt16 => TupleHelpers.CastAs<T, ushort>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int32 => TupleHelpers.CastAs<T, int>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt32 => TupleHelpers.CastAs<T, uint>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.Int64 => TupleHelpers.CastAs<T, long>(Value).TryFormat(destination, out charsWritten),
+                TypeCode.UInt64 => TupleHelpers.CastAs<T, ulong>(Value).TryFormat(destination, out charsWritten),
                 _ => throw new NotSupportedException()
             };
     }
@@ -134,7 +135,7 @@ public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
         => this.fields = fields == null || fields.Length == 0 ? new T?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<T> ISpaceTemplate<T>.Create(T[] fields) => new EnumTuple<T>(fields);
 

@@ -34,10 +34,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task AddAsync(SpaceTuple tuple)
     {
-        if (tuple == SpaceTuple.Empty)
-        {
-            throw new ArgumentException("Empty tuple is not allowed to be writen in the tuple space.");
-        }
+        if (tuple == SpaceTuple.Empty) ThrowHelpers.EmptyTuple();
 
         space.State.Tuples.Add(tuple);
 

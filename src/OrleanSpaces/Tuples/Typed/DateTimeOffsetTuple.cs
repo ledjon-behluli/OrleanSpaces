@@ -1,4 +1,5 @@
 ﻿using Orleans.Concurrency;
+using OrleanSpaces;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -46,7 +47,7 @@ public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
         => this.fields = fields == null || fields.Length == 0 ? new DateTimeOffset?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTimeOffset>
-        => Helpers.Matches(this, tuple);
+        => TupleHelpers.Matches(this, tuple);
 
     ISpaceTuple<DateTimeOffset> ISpaceTemplate<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
 
