@@ -34,7 +34,7 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public async Task AddAsync(IntTuple tuple)
     {
-        if (tuple == IntTuple.Empty) ThrowHelpers.EmptyTuple();
+        ThrowHelpers.EmptyTuple(tuple);
 
         space.State.Tuples.Add(tuple);
 

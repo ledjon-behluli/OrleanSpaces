@@ -2,7 +2,7 @@
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 
-public class Master : SpaceObserver
+public class Master : SpaceObserver<SpaceTuple>
 {
     private readonly ISpaceAgent agent;
     private readonly SpaceTemplate template;

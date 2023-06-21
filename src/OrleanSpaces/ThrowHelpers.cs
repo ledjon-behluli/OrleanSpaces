@@ -1,11 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using OrleanSpaces.Tuples;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces;
 
 internal static class ThrowHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ChannelNotBeingConsumed(IConsumable consumable, [CallerMemberName] string? methodName = null)
+    public static void ChannelNotBeingConsumed<T>(T consumable, [CallerMemberName] string? methodName = null)
+        where T : IConsumable
     {
         if (!consumable.IsBeingConsumed)
         {
@@ -16,7 +18,13 @@ internal static class ThrowHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void EmptyTuple() => throw new ArgumentException("Empty tuple is not allowed to be writen in the tuple space.");
+    public static void EmptyTuple<T>(T tuple) where T : ISpaceTuple
+    {
+        if (tuple.Length == 0)
+        {
+            throw new ArgumentException("Empty tuple is not allowed to be writen in the tuple space.");
+        }
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void InvalidFieldType(int position) => throw new ArgumentException($"The field at position = {position} is not a valid type.");

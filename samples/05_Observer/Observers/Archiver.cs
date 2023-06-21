@@ -1,12 +1,11 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
-using System;
 using System.Text;
 
 // Example of a class that "has" to inherit from another class, at the same time being a space observer.
 // This class wouldn't be able to observe the space by inheriting from the SpaceObserver. Instead it uses
 // the interface which means it has to implement all methods and will have to listen to all observation types.
-public class Archiver : Encoder, ISpaceObserver
+public class Archiver : Encoder, ISpaceObserver<SpaceTuple>
 {
     public Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
@@ -14,9 +13,9 @@ public class Archiver : Encoder, ISpaceObserver
         return Task.CompletedTask;
     }
 
-    public Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    public Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"ARCHIVER: Archived template '{Encode(template.ToString())}'");
+        Console.WriteLine($"ARCHIVER: Archived tuple '{Encode(tuple.ToString())}'");
         return Task.CompletedTask;
     }
 

@@ -251,7 +251,7 @@ public class TimeSpanTupleBenchmarks
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
-        public ReadOnlySpan<int>.Enumerator GetEnumerator() => throw new NotImplementedException();
+        ReadOnlySpan<TimeSpan>.Enumerator ISpaceTuple<TimeSpan>.GetEnumerator() => throw new NotImplementedException();
     }
 
     #endregion

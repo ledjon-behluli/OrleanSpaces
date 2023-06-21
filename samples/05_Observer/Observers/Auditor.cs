@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 
-public class Auditor : SpaceObserver
+public class Auditor : SpaceObserver<SpaceTuple>
 {
     public Auditor()
     {
@@ -14,9 +14,9 @@ public class Auditor : SpaceObserver
         return Task.CompletedTask;
     }
 
-    public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"AUDITOR: Space contracted via template '{template}'.");
+        Console.WriteLine($"AUDITOR: Space contracted via tuple '{tuple}'.");
         return Task.CompletedTask;
     }
 }

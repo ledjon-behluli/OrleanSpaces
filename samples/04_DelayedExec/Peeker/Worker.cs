@@ -48,7 +48,7 @@ public class Worker : BackgroundService
             await Task.Delay(100, cancellationToken);
         }
 
-        Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await agent.PeekAsync(template)).IsNull}");
+        Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {(await agent.PeekAsync(template)).Length > 0}");
 
         Console.WriteLine("\nPress any key to terminate...");
         Console.ReadKey();

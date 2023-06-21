@@ -74,7 +74,6 @@ public static class Extensions
         services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
         services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
       
-
         #endregion
 
         #region Int
