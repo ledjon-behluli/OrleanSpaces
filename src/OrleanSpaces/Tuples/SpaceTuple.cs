@@ -1,5 +1,4 @@
 ﻿using Orleans.Concurrency;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
 
@@ -11,18 +10,15 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
     private readonly object[] fields;
 
+    internal static SpaceTuple Empty => new();
+
     public readonly object this[int index] => fields[index];
     public int Length => fields.Length;
 
     /// <summary>
-    /// Represents a <see cref="SpaceTuple"/> with a single field of type <see cref="SpaceUnit"/>.
-    /// </summary>
-    public static SpaceTuple Empty => new();
-
-    /// <summary>
     /// Default constructor which always instantiates a <see cref="Null"/>. 
     /// </summary>
-    public SpaceTuple() : this(null) { }
+    public SpaceTuple() : this(Array.Empty<object>()) { }
 
     /// <summary>
     /// Main constructor which instantiates a non-<see cref="Null"/>, when all <paramref name="fields"/> are of valid type.
@@ -31,24 +27,28 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
     /// <remarks><i>Tuple ticks can have types of: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
-    public SpaceTuple([AllowNull] params object[] fields)
+    public SpaceTuple(params object[] fields)
     {
-        if (fields == null || fields.Length == 0)
+        if (fields is null)
         {
-            this.fields = new object[1] { new SpaceUnit() };
+            this.fields = Array.Empty<object>();
+            return;
         }
-        else
+
+        this.fields = new object[fields.Length];
+
+        for (int i = 0; i < fields.Length; i++)
         {
-            this.fields = new object[fields.Length];
-
-            for (int i = 0; i < fields.Length; i++)
+            object? obj = fields[i];
+            if (obj is null)
             {
-                object obj = fields[i] ?? throw new ArgumentException($"The field at position = {i} can not be null.");
-
-                Type type = obj.GetType();
-                if (!type.IsSupportedType())
+                ThrowHelpers.NullField(i);
+            }
+            else
+            {
+                if (!obj.GetType().IsSupportedType())
                 {
-                    throw new ArgumentException($"The field at position = {i} is not a valid type.");
+                    ThrowHelpers.InvalidFieldType(i);
                 }
 
                 this.fields[i] = obj;

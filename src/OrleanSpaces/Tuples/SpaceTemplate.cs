@@ -1,5 +1,4 @@
 ﻿using Orleans.Concurrency;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
 
@@ -17,7 +16,7 @@ public readonly struct SpaceTemplate : ISpaceTemplate
     /// <summary>
     /// Default constructor which always instantiates a <see cref="SpaceTemplate"/> with a single field of type <see cref="SpaceUnit"/>.
     /// </summary>
-    public SpaceTemplate() : this(null) { }
+    public SpaceTemplate() : this(Array.Empty<object?>()) { }
 
     /// <summary>
     /// Main constructor which instantiates a <see cref="SpaceTemplate"/>, when all <paramref name="fields"/> are of valid type.
@@ -26,29 +25,28 @@ public readonly struct SpaceTemplate : ISpaceTemplate
     /// <remarks><i>Template ticks can have types of: <see cref="SpaceUnit"/>, <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
-    public SpaceTemplate([AllowNull] params object[] fields)
+    public SpaceTemplate(params object?[] fields)
     {
-        if (fields == null || fields.Length == 0)
+        if (fields is null)
         {
-            this.fields = new object?[1] { null };
+            this.fields = Array.Empty<object?>();
+            return;
         }
-        else
+
+        this.fields = new object[fields.Length];
+
+        for (int i = 0; i < fields.Length; i++)
         {
-            this.fields = new object[fields.Length];
-
-            for (int i = 0; i < fields.Length; i++)
+            object? obj = fields[i];
+            if (obj is not null)
             {
-                object? obj = fields[i];
-                if (obj != null)
+                if (!obj.GetType().IsSupportedType() && obj is not Type)
                 {
-                    if (!obj.GetType().IsSupportedType() && obj is not Type)
-                    {
-                        throw new ArgumentException($"The field at position = {i} is not a valid type.");
-                    }
+                    ThrowHelpers.InvalidFieldType(i);
                 }
-
-                this.fields[i] = obj;
             }
+
+            this.fields[i] = obj;
         }
     }
 
