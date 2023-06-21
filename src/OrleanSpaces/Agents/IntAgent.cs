@@ -99,9 +99,15 @@ internal sealed class IntAgent :
     async Task IAsyncObserver<TupleAction<IntTuple>>.OnNextAsync(TupleAction<IntTuple> action, StreamSequenceToken token)
     {
         await observerChannel.Writer.WriteAsync(action);
+
         if (action.Type == TupleActionType.Added)
         {
+            tuples.Add(action.Tuple);
             await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
+        }
+        else
+        {
+            tuples.Remove(action.Tuple);
         }
     }
 

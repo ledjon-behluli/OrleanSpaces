@@ -6,7 +6,6 @@ using OrleanSpaces.Observers;
 using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
-using System.Runtime.CompilerServices;
 using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
@@ -100,9 +99,15 @@ internal sealed class SpaceAgent :
     async Task IAsyncObserver<TupleAction<SpaceTuple>>.OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken token)
     {
         await observerChannel.Writer.WriteAsync(action);
+
         if (action.Type == TupleActionType.Added)
         {
+            tuples.Add(action.Tuple);
             await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
+        }
+        else
+        {
+            tuples.Remove(action.Tuple);
         }
     }
 
