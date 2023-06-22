@@ -24,8 +24,6 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        evaluationChannel.IsBeingConsumed = true;
-
         await foreach (Func<Task<TTuple>> evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
             try
@@ -38,7 +36,5 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
                 lifetime.StopApplication();
             }
         }
-
-        evaluationChannel.IsBeingConsumed = false;
     }
 }

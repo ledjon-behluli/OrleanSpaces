@@ -3,11 +3,9 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Observers;
 
-internal sealed class ObserverChannel<T> : IConsumable
+internal sealed class ObserverChannel<T>
     where T : ISpaceTuple
 {
-    public bool IsBeingConsumed { get; set; }
-
     private readonly Channel<TupleAction<T>> tupleChannel =
         Channel.CreateUnbounded<TupleAction<T>>(new() { SingleReader = true });
 

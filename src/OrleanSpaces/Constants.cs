@@ -4,8 +4,11 @@ public static class Constants
 {
     public const string PubSubProvider = "PubSubProvider";
     public const string PubSubStore = "PubSubStore";
-    public const string SpaceStorage = "SpaceStorage";
-    public const string IntStorage = "IntStorage";
+    public const string TupleSpacesStore = "TupleSpaces";
+
+    //TODO: Remove these 2
+    public const string SpaceGrainStorage = "SpaceGrain";
+    public const string IntGrainStorage = "IntGrain";
 
     internal const int MaxStackSize = 1024;
 
@@ -31,4 +34,25 @@ public static class Constants
     internal const int MaxFieldCharLength_Double = 24;          // -1.7976931348623157E+308
     internal const int MaxFieldCharLength_Decimal = 30;         // -79228162514264337593543950335
     internal const int MaxFieldCharLength_Float = 24;           // -3.4028235E+38
+
+    internal const string SpaceStream = "SpaceStream";
+    internal const string BoolStream = "BoolStream";
+    internal const string CharStream = "CharStream";
+    internal const string ByteStream = "ByteStream";
+    internal const string SByteStream = "SByteStream";
+    internal const string ShortStream = "ShortStream";
+    internal const string UShortStream = "UShortStream";
+    internal const string IntStream = "IntStream";
+    internal const string UIntStream = "UIntStream";
+    internal const string LongStream = "LongStream";
+    internal const string ULongStream = "ULongStream";
+    internal const string HugeStream = "HugeStream";
+    internal const string UHugeStream = "UHugeStream";
+    internal const string DateTimeStream = "DateTimeStream";
+    internal const string DateTimeOffsetStream = "DateTimeOffsetStream";
+    internal const string TimeSpanStream = "TimeSpanStream";
+    internal const string GuidStream = "GuidStream";
+    internal const string DoubleStream = "DoubleStream";
+    internal const string DecimalStream = "DecimalStream";
+    internal const string FloatStream = "FloatStream";
 }

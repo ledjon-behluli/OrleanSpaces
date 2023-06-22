@@ -3,11 +3,9 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Evaluations;
 
-internal sealed class EvaluationChannel<T> : IConsumable
+internal sealed class EvaluationChannel<T>
     where T : ISpaceTuple
 {
-    public bool IsBeingConsumed { get; set; }
-
     private readonly Channel<Func<Task<T>>> channel
         = Channel.CreateUnbounded<Func<Task<T>>>(new() { SingleReader = true });
 

@@ -43,7 +43,7 @@ internal sealed class IntAgentProvider : ISpaceAgentProvider<int, IntTuple, IntT
     }
 }
 
-[ImplicitStreamSubscription("IntStream")]
+[ImplicitStreamSubscription(Constants.IntStream)]
 internal sealed class IntAgent : 
     ISpaceAgent<int, IntTuple, IntTemplate>, 
     ITupleRouter<IntTuple, IntTemplate>,
@@ -85,13 +85,10 @@ internal sealed class IntAgent :
 
         grain = client.GetGrain<IIntGrain>(Guid.Empty);
 
-        if (observerChannel.IsBeingConsumed)
-        {
-            var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var stream = provider.GetStream<TupleAction<IntTuple>>(Guid.Empty, "IntStream");
+        var provider = client.GetStreamProvider(Constants.PubSubProvider);
+        var stream = provider.GetStream<TupleAction<IntTuple>>(Guid.Empty, Constants.IntStream);
 
-            await stream.SubscribeAsync(this);
-        }
+        await stream.SubscribeAsync(this);
     }
 
     #region IAsyncObserver
@@ -126,28 +123,16 @@ internal sealed class IntAgent :
     #region ISpaceAgent
 
     public Guid Subscribe(ISpaceObserver<IntTuple> observer)
-    {
-        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
-        return observerRegistry.Add(observer);
-    }
+        => observerRegistry.Add(observer);
 
     public void Unsubscribe(Guid observerId)
-    {
-        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
-        observerRegistry.Remove(observerId);
-    }
+        => observerRegistry.Remove(observerId);
 
     public Task WriteAsync(IntTuple tuple) => grain.AddAsync(tuple);
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(evaluationChannel);
-
-        if (evaluation == null)
-        {
-            throw new ArgumentNullException(nameof(evaluation));
-        }
-
+        if (evaluation == null) throw new ArgumentNullException(nameof(evaluation));
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
@@ -159,12 +144,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PeekAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
-
-        if (callback == null)
-        {
-            throw new ArgumentNullException(nameof(callback));
-        }
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
 
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
 
@@ -193,12 +173,7 @@ internal sealed class IntAgent :
 
     public async ValueTask PopAsync(IntTemplate template, Func<IntTuple, Task> callback)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
-
-        if (callback == null)
-        {
-            throw new ArgumentNullException(nameof(callback));
-        }
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
 
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
 

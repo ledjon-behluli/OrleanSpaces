@@ -19,7 +19,9 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     [AllowNull] private IAsyncStream<TupleAction<IntTuple>> stream;
 
-    public IntGrain([PersistentState("IntGrain", "IntGrainStore")] IPersistentState<IntGrainState> space)
+    public IntGrain(
+        [PersistentState(Constants.IntGrainStorage, Constants.TupleSpacesStore)] 
+        IPersistentState<IntGrainState> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
@@ -27,7 +29,7 @@ internal sealed class IntGrain : Grain, IIntGrain
     public override Task OnActivateAsync()
     {
         var provider = GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<TupleAction<IntTuple>>(this.GetPrimaryKey(), "IntStream");
+        stream = provider.GetStream<TupleAction<IntTuple>>(this.GetPrimaryKey(), Constants.IntStream);
 
         return base.OnActivateAsync();
     }

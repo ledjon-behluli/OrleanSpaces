@@ -12,8 +12,9 @@ var host = new SiloHostBuilder()
 #endregion
 #region Persistence
     .AddMemoryGrainStorage(Constants.PubSubStore)
-    .AddMemoryGrainStorage(Constants.SpaceStorage)
-    .AddMemoryGrainStorage(Constants.IntStorage)
+    .AddMemoryGrainStorage(Constants.TupleSpacesStore)
+    //.AddMemoryGrainStorage(Constants.SpaceGrainStorage)
+    //.AddMemoryGrainStorage(Constants.IntGrainStorage)
 
     //.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
     //.AddAzureTableGrainStorage(Constants.TupleSpaceStore, Configs.TableConfig)

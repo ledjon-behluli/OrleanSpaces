@@ -20,14 +20,10 @@ internal sealed class ContinuationProcessor<TTuple, TTemplate> : BackgroundServi
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        channel.IsBeingConsumed = true;
-
         var tupleTask = ConsumeTuples(cancellationToken);
         var templateTask = ConsumeTemplates(cancellationToken);
 
         await Task.WhenAll(tupleTask, templateTask);
-
-        channel.IsBeingConsumed = false;
     }
 
     private async Task ConsumeTuples(CancellationToken cancellationToken)

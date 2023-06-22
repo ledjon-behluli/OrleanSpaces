@@ -43,7 +43,7 @@ internal sealed class SpaceAgentProvider : ISpaceAgentProvider
     }
 }
 
-[ImplicitStreamSubscription("SpaceStream")]
+[ImplicitStreamSubscription(Constants.SpaceStream)]
 internal sealed class SpaceAgent : 
     ISpaceAgent,
     ITupleRouter<SpaceTuple, SpaceTemplate>,
@@ -85,13 +85,10 @@ internal sealed class SpaceAgent :
 
         grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
-        if (observerChannel.IsBeingConsumed)
-        {
-            var provider = client.GetStreamProvider(Constants.PubSubProvider);
-            var stream = provider.GetStream<TupleAction<SpaceTuple>>(Guid.Empty, "SpaceStream");
+        var provider = client.GetStreamProvider(Constants.PubSubProvider);
+        var stream = provider.GetStream<TupleAction<SpaceTuple>>(Guid.Empty, Constants.SpaceStream);
 
-            await stream.SubscribeAsync(this);
-        }
+        await stream.SubscribeAsync(this);
     }
 
     #region IAsyncObserver
@@ -126,29 +123,17 @@ internal sealed class SpaceAgent :
     #region ISpaceAgent
 
     public Guid Subscribe(ISpaceObserver<SpaceTuple> observer)
-    {
-        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
-        return observerRegistry.Add(observer);
-    }
+        => observerRegistry.Add(observer);
 
     public void Unsubscribe(Guid observerId)
-    {
-        ThrowHelpers.ChannelNotBeingConsumed(observerChannel);
-        observerRegistry.Remove(observerId);
-    }
+        => observerRegistry.Remove(observerId);
 
     public Task WriteAsync(SpaceTuple tuple)
         => grain.AddAsync(tuple);
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(evaluationChannel);
-
-        if (evaluation == null)
-        {
-            throw new ArgumentNullException(nameof(evaluation));
-        }
-
+        if (evaluation == null) throw new ArgumentNullException(nameof(evaluation));
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
@@ -160,12 +145,7 @@ internal sealed class SpaceAgent :
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
-
-        if (callback == null)
-        {
-            throw new ArgumentNullException(nameof(callback));
-        }
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
 
         SpaceTuple tuple = FindTuple(template);
 
@@ -194,13 +174,8 @@ internal sealed class SpaceAgent :
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
-        ThrowHelpers.ChannelNotBeingConsumed(callbackChannel);
-
-        if (callback == null)
-        {
-            throw new ArgumentNullException(nameof(callback));
-        }
-
+        if (callback == null) throw new ArgumentNullException(nameof(callback));
+     
         SpaceTuple tuple = FindTuple(template);
 
         if (tuple != SpaceTuple.Empty)

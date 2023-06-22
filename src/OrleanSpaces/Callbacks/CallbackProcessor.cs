@@ -25,8 +25,6 @@ internal sealed class CallbackProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        callbackChannel.IsBeingConsumed = true;
-
         await foreach (CallbackPair<SpaceTuple, SpaceTemplate> pair in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
@@ -38,8 +36,6 @@ internal sealed class CallbackProcessor : BackgroundService
 
             await Task.WhenAll(tasks);
         }
-
-        callbackChannel.IsBeingConsumed = false;
     }
 
     private async Task CallbackAsync(CallbackPair<SpaceTuple, SpaceTemplate> pair, CallbackEntry<SpaceTuple> entry, CancellationToken cancellationToken)
@@ -83,8 +79,6 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        callbackChannel.IsBeingConsumed = true;
-
         await foreach (CallbackPair<TTuple, TTemplate> pair in callbackChannel.Reader.ReadAllAsync(cancellationToken))
         {
             List<Task> tasks = new();
@@ -96,8 +90,6 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
 
             await Task.WhenAll(tasks);
         }
-
-        callbackChannel.IsBeingConsumed = false;
     }
 
     private async Task CallbackAsync(CallbackPair<TTuple, TTemplate> pair, CallbackEntry<TTuple> entry, CancellationToken cancellationToken)
