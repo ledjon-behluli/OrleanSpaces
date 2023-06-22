@@ -49,7 +49,7 @@ internal sealed class SpaceAgent :
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
-    private Guid agentId = Guid.Empty;
+    private Guid agentId = Guid.NewGuid();
     private List<SpaceTuple> tuples = new();
 
     private readonly IClusterClient client;
@@ -137,8 +137,11 @@ internal sealed class SpaceAgent :
     public void Unsubscribe(Guid observerId)
         => observerRegistry.Remove(observerId);
 
-    public Task WriteAsync(SpaceTuple tuple)
-        => grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
+    public async Task WriteAsync(SpaceTuple tuple)
+    {
+        await grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
+        tuples.Add(tuple);
+    }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {

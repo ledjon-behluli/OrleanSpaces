@@ -116,7 +116,6 @@ public readonly struct SpaceTemplate : ISpaceTemplate
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="other"/> share the same number of fields, and all of them match on the type, value and index; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SpaceTemplate other)
     {
-        //TODO: Improve
         if (Length != other.Length)
         {
             return false;
