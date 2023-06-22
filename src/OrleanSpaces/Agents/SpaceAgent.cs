@@ -49,7 +49,7 @@ internal sealed class SpaceAgent :
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
-    private readonly List<SpaceTuple> tuples = new();
+    private List<SpaceTuple> tuples = new();
 
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
@@ -89,6 +89,7 @@ internal sealed class SpaceAgent :
         var stream = provider.GetStream<TupleAction<SpaceTuple>>(Guid.Empty, Constants.SpaceStream);
 
         await stream.SubscribeAsync(this);
+        tuples = (await grain.GetAsync()).ToList();
     }
 
     #region IAsyncObserver

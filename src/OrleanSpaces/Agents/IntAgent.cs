@@ -49,7 +49,7 @@ internal sealed class IntAgent :
     ITupleRouter<IntTuple, IntTemplate>,
     IAsyncObserver<TupleAction<IntTuple>>
 {
-    private readonly List<IntTuple> tuples = new();
+    private List<IntTuple> tuples = new();
 
     private readonly IClusterClient client;
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
@@ -89,6 +89,7 @@ internal sealed class IntAgent :
         var stream = provider.GetStream<TupleAction<IntTuple>>(Guid.Empty, Constants.IntStream);
 
         await stream.SubscribeAsync(this);
+        tuples = (await grain.GetAsync()).ToList();
     }
 
     #region IAsyncObserver

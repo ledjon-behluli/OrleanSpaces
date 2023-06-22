@@ -2,15 +2,16 @@
 using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Tuples.Typed;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
 internal interface IIntGrain : IGrainWithGuidKey
 {
+    ValueTask<ImmutableArray<IntTuple>> GetAsync();
     Task AddAsync(IntTuple tuple);
     Task RemoveAsync(IntTuple tuple);
-    ValueTask<List<IntTuple>> GetAsync(IntTemplate template);
 }
 
 internal sealed class IntGrain : Grain, IIntGrain
@@ -34,6 +35,9 @@ internal sealed class IntGrain : Grain, IIntGrain
         return base.OnActivateAsync();
     }
 
+    public ValueTask<ImmutableArray<IntTuple>> GetAsync()
+      => new(space.State.Tuples.Select(x => (IntTuple)x).ToImmutableArray());
+
     public async Task AddAsync(IntTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
@@ -54,23 +58,6 @@ internal sealed class IntGrain : Grain, IIntGrain
             await space.WriteStateAsync();
             await stream.OnNextAsync(new(tuple, TupleActionType.Removed));
         }
-    }
-
-    public ValueTask<List<IntTuple>> GetAsync(IntTemplate template)
-    {
-        List<IntTuple> results = new();
-
-        IEnumerable<IntGrainState.Tuple> tuples = space.State.Tuples.Where(x => x.Fields.Count == template.Length);
-
-        foreach (var tuple in tuples)
-        {
-            if (template.Matches((IntTuple)tuple))
-            {
-                results.Add(tuple);
-            }
-        }
-
-        return new(results);
     }
 }
 
