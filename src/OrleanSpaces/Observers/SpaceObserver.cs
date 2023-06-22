@@ -19,19 +19,19 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
 
     internal async ValueTask NotifyAsync(TupleAction<T> action, CancellationToken cancellationToken)
     {
-        if (action.Type == TupleActionType.Added && type.HasFlag(Expansions))
+        if (action.Type == TupleActionType.Insert && type.HasFlag(Expansions))
         {
             await OnExpansionAsync(action.Tuple, cancellationToken);
             return;
         }
 
-        if (action.Type == TupleActionType.Removed && type.HasFlag(Contractions))
+        if (action.Type == TupleActionType.Delete && type.HasFlag(Contractions))
         {
             await OnContractionAsync(action.Tuple, cancellationToken);
             return;
         }
 
-        if (action.Type == TupleActionType.Cleaned && type.HasFlag(Contractions))
+        if (action.Type == TupleActionType.Clean && type.HasFlag(Contractions))
         {
             await OnFlatteningAsync(cancellationToken);
             return;

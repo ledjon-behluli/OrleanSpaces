@@ -10,8 +10,8 @@ namespace OrleanSpaces.Grains;
 internal interface ISpaceGrain : IGrainWithGuidKey
 {
     ValueTask<ImmutableArray<SpaceTuple>> GetAsync();
-    Task AddAsync(SpaceTuple tuple);
-    Task RemoveAsync(SpaceTuple tuple);
+    Task AddAsync(TupleAction<SpaceTuple> action);
+    Task RemoveAsync(TupleAction<SpaceTuple> action);
 }
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
@@ -38,25 +38,25 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     public ValueTask<ImmutableArray<SpaceTuple>> GetAsync()
       => new(space.State.Tuples.Select(x => (SpaceTuple)x).ToImmutableArray());
 
-    public async Task AddAsync(SpaceTuple tuple)
+    public async Task AddAsync(TupleAction<SpaceTuple> action)
     {
-        ThrowHelpers.EmptyTuple(tuple);
+        ThrowHelpers.EmptyTuple(action.Tuple);
 
-        space.State.Tuples.Add(tuple);
+        space.State.Tuples.Add(action.Tuple);
 
         await space.WriteStateAsync();
-        await stream.OnNextAsync(new(tuple, TupleActionType.Added));
+        await stream.OnNextAsync(action);
     }
 
-    public async Task RemoveAsync(SpaceTuple tuple)
+    public async Task RemoveAsync(TupleAction<SpaceTuple> action)
     {
-        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == tuple);
+        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == action.Tuple);
         if (storedTuple != null)
         {
             space.State.Tuples.Remove(storedTuple);
 
             await space.WriteStateAsync();
-            await stream.OnNextAsync(new(tuple, TupleActionType.Removed));
+            await stream.OnNextAsync(action);
         }
     }
 }

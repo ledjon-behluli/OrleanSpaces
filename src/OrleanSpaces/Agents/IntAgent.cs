@@ -51,7 +51,9 @@ internal sealed class IntAgent :
 {
     private List<IntTuple> tuples = new();
 
+    private readonly Guid agentId = Guid.NewGuid();
     private readonly IClusterClient client;
+    
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
     private readonly ObserverChannel<IntTuple> observerChannel;
     private readonly ObserverRegistry<IntTuple> observerRegistry;
@@ -98,14 +100,21 @@ internal sealed class IntAgent :
     {
         await observerChannel.Writer.WriteAsync(action);
 
-        if (action.Type == TupleActionType.Added)
+        if (action.Type == TupleActionType.Insert)
         {
-            tuples.Add(action.Tuple);
+            if (action.AgentId != agentId)
+            {
+                tuples.Add(action.Tuple);
+            }
+
             await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
         }
         else
         {
-            tuples.Remove(action.Tuple);
+            if (action.AgentId != agentId)
+            {
+                tuples.Remove(action.Tuple);
+            }
         }
     }
 
@@ -129,7 +138,8 @@ internal sealed class IntAgent :
     public void Unsubscribe(Guid observerId)
         => observerRegistry.Remove(observerId);
 
-    public Task WriteAsync(IntTuple tuple) => grain.AddAsync(tuple);
+    public Task WriteAsync(IntTuple tuple) 
+        => grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
@@ -165,7 +175,7 @@ internal sealed class IntAgent :
 
         if (tuple != IntTuple.Empty)
         {
-            await grain.RemoveAsync(tuple);
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
             tuples.Remove(tuple);
         }
 
@@ -181,7 +191,7 @@ internal sealed class IntAgent :
         if (tuple != IntTuple.Empty)
         {
             await callback(tuple);
-            await grain.RemoveAsync(tuple);
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
 
             tuples.Remove(tuple);
         }

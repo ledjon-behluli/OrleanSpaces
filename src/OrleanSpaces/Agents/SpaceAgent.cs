@@ -49,6 +49,7 @@ internal sealed class SpaceAgent :
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
+    private Guid agentId = Guid.Empty;
     private List<SpaceTuple> tuples = new();
 
     private readonly IClusterClient client;
@@ -98,14 +99,21 @@ internal sealed class SpaceAgent :
     {
         await observerChannel.Writer.WriteAsync(action);
 
-        if (action.Type == TupleActionType.Added)
+        if (action.Type == TupleActionType.Insert)
         {
-            tuples.Add(action.Tuple);
+            if (action.AgentId != agentId)
+            {
+                tuples.Add(action.Tuple);
+            }
+
             await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple));
         }
         else
         {
-            tuples.Remove(action.Tuple);
+            if (action.AgentId != agentId)
+            {
+                tuples.Remove(action.Tuple);
+            }
         }
     }
 
@@ -130,7 +138,7 @@ internal sealed class SpaceAgent :
         => observerRegistry.Remove(observerId);
 
     public Task WriteAsync(SpaceTuple tuple)
-        => grain.AddAsync(tuple);
+        => grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
@@ -166,7 +174,7 @@ internal sealed class SpaceAgent :
 
         if (tuple != SpaceTuple.Empty)
         {
-            await grain.RemoveAsync(tuple);
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
             tuples.Remove(tuple);
         }
 
@@ -182,6 +190,9 @@ internal sealed class SpaceAgent :
         if (tuple != SpaceTuple.Empty)
         {
             await callback(tuple);
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
+
+            tuples.Remove(tuple);
         }
         else
         {
