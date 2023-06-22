@@ -19,9 +19,8 @@ public class Worker : BackgroundService
     {
         ISpaceAgent agent = await provider.GetAsync();
 
-        //await Task.Delay(1000);
-
         SpaceTuple tuple = new(1, 2, 3);
+
         await agent.WriteAsync(tuple);
 
         SpaceTemplate template = new(1, null, 3);

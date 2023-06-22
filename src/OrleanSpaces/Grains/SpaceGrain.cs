@@ -46,7 +46,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task RemoveAsync(SpaceTuple tuple)
     {
-        var storedTuple = space.State.Tuples.FirstOrDefault(x => x.Equals(tuple));
+        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == tuple);
         if (storedTuple != null)
         {
             space.State.Tuples.Remove(storedTuple);
@@ -56,11 +56,12 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         }
     }
 
+    // TODO: Call me after agent initialization
     public ValueTask<List<SpaceTuple>> GetAsync(SpaceTemplate template)
     {
         List<SpaceTuple> results = new();
 
-        IEnumerable<SpaceGrainState.Tuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+        IEnumerable<SpaceGrainState.Tuple> tuples = space.State.Tuples.Where(x => x.Fields.Count == template.Length);
 
         foreach (var tuple in tuples)
         {
@@ -81,7 +82,6 @@ internal sealed class SpaceGrainState
     public class Tuple
     {
         public List<object> Fields { get; set; } = new();
-        public int Length => Fields.Count;
 
         public static implicit operator Tuple(SpaceTuple tuple)
         {

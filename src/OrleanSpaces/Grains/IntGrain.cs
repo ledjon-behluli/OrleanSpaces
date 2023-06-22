@@ -46,7 +46,7 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public async Task RemoveAsync(IntTuple tuple)
     {
-        var storedTuple = space.State.Tuples.FirstOrDefault(x => x.Equals(tuple));
+        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == tuple);
         if (storedTuple != null)
         {
             space.State.Tuples.Remove(storedTuple);
@@ -60,7 +60,7 @@ internal sealed class IntGrain : Grain, IIntGrain
     {
         List<IntTuple> results = new();
 
-        IEnumerable<IntGrainState.Tuple> tuples = space.State.Tuples.Where(x => x.Length == template.Length);
+        IEnumerable<IntGrainState.Tuple> tuples = space.State.Tuples.Where(x => x.Fields.Count == template.Length);
 
         foreach (var tuple in tuples)
         {
@@ -81,7 +81,6 @@ internal sealed class IntGrainState
     public class Tuple
     {
         public List<int> Fields { get; set; } = new();
-        public int Length => Fields.Count;
 
         public static implicit operator Tuple(IntTuple tuple)
         {

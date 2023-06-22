@@ -79,7 +79,7 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
         for (int i = 0; i < Length; i++)
         {
-            if (!this.Equals(other))
+            if (!this[i].Equals(other[i]))
             {
                 return false;
             }
