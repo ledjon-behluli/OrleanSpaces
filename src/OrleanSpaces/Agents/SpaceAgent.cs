@@ -1,5 +1,4 @@
-﻿using Orleans;
-using Orleans.Streams;
+﻿using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
@@ -7,7 +6,7 @@ using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
-using System;
+using Orleans.Runtime;
 
 namespace OrleanSpaces.Agents;
 
@@ -87,7 +86,7 @@ internal sealed class SpaceAgent :
         grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<TupleAction<SpaceTuple>>(Guid.Empty, Constants.SpaceStream);
+        var stream = provider.GetStream<TupleAction<SpaceTuple>>(StreamId.Create(Constants.SpaceStream, Guid.Empty));
 
         await stream.SubscribeAsync(this);
         tuples = (await grain.GetAsync()).ToList();
@@ -95,7 +94,7 @@ internal sealed class SpaceAgent :
 
     #region IAsyncObserver
 
-    async Task IAsyncObserver<TupleAction<SpaceTuple>>.OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken token)
+    async Task IAsyncObserver<TupleAction<SpaceTuple>>.OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken? token)
     {
         await observerChannel.Writer.WriteAsync(action);
 

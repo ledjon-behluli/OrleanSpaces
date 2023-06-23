@@ -28,15 +28,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="7.1.2" />
-		<PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="7.1.2" />
-		<PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="7.1.2">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.2" />
+		<PackageReference Include="Microsoft.Orleans.Streaming" Version="7.1.2" />
+		
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Tests</_Parameter1>
 		</AssemblyAttribute>
+		
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Benchmarks</_Parameter1>
 		</AssemblyAttribute>

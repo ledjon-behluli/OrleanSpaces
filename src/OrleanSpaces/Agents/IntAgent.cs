@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Grains;
+using Orleans.Runtime;
 
 namespace OrleanSpaces.Agents;
 
@@ -86,7 +87,7 @@ internal sealed class IntAgent :
         grain = client.GetGrain<IIntGrain>(Guid.Empty);
 
         var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<TupleAction<IntTuple>>(Guid.Empty, Constants.IntStream);
+        var stream = provider.GetStream<TupleAction<IntTuple>>(StreamId.Create(Constants.IntStream, Guid.Empty));
 
         await stream.SubscribeAsync(this);
         tuples = (await grain.GetAsync()).ToList();
@@ -94,7 +95,7 @@ internal sealed class IntAgent :
 
     #region IAsyncObserver
 
-    async Task IAsyncObserver<TupleAction<IntTuple>>.OnNextAsync(TupleAction<IntTuple> action, StreamSequenceToken token)
+    async Task IAsyncObserver<TupleAction<IntTuple>>.OnNextAsync(TupleAction<IntTuple> action, StreamSequenceToken? token)
     {
         await observerChannel.Writer.WriteAsync(action);
 

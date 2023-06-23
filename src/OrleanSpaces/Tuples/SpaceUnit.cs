@@ -7,6 +7,7 @@ namespace OrleanSpaces.Tuples;
 /// Represents an empty placeholder field and a unit tuple, since <see langword="null"/> is not allowed as part of <see cref="SpaceTuple"/> and <see cref="SpaceTemplate"/>.
 /// </summary>
 [Immutable]
+//TODO: Remove
 public readonly struct SpaceUnit : ISpaceTuple, IEquatable<SpaceUnit>, IComparable<SpaceUnit>
 {
     internal const string DefaultString = "{NULL}";

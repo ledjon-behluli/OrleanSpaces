@@ -1,32 +1,16 @@
-﻿using Orleans;
-using Orleans.Hosting;
-using OrleanSpaces.Observers;
+﻿using OrleanSpaces.Observers;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Continuations;
-using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Agents;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
 public static class Extensions
 {
-    /// <summary>
-    /// Configures the tuple space on the silo.
-    /// </summary>
-    public static ISiloBuilder AddTupleSpace(this ISiloBuilder builder) =>
-        builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
-
-    /// <summary>
-    /// Configures the tuple space on the silo.
-    /// </summary>
-    public static ISiloHostBuilder AddTupleSpace(this ISiloHostBuilder builder) =>
-        builder.ConfigureApplicationParts(parts =>
-            parts.AddApplicationPart(typeof(Extensions).Assembly).WithReferences());
-
     /// <summary>
     /// Configures the tuple space on the client.
     /// </summary>
@@ -58,8 +42,10 @@ public static class Extensions
 
         return services;
 
-        static IClusterClient BuildDefaultClient() =>
-            new ClientBuilder()
+        //https://learn.microsoft.com/en-us/dotnet/orleans/migration-guide
+
+        IClusterClient BuildDefaultClient() =>
+            new ClientBuilder(services)
                 .UseLocalhostClustering()
                 .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
                 .Build();

@@ -1,5 +1,4 @@
-﻿using Orleans;
-using Orleans.Runtime;
+﻿using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
@@ -27,12 +26,12 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
-    public override Task OnActivateAsync()
+    public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        var provider = GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<TupleAction<SpaceTuple>>(this.GetPrimaryKey(), Constants.SpaceStream);
+        var provider = this.GetStreamProvider(Constants.PubSubProvider);
+        stream = provider.GetStream<TupleAction<SpaceTuple>>(StreamId.Create(Constants.SpaceStream, this.GetPrimaryKey()));
 
-        return base.OnActivateAsync();
+        return Task.CompletedTask;
     }
 
     public ValueTask<ImmutableArray<SpaceTuple>> GetAsync()
