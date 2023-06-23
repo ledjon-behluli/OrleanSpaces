@@ -9,8 +9,6 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
 {
     private readonly int[] fields;
 
-    internal static IntTuple Empty => new();
-
     public ref readonly int this[int index] => ref fields[index];
     public int Length => fields.Length;
 

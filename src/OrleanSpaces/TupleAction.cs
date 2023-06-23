@@ -5,6 +5,6 @@ internal readonly record struct TupleAction<T>(Guid AgentId, T Tuple, TupleActio
 public enum TupleActionType
 {
     Insert,
-    Delete,
+    Remove,
     Clean
 }

@@ -25,7 +25,7 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
             return;
         }
 
-        if (action.Type == TupleActionType.Delete && type.HasFlag(Contractions))
+        if (action.Type == TupleActionType.Remove && type.HasFlag(Contractions))
         {
             await OnContractionAsync(action.Tuple, cancellationToken);
             return;

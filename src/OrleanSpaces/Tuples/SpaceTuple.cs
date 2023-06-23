@@ -1,16 +1,16 @@
-﻿using Orleans.Concurrency;
+﻿using Orleans.CodeGeneration;
+using Orleans.Concurrency;
 
 namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
+    [Id(0)]
     private readonly object[] fields;
-
-    internal static SpaceTuple Empty => new();
 
     public readonly object this[int index] => fields[index];
     public int Length => fields.Length;

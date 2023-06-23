@@ -11,19 +11,19 @@ var host = new SiloHostBuilder()
     //.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig)
 #endregion
 #region Persistence
-    .AddMemoryGrainStorage(Constants.PubSubStore)
-    .AddMemoryGrainStorage(Constants.TupleSpacesStore)
+    //.AddMemoryGrainStorage(Constants.PubSubStore)
+    //.AddMemoryGrainStorage(Constants.TupleSpacesStore)
     //.AddMemoryGrainStorage(Constants.SpaceGrainStorage)
     //.AddMemoryGrainStorage(Constants.IntGrainStorage)
 
-    //.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
-    //.AddAzureTableGrainStorage(Constants.TupleSpaceStore, Configs.TableConfig)
+    .AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
+    .AddAzureTableGrainStorage(Constants.TupleSpacesStore, Configs.TableConfig)
 
     //.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig)
-    //.AddAzureBlobGrainStorage(Constants.TupleSpaceStore, Configs.BlobConfig)
+    //.AddAzureBlobGrainStorage(Constants.TupleSpacesStore, Configs.BlobConfig)
 
     //.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig)
-    //.AddAdoNetGrainStorage(Constants.TupleSpaceStore, Configs.AdoNetConfig)
+    //.AddAdoNetGrainStorage(Constants.TupleSpacesStore, Configs.AdoNetConfig)
 #endregion
     .AddTupleSpace()
     .ConfigureLogging(builder => builder.AddConsole())

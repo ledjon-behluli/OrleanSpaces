@@ -49,11 +49,8 @@ internal sealed class IntAgent :
     ITupleRouter<IntTuple, IntTemplate>,
     IAsyncObserver<TupleAction<IntTuple>>
 {
-    private List<IntTuple> tuples = new();
-
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly IClusterClient client;
-    
+    private readonly IClusterClient client; 
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
     private readonly ObserverChannel<IntTuple> observerChannel;
     private readonly ObserverRegistry<IntTuple> observerRegistry;
@@ -61,6 +58,7 @@ internal sealed class IntAgent :
     private readonly CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry;
 
     [AllowNull] private IIntGrain grain;
+    private List<IntTuple> tuples = new();
 
     public IntAgent(
         IClusterClient client,
@@ -138,8 +136,12 @@ internal sealed class IntAgent :
     public void Unsubscribe(Guid observerId)
         => observerRegistry.Remove(observerId);
 
-    public Task WriteAsync(IntTuple tuple) 
-        => grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
+    public async Task WriteAsync(IntTuple tuple)
+    {
+        ThrowHelpers.EmptyTuple(tuple);
+        await grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
+        tuples.Add(tuple);
+    }
 
     public ValueTask EvaluateAsync(Func<Task<IntTuple>> evaluation)
     {
@@ -159,7 +161,7 @@ internal sealed class IntAgent :
 
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
 
-        if (tuple != IntTuple.Empty)
+        if (tuple.Length > 0)
         {
             await callback(tuple);
         }
@@ -173,9 +175,9 @@ internal sealed class IntAgent :
     {
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
 
-        if (tuple != IntTuple.Empty)
+        if (tuple.Length > 0)
         {
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -188,10 +190,10 @@ internal sealed class IntAgent :
 
         IntTuple tuple = tuples.FindTuple<int, IntTuple, IntTemplate>(template);
 
-        if (tuple != IntTuple.Empty)
+        if (tuple.Length > 0)
         {
             await callback(tuple);
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }

@@ -7,6 +7,7 @@ using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
+using System;
 
 namespace OrleanSpaces.Agents;
 
@@ -49,9 +50,7 @@ internal sealed class SpaceAgent :
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
-    private Guid agentId = Guid.NewGuid();
-    private List<SpaceTuple> tuples = new();
-
+    private readonly Guid agentId = Guid.NewGuid();
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
@@ -60,6 +59,7 @@ internal sealed class SpaceAgent :
     private readonly CallbackChannel<SpaceTuple, SpaceTemplate> callbackChannel;
   
     [AllowNull] private ISpaceGrain grain;
+    private List<SpaceTuple> tuples = new();
 
     public SpaceAgent(
         IClusterClient client,
@@ -139,6 +139,7 @@ internal sealed class SpaceAgent :
 
     public async Task WriteAsync(SpaceTuple tuple)
     {
+        ThrowHelpers.EmptyTuple(tuple);
         await grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
         tuples.Add(tuple);
     }
@@ -161,7 +162,7 @@ internal sealed class SpaceAgent :
 
         SpaceTuple tuple = FindTuple(template);
 
-        if (tuple != SpaceTuple.Empty)
+        if (tuple.Length > 0)
         {
             await callback(tuple);
         }
@@ -175,9 +176,9 @@ internal sealed class SpaceAgent :
     {
         SpaceTuple tuple = FindTuple(template);
 
-        if (tuple != SpaceTuple.Empty)
+        if (tuple.Length > 0)
         {
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -190,10 +191,10 @@ internal sealed class SpaceAgent :
      
         SpaceTuple tuple = FindTuple(template);
 
-        if (tuple != SpaceTuple.Empty)
+        if (tuple.Length > 0)
         {
             await callback(tuple);
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Delete));
+            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }
@@ -230,7 +231,7 @@ internal sealed class SpaceAgent :
             }
         }
 
-        return SpaceTuple.Empty;
+        return new();
     }
 
     #endregion

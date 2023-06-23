@@ -16,13 +16,13 @@ internal interface ISpaceGrain : IGrainWithGuidKey
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
-    private readonly IPersistentState<SpaceGrainState> space;
+    private readonly IPersistentState<List<SpaceTuple>> space;
 
     [AllowNull] private IAsyncStream<TupleAction<SpaceTuple>> stream;
 
     public SpaceGrain(
         [PersistentState(Constants.SpaceGrainStorage, Constants.TupleSpacesStore)]
-        IPersistentState<SpaceGrainState> space)
+        IPersistentState<List<SpaceTuple>> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
@@ -36,13 +36,11 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     }
 
     public ValueTask<ImmutableArray<SpaceTuple>> GetAsync()
-      => new(space.State.Tuples.Select(x => (SpaceTuple)x).ToImmutableArray());
+      => new(space.State.ToImmutableArray());
 
     public async Task AddAsync(TupleAction<SpaceTuple> action)
     {
-        ThrowHelpers.EmptyTuple(action.Tuple);
-
-        space.State.Tuples.Add(action.Tuple);
+        space.State.Add(action.Tuple);
 
         await space.WriteStateAsync();
         await stream.OnNextAsync(action);
@@ -50,10 +48,10 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public async Task RemoveAsync(TupleAction<SpaceTuple> action)
     {
-        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == action.Tuple);
-        if (storedTuple != null)
+        var storedTuple = space.State.FirstOrDefault(x => x == action.Tuple);
+        if (storedTuple.Length > 0)
         {
-            space.State.Tuples.Remove(storedTuple);
+            space.State.Remove(storedTuple);
 
             await space.WriteStateAsync();
             await stream.OnNextAsync(action);
