@@ -1,7 +1,4 @@
-﻿using Orleans.CodeGeneration;
-using Orleans.Concurrency;
-
-namespace OrleanSpaces.Tuples;
+﻿namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents a tuple in the tuple space paradigm.

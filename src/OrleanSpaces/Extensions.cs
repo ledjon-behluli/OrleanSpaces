@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
+
+//TODO: Add 'IEquatable' to all typed templates
+
 public static class Extensions
 {
     /// <summary>
@@ -28,27 +31,12 @@ public static class Extensions
     /// <param name="services"/>
     /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
     /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
-    public static IServiceCollection AddTupleSpace(
-        this IServiceCollection services,
-        Action<SpaceOptions>? optionsAction = null,
-        Func<IClusterClient>? clusterClientFactory = null)
+    public static IServiceCollection AddTupleSpace(this IServiceCollection services, Action<SpaceOptions>? optionsAction = null)
     {
-        services.AddSingleton(clusterClientFactory?.Invoke() ?? BuildDefaultClient());
-
         SpaceOptions options = new();
         optionsAction?.Invoke(options);
 
-        services.AddClientServices(options);
-
-        return services;
-
-        //https://learn.microsoft.com/en-us/dotnet/orleans/migration-guide
-
-        IClusterClient BuildDefaultClient() =>
-            new ClientBuilder(services)
-                .UseLocalhostClustering()
-                .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
-                .Build();
+        return services.AddClientServices(options);
     }
 
     private static IServiceCollection AddClientServices(this IServiceCollection services, SpaceOptions options)

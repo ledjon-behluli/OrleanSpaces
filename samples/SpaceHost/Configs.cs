@@ -1,5 +1,4 @@
 ﻿using Orleans.Configuration;
-using Orleans.Hosting;
 
 public static class Configs
 {
@@ -19,13 +18,11 @@ public static class Configs
 
     public static Action<AzureTableStorageOptions> TableConfig = options =>
     {
-        options.UseJson = true;
         options.ConfigureTableServiceClient("UseDevelopmentStorage=true");
     };
 
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
-        options.UseJson = true;
         options.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
     };
 
@@ -34,7 +31,6 @@ public static class Configs
     /// </summary>
     public static Action<AdoNetGrainStorageOptions> AdoNetConfig = options =>
     {
-        options.UseJsonFormat = true;
         options.Invariant = "Npgsql";
         options.ConnectionString = "Host=localhost;Database=OrleanSpaces;Username=postgres;Password=postgres";
     };

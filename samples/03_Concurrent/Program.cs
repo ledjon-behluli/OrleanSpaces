@@ -1,23 +1,27 @@
-﻿using Orleans;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans.Hosting;
 using OrleanSpaces.Tuples;
+using Microsoft.Extensions.Hosting;
 
-var client = new ClientBuilder()
-    .UseLocalhostClustering()
-    .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
-    .AddTupleSpace()
+using var host = new HostBuilder()
+    .ConfigureServices(services => services.AddTupleSpace())
+    .UseOrleansClient(builder =>
+    {
+        builder.UseLocalhostClustering();
+        builder.AddMemoryStreams(Constants.PubSubProvider);
+    })
     .Build();
 
-await client.Connect();   // If not called explicitly, it is handle by the library.
+var client = host.Services.GetRequiredService<IClusterClient>();
+
+await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
 ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 
 //Normally you would call "var agent = await provider.GetAsync();" somewhere here.
-//But I want to showcase want to showcase the thread-safety of the method.
+//But I want to showcase the thread-safety of the method.
 
 const string EXCHANGE_KEY = "exchange-key";
 
@@ -46,7 +50,7 @@ await Task.WhenAll(CreateTasks(10, async index =>
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
-await client.Close();
+await host.StopAsync();
 
 Task[] CreateTasks(int count, Func<int, Task> func)
 {

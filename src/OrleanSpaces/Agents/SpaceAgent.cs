@@ -78,11 +78,6 @@ internal sealed class SpaceAgent :
 
     public async Task InitializeAsync()
     {
-        if (!client.IsInitialized)
-        {
-            await client.Connect();
-        }
-
         grain = client.GetGrain<ISpaceGrain>(Guid.Empty);
 
         var provider = client.GetStreamProvider(Constants.PubSubProvider);

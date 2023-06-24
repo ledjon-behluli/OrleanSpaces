@@ -1,13 +1,11 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
-using System;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 {
     private readonly Int128[] fields;
@@ -83,7 +81,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     }
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct HugeTemplate : ISpaceTemplate<Int128>
 {
     private readonly Int128?[] fields;

@@ -1,10 +1,9 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
 {
     private readonly long[] fields;
@@ -32,7 +31,7 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct LongTemplate : ISpaceTemplate<long>
 {
     private readonly long?[] fields;

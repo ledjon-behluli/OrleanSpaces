@@ -1,10 +1,9 @@
-﻿using Orleans.Concurrency;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 {
     private readonly Guid[] fields;
@@ -57,7 +56,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct GuidTemplate : ISpaceTemplate<Guid>
 {
     private readonly Guid?[] fields;

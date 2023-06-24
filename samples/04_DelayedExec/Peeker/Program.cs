@@ -1,7 +1,5 @@
-﻿using Orleans;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -18,5 +16,10 @@ await Host.CreateDefaultBuilder(args)
         builder.ClearProviders();
         builder.AddConfiguration(context.Configuration.GetSection("Logging"));
         builder.AddConsole();
+    })
+    .UseOrleansClient(builder =>
+    {
+        builder.UseLocalhostClustering();
+        builder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .RunConsoleAsync();

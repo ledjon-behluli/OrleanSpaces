@@ -1,10 +1,9 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 {
     private readonly sbyte[] fields;
@@ -32,7 +31,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct SByteTemplate : ISpaceTemplate<sbyte>
 {
     private readonly sbyte?[] fields;

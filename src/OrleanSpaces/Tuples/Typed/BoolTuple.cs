@@ -1,10 +1,9 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 {
     private readonly bool[] fields;
@@ -65,7 +64,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     }
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct BoolTemplate : ISpaceTemplate<bool>
 {
     private readonly bool?[] fields;

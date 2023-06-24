@@ -1,10 +1,9 @@
-﻿using Orleans.Concurrency;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
 {
     private readonly decimal[] fields;
@@ -86,7 +85,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     }
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct DecimalTemplate : ISpaceTemplate<decimal>
 {
     private readonly decimal?[] fields;

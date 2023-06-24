@@ -2,7 +2,7 @@
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 
-public class Ponger : SpaceObserver
+public class Ponger : SpaceObserver<SpaceTuple>
 {
     private readonly SpaceTemplate template;
     private readonly ISpaceAgentProvider provider;
@@ -12,7 +12,7 @@ public class Ponger : SpaceObserver
         ListenTo(EventType.Expansions);
 
         this.provider = provider;
-        template = new("ping", new SpaceUnit());
+        template = new("ping", null);
     }
 
     public override async Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)

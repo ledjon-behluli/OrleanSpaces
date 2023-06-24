@@ -1,11 +1,9 @@
-﻿using Orleans.Concurrency;
-
-namespace OrleanSpaces.Tuples;
+﻿namespace OrleanSpaces.Tuples;
 
 /// <summary>
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct SpaceTemplate : ISpaceTemplate
 {
     private readonly object?[] fields;
@@ -141,7 +139,7 @@ public readonly struct SpaceTemplate : ISpaceTemplate
 
     public override int GetHashCode() => fields.GetHashCode();
 
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
 
     public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();
 }

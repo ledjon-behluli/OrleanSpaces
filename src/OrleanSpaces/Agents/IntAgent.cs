@@ -1,5 +1,4 @@
-﻿using Orleans;
-using Orleans.Streams;
+﻿using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
@@ -79,11 +78,6 @@ internal sealed class IntAgent :
 
     public async Task InitializeAsync()
     {
-        if (!client.IsInitialized)
-        {
-            await client.Connect();
-        }
-
         grain = client.GetGrain<IIntGrain>(Guid.Empty);
 
         var provider = client.GetStreamProvider(Constants.PubSubProvider);

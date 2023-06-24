@@ -1,12 +1,11 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
@@ -122,7 +121,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     }
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
     where T : unmanaged, Enum
 {

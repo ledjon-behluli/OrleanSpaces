@@ -1,11 +1,9 @@
-﻿using Orleans.Concurrency;
-using OrleanSpaces;
-using System;
+﻿using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquatable<DateTimeOffsetTuple>
 {
     private readonly DateTimeOffset[] fields;
@@ -35,7 +33,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
-[Immutable]
+[GenerateSerializer, Immutable]
 public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
 {
     private readonly DateTimeOffset?[] fields;

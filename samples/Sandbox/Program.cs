@@ -1,6 +1,4 @@
-﻿using Orleans;
-using OrleanSpaces;
-using Orleans.Hosting;
+﻿using OrleanSpaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,5 +7,10 @@ await Host.CreateDefaultBuilder(args)
     {
         services.AddTupleSpace();
         services.AddHostedService<Worker>();
+    })
+    .UseOrleansClient(builder =>
+    {
+        builder.UseLocalhostClustering();
+        builder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .RunConsoleAsync();

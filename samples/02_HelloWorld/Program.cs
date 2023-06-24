@@ -1,16 +1,20 @@
-﻿using Orleans;
-using OrleanSpaces;
+﻿using OrleanSpaces;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans.Hosting;
 using OrleanSpaces.Tuples;
+using Microsoft.Extensions.Hosting;
 
-var client = new ClientBuilder()
-    .UseLocalhostClustering()
-    .AddSimpleMessageStreamProvider(Constants.PubSubProvider)
-    .AddTupleSpace()
+using var host = new HostBuilder()
+    .ConfigureServices(services => services.AddTupleSpace())
+    .UseOrleansClient(builder =>
+    {
+        builder.UseLocalhostClustering();
+        builder.AddMemoryStreams(Constants.PubSubProvider);
+    })
     .Build();
 
-await client.Connect();   // If not called explicitly, it is handle by the library.
+var client = host.Services.GetRequiredService<IClusterClient>();
+
+await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
@@ -25,7 +29,7 @@ var task1 = Task.Run(async () =>
     await agent.WriteAsync(tuple);
 
     Console.WriteLine($"THREAD 1: Placed '{tuple}' into the tuple space.");
-    SpaceTemplate template = new(EXCHANGE_KEY, new SpaceUnit(), new SpaceUnit());
+    SpaceTemplate template = new(EXCHANGE_KEY, null, null);
 
     while (true)
     {
@@ -44,7 +48,7 @@ var task1 = Task.Run(async () =>
 
 var task2 = Task.Run(async () =>
 {
-    SpaceTemplate template = new(EXCHANGE_KEY, new SpaceUnit());
+    SpaceTemplate template = new(EXCHANGE_KEY, null);
     Console.WriteLine($"THREAD 2: Searching for matching tuple with template: {template}");
 
     while (true)
@@ -71,4 +75,4 @@ await Task.WhenAll(task1, task2);
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
-await client.Close();
+await host.StopAsync();
