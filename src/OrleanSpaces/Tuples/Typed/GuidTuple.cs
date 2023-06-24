@@ -49,7 +49,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Guid);
 
@@ -72,5 +72,6 @@ public readonly struct GuidTemplate : ISpaceTemplate<Guid>
 
     ISpaceTuple<Guid> ISpaceTemplate<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
 }

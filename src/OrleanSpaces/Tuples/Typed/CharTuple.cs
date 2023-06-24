@@ -36,7 +36,7 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
 
@@ -59,5 +59,6 @@ public readonly struct CharTemplate : ISpaceTemplate<char>
 
     ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields) => new CharTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();
 }

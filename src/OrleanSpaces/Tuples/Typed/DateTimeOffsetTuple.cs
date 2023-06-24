@@ -26,7 +26,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTimeOffset);
 
@@ -49,5 +49,6 @@ public readonly struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
 
     ISpaceTuple<DateTimeOffset> ISpaceTemplate<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
 }

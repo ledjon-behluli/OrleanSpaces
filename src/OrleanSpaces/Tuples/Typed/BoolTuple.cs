@@ -26,7 +26,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
 
@@ -80,5 +80,6 @@ public readonly struct BoolTemplate : ISpaceTemplate<bool>
 
     ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
 }

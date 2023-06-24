@@ -38,7 +38,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
 
@@ -97,5 +97,6 @@ public readonly struct HugeTemplate : ISpaceTemplate<Int128>
 
     ISpaceTuple<Int128> ISpaceTemplate<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();
 }

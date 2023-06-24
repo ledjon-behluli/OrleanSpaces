@@ -4,7 +4,7 @@
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
 [GenerateSerializer, Immutable]
-public readonly struct SpaceTemplate : ISpaceTemplate
+public readonly struct SpaceTemplate : ISpaceTemplate, IEquatable<SpaceTemplate>
 {
     private readonly object?[] fields;
 
@@ -130,15 +130,7 @@ public readonly struct SpaceTemplate : ISpaceTemplate
         return true;
     }
 
-    /// <summary>
-    /// Compares the current object with another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>Whatever the result of length comparison between <see langword="this"/> and <paramref name="other"/> is.</returns>
-    public int CompareTo(SpaceTemplate other) => Length.CompareTo(other.Length);
-
     public override int GetHashCode() => fields.GetHashCode();
-
     public override string ToString() => $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
 
     public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();

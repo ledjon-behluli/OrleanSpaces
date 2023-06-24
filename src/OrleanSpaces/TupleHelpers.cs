@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Orleans.Serialization.WireProtocol;
 using OrleanSpaces;
 using OrleanSpaces.Tuples;
 
@@ -336,4 +337,12 @@ internal static class TupleHelpers
 
         return result;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToString<T>(T[] fields) where T : unmanaged
+        => $"({string.Join(", ", fields)})";
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToString<T>(T?[] fields) where T : unmanaged
+        => $"({string.Join(", ", fields.Select(field => field.ToString() ?? "{NULL}"))})";
 }

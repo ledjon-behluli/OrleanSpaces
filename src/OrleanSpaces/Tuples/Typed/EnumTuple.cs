@@ -61,7 +61,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan()
     {
@@ -138,5 +138,6 @@ public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
 
     ISpaceTuple<T> ISpaceTemplate<T>.Create(T[] fields) => new EnumTuple<T>(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<T?>.Enumerator GetEnumerator() => new ReadOnlySpan<T?>(fields).GetEnumerator();
 }

@@ -24,7 +24,7 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
 
@@ -47,5 +47,6 @@ public readonly struct UIntTemplate : ISpaceTemplate<uint>
 
     ISpaceTuple<uint> ISpaceTemplate<uint>.Create(uint[] fields) => new UIntTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<uint?>.Enumerator GetEnumerator() => new ReadOnlySpan<uint?>(fields).GetEnumerator();
 }

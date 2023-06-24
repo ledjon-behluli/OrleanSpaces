@@ -9,9 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces;
 
-
-//TODO: Add 'IEquatable' to all typed templates
-
 public static class Extensions
 {
     /// <summary>

@@ -24,7 +24,7 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_ULong);
 
@@ -47,5 +47,6 @@ public readonly struct ULongTemplate : ISpaceTemplate<ulong>
 
     ISpaceTuple<ulong> ISpaceTemplate<ulong>.Create(ulong[] fields) => new ULongTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<ulong?>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong?>(fields).GetEnumerator();
 }

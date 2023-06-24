@@ -26,7 +26,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_TimeSpan);
 
@@ -49,5 +49,6 @@ public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
 
     ISpaceTuple<TimeSpan> ISpaceTemplate<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();
 }

@@ -24,7 +24,7 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
 
@@ -47,5 +47,6 @@ public readonly struct UShortTemplate : ISpaceTemplate<ushort>
 
     ISpaceTuple<ushort> ISpaceTemplate<ushort>.Create(ushort[] fields) => new UShortTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<ushort?>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort?>(fields).GetEnumerator();
 }

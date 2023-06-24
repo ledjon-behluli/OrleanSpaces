@@ -24,7 +24,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Int);
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
@@ -46,6 +46,7 @@ public readonly struct IntTemplate : ISpaceTemplate<int>
 
     ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
 
+    public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
 
 
