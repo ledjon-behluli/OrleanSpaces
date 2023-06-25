@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
 {
-    private readonly decimal[] fields;
+    [Id(0)] private readonly decimal[] fields;
 
     public ref readonly decimal this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -85,8 +85,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     }
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct DecimalTemplate : ISpaceTemplate<decimal>
+public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
 {
     private readonly decimal?[] fields;
 

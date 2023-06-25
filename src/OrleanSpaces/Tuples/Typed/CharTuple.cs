@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
 {
-    private readonly char[] fields;
+    [Id(0)] private readonly char[] fields;
 
     public ref readonly char this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -43,8 +43,7 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct CharTemplate : ISpaceTemplate<char>
+public readonly record struct CharTemplate : ISpaceTemplate<char>
 {
     private readonly char?[] fields;
 

@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTimeTuple>
 {
-    private readonly DateTime[] fields;
+    [Id(0)] private readonly DateTime[] fields;
 
     public ref readonly DateTime this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -33,8 +33,7 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct DateTimeTemplate : ISpaceTemplate<DateTime>
+public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>
 {
     private readonly DateTime?[] fields;
 

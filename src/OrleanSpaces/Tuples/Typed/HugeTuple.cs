@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 {
-    private readonly Int128[] fields;
+    [Id(0)] private readonly Int128[] fields;
     
     public ref readonly Int128 this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -81,8 +81,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     }
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct HugeTemplate : ISpaceTemplate<Int128>
+public readonly record struct HugeTemplate : ISpaceTemplate<Int128>
 {
     private readonly Int128?[] fields;
 

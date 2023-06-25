@@ -9,7 +9,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
-    private readonly T[] fields;
+    [Id(0)] private readonly T[] fields;
 
     public ref readonly T this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -121,8 +121,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     }
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct EnumTemplate<T> : ISpaceTemplate<T>
+public readonly record struct EnumTemplate<T> : ISpaceTemplate<T>
     where T : unmanaged, Enum
 {
     private readonly T?[] fields;

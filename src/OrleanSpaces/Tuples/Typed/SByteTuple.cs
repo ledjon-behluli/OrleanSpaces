@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 {
-    private readonly sbyte[] fields;
+    [Id(0)] private readonly sbyte[] fields;
 
     public ref readonly sbyte this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -31,8 +31,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct SByteTemplate : ISpaceTemplate<sbyte>
+public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>
 {
     private readonly sbyte?[] fields;
 

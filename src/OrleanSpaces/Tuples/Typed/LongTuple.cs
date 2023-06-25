@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
 {
-    private readonly long[] fields;
+    [Id(0)] private readonly long[] fields;
 
     public ref readonly long this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -31,8 +31,7 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct LongTemplate : ISpaceTemplate<long>
+public readonly record struct LongTemplate : ISpaceTemplate<long>
 {
     private readonly long?[] fields;
 

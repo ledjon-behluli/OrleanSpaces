@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>
 {
-    private readonly TimeSpan[] fields;
+    [Id(0)] private readonly TimeSpan[] fields;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -33,8 +33,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
+public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
 {
     private readonly TimeSpan?[] fields;
 

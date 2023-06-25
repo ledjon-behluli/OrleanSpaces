@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTuple>
 {
-    private readonly ushort[] fields;
+    [Id(0)] private readonly ushort[] fields;
 
     public ref readonly ushort this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -31,8 +31,7 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct UShortTemplate : ISpaceTemplate<ushort>
+public readonly record struct UShortTemplate : ISpaceTemplate<ushort>
 {
     private readonly ushort?[] fields;
 

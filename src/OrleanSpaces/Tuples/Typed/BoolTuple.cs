@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 {
-    private readonly bool[] fields;
+    [Id(0)] private readonly bool[] fields;
 
     public ref readonly bool this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -64,8 +64,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     }
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct BoolTemplate : ISpaceTemplate<bool>
+public readonly record struct BoolTemplate : ISpaceTemplate<bool>
 {
     private readonly bool?[] fields;
 

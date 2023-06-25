@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 {
-    private readonly Guid[] fields;
+    [Id(0)] private readonly Guid[] fields;
 
     public ref readonly Guid this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -56,8 +56,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct GuidTemplate : ISpaceTemplate<Guid>
+public readonly record struct GuidTemplate : ISpaceTemplate<Guid>
 {
     private readonly Guid?[] fields;
 

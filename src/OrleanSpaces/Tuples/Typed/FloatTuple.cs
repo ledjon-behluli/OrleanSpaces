@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
 {
-    private readonly float[] fields;
+    [Id(0)] private readonly float[] fields;
 
     public ref readonly float this[int index] => ref fields[index];
     public int Length => fields.Length;
@@ -31,8 +31,7 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }
 
-[GenerateSerializer, Immutable]
-public readonly struct FloatTemplate : ISpaceTemplate<float>
+public readonly record struct FloatTemplate : ISpaceTemplate<float>
 {
     private readonly float?[] fields;
 
