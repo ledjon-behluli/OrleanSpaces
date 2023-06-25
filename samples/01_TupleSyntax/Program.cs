@@ -13,9 +13,9 @@ static void SpaceTupleSyntax()
     Console.WriteLine("\nThis section illustrates SpaceTuple creation");
     Console.WriteLine("---------------- BEGIN -------------------");
 
-    Console.WriteLine($"Space tuple with one field: {new SpaceTuple(1)}");
-    Console.WriteLine($"Space tuple with two fields: {new SpaceTuple(1, "a")}");
-    Console.WriteLine($"Space tuple with three fields: {new SpaceTuple(1, "a", 1.5f)}");
+    Console.WriteLine($"SpaceTuple with one field: {new SpaceTuple(1)}");
+    Console.WriteLine($"SpaceTuple with two fields: {new SpaceTuple(1, "a")}");
+    Console.WriteLine($"SpaceTuple with three fields: {new SpaceTuple(1, "a", 1.5f)}");
 
     Console.WriteLine("---------------- END -------------------\n");
 }
@@ -25,12 +25,12 @@ static void SpaceTemplateSyntax()
     Console.WriteLine("\nThis section illustrates SpaceTemplate creation");
     Console.WriteLine("---------------- BEGIN -------------------");
 
-    Console.WriteLine($"Space template with one field: {new SpaceTemplate(1)}");
-    Console.WriteLine($"Space template with two fields: {new SpaceTemplate(1, "a")}");
-    Console.WriteLine($"Space template with three fields: {new SpaceTemplate(1, "a", 1.5f)}");
-    Console.WriteLine($"Space template implicit casting from SpaceTuple: {(SpaceTemplate)new SpaceTuple(1, "a")}");
-    Console.WriteLine($"Space template with null field: {new SpaceTemplate(1, "a", null, 1.5f)}");
-    Console.WriteLine($"Space template with null and \"NULL\" string: {new SpaceTemplate(null, "NULL")}");
+    Console.WriteLine($"SpaceTemplate with one field: {new SpaceTemplate(1)}");
+    Console.WriteLine($"SpaceTemplate with two fields: {new SpaceTemplate(1, "a")}");
+    Console.WriteLine($"SpaceTemplate with three fields: {new SpaceTemplate(1, "a", 1.5f)}");
+    Console.WriteLine($"SpaceTemplate casting from SpaceTuple: {(SpaceTemplate)new SpaceTuple(1, "a")}");
+    Console.WriteLine($"SpaceTemplate with null field: {new SpaceTemplate(1, "a", null, 1.5f)}");
+    Console.WriteLine($"SpaceTemplate with null and \"NULL\" string: {new SpaceTemplate(null, "NULL")}");
 
     Console.WriteLine("---------------- END -------------------\n");
 }
