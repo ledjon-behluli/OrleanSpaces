@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
-using var host = new HostBuilder()
+var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
     .ConfigureServices(services =>
     {

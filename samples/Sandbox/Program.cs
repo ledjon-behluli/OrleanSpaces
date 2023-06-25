@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Tuples;
 
-using var host = new HostBuilder()
+var host = new HostBuilder()
     .ConfigureServices(services => services.AddTupleSpace())
     .UseOrleansClient(builder =>
     {

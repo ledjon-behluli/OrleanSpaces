@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using OrleanSpaces.Tuples;
 using System.Threading;
 
-using var host = new HostBuilder()
+var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
     .ConfigureServices(services => services.AddTupleSpace())
     .UseOrleansClient(builder =>
