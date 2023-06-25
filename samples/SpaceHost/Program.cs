@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 //https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/local-development-configuration?pivots=orleans-7-0
 //https://github.com/dotnet/samples/tree/main/orleans/ChatRoom
 
-await Host.CreateDefaultBuilder(args)
+var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
         siloBuilder
@@ -38,7 +38,11 @@ await Host.CreateDefaultBuilder(args)
 
     })
     .ConfigureLogging(builder => builder.AddConsole())
-    .RunConsoleAsync();
+    .Build();
+
+await host.StartAsync();
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadLine();
+
+await host.StopAsync();

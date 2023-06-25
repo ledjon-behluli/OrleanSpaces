@@ -6,8 +6,7 @@
 [GenerateSerializer, Immutable]
 public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
-    [Id(0)]
-    private readonly object[] fields;
+    [Id(0)] private readonly object[] fields;
 
     public readonly object this[int index] => fields[index];
     public int Length => fields.Length;

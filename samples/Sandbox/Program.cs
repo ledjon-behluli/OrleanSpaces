@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 await Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        services.AddTupleSpace();
+        services.AddTupleSpace();// options => options.IntTuplesEnabled = true);
         services.AddHostedService<Worker>();
     })
     .UseOrleansClient(builder =>
