@@ -12,13 +12,11 @@ using var host = new HostBuilder()
     })
     .Build();
 
-var client = host.Services.GetRequiredService<IClusterClient>();
-
 await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
+ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
 ISpaceAgent agent = await provider.GetAsync();
 
 const string EXCHANGE_KEY = "exchange-key";

@@ -2,10 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 
-//https://learn.microsoft.com/en-us/dotnet/orleans/migration-guide
-//https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/local-development-configuration?pivots=orleans-7-0
-//https://github.com/dotnet/samples/tree/main/orleans/ChatRoom
-
 var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
