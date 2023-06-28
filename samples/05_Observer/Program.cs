@@ -9,7 +9,7 @@ var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
     .ConfigureServices(services =>
     {
-        services.AddTupleSpace();
+        services.AddOrleanSpaces();
         services.AddSingleton<Ponger>();
         services.AddSingleton<Auditor>();
         services.AddSingleton<Completer>();

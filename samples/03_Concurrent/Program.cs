@@ -4,7 +4,7 @@ using OrleanSpaces.Tuples;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureServices(services => services.AddTupleSpace())
+    .ConfigureServices(services => services.AddOrleanSpaces())
     .UseOrleansClient(builder =>
     {
         builder.UseLocalhostClustering();
