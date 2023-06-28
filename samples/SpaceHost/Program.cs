@@ -16,13 +16,13 @@ var host = Host.CreateDefaultBuilder(args)
 
         #region Persistence
 
-            .AddMemoryGrainStorage(Constants.PubSubStore)
-            .AddMemoryGrainStorage(Constants.TupleSpacesStore);
+        //.AddMemoryGrainStorage(Constants.PubSubStore)
+        //.AddMemoryGrainStorage(Constants.TupleSpacesStore);
         //.AddMemoryGrainStorage(Constants.SpaceGrainStorage)
         //.AddMemoryGrainStorage(Constants.IntGrainStorage)
 
-        //.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
-        //.AddAzureTableGrainStorage(Constants.TupleSpacesStore, Configs.TableConfig);
+        .AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
+        .AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
         //.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig)
         //.AddAzureBlobGrainStorage(Constants.TupleSpacesStore, Configs.BlobConfig);

@@ -18,11 +18,13 @@ public static class Configs
 
     public static Action<AzureTableStorageOptions> TableConfig = options =>
     {
+        options.TableName = OrleanSpaces.Constants.StorageName;
         options.ConfigureTableServiceClient("UseDevelopmentStorage=true");
     };
 
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
+        options.ContainerName = OrleanSpaces.Constants.StorageName;
         options.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
     };
 
