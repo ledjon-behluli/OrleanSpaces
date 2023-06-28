@@ -193,7 +193,7 @@ internal sealed class IntAgent :
         }
         else
         {
-            callbackRegistry.Add(template, new(callback, false));
+            callbackRegistry.Add(template, new(callback, true));
         }
     }
 

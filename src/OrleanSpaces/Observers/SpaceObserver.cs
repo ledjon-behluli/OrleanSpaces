@@ -17,7 +17,7 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
     /// <remarks><i>Combinations are possible via bitwise operations on <see cref="EventType"/>.</i></remarks>
     protected void ListenTo(EventType type) => this.type = type;
 
-    internal async ValueTask NotifyAsync(TupleAction<T> action, CancellationToken cancellationToken)
+    internal async Task NotifyAsync(TupleAction<T> action, CancellationToken cancellationToken)
     {
         if (action.Type == TupleActionType.Insert && type.HasFlag(Expansions))
         {
