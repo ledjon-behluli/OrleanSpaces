@@ -8,7 +8,7 @@ namespace OrleanSpaces.Observers;
 public abstract class SpaceObserver<T> : ISpaceObserver<T>
     where T : ISpaceTuple
 {
-    protected internal EventType type = EventType.Nothing;
+    private EventType type = EventType.Nothing;
 
     /// <summary>
     /// Configures the derived class to listen to specific events.
@@ -43,7 +43,7 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [Flags]
-    protected internal enum EventType
+    protected enum EventType
     {
         /// <summary>
         /// Specifies that the observer is not interested in any kind of events.
