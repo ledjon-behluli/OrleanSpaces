@@ -12,17 +12,6 @@ namespace OrleanSpaces;
 public static class Extensions
 {
     /// <summary>
-    /// Configures the tuple space on the client.
-    /// </summary>
-    public static IClientBuilder AddTupleSpace(this IClientBuilder builder, Action<SpaceOptions>? optionsAction = null)
-    {
-        SpaceOptions options = new();
-        optionsAction?.Invoke(options);
-
-        return builder.ConfigureServices(services => services.AddClientServices(options));
-    }
-
-    /// <summary>
     /// Configures the tuple space on the service collection.
     /// </summary>
     /// <param name="services"/>
