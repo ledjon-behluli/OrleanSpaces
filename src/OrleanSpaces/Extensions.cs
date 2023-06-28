@@ -22,11 +22,6 @@ public static class Extensions
         SpaceOptions options = new();
         action?.Invoke(options);
 
-        return services.AddClientServices(options);
-    }
-
-    private static IServiceCollection AddClientServices(this IServiceCollection services, SpaceOptions options)
-    {
         if (options.SpaceTuplesEnabled)
         {
             services.AddSingleton<ObserverRegistry<SpaceTuple>>();
