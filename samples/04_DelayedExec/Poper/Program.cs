@@ -8,7 +8,7 @@ using System.Threading;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
-    .ConfigureServices(services => services.AddTupleSpace())
+    .ConfigureServices(services => services.AddOrleanSpaces())
     .UseOrleansClient(builder =>
     {
         builder.UseLocalhostClustering();

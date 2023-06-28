@@ -17,16 +17,11 @@ public static class Extensions
     /// <param name="services"/>
     /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
     /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
-    public static IServiceCollection AddTupleSpace(this IServiceCollection services, Action<SpaceOptions>? action = null)
+    public static IServiceCollection AddOrleanSpaces(this IServiceCollection services, Action<SpaceOptions>? action = null)
     {
         SpaceOptions options = new();
         action?.Invoke(options);
 
-        return services.AddClientServices(options);
-    }
-
-    private static IServiceCollection AddClientServices(this IServiceCollection services, SpaceOptions options)
-    {
         if (options.SpaceTuplesEnabled)
         {
             services.AddSingleton<ObserverRegistry<SpaceTuple>>();
