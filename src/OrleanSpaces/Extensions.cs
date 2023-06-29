@@ -14,9 +14,8 @@ public static class Extensions
     /// <summary>
     /// Configures the tuple space on the <see cref="IClientBuilder"/>.
     /// </summary>
-    /// <param name="services"/>
-    /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
-    /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
+    /// <param name="builder">The orleans client builder.</param>
+    /// <param name="action">An optional delegate to configure the <see cref="SpaceOptions"/></param>
     public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceOptions>? action = null)
     {
         SpaceOptions options = new();
