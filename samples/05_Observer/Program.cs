@@ -7,16 +7,15 @@ using Microsoft.Extensions.Configuration;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
-    .ConfigureServices(services =>
-    {
-        services.AddOrleanSpaces();
-        services.AddSingleton<Ponger>();
-        services.AddSingleton<Auditor>();
-        services.AddSingleton<Completer>();
-        services.AddSingleton<Archiver>();
-    })
     .UseOrleansClient(builder =>
     {
+        builder.Services
+            .AddOrleanSpaces()
+            .AddSingleton<Ponger>()
+            .AddSingleton<Auditor>()
+            .AddSingleton<Completer>()
+            .AddSingleton<Archiver>();
+
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })

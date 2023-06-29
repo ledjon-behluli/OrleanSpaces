@@ -15,6 +15,7 @@
 		<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="7.1.2" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="7.1.2" />
+		<PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" Version="7.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>

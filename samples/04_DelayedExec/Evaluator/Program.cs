@@ -7,9 +7,9 @@ using OrleanSpaces.Tuples;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
-    .ConfigureServices(services => services.AddOrleanSpaces())
     .UseOrleansClient(builder =>
     {
+        builder.AddOrleanSpaces();
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })
