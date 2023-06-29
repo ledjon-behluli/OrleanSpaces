@@ -1,4 +1,5 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +7,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
 {
-    [Id(0)] private readonly ulong[] fields;
+    [Id(0), JsonProperty] private readonly ulong[] fields;
 
     public ref readonly ulong this[int index] => ref fields[index];
     public int Length => fields.Length;

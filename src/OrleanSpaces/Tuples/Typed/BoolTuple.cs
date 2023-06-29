@@ -1,4 +1,4 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 {
-    [Id(0)] private readonly bool[] fields;
+    [Id(0), JsonProperty] private readonly bool[] fields;
 
     public ref readonly bool this[int index] => ref fields[index];
     public int Length => fields.Length;

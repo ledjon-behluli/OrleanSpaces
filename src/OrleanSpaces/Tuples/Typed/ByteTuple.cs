@@ -1,4 +1,4 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
 {
-    [Id(0)] private readonly byte[] fields;
+    [Id(0), JsonProperty] private readonly byte[] fields;
 
     public ref readonly byte this[int index] => ref fields[index];
     public int Length => fields.Length;
