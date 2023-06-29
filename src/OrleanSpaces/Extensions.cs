@@ -12,7 +12,7 @@ namespace OrleanSpaces;
 public static class Extensions
 {
     /// <summary>
-    /// Configures the tuple space on the <see cref="IServiceCollection"/>.
+    /// Configures the tuple space on the <see cref="IClientBuilder"/>.
     /// </summary>
     /// <param name="services"/>
     /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
