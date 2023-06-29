@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +7,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
 {
-    [Id(0)] private readonly decimal[] fields;
+    [Id(0), JsonProperty] private readonly decimal[] fields;
 
     public ref readonly decimal this[int index] => ref fields[index];
     public int Length => fields.Length;

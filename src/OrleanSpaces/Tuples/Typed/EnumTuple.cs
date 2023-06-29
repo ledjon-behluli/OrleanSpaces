@@ -1,4 +1,5 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
-    [Id(0)] private readonly T[] fields;
+    [Id(0), JsonProperty] private readonly T[] fields;
 
     public ref readonly T this[int index] => ref fields[index];
     public int Length => fields.Length;

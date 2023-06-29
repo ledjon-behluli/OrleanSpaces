@@ -1,4 +1,5 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +7,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>
 {
-    [Id(0)] private readonly TimeSpan[] fields;
+    [Id(0), JsonProperty] private readonly TimeSpan[] fields;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
     public int Length => fields.Length;

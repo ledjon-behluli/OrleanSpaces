@@ -1,4 +1,5 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -8,7 +9,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>
 {
-    [Id(0)] private readonly UInt128[] fields;
+    [Id(0), JsonProperty] private readonly UInt128[] fields;
 
     public ref readonly UInt128 this[int index] => ref fields[index];
     public int Length => fields.Length;

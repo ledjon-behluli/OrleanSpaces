@@ -4,13 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using OrleanSpaces.Tuples;
-using System.Threading;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
-    .ConfigureServices(services => services.AddOrleanSpaces())
     .UseOrleansClient(builder =>
     {
+        builder.AddOrleanSpaces();
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })

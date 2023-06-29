@@ -12,57 +12,56 @@ namespace OrleanSpaces;
 public static class Extensions
 {
     /// <summary>
-    /// Configures the tuple space on the service collection.
+    /// Configures the tuple space on the <see cref="IClientBuilder"/>.
     /// </summary>
-    /// <param name="services"/>
-    /// <param name="clusterClientFactory">An optional delegate that returns an <see cref="IClusterClient"/> to be used.<br/>
-    /// <i>If omitted, then localhost clustering and simple message stream provider are used instead.</i></param>
-    public static IServiceCollection AddOrleanSpaces(this IServiceCollection services, Action<SpaceOptions>? action = null)
+    /// <param name="builder">The orleans client builder.</param>
+    /// <param name="action">An optional delegate to configure the <see cref="SpaceOptions"/></param>
+    public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceOptions>? action = null)
     {
         SpaceOptions options = new();
         action?.Invoke(options);
 
         if (options.SpaceTuplesEnabled)
         {
-            services.AddSingleton<ObserverRegistry<SpaceTuple>>();
-            services.AddSingleton<CallbackRegistry>();
+            builder.Services.AddSingleton<ObserverRegistry<SpaceTuple>>();
+            builder.Services.AddSingleton<CallbackRegistry>();
 
-            services.AddSingleton<EvaluationChannel<SpaceTuple>>();
-            services.AddSingleton<ObserverChannel<SpaceTuple>>();
-            services.AddSingleton<CallbackChannel<SpaceTuple, SpaceTemplate>>();
-            services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
+            builder.Services.AddSingleton<EvaluationChannel<SpaceTuple>>();
+            builder.Services.AddSingleton<ObserverChannel<SpaceTuple>>();
+            builder.Services.AddSingleton<CallbackChannel<SpaceTuple, SpaceTemplate>>();
+            builder.Services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
 
-            services.AddSingleton<SpaceAgent>();
-            services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
-            services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
+            builder.Services.AddSingleton<SpaceAgent>();
+            builder.Services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
+            builder.Services.AddSingleton<ISpaceAgentProvider, SpaceAgentProvider>();
 
-            services.AddHostedService<CallbackProcessor>();
-            services.AddHostedService<ObserverProcessor<SpaceTuple>>();
-            services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
-            services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
+            builder.Services.AddHostedService<CallbackProcessor>();
+            builder.Services.AddHostedService<ObserverProcessor<SpaceTuple>>();
+            builder.Services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
+            builder.Services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
         }
 
         if (options.IntTuplesEnabled)
         {
-            services.AddSingleton<ObserverRegistry<IntTuple>>();
-            services.AddSingleton<CallbackRegistry<int, IntTuple, IntTemplate>>();
+            builder.Services.AddSingleton<ObserverRegistry<IntTuple>>();
+            builder.Services.AddSingleton<CallbackRegistry<int, IntTuple, IntTemplate>>();
 
-            services.AddSingleton<EvaluationChannel<IntTuple>>();
-            services.AddSingleton<ObserverChannel<IntTuple>>();
-            services.AddSingleton<CallbackChannel<IntTuple, IntTemplate>>();
-            services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
+            builder.Services.AddSingleton<EvaluationChannel<IntTuple>>();
+            builder.Services.AddSingleton<ObserverChannel<IntTuple>>();
+            builder.Services.AddSingleton<CallbackChannel<IntTuple, IntTemplate>>();
+            builder.Services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
 
-            services.AddSingleton<IntAgent>();
-            services.AddSingleton<ITupleRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
-            services.AddSingleton<ISpaceAgentProvider<int, IntTuple, IntTemplate>, IntAgentProvider>();
+            builder.Services.AddSingleton<IntAgent>();
+            builder.Services.AddSingleton<ITupleRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
+            builder.Services.AddSingleton<ISpaceAgentProvider<int, IntTuple, IntTemplate>, IntAgentProvider>();
 
-            services.AddHostedService<ObserverProcessor<IntTuple>>();
-            services.AddHostedService<CallbackProcessor<int, IntTuple, IntTemplate>>();
-            services.AddHostedService<EvaluationProcessor<IntTuple, IntTemplate>>();
-            services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
+            builder.Services.AddHostedService<ObserverProcessor<IntTuple>>();
+            builder.Services.AddHostedService<CallbackProcessor<int, IntTuple, IntTemplate>>();
+            builder.Services.AddHostedService<EvaluationProcessor<IntTuple, IntTemplate>>();
+            builder.Services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
         }
 
-        return services;
+        return builder;
     }
 }
 

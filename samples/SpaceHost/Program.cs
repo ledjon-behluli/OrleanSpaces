@@ -5,30 +5,26 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
-        siloBuilder
-             .UseLocalhostClustering()
+        siloBuilder.UseLocalhostClustering();
         #region Streaming
 
-            .AddMemoryStreams(Constants.PubSubProvider)
-            //.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig)
+        siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
+        //siloBuilder.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig)
 
         #endregion
-
         #region Persistence
 
-        //.AddMemoryGrainStorage(Constants.PubSubStore)
-        //.AddMemoryGrainStorage(Constants.TupleSpacesStore);
-        //.AddMemoryGrainStorage(Constants.SpaceGrainStorage)
-        //.AddMemoryGrainStorage(Constants.IntGrainStorage)
+        //siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore)
+        //siloBuilder.AddMemoryGrainStorage(Constants.TupleSpacesStore);;
 
-        .AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig)
-        .AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
+        siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
+        siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
-        //.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig)
-        //.AddAzureBlobGrainStorage(Constants.TupleSpacesStore, Configs.BlobConfig);
-
-        //.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig)
-        //.AddAdoNetGrainStorage(Constants.TupleSpacesStore, Configs.AdoNetConfig);
+        //siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
+        //siloBuilder.AddAzureBlobGrainStorage(Constants.TupleSpacesStore, Configs.BlobConfig);
+          
+        //siloBuilder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
+        //siloBuilder.AddAdoNetGrainStorage(Constants.TupleSpacesStore, Configs.AdoNetConfig);
 
         #endregion
 

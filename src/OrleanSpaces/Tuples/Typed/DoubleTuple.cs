@@ -1,4 +1,5 @@
-﻿using OrleanSpaces;
+﻿using Newtonsoft.Json;
+using OrleanSpaces;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Typed;
@@ -6,7 +7,7 @@ namespace OrleanSpaces.Tuples.Typed;
 [GenerateSerializer, Immutable]
 public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTuple>
 {
-    [Id(0)] private readonly double[] fields;
+    [Id(0), JsonProperty] private readonly double[] fields;
 
     public ref readonly double this[int index] => ref fields[index];
     public int Length => fields.Length;
