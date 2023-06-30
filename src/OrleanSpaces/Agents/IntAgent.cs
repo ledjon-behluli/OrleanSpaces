@@ -7,6 +7,7 @@ using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
+using Orleans.Runtime;
 
 namespace OrleanSpaces.Agents;
 
@@ -80,7 +81,7 @@ internal sealed class IntAgent :
     {
         grain = client.GetGrain<IIntGrain>(IIntGrain.Id);
         tuples = (await grain.GetAsync()).ToList();
-        await this.SubscribeAsync<IntTuple, IntGrain>(client);
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, IIntGrain.Id));
     }
 
     #region IAsyncObserver

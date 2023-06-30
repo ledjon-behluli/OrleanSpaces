@@ -1,24 +1,22 @@
 ﻿using Orleans.Streams;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Grains;
 using System.Runtime.CompilerServices;
+using Orleans.Runtime;
 
 namespace OrleanSpaces.Helpers;
 
 internal static class OrleansHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IAsyncStream<TupleAction<T>> GetStream<T, TGrain>(this Grain grain)
+    public static IAsyncStream<TupleAction<T>> GetStream<T>(this Grain grain, StreamId streamId)
         where T : ISpaceTuple
-        where TGrain : IBaseGrain<T>
-        => grain.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(TGrain.StreamId);
+        => grain.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static async Task SubscribeAsync<T, TGrain>(this IAsyncObserver<TupleAction<T>> observer, IClusterClient client) 
+    public static async Task SubscribeAsync<T>(this IClusterClient client, IAsyncObserver<TupleAction<T>> observer, StreamId streamId) 
         where T : ISpaceTuple
-        where TGrain : IBaseGrain<T>
     {
-        var stream = client.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(TGrain.StreamId);
+        var stream = client.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
         var handles = await stream.GetAllSubscriptionHandles();
 
         if (handles.Count > 0)
