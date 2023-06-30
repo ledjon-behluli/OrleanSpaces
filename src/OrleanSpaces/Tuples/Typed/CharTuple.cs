@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
 {
     [Id(0), JsonProperty] private readonly char[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly char this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     public CharTuple() : this(Array.Empty<char>()) { }
     public CharTuple(params char[] fields) => this.fields = fields;

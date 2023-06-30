@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
 {
     [Id(0), JsonProperty] private readonly int[] fields;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly int this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     Span<int> INumericTuple<int>.Fields => fields.AsSpan();
 

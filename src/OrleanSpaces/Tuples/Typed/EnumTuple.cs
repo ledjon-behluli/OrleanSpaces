@@ -11,9 +11,9 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     where T : unmanaged, Enum
 {
     [Id(0), JsonProperty] private readonly T[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly T this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     public EnumTuple() : this(Array.Empty<T>()) { }
     public EnumTuple(params T[] fields) => this.fields = fields;

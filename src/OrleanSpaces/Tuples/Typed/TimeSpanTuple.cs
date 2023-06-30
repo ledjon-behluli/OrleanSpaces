@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpanTuple>
 {
     [Id(0), JsonProperty] private readonly TimeSpan[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     public TimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }
     public TimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;

@@ -10,9 +10,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>
 {
     [Id(0), JsonProperty] private readonly UInt128[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly UInt128 this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     Span<UInt128> INumericTuple<UInt128>.Fields => fields.AsSpan();
 

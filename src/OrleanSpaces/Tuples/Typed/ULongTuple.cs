@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
 {
     [Id(0), JsonProperty] private readonly ulong[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly ulong this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     Span<ulong> INumericTuple<ulong>.Fields => fields.AsSpan();
 

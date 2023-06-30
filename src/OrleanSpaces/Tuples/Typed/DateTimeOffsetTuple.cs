@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquatable<DateTimeOffsetTuple>
 {
     [Id(0), JsonProperty] private readonly DateTimeOffset[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     public DateTimeOffsetTuple() : this(Array.Empty<DateTimeOffset>()) { }
     public DateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;

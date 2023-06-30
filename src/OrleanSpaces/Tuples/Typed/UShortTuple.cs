@@ -8,9 +8,9 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTuple>
 {
     [Id(0), JsonProperty] private readonly ushort[] fields;
+    [JsonProperty] public int Length => fields.Length;
 
     public ref readonly ushort this[int index] => ref fields[index];
-    public int Length => fields.Length;
 
     Span<ushort> INumericTuple<ushort>.Fields => fields.AsSpan();
 
