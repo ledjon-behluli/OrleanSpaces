@@ -6,10 +6,7 @@ using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
-using Orleans.Runtime;
-using System.Xml.Linq;
-using System.Xml;
-using System;
+using OrleanSpaces.Helpers;
 
 namespace OrleanSpaces.Agents;
 
@@ -84,19 +81,7 @@ internal sealed class SpaceAgent :
         grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Name);
         
         tuples = (await grain.GetAsync()).ToList();
-
-        var stream = client.GetStreamProvider(Constants.PubSubProvider)
-              .GetStream<TupleAction<SpaceTuple>>(ISpaceGrain.GetStreamId());
-
-        var handles = await stream.GetAllSubscriptionHandles();
-        if (handles.Count > 0)
-        {
-            await handles[0].ResumeAsync(this);
-        }
-        else
-        {
-            await stream.SubscribeAsync(this);
-        }
+        await client.SubscribeAsync(this, ISpaceGrain.GetStreamId());
     }
 
     #region IAsyncObserver
