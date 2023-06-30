@@ -10,7 +10,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 {
     [Id(0), JsonProperty] private readonly Int128[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly Int128 this[int index] => ref fields[index];
 

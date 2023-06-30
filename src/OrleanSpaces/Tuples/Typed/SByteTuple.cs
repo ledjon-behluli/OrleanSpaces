@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 {
     [Id(0), JsonProperty] private readonly sbyte[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly sbyte this[int index] => ref fields[index];
 

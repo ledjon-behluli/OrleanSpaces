@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTimeTuple>
 {
     [Id(0), JsonProperty] private readonly DateTime[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly DateTime this[int index] => ref fields[index];
 

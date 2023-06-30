@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTuple>
 {
     [Id(0), JsonProperty] private readonly double[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly double this[int index] => ref fields[index];
 

@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 {
     [Id(0), JsonProperty] private readonly bool[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly bool this[int index] => ref fields[index];
 

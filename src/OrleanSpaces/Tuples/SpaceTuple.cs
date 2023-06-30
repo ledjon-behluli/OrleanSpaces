@@ -10,7 +10,7 @@ namespace OrleanSpaces.Tuples;
 public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 {
     [Id(0), JsonProperty] private readonly object[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public readonly object this[int index] => fields[index];
    

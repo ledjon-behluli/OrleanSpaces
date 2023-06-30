@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct ShortTuple : INumericTuple<short>, IEquatable<ShortTuple>
 {
     [Id(0), JsonProperty] private readonly short[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly short this[int index] => ref fields[index];
 

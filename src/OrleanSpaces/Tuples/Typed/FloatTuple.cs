@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
 {
     [Id(0), JsonProperty] private readonly float[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly float this[int index] => ref fields[index];
 

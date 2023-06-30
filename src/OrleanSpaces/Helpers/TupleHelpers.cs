@@ -315,7 +315,7 @@ internal static class TupleHelpers
             }
         }
 
-        return default;
+        return new();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

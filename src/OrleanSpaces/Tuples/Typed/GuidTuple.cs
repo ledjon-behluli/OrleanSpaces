@@ -9,7 +9,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 {
     [Id(0), JsonProperty] private readonly Guid[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly Guid this[int index] => ref fields[index];
     

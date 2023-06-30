@@ -9,7 +9,7 @@ namespace OrleanSpaces.Tuples.Typed;
 public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
 {
     [Id(0), JsonProperty] private readonly decimal[] fields;
-    [JsonProperty] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly decimal this[int index] => ref fields[index];
     
