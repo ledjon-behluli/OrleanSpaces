@@ -9,7 +9,7 @@ namespace OrleanSpaces.Grains;
 
 internal interface IIntGrain : IGrainWithStringKey 
 {
-    const string Id = "IntGrain";
+    const string Name = "IntGrain";
 
     ValueTask<ImmutableArray<IntTuple>> GetAsync();
     Task AddAsync(TupleAction<IntTuple> action);
@@ -22,7 +22,7 @@ internal sealed class IntGrain : Grain, IIntGrain
     [AllowNull] private IAsyncStream<TupleAction<IntTuple>> stream;
 
     public IntGrain(
-        [PersistentState(IIntGrain.Id, Constants.StorageName)] 
+        [PersistentState(IIntGrain.Name, Constants.StorageName)] 
         IPersistentState<List<IntTuple>> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -30,7 +30,7 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<IntTuple>(StreamId.Create(Constants.StreamName, IIntGrain.Id));
+        stream = this.GetStream<IntTuple>(StreamId.Create(Constants.StreamName, IIntGrain.Name));
         return Task.CompletedTask;
     }
 

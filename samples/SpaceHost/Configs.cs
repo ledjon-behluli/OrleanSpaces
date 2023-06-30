@@ -6,13 +6,8 @@ public static class Configs
     {
         configurator.ConfigureAzureQueue(queueOptions => queueOptions.Configure(options =>
         {
-            options.QueueNames = new List<string> { "pub-sub" };
+            options.QueueNames = new List<string> { OrleanSpaces.Constants.StreamName };
             options.ConfigureQueueServiceClient("UseDevelopmentStorage=true");
-        }));
-        configurator.ConfigureCacheSize(1024);
-        configurator.ConfigurePullingAgent(ob => ob.Configure(options =>
-        {
-            options.GetQueueMsgsTimerPeriod = TimeSpan.FromMilliseconds(200);
         }));
     };
 
@@ -24,7 +19,7 @@ public static class Configs
 
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
-        options.ContainerName = OrleanSpaces.Constants.StorageName;
+        options.ContainerName = OrleanSpaces.Constants.StorageName.ToLower(); // ToLower because of blob container naming rules
         options.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
     };
 

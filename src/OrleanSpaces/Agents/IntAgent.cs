@@ -79,9 +79,9 @@ internal sealed class IntAgent :
 
     public async Task InitializeAsync()
     {
-        grain = client.GetGrain<IIntGrain>(IIntGrain.Id);
+        grain = client.GetGrain<IIntGrain>(IIntGrain.Name);
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, IIntGrain.Id));
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, IIntGrain.Name));
     }
 
     #region IAsyncObserver

@@ -9,22 +9,22 @@ var host = Host.CreateDefaultBuilder(args)
         #region Streaming
 
         siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
-        //siloBuilder.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig)
+        //siloBuilder.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig);
 
         #endregion
         #region Persistence
 
         //siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore)
-        //siloBuilder.AddMemoryGrainStorage(Constants.TupleSpacesStore);;
+        //siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
 
-        siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
-        siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
+        //siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
+        //siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
-        //siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
-        //siloBuilder.AddAzureBlobGrainStorage(Constants.TupleSpacesStore, Configs.BlobConfig);
-          
+        siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
+        siloBuilder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);
+
         //siloBuilder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
-        //siloBuilder.AddAdoNetGrainStorage(Constants.TupleSpacesStore, Configs.AdoNetConfig);
+        //siloBuilder.AddAdoNetGrainStorage(Constants.StorageName, Configs.AdoNetConfig);
 
         #endregion
 

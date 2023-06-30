@@ -79,9 +79,9 @@ internal sealed class SpaceAgent :
 
     public async Task InitializeAsync()
     {
-        grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Id);       
+        grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Name);       
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, ISpaceGrain.Id));
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, ISpaceGrain.Name));
     }
 
     #region IAsyncObserver
