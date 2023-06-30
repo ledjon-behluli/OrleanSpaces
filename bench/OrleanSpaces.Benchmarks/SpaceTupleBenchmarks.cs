@@ -9,28 +9,6 @@ public class SpaceTupleBenchmarks
 {
     private const int iterations = 100_000;
 
-    #region Instantiation
-
-    [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateByCtor()
-    {
-        for (int i = 0; i < iterations; i++)
-        {
-            _ = new SpaceTuple();
-        }
-    }
-
-    [BenchmarkCategory("Instantiation"), Benchmark]
-    public void InstantiateByRefReturn()
-    {
-        for (int i = 0; i < iterations; i++)
-        {
-            _ = SpaceTuple.Empty;
-        }
-    }
-
-    #endregion
-
     #region Equality
 
     private readonly static SpaceTuple baseTuple = new(1);
