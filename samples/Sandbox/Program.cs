@@ -21,28 +21,15 @@ ISpaceAgentProvider provider = client.ServiceProvider.GetRequiredService<ISpaceA
 ISpaceAgent agent = await provider.GetAsync();
 
 SpaceTuple tuple = new(1, 2, 3);
-await agent.WriteAsync(tuple);
+SpaceTemplate template = new(1, null, 3, 4);
 
-SpaceTemplate template = new(1, null, 3);
-Console.WriteLine($"Searching for matching tuple with template: {template}");
-
-var _tuple = await agent.PeekAsync(template);
-if (_tuple.Length > 0)
+await agent.PeekAsync(template, x =>
 {
-    Console.WriteLine($"Found this tuple: {_tuple}");
-}
+    Console.WriteLine(x);
+    return Task.CompletedTask;
+});
 
-_tuple = await agent.PopAsync(template);
-if (_tuple.Length > 0)
-{
-    Console.WriteLine($"Found this tuple: {_tuple} and removed it");
-}
-
-_tuple = await agent.PeekAsync(template);
-if (_tuple.Length == 0)
-{
-    Console.WriteLine($"Tuple: {_tuple} has been removed");
-}
+await agent.WriteAsync(new(1, 2, 3, 4));
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();

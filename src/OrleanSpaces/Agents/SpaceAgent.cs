@@ -6,6 +6,10 @@ using OrleanSpaces.Continuations;
 using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
+using Orleans.Runtime;
+using System.Xml.Linq;
+using System.Xml;
+using System;
 
 namespace OrleanSpaces.Agents;
 
@@ -78,12 +82,21 @@ internal sealed class SpaceAgent :
     public async Task InitializeAsync()
     {
         grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Name);
-
-        var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<TupleAction<SpaceTuple>>(ISpaceGrain.GetStreamId());
-
-        await stream.SubscribeAsync(this);
+        
         tuples = (await grain.GetAsync()).ToList();
+
+        var stream = client.GetStreamProvider(Constants.PubSubProvider)
+              .GetStream<TupleAction<SpaceTuple>>(ISpaceGrain.GetStreamId());
+
+        var handles = await stream.GetAllSubscriptionHandles();
+        if (handles.Count > 0)
+        {
+            await handles[0].ResumeAsync(this);
+        }
+        else
+        {
+            await stream.SubscribeAsync(this);
+        }
     }
 
     #region IAsyncObserver

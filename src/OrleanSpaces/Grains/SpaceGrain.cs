@@ -6,15 +6,28 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface ISpaceGrain : IGrainWithStringKey
+internal interface IBaseGrain<T> where T : ISpaceTuple
+{
+    ValueTask<ImmutableArray<T>> GetAsync();
+    Task AddAsync(TupleAction<T> action);
+    Task RemoveAsync(TupleAction<T> action);
+}
+
+internal interface ISpaceGrain : IBaseGrain<SpaceTuple>, IGrainWithStringKey
 {
     const string Name = "SpaceGrain";
     static StreamId GetStreamId() => StreamId.Create(Constants.StreamName, Name);
-
-    ValueTask<ImmutableArray<SpaceTuple>> GetAsync();
-    Task AddAsync(TupleAction<SpaceTuple> action);
-    Task RemoveAsync(TupleAction<SpaceTuple> action);
 }
+
+//internal interface ISpaceGrain : IGrainWithStringKey
+//{
+//    const string Name = "SpaceGrain";
+//    static StreamId GetStreamId() => StreamId.Create(Constants.StreamName, Name);
+
+//    ValueTask<ImmutableArray<SpaceTuple>> GetAsync();
+//    Task AddAsync(TupleAction<SpaceTuple> action);
+//    Task RemoveAsync(TupleAction<SpaceTuple> action);
+//}
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {

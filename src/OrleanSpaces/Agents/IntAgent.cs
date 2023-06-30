@@ -79,11 +79,11 @@ internal sealed class IntAgent :
     {
         grain = client.GetGrain<IIntGrain>(IIntGrain.Name);
 
-        var provider = client.GetStreamProvider(Constants.PubSubProvider);
-        var stream = provider.GetStream<TupleAction<IntTuple>>(IIntGrain.GetStreamId());
-
-        await stream.SubscribeAsync(this);
         tuples = (await grain.GetAsync()).ToList();
+
+        await client.GetStreamProvider(Constants.PubSubProvider)
+            .GetStream<TupleAction<IntTuple>>(IIntGrain.GetStreamId())
+            .SubscribeAsync(this);
     }
 
     #region IAsyncObserver
