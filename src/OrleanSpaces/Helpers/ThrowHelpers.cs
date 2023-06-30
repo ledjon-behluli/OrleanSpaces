@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Runtime.CompilerServices;
 
-namespace OrleanSpaces;
+namespace OrleanSpaces.Helpers;
 
 internal static class ThrowHelpers
 {

@@ -1,15 +1,15 @@
 ﻿using Orleans.Runtime;
 using Orleans.Streams;
+using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples.Typed;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface IIntGrain : IGrainWithStringKey
+internal interface IIntGrain : IGrainWithStringKey 
 {
-    const string Name = "IntGrain";
-    static StreamId GetStreamId() => StreamId.Create(Constants.StreamName, Name);
+    const string Id = "IntGrain";
 
     ValueTask<ImmutableArray<IntTuple>> GetAsync();
     Task AddAsync(TupleAction<IntTuple> action);
@@ -18,33 +18,28 @@ internal interface IIntGrain : IGrainWithStringKey
 
 internal sealed class IntGrain : Grain, IIntGrain
 {
-    private readonly IPersistentState<IntGrainState> space;
-
+    private readonly IPersistentState<List<IntTuple>> space;
     [AllowNull] private IAsyncStream<TupleAction<IntTuple>> stream;
 
     public IntGrain(
-        [PersistentState(IIntGrain.Name, Constants.StorageName)] 
-        IPersistentState<IntGrainState> space)
+        [PersistentState(IIntGrain.Id, Constants.StorageName)] 
+        IPersistentState<List<IntTuple>> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        var provider = this.GetStreamProvider(Constants.PubSubProvider);
-        stream = provider.GetStream<TupleAction<IntTuple>>(StreamId.Create(Constants.StreamName, IIntGrain.Name));
-
+        stream = this.GetStream<IntTuple>(StreamId.Create(Constants.StreamName, IIntGrain.Id));
         return Task.CompletedTask;
     }
 
     public ValueTask<ImmutableArray<IntTuple>> GetAsync()
-      => new(space.State.Tuples.Select(x => (IntTuple)x).ToImmutableArray());
+      => new(space.State.ToImmutableArray());
 
     public async Task AddAsync(TupleAction<IntTuple> action)
     {
-        ThrowHelpers.EmptyTuple(action.Tuple);
-
-        space.State.Tuples.Add(action.Tuple);
+        space.State.Add(action.Tuple);
 
         await space.WriteStateAsync();
         await stream.OnNextAsync(action);
@@ -52,38 +47,13 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public async Task RemoveAsync(TupleAction<IntTuple> action)
     {
-        var storedTuple = space.State.Tuples.FirstOrDefault(x => x == action.Tuple);
-        if (storedTuple != null)
+        var storedTuple = space.State.FirstOrDefault(x => x == action.Tuple);
+        if (storedTuple.Length > 0)
         {
-            space.State.Tuples.Remove(storedTuple);
+            space.State.Remove(storedTuple);
 
             await space.WriteStateAsync();
             await stream.OnNextAsync(action);
         }
-    }
-}
-
-internal sealed class IntGrainState
-{
-    public List<Tuple> Tuples { get; set; } = new();
-
-    public class Tuple
-    {
-        public List<int> Fields { get; set; } = new();
-
-        public static implicit operator Tuple(IntTuple tuple)
-        {
-            Tuple dto = new();
-
-            for (int i = 0; i < tuple.Length; i++)
-            {
-                dto.Fields.Add(tuple[i]);
-            }
-
-            return dto;
-        }
-
-        public static implicit operator IntTuple(Tuple tuple) =>
-            new(tuple.Fields.ToArray());
     }
 }

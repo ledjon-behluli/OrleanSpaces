@@ -1,10 +1,10 @@
 ﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using OrleanSpaces;
+using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces;
+namespace OrleanSpaces.Helpers;
 
 internal static class TupleHelpers
 {

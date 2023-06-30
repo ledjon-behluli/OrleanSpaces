@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples.Typed;
 using OrleanSpaces.Tuples;
-using OrleanSpaces;
+using OrleanSpaces.Helpers;
 
 [ShortRunJob] //TODO: Remove
 [MemoryDiagnoser]

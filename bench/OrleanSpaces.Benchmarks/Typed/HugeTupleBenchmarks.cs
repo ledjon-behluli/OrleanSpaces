@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using OrleanSpaces;
+using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
 
