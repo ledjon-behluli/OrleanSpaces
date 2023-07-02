@@ -67,7 +67,7 @@ internal class Agent<T, TTuple, TTemplate> :
                 tuples.Add(action.Tuple);
             }
 
-            await callbackChannel.Writer.WriteAsync(new(action.Tuple, TTemplate.Create(action.Tuple)));
+            await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple.ToTemplate<TTemplate>()));
         }
         else
         {

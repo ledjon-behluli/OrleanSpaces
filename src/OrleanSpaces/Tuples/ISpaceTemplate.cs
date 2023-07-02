@@ -14,5 +14,4 @@ public interface ISpaceTemplate<T> : ISpaceTemplate
     ReadOnlySpan<T?>.Enumerator GetEnumerator();
 
     internal ISpaceTuple<T> Create(T[] fields);
-    internal abstract static TTemplate Create<TTemplate>(ISpaceTuple<T> tuple) where TTemplate : ISpaceTemplate<T>;
 }

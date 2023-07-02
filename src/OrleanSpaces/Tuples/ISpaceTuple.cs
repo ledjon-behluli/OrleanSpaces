@@ -14,6 +14,8 @@ public interface ISpaceTuple<T> : ISpaceTuple
 
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
+
+    TTemplate ToTemplate<TTemplate>() where TTemplate : ISpaceTemplate<T>;
 }
 
 internal interface INumericTuple<T> : ISpaceTuple<T>

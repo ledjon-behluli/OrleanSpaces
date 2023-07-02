@@ -82,9 +82,4 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
-
-    static ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields)
-    {
-        throw new NotImplementedException();
-    }
 }

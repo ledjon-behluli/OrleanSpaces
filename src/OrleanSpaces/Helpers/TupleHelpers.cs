@@ -22,9 +22,8 @@ internal static class TupleHelpers
        type == typeof(Guid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T, TTuple>(this TTuple left, TTuple right, out bool result)
+    public static bool TryParallelEquals<T>(this INumericTuple<T> left, INumericTuple<T> right, out bool result)
         where T : unmanaged, INumber<T>
-        where TTuple : INumericTuple<T>
     {
         result = false;
 
@@ -153,9 +152,8 @@ internal static class TupleHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T, TTuple>(this TTuple left, TTuple right)
+    public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
         where T : unmanaged
-        where TTuple : ISpaceTuple<T>
     {
         int length = left.Length;
         if (length != right.Length)
@@ -178,10 +176,8 @@ internal static class TupleHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T, TTuple, TTemplate>(TTemplate template, TTuple tuple)
+    public static bool Matches<T>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
         where T : unmanaged
-        where TTuple : struct, ISpaceTuple<T>
-        where TTemplate : struct, ISpaceTemplate<T>
     {
         int length = template.Length;
         if (length != tuple.Length)
@@ -202,9 +198,8 @@ internal static class TupleHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> AsSpan<T, TTuple>(this TTuple tuple, int maxFieldCharLength)
+    public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
         where T : unmanaged, ISpanFormattable
-        where TTuple : ISpaceTuple<T>
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = ArrayPool<char>.Shared.Rent(capacity);
@@ -280,9 +275,8 @@ internal static class TupleHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AllocateAndExecute<T, TConsumer>(this TConsumer consumer, int capacity)
-        where T : unmanaged
-        where TConsumer : IBufferConsumer<T>
+    public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity)
+       where T : unmanaged
     {
         if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
         {
