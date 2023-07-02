@@ -14,14 +14,14 @@ var host = Host.CreateDefaultBuilder(args)
         #endregion
         #region Persistence
 
-        //siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore)
-        //siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
+        siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
+        siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
 
         //siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
         //siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
-        siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
-        siloBuilder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);
+        //siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
+        //siloBuilder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);
 
         //siloBuilder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
         //siloBuilder.AddAdoNetGrainStorage(Constants.StorageName, Configs.AdoNetConfig);

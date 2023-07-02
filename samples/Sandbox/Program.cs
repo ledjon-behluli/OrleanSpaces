@@ -9,7 +9,7 @@ var host = new HostBuilder()
     {
         builder.AddOrleanSpaces(options =>
         {
-            options.SpaceTuplesEnabled = false;
+            options.SpaceTuplesEnabled = true;
             options.IntTuplesEnabled = true;
         });
         builder.UseLocalhostClustering();
@@ -25,27 +25,27 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 // SpaceTuple
 
-//var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
-//var agent1 = await provider1.GetAsync();
+var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
+var agent1 = await provider1.GetAsync();
 
-//SpaceTuple s_tuple1 = new(1, "2", 3);
-//SpaceTemplate s_template1 = new(1, null, 3);
-//SpaceTuple s_tuple2 = new(1, "2", 3, 4);
-//SpaceTemplate s_template2 = new(1, null, 3, null);
+SpaceTuple s_tuple1 = new(1, "2", 3);
+SpaceTemplate s_template1 = new(1, null, 3);
 
-//await agent1.WriteAsync(s_tuple1);
-//var s_tuple = await agent1.PeekAsync(s_template1);
+await agent1.WriteAsync(s_tuple1);
+
 
 
 // IntTuple
 
-var provider2 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider<int, IntTuple, IntTemplate>>();
+var provider2 = client.ServiceProvider.GetRequiredService<IIntAgentProvider>();
 var agent2 = await provider2.GetAsync();
 
 IntTuple i_tuple1 = new(1, 2, 3);
 IntTemplate i_template1 = new(1, null, 3);
 
 await agent2.WriteAsync(i_tuple1);
+
+var s_tuple = await agent1.PopAsync(s_template1);
 var i_tuple = await agent2.PopAsync(i_template1);
 
 
