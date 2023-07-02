@@ -102,6 +102,8 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
+    internal Task InitializeAsync();
+
     Guid Subscribe(ISpaceObserver<TTuple> observer);
     void Unsubscribe(Guid observerId);
 

@@ -33,8 +33,6 @@ SpaceTemplate s_template1 = new(1, null, 3);
 
 await agent1.WriteAsync(s_tuple1);
 
-
-
 // IntTuple
 
 var provider2 = client.ServiceProvider.GetRequiredService<IIntAgentProvider>();
