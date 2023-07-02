@@ -191,7 +191,7 @@ internal static class TupleHelpers
             fields[i] = template[i] is { } value ? value : tuple[i];
         }
 
-        ISpaceTuple<T> templateTuple = template.Create(fields);
+        ISpaceTuple<T> templateTuple = ISpaceTemplate<T>.Create( template.Create(fields);
         bool result = templateTuple.Equals(tuple);
 
         return result;

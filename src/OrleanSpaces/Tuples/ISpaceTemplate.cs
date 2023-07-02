@@ -13,5 +13,7 @@ public interface ISpaceTemplate<T> : ISpaceTemplate
     bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
     ReadOnlySpan<T?>.Enumerator GetEnumerator();
 
-    internal ISpaceTuple<T> Create(T[] fields);
+    //internal ISpaceTuple<T> Create(T[] fields);
+    internal abstract static ISpaceTuple<T> Create(T[] fields);
+    internal abstract static TTemplate Create<TTemplate>(ISpaceTuple<T> tuple) where TTemplate : ISpaceTemplate<T>;
 }
