@@ -75,11 +75,16 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
     public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields == null || fields.Length == 0 ? new bool?[1] { null } : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool> 
+    public static bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool> 
         => TupleHelpers.Matches(this, tuple);
 
-    ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
+    static ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
+
+    static ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields)
+    {
+        throw new NotImplementedException();
+    }
 }
