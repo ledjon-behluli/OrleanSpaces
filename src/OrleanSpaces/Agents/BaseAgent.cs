@@ -1,5 +1,4 @@
 ﻿using Orleans.Runtime;
-using Orleans.Serialization.WireProtocol;
 using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
@@ -8,14 +7,12 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Typed;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal class Agent<T, TTuple, TTemplate> : 
+internal class BaseAgent<T, TTuple, TTemplate> : 
     ISpaceAgent<T, TTuple, TTemplate>,
     ITupleRouter<TTuple, TTemplate>,
     IAsyncObserver<TupleAction<TTuple>>
@@ -31,10 +28,10 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackChannel<TTuple, TTemplate> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
-    [AllowNull] private IIntGrain grain;
+    [AllowNull] private IBaseGrain<TTuple> grain;
     private List<TTuple> tuples = new();
 
-    public Agent(
+    public BaseAgent(
         IClusterClient client,
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverChannel<TTuple> observerChannel,
@@ -50,11 +47,12 @@ internal class Agent<T, TTuple, TTemplate> :
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync<TGrain>(TGrain grain)
+        where TGrain : IBaseGrain<TTuple>
     {
-        grain = client.GetGrain<IIntGrain>(IIntGrain.Name);
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, IIntGrain.Name));
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, TGrain.Id));
+        this.grain = grain;
     }
 
     #region IAsyncObserver

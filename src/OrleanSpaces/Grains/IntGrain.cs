@@ -7,22 +7,17 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface IIntGrain : IGrainWithStringKey 
-{
-    const string Name = "IntGrain";
-
-    ValueTask<ImmutableArray<IntTuple>> GetAsync();
-    Task AddAsync(TupleAction<IntTuple> action);
-    Task RemoveAsync(TupleAction<IntTuple> action);
-}
+internal interface IIntGrain : IBaseGrain<IntTuple>, IGrainWithStringKey { }
 
 internal sealed class IntGrain : Grain, IIntGrain
 {
     private readonly IPersistentState<List<IntTuple>> space;
     [AllowNull] private IAsyncStream<TupleAction<IntTuple>> stream;
 
+    public static string Id => "IntGrain";
+
     public IntGrain(
-        [PersistentState(IIntGrain.Name, Constants.StorageName)] 
+        [PersistentState("IntGrain", Constants.StorageName)] 
         IPersistentState<List<IntTuple>> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -30,7 +25,7 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<IntTuple>(StreamId.Create(Constants.StreamName, IIntGrain.Name));
+        stream = this.GetStream<IntTuple>(StreamId.Create(Constants.StreamName, Id));
         return Task.CompletedTask;
     }
 

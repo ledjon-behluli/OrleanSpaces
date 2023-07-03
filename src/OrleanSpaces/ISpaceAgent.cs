@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Observers;
+﻿using OrleanSpaces.Grains;
+using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
@@ -102,7 +103,7 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
-    internal Task InitializeAsync();
+    internal Task InitializeAsync<TGrain>(TGrain grain) where TGrain : IBaseGrain<TTuple>;
 
     Guid Subscribe(ISpaceObserver<TTuple> observer);
     void Unsubscribe(Guid observerId);

@@ -27,7 +27,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+    static ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
     ISpaceTemplate<sbyte> ISpaceTuple<sbyte>.ToTemplate()
     {
         ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in this.fields);
@@ -49,9 +49,7 @@ public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>
         => this.fields = fields == null || fields.Length == 0 ? new sbyte?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<sbyte>
-        => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<sbyte> ISpaceTemplate<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+        => TupleHelpers.Matches<sbyte, SByteTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();

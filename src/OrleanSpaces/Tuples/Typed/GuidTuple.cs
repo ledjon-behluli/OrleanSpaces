@@ -53,7 +53,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
+    static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
     ISpaceTemplate<Guid> ISpaceTuple<Guid>.ToTemplate()
     {
         ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(in this.fields);
@@ -75,7 +75,7 @@ public readonly record struct GuidTemplate : ISpaceTemplate<Guid>
         => this.fields = fields == null || fields.Length == 0 ? new Guid?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Guid>
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<Guid, GuidTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();

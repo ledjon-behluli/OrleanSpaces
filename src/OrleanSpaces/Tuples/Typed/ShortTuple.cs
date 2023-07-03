@@ -27,7 +27,7 @@ public readonly struct ShortTuple : INumericTuple<short>, IEquatable<ShortTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<short> ISpaceTuple<short>.Create(short[] fields) => new ShortTuple(fields);
+    static ISpaceTuple<short> ISpaceTuple<short>.Create(short[] fields) => new ShortTuple(fields);
     ISpaceTemplate<short> ISpaceTuple<short>.ToTemplate()
     {
         ref short?[] fields = ref TupleHelpers.CastAs<short[], short?[]>(in this.fields);
@@ -49,7 +49,7 @@ public readonly record struct ShortTemplate : ISpaceTemplate<short>
         => this.fields = fields == null || fields.Length == 0 ? new short?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<short>
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<short, ShortTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<short?>.Enumerator GetEnumerator() => new ReadOnlySpan<short?>(fields).GetEnumerator();

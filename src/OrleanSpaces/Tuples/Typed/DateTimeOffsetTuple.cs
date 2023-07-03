@@ -29,7 +29,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
+    static ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
     ISpaceTemplate<DateTimeOffset> ISpaceTuple<DateTimeOffset>.ToTemplate()
     {
         ref DateTimeOffset?[] fields = ref TupleHelpers.CastAs<DateTimeOffset[], DateTimeOffset?[]>(in this.fields);
@@ -51,7 +51,7 @@ public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOf
         => this.fields = fields == null || fields.Length == 0 ? new DateTimeOffset?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTimeOffset>
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();

@@ -15,7 +15,7 @@ public interface ISpaceTuple<T> : ISpaceTuple
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
 
-    internal ISpaceTuple<T> Create(T[] fields);
+    internal static abstract ISpaceTuple<T> Create(T[] fields);
     internal ISpaceTemplate<T> ToTemplate();
 }
 

@@ -176,8 +176,9 @@ internal static class TupleHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
+    public static bool Matches<T, TTuple>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
         where T : unmanaged
+        where TTuple : ISpaceTuple<T>
     {
         int length = template.Length;
         if (length != tuple.Length)
@@ -191,7 +192,7 @@ internal static class TupleHelpers
             fields[i] = template[i] is { } value ? value : tuple[i];
         }
 
-        ISpaceTuple<T> templateTuple = template.Create(fields);
+        ISpaceTuple<T> templateTuple = TTuple.Create(fields);
         bool result = templateTuple.Equals(tuple);
 
         return result;

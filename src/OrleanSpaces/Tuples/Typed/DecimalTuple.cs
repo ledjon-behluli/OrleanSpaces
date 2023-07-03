@@ -53,7 +53,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
+    static ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
     ISpaceTemplate<decimal> ISpaceTuple<decimal>.ToTemplate()
     {
         ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in this.fields);
@@ -104,7 +104,7 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
         => this.fields = fields == null || fields.Length == 0 ? new decimal?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<decimal, DecimalTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();

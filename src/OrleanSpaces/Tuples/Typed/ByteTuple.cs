@@ -27,7 +27,7 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
+    static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
     ISpaceTemplate<byte> ISpaceTuple<byte>.ToTemplate()
     {
         ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in this.fields);
@@ -49,7 +49,7 @@ public readonly record struct ByteTemplate : ISpaceTemplate<byte>
         => this.fields = fields == null || fields.Length == 0 ? new byte?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<byte>
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<byte, ByteTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();

@@ -29,7 +29,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
+    static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
     ISpaceTemplate<bool> ISpaceTuple<bool>.ToTemplate()
     {
         ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in this.fields);
@@ -52,7 +52,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 
         return new SFBoolTuple(sfBools).AsSpan(Constants.MaxFieldCharLength_Bool);
     }
- 
+
     readonly record struct SFBoolTuple(params SFBool[] Fields) : ISpaceTuple<SFBool>
     {
         public ref readonly SFBool this[int index] => ref Fields[index];
@@ -61,7 +61,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
 
-        ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
+        static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
         ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
     }
 
@@ -85,7 +85,7 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
         => this.fields = fields == null || fields.Length == 0 ? new bool?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool> 
-        => TupleHelpers.Matches(this, tuple);
+        => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
