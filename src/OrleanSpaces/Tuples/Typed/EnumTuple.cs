@@ -64,6 +64,13 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
+    ISpaceTuple<T> ISpaceTuple<T>.Create(T[] fields) => new EnumTuple<T>(fields);
+    ISpaceTemplate<T> ISpaceTuple<T>.ToTemplate()
+    {
+        ref T?[] fields = ref TupleHelpers.CastAs<T[], T?[]>(in this.fields);
+        return new EnumTemplate<T>(fields);
+    }
+
     public ReadOnlySpan<char> AsSpan()
     {
         int tupleLength = Length;
@@ -97,8 +104,10 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
         public ref readonly SFEnum this[int index] => ref Fields[index];
         public int Length => Fields.Length;
 
-        public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+        ISpaceTuple<SFEnum> ISpaceTuple<SFEnum>.Create(SFEnum[] fields) => new SFEnumTuple(fields);
+        ISpaceTemplate<SFEnum> ISpaceTuple<SFEnum>.ToTemplate() => throw new NotImplementedException();
 
+        public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFEnum>.Enumerator GetEnumerator() => new ReadOnlySpan<SFEnum>(Fields).GetEnumerator();
     }
 
@@ -135,8 +144,6 @@ public readonly record struct EnumTemplate<T> : ISpaceTemplate<T>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<T> ISpaceTemplate<T>.Create(T[] fields) => new EnumTuple<T>(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<T?>.Enumerator GetEnumerator() => new ReadOnlySpan<T?>(fields).GetEnumerator();

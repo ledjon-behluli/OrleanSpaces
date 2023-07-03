@@ -41,8 +41,14 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
+    ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
+    ISpaceTemplate<UInt128> ISpaceTuple<UInt128>.ToTemplate()
+    {
+        ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(in this.fields);
+        return new UHugeTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
     public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<byte>
@@ -94,8 +100,6 @@ public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<UInt128>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<UInt128> ISpaceTemplate<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128?>(fields).GetEnumerator();

@@ -29,8 +29,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
+    ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
+    ISpaceTemplate<bool> ISpaceTuple<bool>.ToTemplate()
+    {
+        ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in this.fields);
+        return new BoolTemplate(fields);
+    }
 
+    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
     public ReadOnlySpan<char> AsSpan()
     {
         // Since `bool` does not implement `ISpanFormattable` (see: https://github.com/dotnet/runtime/issues/67388),
@@ -46,7 +52,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 
         return new SFBoolTuple(sfBools).AsSpan(Constants.MaxFieldCharLength_Bool);
     }
-
+ 
     readonly record struct SFBoolTuple(params SFBool[] Fields) : ISpaceTuple<SFBool>
     {
         public ref readonly SFBool this[int index] => ref Fields[index];
@@ -54,6 +60,9 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
+
+        ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
+        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable
@@ -77,8 +86,6 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool> 
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<bool> ISpaceTemplate<bool>.Create(bool[] fields) => new BoolTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();

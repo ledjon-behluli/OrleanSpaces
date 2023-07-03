@@ -27,6 +27,13 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
+    ISpaceTuple<int> ISpaceTuple<int>.Create(int[] fields) => new IntTuple(fields);
+    ISpaceTemplate<int> ISpaceTuple<int>.ToTemplate()
+    {
+        ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in this.fields);
+        return new IntTemplate(fields);
+    }
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Int);
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
 }
@@ -44,22 +51,6 @@ public readonly record struct IntTemplate : ISpaceTemplate<int>
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int>
         => TupleHelpers.Matches(this, tuple);
 
-    ISpaceTuple<int> ISpaceTemplate<int>.Create(int[] fields) => new IntTuple(fields);
-
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
-
-
-    public static implicit operator IntTemplate(IntTuple tuple)
-    {
-        int length = tuple.Length;
-        int[] fields = new int[length];
-
-        for (int i = 0; i < length; i++)
-        {
-            fields[i] = tuple[i];
-        }
-
-        return new IntTuple(fields);
-    }
 }

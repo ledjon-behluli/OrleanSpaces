@@ -39,8 +39,14 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
+    ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => new CharTuple(fields);
+    ISpaceTemplate<char> ISpaceTuple<char>.ToTemplate()
+    {
+        ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(in this.fields);
+        return new CharTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
@@ -56,8 +62,6 @@ public readonly record struct CharTemplate : ISpaceTemplate<char>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<char>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<char> ISpaceTemplate<char>.Create(char[] fields) => new CharTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();

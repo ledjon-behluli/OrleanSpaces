@@ -298,7 +298,6 @@ internal static class TupleHelpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref TOut CastAs<TIn, TOut>(in TIn value) // 'value' is passed using 'in' to avoid defensive copying.
-       where TIn : struct
        => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

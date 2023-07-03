@@ -27,8 +27,14 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
+    ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+    ISpaceTemplate<sbyte> ISpaceTuple<sbyte>.ToTemplate()
+    {
+        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in this.fields);
+        return new SByteTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 

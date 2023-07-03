@@ -29,8 +29,14 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
+    ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
+    ISpaceTemplate<DateTime> ISpaceTuple<DateTime>.ToTemplate()
+    {
+        ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(in this.fields);
+        return new DateTimeTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }
 
@@ -46,8 +52,6 @@ public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTime>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<DateTime> ISpaceTemplate<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<DateTime?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime?>(fields).GetEnumerator();

@@ -27,8 +27,14 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
+    ISpaceTuple<uint> ISpaceTuple<uint>.Create(uint[] fields) => new UIntTuple(fields);
+    ISpaceTemplate<uint> ISpaceTuple<uint>.ToTemplate()
+    {
+        ref uint?[] fields = ref TupleHelpers.CastAs<uint[], uint?[]>(in this.fields);
+        return new UIntTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
     public ReadOnlySpan<uint>.Enumerator GetEnumerator() => new ReadOnlySpan<uint>(fields).GetEnumerator();
 }
 
@@ -44,8 +50,6 @@ public readonly record struct UIntTemplate : ISpaceTemplate<uint>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<uint>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<uint> ISpaceTemplate<uint>.Create(uint[] fields) => new UIntTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<uint?>.Enumerator GetEnumerator() => new ReadOnlySpan<uint?>(fields).GetEnumerator();

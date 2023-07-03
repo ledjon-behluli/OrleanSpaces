@@ -1,4 +1,5 @@
 ﻿using Orleans.Runtime;
+using Orleans.Serialization.WireProtocol;
 using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
@@ -7,7 +8,9 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Typed;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
@@ -67,7 +70,7 @@ internal class Agent<T, TTuple, TTemplate> :
                 tuples.Add(action.Tuple);
             }
 
-            await callbackChannel.Writer.WriteAsync(new(action.Tuple, action.Tuple.ToTemplate<TTemplate>()));
+            await callbackChannel.Writer.WriteAsync(new(action.Tuple, (TTemplate)action.Tuple.ToTemplate()));
         }
         else
         {

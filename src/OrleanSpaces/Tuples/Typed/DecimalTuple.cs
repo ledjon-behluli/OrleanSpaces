@@ -53,8 +53,14 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
+    ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
+    ISpaceTemplate<decimal> ISpaceTuple<decimal>.ToTemplate()
+    {
+        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in this.fields);
+        return new DecimalTemplate(fields);
+    }
 
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<int>
@@ -99,8 +105,6 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
         => TupleHelpers.Matches(this, tuple);
-
-    ISpaceTuple<decimal> ISpaceTemplate<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
