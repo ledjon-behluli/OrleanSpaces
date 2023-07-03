@@ -252,6 +252,8 @@ public class DateTimeOffsetTupleBenchmarks
         public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => throw new NotImplementedException();
+        static ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => throw new NotImplementedException();
+        ISpaceTemplate<DateTimeOffset> ISpaceTuple<DateTimeOffset>.ToTemplate() => throw new NotImplementedException();
     }
 
     #endregion

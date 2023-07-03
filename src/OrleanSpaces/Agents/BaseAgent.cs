@@ -11,6 +11,42 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Agents;
 
+internal class BaseAgentProvider<T, TTuple, TTemplate, TGrain> : ISpaceAgentProvider<T, TTuple, TTemplate>
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+    where TTemplate : ISpaceTemplate<T>
+    where TGrain : IBaseGrain<TTuple>
+{
+    private static readonly SemaphoreSlim semaphore = new(1, 1);
+
+    private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
+    private bool initialized;
+
+    public BaseAgentProvider(ISpaceAgent<T, TTuple, TTemplate> agent) => this.agent = agent;
+
+    public async ValueTask<ISpaceAgent<T, TTuple, TTemplate>> GetAsync()
+    {
+        if (initialized)
+        {
+            return agent;
+        }
+
+        await semaphore.WaitAsync();
+
+        try
+        {
+            await agent.InitializeAsync<TGrain>();
+            initialized = true;
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+
+        return agent;
+    }
+}
+
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal class BaseAgent<T, TTuple, TTemplate> : 
     ISpaceAgent<T, TTuple, TTemplate>,

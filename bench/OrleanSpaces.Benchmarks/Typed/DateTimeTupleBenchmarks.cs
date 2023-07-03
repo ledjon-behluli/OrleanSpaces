@@ -252,6 +252,8 @@ public class DateTimeTupleBenchmarks
         public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => throw new NotImplementedException();
+        static ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => throw new NotImplementedException();
+        ISpaceTemplate<DateTime> ISpaceTuple<DateTime>.ToTemplate() => throw new NotImplementedException();
     }
 
     #endregion

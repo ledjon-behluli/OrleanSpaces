@@ -175,8 +175,31 @@ internal static class TupleHelpers
         return true;
     }
 
+    //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+    //public static bool Matches<T, TTuple>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
+    //    where T : unmanaged
+    //    where TTuple : ISpaceTuple<T>
+    //{
+    //    int length = template.Length;
+    //    if (length != tuple.Length)
+    //    {
+    //        return false;
+    //    }
+
+    //    T[] fields = new T[length];
+    //    for (int i = 0; i < length; i++)
+    //    {
+    //        fields[i] = template[i] is { } value ? value : tuple[i];
+    //    }
+
+    //    ISpaceTuple<T> templateTuple = TTuple.Create(fields);
+    //    bool result = templateTuple.Equals(tuple);
+
+    //    return result;
+    //}
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T, TTuple>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
+    public static bool Matches<T, TTuple, TTemplate>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
         where T : unmanaged
         where TTuple : ISpaceTuple<T>
     {
