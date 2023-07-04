@@ -29,7 +29,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<bool> ToTemplate()
+    public ISpaceTemplate ToTemplate()
     {
         ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in this.fields);
         return new BoolTemplate(fields);
@@ -63,7 +63,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
 
         static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
-        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
+        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable

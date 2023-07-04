@@ -27,7 +27,7 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<byte> ToTemplate()
+    public ISpaceTemplate ToTemplate()
     {
         ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in this.fields);
         return new ByteTemplate(fields);

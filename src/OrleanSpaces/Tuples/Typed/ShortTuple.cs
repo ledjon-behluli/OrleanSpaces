@@ -27,7 +27,7 @@ public readonly struct ShortTuple : INumericTuple<short>, IEquatable<ShortTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<short> ToTemplate()
+    public ISpaceTemplate ToTemplate()
     {
         ref short?[] fields = ref TupleHelpers.CastAs<short[], short?[]>(in this.fields);
         return new ShortTemplate(fields);

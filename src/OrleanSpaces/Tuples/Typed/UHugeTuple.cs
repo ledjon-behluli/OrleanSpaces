@@ -41,7 +41,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<UInt128> ToTemplate()
+    public ISpaceTemplate ToTemplate()
     {
         ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(in this.fields);
         return new UHugeTemplate(fields);

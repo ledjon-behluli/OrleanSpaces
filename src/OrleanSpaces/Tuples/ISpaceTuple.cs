@@ -5,6 +5,7 @@ namespace OrleanSpaces.Tuples;
 public interface ISpaceTuple 
 {
     int Length { get; }
+    ISpaceTemplate ToTemplate();
 }
 
 public interface ISpaceTuple<T> : ISpaceTuple
@@ -12,7 +13,7 @@ public interface ISpaceTuple<T> : ISpaceTuple
 {  
     ref readonly T this[int index] { get; }
 
-    ISpaceTemplate<T> ToTemplate();
+    //ISpaceTemplate<T> ToTemplate();
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
 
