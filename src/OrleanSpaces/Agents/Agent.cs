@@ -91,7 +91,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(IBaseGrain<TTuple> grain)
     {
-        tuples = (await grain.GetAsync()).ToList();
+        tuples = (await grain.GetAll()).ToList();
         StreamId streamId = await grain.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
@@ -145,7 +145,7 @@ internal class Agent<T, TTuple, TTemplate> :
     public async Task WriteAsync(TTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        await grain.AddAsync(new(agentId, tuple, TupleActionType.Insert));
+        await grain.Insert(new(agentId, tuple, TupleActionType.Insert));
         tuples.Add(tuple);
     }
 
@@ -183,7 +183,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
         if (tuple.Length > 0)
         {
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
+            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -199,7 +199,7 @@ internal class Agent<T, TTuple, TTemplate> :
         if (tuple.Length > 0)
         {
             await callback(tuple);
-            await grain.RemoveAsync(new(agentId, tuple, TupleActionType.Remove));
+            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }

@@ -34,10 +34,10 @@ internal sealed class IntGrain : Grain, IIntGrain
 
     public ValueTask<StreamId> GetStreamId() => new(streamId);
 
-    public ValueTask<ImmutableArray<IntTuple>> GetAsync()
+    public ValueTask<ImmutableArray<IntTuple>> GetAll()
       => new(space.State.ToImmutableArray());
 
-    public async Task AddAsync(TupleAction<IntTuple> action)
+    public async Task Insert(TupleAction<IntTuple> action)
     {
         space.State.Add(action.Tuple);
 
@@ -45,7 +45,7 @@ internal sealed class IntGrain : Grain, IIntGrain
         await stream.OnNextAsync(action);
     }
 
-    public async Task RemoveAsync(TupleAction<IntTuple> action)
+    public async Task Remove(TupleAction<IntTuple> action)
     {
         var storedTuple = space.State.FirstOrDefault(x => x == action.Tuple);
         if (storedTuple.Length > 0)

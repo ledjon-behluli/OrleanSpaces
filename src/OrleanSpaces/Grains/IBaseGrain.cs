@@ -7,8 +7,7 @@ namespace OrleanSpaces.Grains;
 internal interface IBaseGrain<T> where T : ISpaceTuple
 {
     ValueTask<StreamId> GetStreamId();
-
-    ValueTask<ImmutableArray<T>> GetAsync();
-    Task AddAsync(TupleAction<T> action);
-    Task RemoveAsync(TupleAction<T> action);
+    ValueTask<ImmutableArray<T>> GetAll();
+    Task Insert(TupleAction<T> action);
+    Task Remove(TupleAction<T> action);
 }
