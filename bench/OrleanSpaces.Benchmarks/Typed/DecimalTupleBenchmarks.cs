@@ -250,7 +250,7 @@ public class DecimalTupleBenchmarks
         public SequentialDecimalTuple(params decimal[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDecimalTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate<decimal> AsTemplate() => throw new NotImplementedException();
+        public ISpaceTemplate<decimal> ToTemplate() => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => throw new NotImplementedException();
         static ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => throw new NotImplementedException();

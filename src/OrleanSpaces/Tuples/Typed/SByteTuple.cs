@@ -27,7 +27,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<sbyte> AsTemplate()
+    public ISpaceTemplate<sbyte> ToTemplate()
     {
         ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in this.fields);
         return new SByteTemplate(fields);

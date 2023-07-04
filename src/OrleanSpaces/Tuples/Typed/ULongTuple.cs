@@ -27,7 +27,7 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<ulong> AsTemplate()
+    public ISpaceTemplate<ulong> ToTemplate()
     {
         ref ulong?[] fields = ref TupleHelpers.CastAs<ulong[], ulong?[]>(in this.fields);
         return new ULongTemplate(fields);

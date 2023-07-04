@@ -28,7 +28,7 @@ static void SpaceTemplateSyntax()
     Console.WriteLine($"SpaceTemplate with one field: {new SpaceTemplate(1)}");
     Console.WriteLine($"SpaceTemplate with two fields: {new SpaceTemplate(1, "a")}");
     Console.WriteLine($"SpaceTemplate with three fields: {new SpaceTemplate(1, "a", 1.5f)}");
-    Console.WriteLine($"SpaceTemplate from SpaceTuple: {new SpaceTuple(1, "a").AsTemplate()}");
+    Console.WriteLine($"SpaceTemplate from SpaceTuple: {new SpaceTuple(1, "a").ToTemplate()}");
     Console.WriteLine($"SpaceTemplate with null field: {new SpaceTemplate(1, "a", null, 1.5f)}");
     Console.WriteLine($"SpaceTemplate with null and \"NULL\" string: {new SpaceTemplate(null, "NULL")}");
 

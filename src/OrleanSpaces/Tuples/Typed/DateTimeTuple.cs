@@ -29,7 +29,7 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<DateTime> AsTemplate()
+    public ISpaceTemplate<DateTime> ToTemplate()
     {
         ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(in this.fields);
         return new DateTimeTemplate(fields);

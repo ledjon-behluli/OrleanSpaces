@@ -53,7 +53,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<decimal> AsTemplate()
+    public ISpaceTemplate<decimal> ToTemplate()
     {
         ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in this.fields);
         return new DecimalTemplate(fields);

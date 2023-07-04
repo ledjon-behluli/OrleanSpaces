@@ -27,7 +27,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<int> AsTemplate()
+    public ISpaceTemplate<int> ToTemplate()
     {
         ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in this.fields);
         return new IntTemplate(fields);

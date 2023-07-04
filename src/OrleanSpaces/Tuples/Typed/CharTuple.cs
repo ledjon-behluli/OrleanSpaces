@@ -39,7 +39,7 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<char> AsTemplate()
+    public ISpaceTemplate<char> ToTemplate()
     {
         ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(in this.fields);
         return new CharTemplate(fields);

@@ -27,7 +27,7 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<double> AsTemplate()
+    public ISpaceTemplate<double> ToTemplate()
     {
         ref double?[] fields = ref TupleHelpers.CastAs<double[], double?[]>(in this.fields);
         return new DoubleTemplate(fields);

@@ -28,7 +28,7 @@ public class Slave
             {
                 Console.WriteLine($"\nSLAVE {id}: Found password to Hash = {hash}");
 
-                await agent.PopAsync(tuple.AsTemplate());
+                await agent.PopAsync(tuple.ToTemplate());
                 await agent.WriteAsync(new(ExchangeKeys.PASSWORD_FOUND, hash, password));
             }
         }

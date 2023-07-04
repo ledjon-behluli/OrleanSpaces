@@ -53,7 +53,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<Guid> AsTemplate()
+    public ISpaceTemplate<Guid> ToTemplate()
     {
         ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(in this.fields);
         return new GuidTemplate(fields);

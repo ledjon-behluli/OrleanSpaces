@@ -27,7 +27,7 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<float> AsTemplate()
+    public ISpaceTemplate<float> ToTemplate()
     {
         ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(in this.fields);
         return new FloatTemplate(fields);

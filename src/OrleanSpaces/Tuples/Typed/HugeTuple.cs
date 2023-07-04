@@ -41,7 +41,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<Int128> AsTemplate()
+    public ISpaceTemplate<Int128> ToTemplate()
     {
         ref Int128?[] fields = ref TupleHelpers.CastAs<Int128[], Int128?[]>(in this.fields);
         return new HugeTemplate(fields);

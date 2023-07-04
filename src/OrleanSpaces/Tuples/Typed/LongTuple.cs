@@ -27,7 +27,7 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate<long> AsTemplate()
+    public ISpaceTemplate<long> ToTemplate()
     {
         ref long?[] fields = ref TupleHelpers.CastAs<long[], long?[]>(in this.fields);
         return new LongTemplate(fields);
