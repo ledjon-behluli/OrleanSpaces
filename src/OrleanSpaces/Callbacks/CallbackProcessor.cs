@@ -38,7 +38,7 @@ internal sealed class CallbackProcessor : BackgroundService
     private async Task CallbackAsync(SpaceTuple tuple, CallbackEntry<SpaceTuple> entry, CancellationToken cancellationToken)
     {
         await entry.Callback(tuple);
-        if (entry.IsContinuable)
+        if (entry.HasContinuation)
         {
             await continuationChannel.TemplateWriter.WriteAsync(tuple.ToTemplate(), cancellationToken);
         }
@@ -82,7 +82,7 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
     private async Task CallbackAsync(TTuple tuple, CallbackEntry<TTuple> entry, CancellationToken cancellationToken)
     {
         await entry.Callback(tuple);
-        if (entry.IsContinuable)
+        if (entry.HasContinuation)
         {
             await continuationChannel.TemplateWriter.WriteAsync((TTemplate)tuple.ToTemplate(), cancellationToken);
         }

@@ -6,11 +6,11 @@ internal readonly struct CallbackEntry<T>
     where T : ISpaceTuple
 {
     public readonly Func<T, Task> Callback;
-    public readonly bool IsContinuable;
+    public readonly bool HasContinuation;
 
-    public CallbackEntry(Func<T, Task> callback, bool isContinuable)
+    public CallbackEntry(Func<T, Task> callback, bool hasContinuation)
     {
         Callback = callback;
-        IsContinuable = isContinuable;
+        HasContinuation = hasContinuation;
     }
 }
