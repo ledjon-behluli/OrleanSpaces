@@ -11,18 +11,26 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Agents;
 
-internal class BaseAgentProvider<T, TTuple, TTemplate, TGrain> : ISpaceAgentProvider<T, TTuple, TTemplate>
+internal class AgentProvider<T, TTuple, TTemplate, TGrain> : ISpaceAgentProvider<T, TTuple, TTemplate>
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
-    where TGrain : IBaseGrain<TTuple>
+    where TGrain : IBaseGrain<TTuple>, IGrainWithStringKey
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
+    private readonly IClusterClient client;
     private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
+
     private bool initialized;
 
-    public BaseAgentProvider(ISpaceAgent<T, TTuple, TTemplate> agent) => this.agent = agent;
+    public AgentProvider(
+        IClusterClient client,
+        ISpaceAgent<T, TTuple, TTemplate> agent)
+    {
+        this.client = client;
+        this.agent = agent;
+    }
 
     public async ValueTask<ISpaceAgent<T, TTuple, TTemplate>> GetAsync()
     {
@@ -35,7 +43,8 @@ internal class BaseAgentProvider<T, TTuple, TTemplate, TGrain> : ISpaceAgentProv
 
         try
         {
-            await agent.InitializeAsync<TGrain>();
+            TGrain grain = client.GetGrain<TGrain>(TGrain.Name);
+            await agent.InitializeAsync(grain);
             initialized = true;
         }
         finally
@@ -47,8 +56,7 @@ internal class BaseAgentProvider<T, TTuple, TTemplate, TGrain> : ISpaceAgentProv
     }
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal class BaseAgent<T, TTuple, TTemplate> : 
+internal class Agent<T, TTuple, TTemplate> : 
     ISpaceAgent<T, TTuple, TTemplate>,
     ITupleRouter<TTuple, TTemplate>,
     IAsyncObserver<TupleAction<TTuple>>
@@ -67,7 +75,7 @@ internal class BaseAgent<T, TTuple, TTemplate> :
     [AllowNull] private IBaseGrain<TTuple> grain;
     private List<TTuple> tuples = new();
 
-    public BaseAgent(
+    public Agent(
         IClusterClient client,
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverChannel<TTuple> observerChannel,
@@ -83,11 +91,10 @@ internal class BaseAgent<T, TTuple, TTemplate> :
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    public async Task InitializeAsync<TGrain>(TGrain grain)
-        where TGrain : IBaseGrain<TTuple>
+    async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync<TGrain>(TGrain grain)
     {
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, TGrain.Id));
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, TGrain.Name));
         this.grain = grain;
     }
 

@@ -6,14 +6,15 @@ using OrleanSpaces.Tuples.Typed;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed class IntAgentProvider : BaseAgentProvider<int, IntTuple, IntTemplate, IntGrain>
+internal sealed class IntAgentProvider : AgentProvider<int, IntTuple, IntTemplate, IntGrain>
 {
-    public IntAgentProvider(IntAgent agent) : base(agent) { }
+    public IntAgentProvider(IClusterClient client, IntAgent agent) :
+        base(client, agent) { }
 }
 
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class IntAgent : BaseAgent<int, IntTuple, IntTemplate>
+internal sealed class IntAgent : Agent<int, IntTuple, IntTemplate>
 {
     public IntAgent(
         IClusterClient client,

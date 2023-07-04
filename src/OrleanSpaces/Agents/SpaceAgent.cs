@@ -15,10 +15,18 @@ internal sealed class SpaceAgentProvider : ISpaceAgentProvider
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
+    private readonly IClusterClient client;
     private readonly SpaceAgent agent;
+
     private bool initialized;
 
-    public SpaceAgentProvider(SpaceAgent agent) => this.agent = agent;
+    public SpaceAgentProvider(
+        IClusterClient client,
+        SpaceAgent agent)
+    {
+        this.client = client;
+        this.agent = agent;
+    }
 
     public async ValueTask<ISpaceAgent> GetAsync()
     {
@@ -31,7 +39,8 @@ internal sealed class SpaceAgentProvider : ISpaceAgentProvider
 
         try
         {
-            await agent.InitializeAsync();
+            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Id);
+            await agent.InitializeAsync(grain);
             initialized = true;
         }
         finally
@@ -76,11 +85,11 @@ internal sealed class SpaceAgent :
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(ISpaceGrain grain)
     {
-        grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Name);       
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, ISpaceGrain.Name));
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, ISpaceGrain.Id));
+        this.grain = grain;
     }
 
     #region IAsyncObserver
