@@ -28,10 +28,13 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 var agent1 = await provider1.GetAsync();
 
-SpaceTuple s_tuple1 = new(1, "2", 3);
-SpaceTemplate s_template1 = new(1, null, 3);
+SpaceTuple s_tuple1 = new(1, "2", 3, '4');
+SpaceTemplate s_template1 = new(1, null, 3, '4');
 
 await agent1.WriteAsync(s_tuple1);
+var t1 = await agent1.PopAsync(s_template1);
+
+Enumerate(t1);
 
 // IntTuple
 
@@ -42,12 +45,27 @@ IntTuple i_tuple1 = new(1, 2, 3);
 IntTemplate i_template1 = new(1, null, 3);
 
 await agent2.WriteAsync(i_tuple1);
+var t2 = await agent2.PopAsync(i_template1);
 
-var s_tuple = await agent1.PopAsync(s_template1);
-var i_tuple = await agent2.PopAsync(i_template1);
-
+EnumerateInt(t2);
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
 await host.StopAsync();
+
+static void Enumerate(SpaceTuple t1)
+{
+    foreach (ref readonly object a in t1)
+    {
+        Console.WriteLine(a);
+    }
+}
+
+static void EnumerateInt(IntTuple t2)
+{
+    foreach (ref readonly int a in t2)
+    {
+        Console.WriteLine(a);
+    }
+}
