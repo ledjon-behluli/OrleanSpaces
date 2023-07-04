@@ -53,13 +53,13 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
-    ISpaceTemplate<Guid> ISpaceTuple<Guid>.ToTemplate()
+    public ISpaceTemplate<Guid> AsTemplate()
     {
         ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(in this.fields);
         return new GuidTemplate(fields);
     }
 
+    static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Guid);
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }

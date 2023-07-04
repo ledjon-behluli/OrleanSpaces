@@ -27,13 +27,13 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<long> ISpaceTuple<long>.Create(long[] fields) => new LongTuple(fields);
-    ISpaceTemplate<long> ISpaceTuple<long>.ToTemplate()
+    public ISpaceTemplate<long> AsTemplate()
     {
         ref long?[] fields = ref TupleHelpers.CastAs<long[], long?[]>(in this.fields);
         return new LongTemplate(fields);
     }
 
+    static ISpaceTuple<long> ISpaceTuple<long>.Create(long[] fields) => new LongTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Long);
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }

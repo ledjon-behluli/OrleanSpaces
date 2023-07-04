@@ -29,14 +29,15 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
-    ISpaceTemplate<bool> ISpaceTuple<bool>.ToTemplate()
+    public ISpaceTemplate<bool> AsTemplate()
     {
         ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in this.fields);
         return new BoolTemplate(fields);
     }
 
+    static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
+
     public ReadOnlySpan<char> AsSpan()
     {
         // Since `bool` does not implement `ISpanFormattable` (see: https://github.com/dotnet/runtime/issues/67388),
@@ -62,7 +63,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
 
         static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
-        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
+        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.AsTemplate() => throw new NotImplementedException();
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable

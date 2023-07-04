@@ -44,13 +44,14 @@ public class Master : SpaceObserver<SpaceTuple>
     {
         if (template.Matches(tuple))
         {
-            Console.WriteLine($"MASTER: Received solution to Hash = {tuple[1]}");
-            await agent.PopAsync(tuple);
-
             string hash = (string)tuple[1];
-            string password = (string)tuple[2];
 
+            Console.WriteLine($"MASTER: Received solution to Hash = {hash}");
+            await agent.PopAsync(tuple.AsTemplate());
+
+            string password = (string)tuple[2];
             hashPasswordPairs[hash] = password;
+
             if (hashPasswordPairs.All(x => x.Value.Length > 0))
             {
                 IsDone = true;

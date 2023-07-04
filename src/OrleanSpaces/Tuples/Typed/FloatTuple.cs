@@ -27,13 +27,13 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => new FloatTuple(fields);
-    ISpaceTemplate<float> ISpaceTuple<float>.ToTemplate()
+    public ISpaceTemplate<float> AsTemplate()
     {
         ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(in this.fields);
         return new FloatTemplate(fields);
     }
 
+    static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => new FloatTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }

@@ -64,13 +64,14 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<T> ISpaceTuple<T>.Create(T[] fields) => new EnumTuple<T>(fields);
-    ISpaceTemplate<T> ISpaceTuple<T>.ToTemplate()
+    public ISpaceTemplate<T> AsTemplate()
     {
         ref T?[] fields = ref TupleHelpers.CastAs<T[], T?[]>(in this.fields);
         return new EnumTemplate<T>(fields);
     }
 
+    static ISpaceTuple<T> ISpaceTuple<T>.Create(T[] fields) => new EnumTuple<T>(fields);
+   
     public ReadOnlySpan<char> AsSpan()
     {
         int tupleLength = Length;
@@ -105,7 +106,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
         public int Length => Fields.Length;
 
         static ISpaceTuple<SFEnum> ISpaceTuple<SFEnum>.Create(SFEnum[] fields) => new SFEnumTuple(fields);
-        ISpaceTemplate<SFEnum> ISpaceTuple<SFEnum>.ToTemplate() => throw new NotImplementedException();
+        ISpaceTemplate<SFEnum> ISpaceTuple<SFEnum>.AsTemplate() => throw new NotImplementedException();
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFEnum>.Enumerator GetEnumerator() => new ReadOnlySpan<SFEnum>(Fields).GetEnumerator();

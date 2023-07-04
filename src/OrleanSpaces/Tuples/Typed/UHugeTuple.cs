@@ -41,13 +41,13 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
-    ISpaceTemplate<UInt128> ISpaceTuple<UInt128>.ToTemplate()
+    public ISpaceTemplate<UInt128> AsTemplate()
     {
         ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(in this.fields);
         return new UHugeTemplate(fields);
     }
 
+    static ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
     public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
 

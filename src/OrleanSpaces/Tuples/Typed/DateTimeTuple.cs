@@ -29,13 +29,13 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
-    ISpaceTemplate<DateTime> ISpaceTuple<DateTime>.ToTemplate()
+    public ISpaceTemplate<DateTime> AsTemplate()
     {
         ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(in this.fields);
         return new DateTimeTemplate(fields);
     }
 
+    static ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }

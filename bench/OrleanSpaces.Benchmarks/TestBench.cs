@@ -6,6 +6,7 @@ using OrleanSpaces.Tuples.Typed;
 using System.Drawing;
 using System.Numerics;
 
+//TODO: Delete me!
 [ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]

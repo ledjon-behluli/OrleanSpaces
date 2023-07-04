@@ -250,10 +250,10 @@ public class EnumTupleBenchmarks
         public SequentialEnumTuple(params MyEnum[] fields) => this.fields = fields;
 
         public bool Equals(SequentialEnumTuple other) => this.SequentialEquals(other);
+        public ISpaceTemplate<MyEnum> AsTemplate() => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<MyEnum>.Enumerator GetEnumerator() => throw new NotImplementedException();
         static ISpaceTuple<MyEnum> ISpaceTuple<MyEnum>.Create(MyEnum[] fields) => throw new NotImplementedException();
-        ISpaceTemplate<MyEnum> ISpaceTuple<MyEnum>.ToTemplate() => throw new NotImplementedException();
     }
 
     #endregion

@@ -39,13 +39,13 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => new CharTuple(fields);
-    ISpaceTemplate<char> ISpaceTuple<char>.ToTemplate()
+    public ISpaceTemplate<char> AsTemplate()
     {
         ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(in this.fields);
         return new CharTemplate(fields);
     }
 
+    static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => new CharTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }

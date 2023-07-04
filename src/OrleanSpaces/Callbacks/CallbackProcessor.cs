@@ -40,7 +40,7 @@ internal sealed class CallbackProcessor : BackgroundService
         await entry.Callback(tuple);
         if (entry.HasContinuation)
         {
-            await continuationChannel.TemplateWriter.WriteAsync(tuple.ToTemplate(), cancellationToken);
+            await continuationChannel.TemplateWriter.WriteAsync(tuple.AsTemplate(), cancellationToken);
         }
     }
 }
@@ -84,7 +84,7 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
         await entry.Callback(tuple);
         if (entry.HasContinuation)
         {
-            await continuationChannel.TemplateWriter.WriteAsync((TTemplate)tuple.ToTemplate(), cancellationToken);
+            await continuationChannel.TemplateWriter.WriteAsync((TTemplate)tuple.AsTemplate(), cancellationToken);
         }
     }
 }

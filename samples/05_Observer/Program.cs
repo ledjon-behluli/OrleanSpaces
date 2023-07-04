@@ -9,13 +9,7 @@ var host = new HostBuilder()
     .ConfigureAppConfiguration(config => config.AddJsonFile("appsettings.json"))
     .UseOrleansClient(builder =>
     {
-        builder.Services
-            .AddOrleanSpaces()
-            .AddSingleton<Ponger>()
-            .AddSingleton<Auditor>()
-            .AddSingleton<Completer>()
-            .AddSingleton<Archiver>();
-
+        builder.AddOrleanSpaces();
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })
@@ -33,10 +27,10 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
 
-Ponger ponger = host.Services.GetRequiredService<Ponger>();
-Auditor auditor = host.Services.GetRequiredService<Auditor>();
-Completer completer = host.Services.GetRequiredService<Completer>();
-Archiver archiver = host.Services.GetRequiredService<Archiver>();
+Ponger ponger = new(provider);
+Auditor auditor = new();
+Completer completer = new();
+Archiver archiver = new();
 
 ISpaceAgent agent = await provider.GetAsync();
 

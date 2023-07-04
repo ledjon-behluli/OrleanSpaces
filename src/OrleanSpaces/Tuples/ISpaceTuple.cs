@@ -12,11 +12,11 @@ public interface ISpaceTuple<T> : ISpaceTuple
 {  
     ref readonly T this[int index] { get; }
 
+    ISpaceTemplate<T> AsTemplate();
+    internal static abstract ISpaceTuple<T> Create(T[] fields);
+
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
-
-    internal static abstract ISpaceTuple<T> Create(T[] fields);
-    internal ISpaceTemplate<T> ToTemplate();
 }
 
 internal interface INumericTuple<T> : ISpaceTuple<T>

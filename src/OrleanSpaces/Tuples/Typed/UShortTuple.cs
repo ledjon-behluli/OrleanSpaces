@@ -27,13 +27,13 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<ushort> ISpaceTuple<ushort>.Create(ushort[] fields) => new UShortTuple(fields);
-    ISpaceTemplate<ushort> ISpaceTuple<ushort>.ToTemplate()
+    public ISpaceTemplate<ushort> AsTemplate()
     {
         ref ushort?[] fields = ref TupleHelpers.CastAs<ushort[], ushort?[]>(in this.fields);
         return new UShortTemplate(fields);
     }
 
+    static ISpaceTuple<ushort> ISpaceTuple<ushort>.Create(ushort[] fields) => new UShortTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }

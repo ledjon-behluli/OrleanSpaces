@@ -249,10 +249,10 @@ public class CharTupleBenchmarks
         public SequentialCharTuple(params char[] fields) => this.fields = fields;
 
         public bool Equals(SequentialCharTuple other) => this.SequentialEquals(other);
+        public ISpaceTemplate<char> AsTemplate() => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<char>.Enumerator GetEnumerator() => throw new NotImplementedException();
         static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => throw new NotImplementedException();
-        ISpaceTemplate<char> ISpaceTuple<char>.ToTemplate() => throw new NotImplementedException();
     }
 
     #endregion

@@ -27,13 +27,13 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
-    ISpaceTemplate<byte> ISpaceTuple<byte>.ToTemplate()
+    public ISpaceTemplate<byte> AsTemplate()
     {
         ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in this.fields);
         return new ByteTemplate(fields);
     }
 
+    static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Byte);
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }
