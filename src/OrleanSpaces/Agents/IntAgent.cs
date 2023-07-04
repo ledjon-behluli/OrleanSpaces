@@ -6,10 +6,10 @@ using OrleanSpaces.Tuples.Typed;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed class IntAgentProvider : AgentProvider<int, IntTuple, IntTemplate, IntGrain>
+internal sealed class IntAgentProvider : AgentProvider<int, IntTuple, IntTemplate>
 {
     public IntAgentProvider(IClusterClient client, IntAgent agent) :
-        base(client, agent) { }
+        base(client.GetGrain<IIntGrain>(IIntGrain.Key), agent) { }
 }
 
 

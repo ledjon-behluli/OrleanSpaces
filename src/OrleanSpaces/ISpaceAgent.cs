@@ -103,7 +103,7 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
-    internal Task InitializeAsync<TGrain>(TGrain grain) where TGrain : IBaseGrain<TTuple>;
+    internal Task InitializeAsync(IBaseGrain<TTuple> grain);
 
     Guid Subscribe(ISpaceObserver<TTuple> observer);
     void Unsubscribe(Guid observerId);

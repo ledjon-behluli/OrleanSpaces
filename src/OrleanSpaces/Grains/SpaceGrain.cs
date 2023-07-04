@@ -7,22 +7,20 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface ISpaceGrain : IGrainWithStringKey 
+internal interface ISpaceGrain : IBaseGrain<SpaceTuple>, IGrainWithStringKey 
 {
-    const string Id = "SpaceGrain";
-
-    ValueTask<ImmutableArray<SpaceTuple>> GetAsync();
-    Task AddAsync(TupleAction<SpaceTuple> action);
-    Task RemoveAsync(TupleAction<SpaceTuple> action);
+    const string Key = "SpaceStore";
 }
 
 internal sealed class SpaceGrain : Grain, ISpaceGrain
 {
     private readonly IPersistentState<List<SpaceTuple>> space;
+    private readonly StreamId streamId = StreamId.Create(Constants.StreamName, ISpaceGrain.Key);
+
     [AllowNull] private IAsyncStream<TupleAction<SpaceTuple>> stream;
 
     public SpaceGrain(
-        [PersistentState(ISpaceGrain.Id, Constants.StorageName)]
+        [PersistentState(ISpaceGrain.Key, Constants.StorageName)]
         IPersistentState<List<SpaceTuple>> space)
     {
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -30,9 +28,11 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<SpaceTuple>(StreamId.Create(Constants.StreamName, ISpaceGrain.Id));
+        stream = this.GetStream<SpaceTuple>(streamId);
         return Task.CompletedTask;
     }
+
+    public ValueTask<StreamId> GetStreamId() => new(streamId);
 
     public ValueTask<ImmutableArray<SpaceTuple>> GetAsync()
       => new(space.State.ToImmutableArray());

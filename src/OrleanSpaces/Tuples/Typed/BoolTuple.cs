@@ -85,7 +85,7 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
         => this.fields = fields == null || fields.Length == 0 ? new bool?[1] { null } : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool>
-        => TupleHelpers.Matches<bool, BoolTuple, BoolTemplate>(this, tuple);
+        => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();

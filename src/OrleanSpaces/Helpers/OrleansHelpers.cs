@@ -13,7 +13,7 @@ internal static class OrleansHelpers
         => grain.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static async Task SubscribeAsync<T>(this IClusterClient client, IAsyncObserver<TupleAction<T>> observer, StreamId streamId) 
+    public static async Task SubscribeAsync<T>(this IClusterClient client, IAsyncObserver<TupleAction<T>> observer, StreamId streamId)
         where T : ISpaceTuple
     {
         var stream = client.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);

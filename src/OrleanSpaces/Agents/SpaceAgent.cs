@@ -39,7 +39,7 @@ internal sealed class SpaceAgentProvider : ISpaceAgentProvider
 
         try
         {
-            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Id);
+            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Key);
             await agent.InitializeAsync(grain);
             initialized = true;
         }
@@ -88,7 +88,9 @@ internal sealed class SpaceAgent :
     public async Task InitializeAsync(ISpaceGrain grain)
     {
         tuples = (await grain.GetAsync()).ToList();
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, ISpaceGrain.Id));
+        StreamId streamId = await grain.GetStreamId();
+        await client.SubscribeAsync(this, streamId);
+
         this.grain = grain;
     }
 
