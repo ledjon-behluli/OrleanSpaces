@@ -31,25 +31,18 @@ SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
 
 await agent1.WriteAsync(s_tuple1);
-await agent1.PopAsync(new(1, null, 4), t =>
-{
-    return Task.CompletedTask;
-});
-
-await agent1.WriteAsync(new(1, "2", 4));
-
-//var t1 = await agent1.PopAsync(s_template1);
+var t1 = await agent1.PopAsync(s_template1);
 
 // IntTuple
 
-//var provider2 = client.ServiceProvider.GetRequiredService<IIntAgentProvider>();
-//var agent2 = await provider2.GetAsync();
+var provider2 = client.ServiceProvider.GetRequiredService<IIntAgentProvider>();
+var agent2 = await provider2.GetAsync();
 
-//IntTuple i_tuple1 = new(1, 2, 3);
-//IntTemplate i_template1 = new(1, null, 3);
+IntTuple i_tuple1 = new(1, 2, 3);
+IntTemplate i_template1 = new(1, null, 3);
 
-//await agent2.WriteAsync(i_tuple1);
-//var t2 = await agent2.PopAsync(i_template1);
+await agent2.WriteAsync(i_tuple1);
+var t2 = await agent2.PopAsync(i_template1);
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
