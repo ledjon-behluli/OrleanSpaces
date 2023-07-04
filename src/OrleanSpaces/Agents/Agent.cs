@@ -67,7 +67,7 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverChannel<TTuple> observerChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
-    private readonly CallbackChannel<TTuple, TTemplate> callbackChannel;
+    private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
     [AllowNull] private IBaseGrain<TTuple> grain;
@@ -78,7 +78,7 @@ internal class Agent<T, TTuple, TTemplate> :
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverChannel<TTuple> observerChannel,
         ObserverRegistry<TTuple> observerRegistry,
-        CallbackChannel<TTuple, TTemplate> callbackChannel,
+        CallbackChannel<TTuple> callbackChannel,
         CallbackRegistry<T, TTuple, TTemplate> callbackRegistry)
     {
         this.client = client ?? throw new ArgumentNullException(nameof(client));
@@ -111,7 +111,7 @@ internal class Agent<T, TTuple, TTemplate> :
                 tuples.Add(action.Tuple);
             }
 
-            await callbackChannel.Writer.WriteAsync(new(action.Tuple, (TTemplate)action.Tuple.ToTemplate()));
+            await callbackChannel.Writer.WriteAsync(action.Tuple);
         }
         else
         {

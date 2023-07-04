@@ -22,7 +22,6 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-
 // SpaceTuple
 
 var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();

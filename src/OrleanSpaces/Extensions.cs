@@ -28,7 +28,7 @@ public static class Extensions
 
             builder.Services.AddSingleton<EvaluationChannel<SpaceTuple>>();
             builder.Services.AddSingleton<ObserverChannel<SpaceTuple>>();
-            builder.Services.AddSingleton<CallbackChannel<SpaceTuple, SpaceTemplate>>();
+            builder.Services.AddSingleton<CallbackChannel<SpaceTuple>>();
             builder.Services.AddSingleton<ContinuationChannel<SpaceTuple, SpaceTemplate>>();
 
             builder.Services.AddSingleton<SpaceAgent>();
@@ -48,7 +48,7 @@ public static class Extensions
 
             builder.Services.AddSingleton<EvaluationChannel<IntTuple>>();
             builder.Services.AddSingleton<ObserverChannel<IntTuple>>();
-            builder.Services.AddSingleton<CallbackChannel<IntTuple, IntTemplate>>();
+            builder.Services.AddSingleton<CallbackChannel<IntTuple>>();
             builder.Services.AddSingleton<ContinuationChannel<IntTuple, IntTemplate>>();
 
             builder.Services.AddSingleton<IntAgent>();

@@ -21,7 +21,7 @@ internal sealed class IntAgent : Agent<int, IntTuple, IntTemplate>
         EvaluationChannel<IntTuple> evaluationChannel,
         ObserverChannel<IntTuple> observerChannel,
         ObserverRegistry<IntTuple> observerRegistry,
-        CallbackChannel<IntTuple, IntTemplate> callbackChannel,
+        CallbackChannel<IntTuple> callbackChannel,
         CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry)
         : base(client, evaluationChannel, observerChannel, observerRegistry, callbackChannel, callbackRegistry) { }
 }
