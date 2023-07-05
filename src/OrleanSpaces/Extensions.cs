@@ -21,7 +21,7 @@ public static class Extensions
         SpaceOptions options = new();
         action?.Invoke(options);
 
-        if (options.SpaceTuplesEnabled)
+        if (options.EnabledSpaces.HasFlag(SpaceType.Generic))
         {
             builder.Services.AddSingleton<ObserverRegistry<SpaceTuple>>();
             builder.Services.AddSingleton<CallbackRegistry>();
@@ -41,7 +41,7 @@ public static class Extensions
             builder.Services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
         }
 
-        if (options.IntTuplesEnabled)
+        if (options.EnabledSpaces.HasFlag(SpaceType.Ints))
         {
             builder.Services.AddSingleton<ObserverRegistry<IntTuple>>();
             builder.Services.AddSingleton<CallbackRegistry<int, IntTuple, IntTemplate>>();
@@ -63,10 +63,4 @@ public static class Extensions
 
         return builder;
     }
-}
-
-public sealed class SpaceOptions
-{
-    public bool SpaceTuplesEnabled { get; set; } = true;
-    public bool IntTuplesEnabled { get; set; } = false;
 }
