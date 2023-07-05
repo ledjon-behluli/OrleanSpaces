@@ -48,7 +48,6 @@ var provider3 = client.ServiceProvider.GetRequiredService
 
 await host.StopAsync();
 
-
 enum MyEnum
 {
 
