@@ -22,7 +22,7 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
 
     public static explicit operator UShortTemplate(UShortTuple tuple)
     {
-        ref ushort?[] fields = ref TupleHelpers.CastAs<ushort[], ushort?[]>(tuple.fields);
+        ref ushort?[] fields = ref TupleHelpers.CastAs<ushort[], ushort?[]>(in tuple.fields);
         return new UShortTemplate(fields);
     }
 

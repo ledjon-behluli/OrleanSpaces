@@ -22,7 +22,7 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
 
     public static explicit operator LongTemplate(LongTuple tuple)
     {
-        ref long?[] fields = ref TupleHelpers.CastAs<long[], long?[]>(tuple.fields);
+        ref long?[] fields = ref TupleHelpers.CastAs<long[], long?[]>(in tuple.fields);
         return new LongTemplate(fields);
     }
 

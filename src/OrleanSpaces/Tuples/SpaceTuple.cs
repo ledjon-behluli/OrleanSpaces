@@ -60,7 +60,7 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     public static explicit operator SpaceTemplate(SpaceTuple tuple)
     {
-        ref object?[] fields = ref TupleHelpers.CastAs<object[], object?[]>(tuple.fields);
+        ref object?[] fields = ref TupleHelpers.CastAs<object[], object?[]>(in tuple.fields);
         return new SpaceTemplate(fields);
     }
 

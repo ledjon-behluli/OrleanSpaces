@@ -20,7 +20,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
 
     public static explicit operator TimeSpanTemplate(TimeSpanTuple tuple)
     {
-        ref TimeSpan?[] fields = ref TupleHelpers.CastAs<TimeSpan[], TimeSpan?[]>(tuple.fields);
+        ref TimeSpan?[] fields = ref TupleHelpers.CastAs<TimeSpan[], TimeSpan?[]>(in tuple.fields);
         return new TimeSpanTemplate(fields);
     }
 

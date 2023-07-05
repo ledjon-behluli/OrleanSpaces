@@ -22,7 +22,7 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 
     public static explicit operator SByteTemplate(SByteTuple tuple)
     {
-        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(tuple.fields);
+        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in tuple.fields);
         return new SByteTemplate(fields);
     }
 

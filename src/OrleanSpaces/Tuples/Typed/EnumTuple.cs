@@ -23,7 +23,7 @@ public readonly struct EnumTuple<T> : ISpaceTuple<T> , IEquatable<EnumTuple<T>>
 
     public static explicit operator EnumTemplate<T>(EnumTuple<T> tuple)
     {
-        ref T?[] fields = ref TupleHelpers.CastAs<T[], T?[]>(tuple.fields);
+        ref T?[] fields = ref TupleHelpers.CastAs<T[], T?[]>(in tuple.fields);
         return new EnumTemplate<T>(fields);
     }
 

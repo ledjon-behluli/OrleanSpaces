@@ -22,7 +22,7 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
 
     public static explicit operator DoubleTemplate(DoubleTuple tuple)
     {
-        ref double?[] fields = ref TupleHelpers.CastAs<double[], double?[]>(tuple.fields);
+        ref double?[] fields = ref TupleHelpers.CastAs<double[], double?[]>(in tuple.fields);
         return new DoubleTemplate(fields);
     }
 

@@ -22,7 +22,7 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
 
     public static explicit operator ByteTemplate(ByteTuple tuple)
     {
-        ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(tuple.fields);
+        ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in tuple.fields);
         return new ByteTemplate(fields);
     }
 

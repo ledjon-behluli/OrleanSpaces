@@ -20,7 +20,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
 
     public static explicit operator DateTimeOffsetTemplate(DateTimeOffsetTuple tuple)
     {
-        ref DateTimeOffset?[] fields = ref TupleHelpers.CastAs<DateTimeOffset[], DateTimeOffset?[]>(tuple.fields);
+        ref DateTimeOffset?[] fields = ref TupleHelpers.CastAs<DateTimeOffset[], DateTimeOffset?[]>(in tuple.fields);
         return new DateTimeOffsetTemplate(fields);
     }
 

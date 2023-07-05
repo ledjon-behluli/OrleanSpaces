@@ -22,7 +22,7 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
 
     public static explicit operator FloatTemplate(FloatTuple tuple)
     {
-        ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(tuple.fields);
+        ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(in tuple.fields);
         return new FloatTemplate(fields);
     }
 

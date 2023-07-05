@@ -24,7 +24,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 
     public static explicit operator HugeTemplate(HugeTuple tuple)
     {
-        ref Int128?[] fields = ref TupleHelpers.CastAs<Int128[], Int128?[]>(tuple.fields);
+        ref Int128?[] fields = ref TupleHelpers.CastAs<Int128[], Int128?[]>(in tuple.fields);
         return new HugeTemplate(fields);
     }
 

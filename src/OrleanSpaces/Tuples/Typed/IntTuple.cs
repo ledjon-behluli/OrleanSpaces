@@ -22,7 +22,7 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
 
     public static explicit operator IntTemplate(IntTuple tuple)
     {
-        ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(tuple.fields);
+        ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in tuple.fields);
         return new IntTemplate(fields);
     }
 

@@ -21,7 +21,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
 
     public static explicit operator DecimalTemplate(DecimalTuple tuple)
     {
-        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(tuple.fields);
+        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in tuple.fields);
         return new DecimalTemplate(fields);
     }
 
