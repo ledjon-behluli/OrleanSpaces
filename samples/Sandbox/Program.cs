@@ -7,11 +7,7 @@ using OrleanSpaces.Tuples.Typed;
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
     {
-        builder.AddOrleanSpaces(options =>
-        {
-            options.SpaceTuplesEnabled = true;
-            options.IntTuplesEnabled = true;
-        });
+        builder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceType.Generic | SpaceType.Ints);
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })
