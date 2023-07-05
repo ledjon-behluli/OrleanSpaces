@@ -18,6 +18,12 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public static bool operator ==(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => !(left == right);
 
+    public static explicit operator DateTimeOffsetTemplate(DateTimeOffsetTuple tuple)
+    {
+        ref DateTimeOffset?[] fields = ref TupleHelpers.CastAs<DateTimeOffset[], DateTimeOffset?[]>(tuple.fields);
+        return new DateTimeOffsetTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is DateTimeOffsetTuple tuple && Equals(tuple);
 
     public bool Equals(DateTimeOffsetTuple other)
@@ -29,13 +35,9 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref DateTimeOffset?[] fields = ref TupleHelpers.CastAs<DateTimeOffset[], DateTimeOffset?[]>(in this.fields);
-        return new DateTimeOffsetTemplate(fields);
-    }
-
+    ISpaceTemplate<DateTimeOffset> ISpaceTuple<DateTimeOffset>.ToTemplate() => (DateTimeOffsetTemplate)this;
     static ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
+    
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTimeOffset);
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }

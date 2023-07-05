@@ -250,10 +250,11 @@ public class FloatTupleBenchmarks
         public SequentialFloatTuple(params float[] fields) => this.fields = fields;
 
         public bool Equals(SequentialFloatTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
+
+        ISpaceTemplate<float> ISpaceTuple<float>.ToTemplate() => throw new NotImplementedException();
+        static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<float>.Enumerator GetEnumerator() => throw new NotImplementedException();
-        static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => throw new NotImplementedException();
     }
 
     #endregion

@@ -19,6 +19,12 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public static bool operator ==(GuidTuple left, GuidTuple right) => left.Equals(right);
     public static bool operator !=(GuidTuple left, GuidTuple right) => !(left == right);
 
+    public static explicit operator GuidTemplate(GuidTuple tuple)
+    {
+        ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(tuple.fields);
+        return new GuidTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is GuidTuple tuple && Equals(tuple);
 
     public bool Equals(GuidTuple other)
@@ -53,13 +59,9 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(in this.fields);
-        return new GuidTemplate(fields);
-    }
-
+    ISpaceTemplate<Guid> ISpaceTuple<Guid>.ToTemplate() => (GuidTemplate)this;
     static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Guid);
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }

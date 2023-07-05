@@ -18,6 +18,12 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public static bool operator ==(BoolTuple left, BoolTuple right) => left.Equals(right);
     public static bool operator !=(BoolTuple left, BoolTuple right) => !(left == right);
 
+    public static explicit operator BoolTemplate(BoolTuple tuple)
+    {
+        ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(tuple.fields);
+        return new BoolTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is BoolTuple tuple && Equals(tuple);
 
     public bool Equals(BoolTuple other)
@@ -29,13 +35,9 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in this.fields);
-        return new BoolTemplate(fields);
-    }
-
+    ISpaceTemplate<bool> ISpaceTuple<bool>.ToTemplate() => (BoolTemplate)this;
     static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
+
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
 
     public ReadOnlySpan<char> AsSpan()
@@ -62,8 +64,8 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
 
+        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
         static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable

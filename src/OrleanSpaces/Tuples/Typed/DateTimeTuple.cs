@@ -18,6 +18,12 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public static bool operator ==(DateTimeTuple left, DateTimeTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeTuple left, DateTimeTuple right) => !(left == right);
 
+    public static explicit operator DateTimeTemplate(DateTimeTuple tuple)
+    {
+        ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(tuple.fields);
+        return new DateTimeTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is DateTimeTuple tuple && Equals(tuple);
 
     public bool Equals(DateTimeTuple other)
@@ -29,13 +35,9 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(in this.fields);
-        return new DateTimeTemplate(fields);
-    }
-
+    ISpaceTemplate<DateTime> ISpaceTuple<DateTime>.ToTemplate() => (DateTimeTemplate)this;
     static ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
+    
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }

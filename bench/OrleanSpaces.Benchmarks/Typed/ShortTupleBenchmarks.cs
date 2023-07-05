@@ -196,10 +196,11 @@ public class ShortTupleBenchmarks
         public SequentialShortTuple(params short[] fields) => this.fields = fields;
 
         public bool Equals(SequentialShortTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
+
+        ISpaceTemplate<short> ISpaceTuple<short>.ToTemplate() => throw new NotImplementedException();
+        static ISpaceTuple<short> ISpaceTuple<short>.Create(short[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<short>.Enumerator GetEnumerator() => throw new NotImplementedException();
-        static ISpaceTuple<short> ISpaceTuple<short>.Create(short[] fields) => throw new NotImplementedException();
     }
 
     #endregion

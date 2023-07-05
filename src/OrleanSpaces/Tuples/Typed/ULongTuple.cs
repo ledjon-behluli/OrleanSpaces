@@ -20,6 +20,12 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public static bool operator ==(ULongTuple left, ULongTuple right) => left.Equals(right);
     public static bool operator !=(ULongTuple left, ULongTuple right) => !(left == right);
 
+    public static explicit operator ULongTemplate(ULongTuple tuple)
+    {
+        ref ulong?[] fields = ref TupleHelpers.CastAs<ulong[], ulong?[]>(tuple.fields);
+        return new ULongTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is ULongTuple tuple && Equals(tuple);
     public bool Equals(ULongTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref ulong?[] fields = ref TupleHelpers.CastAs<ulong[], ulong?[]>(in this.fields);
-        return new ULongTemplate(fields);
-    }
-
+    ISpaceTemplate<ulong> ISpaceTuple<ulong>.ToTemplate() => (ULongTemplate)this;
     static ISpaceTuple<ulong> ISpaceTuple<ulong>.Create(ulong[] fields) => new ULongTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_ULong);
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
 }

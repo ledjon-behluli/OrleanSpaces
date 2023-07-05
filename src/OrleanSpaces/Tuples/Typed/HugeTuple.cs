@@ -22,6 +22,12 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     public static bool operator ==(HugeTuple left, HugeTuple right) => left.Equals(right);
     public static bool operator !=(HugeTuple left, HugeTuple right) => !(left == right);
 
+    public static explicit operator HugeTemplate(HugeTuple tuple)
+    {
+        ref Int128?[] fields = ref TupleHelpers.CastAs<Int128[], Int128?[]>(tuple.fields);
+        return new HugeTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is HugeTuple tuple && Equals(tuple);
     public bool Equals(HugeTuple other)
     {
@@ -41,13 +47,9 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref Int128?[] fields = ref TupleHelpers.CastAs<Int128[], Int128?[]>(in this.fields);
-        return new HugeTemplate(fields);
-    }
-
+    ISpaceTemplate<Int128> ISpaceTuple<Int128>.ToTemplate() => (HugeTemplate)this;
     static ISpaceTuple<Int128> ISpaceTuple<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
     public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128>(fields).GetEnumerator();
 

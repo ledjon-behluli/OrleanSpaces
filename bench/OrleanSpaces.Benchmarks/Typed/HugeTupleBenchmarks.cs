@@ -250,10 +250,11 @@ public class HugeTupleBenchmarks
         public SequentialHugeTuple(params Int128[] fields) => this.fields = fields;
 
         public bool Equals(SequentialHugeTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
+
+        ISpaceTemplate<Int128> ISpaceTuple<Int128>.ToTemplate() => throw new NotImplementedException();
+        static ISpaceTuple<Int128> ISpaceTuple<Int128>.Create(Int128[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => throw new NotImplementedException();
-        static ISpaceTuple<Int128> ISpaceTuple<Int128>.Create(Int128[] fields) => throw new NotImplementedException();
     }
 
     #endregion

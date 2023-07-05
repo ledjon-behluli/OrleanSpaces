@@ -20,6 +20,12 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public static bool operator ==(ByteTuple left, ByteTuple right) => left.Equals(right);
     public static bool operator !=(ByteTuple left, ByteTuple right) => !(left == right);
 
+    public static explicit operator ByteTemplate(ByteTuple tuple)
+    {
+        ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(tuple.fields);
+        return new ByteTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is ByteTuple tuple && Equals(tuple);
     public bool Equals(ByteTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in this.fields);
-        return new ByteTemplate(fields);
-    }
-
+    ISpaceTemplate<byte> ISpaceTuple<byte>.ToTemplate() => (ByteTemplate)this;
     static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Byte);
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }

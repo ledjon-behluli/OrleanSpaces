@@ -20,6 +20,12 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
     public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
 
+    public static explicit operator FloatTemplate(FloatTuple tuple)
+    {
+        ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(tuple.fields);
+        return new FloatTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is FloatTuple tuple && Equals(tuple);
     public bool Equals(FloatTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref float?[] fields = ref TupleHelpers.CastAs<float[], float?[]>(in this.fields);
-        return new FloatTemplate(fields);
-    }
-
+    ISpaceTemplate<float> ISpaceTuple<float>.ToTemplate() => (FloatTemplate)this;
     static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => new FloatTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }

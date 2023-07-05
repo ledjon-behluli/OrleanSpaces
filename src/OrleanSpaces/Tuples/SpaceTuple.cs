@@ -58,6 +58,12 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
+    public static explicit operator SpaceTemplate(SpaceTuple tuple)
+    {
+        ref object?[] fields = ref TupleHelpers.CastAs<object[], object?[]>(tuple.fields);
+        return new SpaceTemplate(fields);
+    }
+
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
@@ -89,12 +95,6 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
-
-    public ISpaceTemplate ToTemplate()
-    {
-        ref object?[] fields = ref TupleHelpers.CastAs<object[], object?[]>(in this.fields);
-        return new SpaceTemplate(fields);
-    }
 
     public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
 }

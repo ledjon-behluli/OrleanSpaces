@@ -20,6 +20,12 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
     public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
     public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
 
+    public static explicit operator UIntTemplate(UIntTuple tuple)
+    {
+        ref uint?[] fields = ref TupleHelpers.CastAs<uint[], uint?[]>(tuple.fields);
+        return new UIntTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is UIntTuple tuple && Equals(tuple);
     public bool Equals(UIntTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref uint?[] fields = ref TupleHelpers.CastAs<uint[], uint?[]>(in this.fields);
-        return new UIntTemplate(fields);
-    }
-
+    ISpaceTemplate<uint> ISpaceTuple<uint>.ToTemplate() => (UIntTemplate)this;
     static ISpaceTuple<uint> ISpaceTuple<uint>.Create(uint[] fields) => new UIntTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
     public ReadOnlySpan<uint>.Enumerator GetEnumerator() => new ReadOnlySpan<uint>(fields).GetEnumerator();
 }

@@ -22,6 +22,12 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public static bool operator ==(UHugeTuple left, UHugeTuple right) => left.Equals(right);
     public static bool operator !=(UHugeTuple left, UHugeTuple right) => !(left == right);
 
+    public static explicit operator UHugeTemplate(UHugeTuple tuple)
+    {
+        ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(tuple.fields);
+        return new UHugeTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is UHugeTuple tuple && Equals(tuple);
     public bool Equals(UHugeTuple other)
     {
@@ -41,13 +47,9 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(in this.fields);
-        return new UHugeTemplate(fields);
-    }
-
+    ISpaceTemplate<UInt128> ISpaceTuple<UInt128>.ToTemplate() => (UHugeTemplate)this;
     static ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
     public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
 

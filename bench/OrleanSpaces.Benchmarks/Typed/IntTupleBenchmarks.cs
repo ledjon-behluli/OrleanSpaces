@@ -196,10 +196,11 @@ public class IntTupleBenchmarks
         public SequentialIntTuple(params int[] fields) => this.fields = fields;
 
         public bool Equals(SequentialIntTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
+
+        ISpaceTemplate<int> ISpaceTuple<int>.ToTemplate() => throw new NotImplementedException();
+        static ISpaceTuple<int> ISpaceTuple<int>.Create(int[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<int>.Enumerator GetEnumerator() => throw new NotImplementedException();
-        static ISpaceTuple<int> ISpaceTuple<int>.Create(int[] fields) => throw new NotImplementedException();
     }
 
     #endregion

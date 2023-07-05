@@ -250,10 +250,11 @@ public class DoubleTupleBenchmarks
         public SequentialDoubleTuple(params double[] fields) => this.fields = fields;
 
         public bool Equals(SequentialDoubleTuple other) => this.SequentialEquals(other);
-        public ISpaceTemplate ToTemplate() => throw new NotImplementedException();
+
+        ISpaceTemplate<double> ISpaceTuple<double>.ToTemplate() => throw new NotImplementedException();
+        static ISpaceTuple<double> ISpaceTuple<double>.Create(double[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<double>.Enumerator GetEnumerator() => throw new NotImplementedException();
-        static ISpaceTuple<double> ISpaceTuple<double>.Create(double[] fields) => throw new NotImplementedException();
     }
 
     #endregion

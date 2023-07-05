@@ -19,6 +19,12 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public static bool operator ==(DecimalTuple left, DecimalTuple right) => left.Equals(right);
     public static bool operator !=(DecimalTuple left, DecimalTuple right) => !(left == right);
 
+    public static explicit operator DecimalTemplate(DecimalTuple tuple)
+    {
+        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(tuple.fields);
+        return new DecimalTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is DecimalTuple tuple && Equals(tuple);
 
     public bool Equals(DecimalTuple other)
@@ -53,14 +59,9 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in this.fields);
-        return new DecimalTemplate(fields);
-    }
-
-
+    ISpaceTemplate<decimal> ISpaceTuple<decimal>.ToTemplate() => (DecimalTemplate)this;
     static ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 

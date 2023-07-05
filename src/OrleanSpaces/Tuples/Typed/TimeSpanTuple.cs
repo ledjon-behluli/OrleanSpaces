@@ -18,6 +18,12 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     public static bool operator ==(TimeSpanTuple left, TimeSpanTuple right) => left.Equals(right);
     public static bool operator !=(TimeSpanTuple left, TimeSpanTuple right) => !(left == right);
 
+    public static explicit operator TimeSpanTemplate(TimeSpanTuple tuple)
+    {
+        ref TimeSpan?[] fields = ref TupleHelpers.CastAs<TimeSpan[], TimeSpan?[]>(tuple.fields);
+        return new TimeSpanTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is TimeSpanTuple tuple && Equals(tuple);
 
     public bool Equals(TimeSpanTuple other)
@@ -29,13 +35,9 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref TimeSpan?[] fields = ref TupleHelpers.CastAs<TimeSpan[], TimeSpan?[]>(in this.fields);
-        return new TimeSpanTemplate(fields);
-    }
-
+    ISpaceTemplate<TimeSpan> ISpaceTuple<TimeSpan>.ToTemplate() => (TimeSpanTemplate)this;
     static ISpaceTuple<TimeSpan> ISpaceTuple<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_TimeSpan);
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }

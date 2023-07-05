@@ -20,6 +20,12 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
     public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);
 
+    public static explicit operator SByteTemplate(SByteTuple tuple)
+    {
+        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(tuple.fields);
+        return new SByteTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is SByteTuple tuple && Equals(tuple);
     public bool Equals(SByteTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in this.fields);
-        return new SByteTemplate(fields);
-    }
-
+    ISpaceTemplate<sbyte> ISpaceTuple<sbyte>.ToTemplate() => (SByteTemplate)this;
     static ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }

@@ -20,6 +20,12 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
     public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
 
+    public static explicit operator UShortTemplate(UShortTuple tuple)
+    {
+        ref ushort?[] fields = ref TupleHelpers.CastAs<ushort[], ushort?[]>(tuple.fields);
+        return new UShortTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is UShortTuple tuple && Equals(tuple);
     public bool Equals(UShortTuple other) 
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref ushort?[] fields = ref TupleHelpers.CastAs<ushort[], ushort?[]>(in this.fields);
-        return new UShortTemplate(fields);
-    }
-
+    ISpaceTemplate<ushort> ISpaceTuple<ushort>.ToTemplate() => (UShortTemplate)this;
     static ISpaceTuple<ushort> ISpaceTuple<ushort>.Create(ushort[] fields) => new UShortTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }

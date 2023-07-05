@@ -20,6 +20,12 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public static bool operator ==(IntTuple left, IntTuple right) => left.Equals(right);
     public static bool operator !=(IntTuple left, IntTuple right) => !(left == right);
 
+    public static explicit operator IntTemplate(IntTuple tuple)
+    {
+        ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(tuple.fields);
+        return new IntTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is IntTuple tuple && Equals(tuple);
     public bool Equals(IntTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
@@ -27,13 +33,9 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in this.fields);
-        return new IntTemplate(fields);
-    }
-
+    ISpaceTemplate<int> ISpaceTuple<int>.ToTemplate() => (IntTemplate)this;
     static ISpaceTuple<int> ISpaceTuple<int>.Create(int[] fields) => new IntTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Int);
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
 }

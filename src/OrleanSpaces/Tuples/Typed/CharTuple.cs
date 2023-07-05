@@ -18,6 +18,12 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public static bool operator ==(CharTuple left, CharTuple right) => left.Equals(right);
     public static bool operator !=(CharTuple left, CharTuple right) => !(left == right);
 
+    public static explicit operator CharTemplate(CharTuple tuple)
+    {
+        ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(tuple.fields);
+        return new CharTemplate(fields);
+    }
+
     public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
     public bool Equals(CharTuple other)
@@ -39,13 +45,9 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    public ISpaceTemplate ToTemplate()
-    {
-        ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(in this.fields);
-        return new CharTemplate(fields);
-    }
-
+    ISpaceTemplate<char> ISpaceTuple<char>.ToTemplate() => (CharTemplate)this;
     static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => new CharTuple(fields);
+
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
