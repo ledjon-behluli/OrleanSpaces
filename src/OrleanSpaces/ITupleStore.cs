@@ -2,9 +2,9 @@
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Grains;
+namespace OrleanSpaces;
 
-internal interface IBaseGrain<T> where T : ISpaceTuple
+internal interface ITupleStore<T> where T : ISpaceTuple
 {
     ValueTask<StreamId> GetStreamId();
     ValueTask<ImmutableArray<T>> GetAll();

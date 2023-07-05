@@ -1,43 +1,40 @@
 ﻿using Orleans.Runtime;
 using Orleans.Streams;
-using OrleanSpaces.Tuples;
 using OrleanSpaces.Helpers;
+using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface ISpaceGrain : ITupleStore<SpaceTuple>, IGrainWithStringKey 
+internal abstract class Grain<T, TTuple, TSelf> : Grain
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+    where TSelf : ITupleStore<TTuple>
 {
-    const string Key = "SpaceStore";
-}
+    private readonly IPersistentState<List<TTuple>> space;
+    private readonly StreamId streamId;
 
-internal sealed class SpaceGrain : Grain, ISpaceGrain
-{
-    private readonly IPersistentState<List<SpaceTuple>> space;
-    private readonly StreamId streamId = StreamId.Create(Constants.StreamName, ISpaceGrain.Key);
+    [AllowNull] private IAsyncStream<TupleAction<TTuple>> stream;
 
-    [AllowNull] private IAsyncStream<TupleAction<SpaceTuple>> stream;
-
-    public SpaceGrain(
-        [PersistentState(ISpaceGrain.Key, Constants.StorageName)]
-        IPersistentState<List<SpaceTuple>> space)
+    public Grain(string key, IPersistentState<List<TTuple>> space)
     {
+        streamId = StreamId.Create(Constants.StreamName, key ?? throw new ArgumentNullException(nameof(key)));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<SpaceTuple>(streamId);
+        stream = this.GetStream<TTuple>(streamId);
         return Task.CompletedTask;
     }
 
     public ValueTask<StreamId> GetStreamId() => new(streamId);
 
-    public ValueTask<ImmutableArray<SpaceTuple>> GetAll()
+    public ValueTask<ImmutableArray<TTuple>> GetAll()
       => new(space.State.ToImmutableArray());
 
-    public async Task Insert(TupleAction<SpaceTuple> action)
+    public async Task Insert(TupleAction<TTuple> action)
     {
         space.State.Add(action.Tuple);
 
@@ -45,7 +42,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
         await stream.OnNextAsync(action);
     }
 
-    public async Task Remove(TupleAction<SpaceTuple> action)
+    public async Task Remove(TupleAction<TTuple> action)
     {
         var storedTuple = space.State.FirstOrDefault(x => x == action.Tuple);
         if (storedTuple.Length > 0)

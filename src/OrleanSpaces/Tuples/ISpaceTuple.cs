@@ -13,7 +13,6 @@ public interface ISpaceTuple<T> : ISpaceTuple
 {  
     ref readonly T this[int index] { get; }
 
-    //ISpaceTemplate<T> ToTemplate();
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
 

@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal interface IIntGrain : IBaseGrain<IntTuple>, IGrainWithStringKey 
+internal interface IIntGrain : ITupleStore<IntTuple>, IGrainWithStringKey 
 {
     const string Key = "IntStore";
 }

@@ -3,7 +3,6 @@ using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Evaluations;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
@@ -18,16 +17,16 @@ internal class AgentProvider<T, TTuple, TTemplate> : ISpaceAgentProvider<T, TTup
 {
     private static readonly SemaphoreSlim semaphore = new(1, 1);
 
-    private readonly IBaseGrain<TTuple> grain;
+    private readonly ITupleStore<TTuple> store;
     private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
 
     private bool initialized;
 
     public AgentProvider(
-        IBaseGrain<TTuple> grain,
+        ITupleStore<TTuple> store,
         ISpaceAgent<T, TTuple, TTemplate> agent)
     {
-        this.grain = grain;
+        this.store = store;
         this.agent = agent;
     }
 
@@ -42,7 +41,7 @@ internal class AgentProvider<T, TTuple, TTemplate> : ISpaceAgentProvider<T, TTup
 
         try
         {
-            await agent.InitializeAsync(grain);
+            await agent.InitializeAsync(store);
             initialized = true;
         }
         finally
@@ -70,7 +69,7 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
-    [AllowNull] private IBaseGrain<TTuple> grain;
+    [AllowNull] private ITupleStore<TTuple> store;
     private List<TTuple> tuples = new();
 
     public Agent(
@@ -89,13 +88,13 @@ internal class Agent<T, TTuple, TTemplate> :
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(IBaseGrain<TTuple> grain)
+    async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(ITupleStore<TTuple> store)
     {
-        tuples = (await grain.GetAll()).ToList();
-        StreamId streamId = await grain.GetStreamId();
+        tuples = (await this.store.GetAll()).ToList();
+        StreamId streamId = await this.store.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
-        this.grain = grain;
+        this.store = store;
     }
 
     #region IAsyncObserver
@@ -145,7 +144,7 @@ internal class Agent<T, TTuple, TTemplate> :
     public async Task WriteAsync(TTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        await grain.Insert(new(agentId, tuple, TupleActionType.Insert));
+        await store.Insert(new(agentId, tuple, TupleActionType.Insert));
         tuples.Add(tuple);
     }
 
@@ -183,7 +182,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
         if (tuple.Length > 0)
         {
-            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await store.Remove(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -199,7 +198,7 @@ internal class Agent<T, TTuple, TTemplate> :
         if (tuple.Length > 0)
         {
             await callback(tuple);
-            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await store.Remove(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }
