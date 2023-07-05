@@ -7,10 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal abstract class Grain<T, TTuple, TSelf> : Grain
+internal abstract class Grain<T, TTuple> : Grain
     where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TSelf : ITupleStore<TTuple>
+    where TTuple : struct, ISpaceTuple<T>, IEquatable<TTuple>
 {
     private readonly IPersistentState<List<TTuple>> space;
     private readonly StreamId streamId;
@@ -44,7 +43,7 @@ internal abstract class Grain<T, TTuple, TSelf> : Grain
 
     public async Task Remove(TupleAction<TTuple> action)
     {
-        var storedTuple = space.State.FirstOrDefault(x => x == action.Tuple);
+        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Tuple));
         if (storedTuple.Length > 0)
         {
             space.State.Remove(storedTuple);

@@ -90,8 +90,8 @@ internal class Agent<T, TTuple, TTemplate> :
 
     async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(ITupleStore<TTuple> store)
     {
-        tuples = (await this.store.GetAll()).ToList();
-        StreamId streamId = await this.store.GetStreamId();
+        tuples = (await store.GetAll()).ToList();
+        StreamId streamId = await store.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
         this.store = store;
