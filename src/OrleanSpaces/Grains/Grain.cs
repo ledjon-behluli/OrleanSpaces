@@ -7,16 +7,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal abstract class Grain<T, TTuple> : Grain
-    where T : unmanaged
-    where TTuple : struct, ISpaceTuple<T>, IEquatable<TTuple>
+internal abstract class Grain<T> : Grain
+    where T : struct, ISpaceTuple, IEquatable<T>
 {
-    private readonly IPersistentState<List<TTuple>> space;
+    private readonly IPersistentState<List<T>> space;
     private readonly StreamId streamId;
 
-    [AllowNull] private IAsyncStream<TupleAction<TTuple>> stream;
+    [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
-    public Grain(string key, IPersistentState<List<TTuple>> space)
+    public Grain(string key, IPersistentState<List<T>> space)
     {
         streamId = StreamId.Create(Constants.StreamName, key ?? throw new ArgumentNullException(nameof(key)));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
@@ -24,14 +23,14 @@ internal abstract class Grain<T, TTuple> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<TTuple>(streamId);
+        stream = this.GetStream<T>(streamId);
         return Task.CompletedTask;
     }
 
     public ValueTask<StreamId> GetStreamId() => new(streamId);
-    public ValueTask<ImmutableArray<TTuple>> GetAll() => new(space.State.ToImmutableArray());
+    public ValueTask<ImmutableArray<T>> GetAll() => new(space.State.ToImmutableArray());
 
-    public async Task Insert(TupleAction<TTuple> action)
+    public async Task Insert(TupleAction<T> action)
     {
         space.State.Add(action.Tuple);
 
@@ -39,7 +38,7 @@ internal abstract class Grain<T, TTuple> : Grain
         await stream.OnNextAsync(action);
     }
 
-    public async Task Remove(TupleAction<TTuple> action)
+    public async Task Remove(TupleAction<T> action)
     {
         var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Tuple));
         if (storedTuple.Length > 0)
