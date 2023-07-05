@@ -29,9 +29,7 @@ internal abstract class Grain<T, TTuple> : Grain
     }
 
     public ValueTask<StreamId> GetStreamId() => new(streamId);
-
-    public ValueTask<ImmutableArray<TTuple>> GetAll()
-      => new(space.State.ToImmutableArray());
+    public ValueTask<ImmutableArray<TTuple>> GetAll() => new(space.State.ToImmutableArray());
 
     public async Task Insert(TupleAction<TTuple> action)
     {

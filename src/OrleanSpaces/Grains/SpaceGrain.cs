@@ -33,9 +33,7 @@ internal sealed class SpaceGrain : Grain, ISpaceGrain
     }
 
     public ValueTask<StreamId> GetStreamId() => new(streamId);
-
-    public ValueTask<ImmutableArray<SpaceTuple>> GetAll()
-      => new(space.State.ToImmutableArray());
+    public ValueTask<ImmutableArray<SpaceTuple>> GetAll() => new(space.State.ToImmutableArray());
 
     public async Task Insert(TupleAction<SpaceTuple> action)
     {
