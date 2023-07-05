@@ -43,12 +43,4 @@ var t2 = await agent2.PopAsync(i_template1);
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
-var provider3 = client.ServiceProvider.GetRequiredService
-    <ISpaceAgentProvider<MyEnum, EnumTuple<MyEnum>, EnumTemplate<MyEnum>>>();
-
 await host.StopAsync();
-
-enum MyEnum
-{
-
-}

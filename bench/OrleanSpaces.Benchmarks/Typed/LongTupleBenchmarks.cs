@@ -4,7 +4,6 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Typed;
 
-[LongRunJob] //TODO: Remove
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.Declared)]
