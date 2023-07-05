@@ -11,47 +11,6 @@ using Orleans.Runtime;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed class SpaceAgentProvider : ISpaceAgentProvider
-{
-    private static readonly SemaphoreSlim semaphore = new(1, 1);
-
-    private readonly IClusterClient client;
-    private readonly SpaceAgent agent;
-
-    private bool initialized;
-
-    public SpaceAgentProvider(
-        IClusterClient client,
-        SpaceAgent agent)
-    {
-        this.client = client;
-        this.agent = agent;
-    }
-
-    public async ValueTask<ISpaceAgent> GetAsync()
-    {
-        if (initialized)
-        {
-            return agent;
-        }
-
-        await semaphore.WaitAsync();
-
-        try
-        {
-            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Key);
-            await agent.InitializeAsync(grain);
-            initialized = true;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-
-        return agent;
-    }
-}
-
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SpaceAgent : 
     ISpaceAgent,
@@ -236,4 +195,45 @@ internal sealed class SpaceAgent :
     }
 
     #endregion
+}
+
+internal sealed class SpaceAgentProvider : ISpaceAgentProvider
+{
+    private static readonly SemaphoreSlim semaphore = new(1, 1);
+
+    private readonly IClusterClient client;
+    private readonly SpaceAgent agent;
+
+    private bool initialized;
+
+    public SpaceAgentProvider(
+        IClusterClient client,
+        SpaceAgent agent)
+    {
+        this.client = client;
+        this.agent = agent;
+    }
+
+    public async ValueTask<ISpaceAgent> GetAsync()
+    {
+        if (initialized)
+        {
+            return agent;
+        }
+
+        await semaphore.WaitAsync();
+
+        try
+        {
+            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Key);
+            await agent.InitializeAsync(grain);
+            initialized = true;
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+
+        return agent;
+    }
 }
