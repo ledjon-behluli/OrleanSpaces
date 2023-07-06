@@ -14,8 +14,9 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
 
     Span<byte> INumericTuple<byte>.Fields => fields.AsSpan();
 
-    public ByteTuple() : this(Array.Empty<byte>()) { }
-    public ByteTuple(params byte[] fields) => this.fields = fields;
+    public ByteTuple() => fields = Array.Empty<byte>();
+    public ByteTuple([AllowNull] params byte[] fields) 
+        => this.fields = fields is null ? Array.Empty<byte>() : fields;
 
     public static bool operator ==(ByteTuple left, ByteTuple right) => left.Equals(right);
     public static bool operator !=(ByteTuple left, ByteTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct ByteTemplate : ISpaceTemplate<byte>
     public ref readonly byte? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public ByteTemplate([AllowNull] params byte?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new byte?[1] { null } : fields;
+    public ByteTemplate() => fields = Array.Empty<byte?>();
+    public ByteTemplate([AllowNull] params byte?[] fields) 
+        => this.fields = fields is null ? Array.Empty<byte?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<byte>
         => TupleHelpers.Matches<byte, ByteTuple>(this, tuple);

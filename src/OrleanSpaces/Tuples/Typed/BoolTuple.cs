@@ -12,8 +12,9 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 
     public ref readonly bool this[int index] => ref fields[index];
 
-    public BoolTuple() : this(Array.Empty<bool>()) { }
-    public BoolTuple(params bool[] fields) => this.fields = fields;
+    public BoolTuple() => fields = Array.Empty<bool>();
+    public BoolTuple([AllowNull] params bool[] fields) 
+        => this.fields = fields is null ? Array.Empty<bool>() : fields;
 
     public static bool operator ==(BoolTuple left, BoolTuple right) => left.Equals(right);
     public static bool operator !=(BoolTuple left, BoolTuple right) => !(left == right);
@@ -84,8 +85,9 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
     public ref readonly bool? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public BoolTemplate([AllowNull] params bool?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new bool?[1] { null } : fields;
+    public BoolTemplate() => fields = Array.Empty<bool?>();
+    public BoolTemplate([AllowNull] params bool?[] fields) 
+        => this.fields = fields is null ? Array.Empty<bool?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool>
         => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);

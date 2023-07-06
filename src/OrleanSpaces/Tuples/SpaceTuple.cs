@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples;
 
@@ -17,7 +18,7 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
     /// <summary>
     /// Default constructor which instantiates an empty <see cref="SpaceTuple"/>. 
     /// </summary>
-    public SpaceTuple() : this(Array.Empty<object>()) { }
+    public SpaceTuple() => fields = Array.Empty<object>();
 
     /// <summary>
     /// Main constructor which instantiates a non-empty <see cref="SpaceTuple"/>, when all <paramref name="fields"/> are of valid type.
@@ -26,7 +27,7 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
     /// <remarks><i>Tuple fields can be of type: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
-    public SpaceTuple(params object[] fields)
+    public SpaceTuple([AllowNull] params object[] fields)
     {
         if (fields is null)
         {
@@ -112,7 +113,7 @@ public readonly record struct SpaceTemplate : ISpaceTemplate
     /// <summary>
     /// Default constructor which instantiates an empty <see cref="SpaceTemplate"/>.
     /// </summary>
-    public SpaceTemplate() : this(Array.Empty<object?>()) { }
+    public SpaceTemplate() => fields = Array.Empty<object?>();
 
     /// <summary>
     /// Main constructor which instantiates a non-empty <see cref="SpaceTemplate"/>, when all <paramref name="fields"/> are of valid type.
@@ -121,7 +122,7 @@ public readonly record struct SpaceTemplate : ISpaceTemplate
     /// <remarks><i>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
-    public SpaceTemplate(params object?[] fields)
+    public SpaceTemplate([AllowNull] params object?[] fields)
     {
         if (fields is null)
         {

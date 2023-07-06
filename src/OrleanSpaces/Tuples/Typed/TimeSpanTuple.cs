@@ -12,8 +12,9 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
 
-    public TimeSpanTuple() : this(Array.Empty<TimeSpan>()) { }
-    public TimeSpanTuple(params TimeSpan[] fields) => this.fields = fields;
+    public TimeSpanTuple() => fields = Array.Empty<TimeSpan>();
+    public TimeSpanTuple([AllowNull] params TimeSpan[] fields)
+        => this.fields = fields is null ? Array.Empty<TimeSpan>() : fields;
 
     public static bool operator ==(TimeSpanTuple left, TimeSpanTuple right) => left.Equals(right);
     public static bool operator !=(TimeSpanTuple left, TimeSpanTuple right) => !(left == right);
@@ -49,8 +50,9 @@ public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
     public ref readonly TimeSpan? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new TimeSpan?[1] { null } : fields;
+    public TimeSpanTemplate() => fields = Array.Empty<TimeSpan?>();
+    public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields) 
+        => this.fields = fields is null ? Array.Empty<TimeSpan?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<TimeSpan>
         => TupleHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);

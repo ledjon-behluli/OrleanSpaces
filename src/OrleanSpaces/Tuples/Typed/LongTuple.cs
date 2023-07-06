@@ -14,8 +14,9 @@ public readonly struct LongTuple : INumericTuple<long>, IEquatable<LongTuple>
 
     Span<long> INumericTuple<long>.Fields => fields.AsSpan();
 
-    public LongTuple() : this(Array.Empty<long>()) { }
-    public LongTuple(params long[] fields) => this.fields = fields;
+    public LongTuple() => fields = Array.Empty<long>();
+    public LongTuple([AllowNull] params long[] fields) 
+        => this.fields = fields is null ? Array.Empty<long>() : fields;
 
     public static bool operator ==(LongTuple left, LongTuple right) => left.Equals(right);
     public static bool operator !=(LongTuple left, LongTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct LongTemplate : ISpaceTemplate<long>
     public ref readonly long? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public LongTemplate([AllowNull] params long?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new long?[1] { null } : fields;
+    public LongTemplate() => fields = Array.Empty<long?>();
+    public LongTemplate([AllowNull] params long?[] fields) 
+        => this.fields = fields is null ? Array.Empty<long?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<long>
         => TupleHelpers.Matches<long, LongTuple>(this, tuple);

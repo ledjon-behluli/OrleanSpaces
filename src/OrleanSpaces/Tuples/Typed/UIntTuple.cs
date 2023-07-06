@@ -14,8 +14,9 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
 
     Span<uint> INumericTuple<uint>.Fields => fields.AsSpan();
 
-    public UIntTuple() : this(Array.Empty<uint>()) { }
-    public UIntTuple(params uint[] fields) => this.fields = fields;
+    public UIntTuple() => fields = Array.Empty<uint>();
+    public UIntTuple([AllowNull] params uint[] fields) 
+        => this.fields = fields is null ? Array.Empty<uint>() : fields;
 
     public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
     public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct UIntTemplate : ISpaceTemplate<uint>
     public ref readonly uint? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public UIntTemplate([AllowNull] params uint?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new uint?[1] { null } : fields;
+    public UIntTemplate() => fields = Array.Empty<uint?>();
+    public UIntTemplate([AllowNull] params uint?[] fields) 
+        => this.fields = fields is null ? Array.Empty<uint?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<uint>
         => TupleHelpers.Matches<uint, UIntTuple>(this, tuple);

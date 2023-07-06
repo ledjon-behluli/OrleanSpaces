@@ -12,8 +12,9 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
 
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
 
-    public DateTimeOffsetTuple() : this(Array.Empty<DateTimeOffset>()) { }
-    public DateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;
+    public DateTimeOffsetTuple() => fields = Array.Empty<DateTimeOffset>();
+    public DateTimeOffsetTuple([AllowNull] params DateTimeOffset[] fields) 
+        => this.fields = fields is null ? Array.Empty<DateTimeOffset>() : fields;
 
     public static bool operator ==(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => !(left == right);
@@ -49,8 +50,9 @@ public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOf
     public ref readonly DateTimeOffset? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new DateTimeOffset?[1] { null } : fields;
+    public DateTimeOffsetTemplate() => fields = Array.Empty<DateTimeOffset?>();
+    public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) => 
+        this.fields = fields is null ? Array.Empty<DateTimeOffset?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTimeOffset>
         => TupleHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);

@@ -14,8 +14,9 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 
     Span<sbyte> INumericTuple<sbyte>.Fields => fields.AsSpan();
 
-    public SByteTuple() : this(Array.Empty<sbyte>()) { }
-    public SByteTuple(params sbyte[] fields) => this.fields = fields;
+    public SByteTuple() => fields = Array.Empty<sbyte>();
+    public SByteTuple([AllowNull] params sbyte[] fields) 
+        => this.fields = fields is null ? Array.Empty<sbyte>() : fields;
 
     public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
     public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>
     public ref readonly sbyte? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
+    public SByteTemplate() => fields = Array.Empty<sbyte?>();
     public SByteTemplate([AllowNull] params sbyte?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new sbyte?[1] { null } : fields;
+        => this.fields = fields is null ? Array.Empty<sbyte?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<sbyte>
         => TupleHelpers.Matches<sbyte, SByteTuple>(this, tuple);

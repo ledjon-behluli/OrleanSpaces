@@ -12,8 +12,9 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
 
     public ref readonly char this[int index] => ref fields[index];
 
-    public CharTuple() : this(Array.Empty<char>()) { }
-    public CharTuple(params char[] fields) => this.fields = fields;
+    public CharTuple() => fields = Array.Empty<char>();
+    public CharTuple([AllowNull] params char[] fields) 
+        => this.fields = fields is null ? Array.Empty<char>() : fields;
 
     public static bool operator ==(CharTuple left, CharTuple right) => left.Equals(right);
     public static bool operator !=(CharTuple left, CharTuple right) => !(left == right);
@@ -59,8 +60,8 @@ public readonly record struct CharTemplate : ISpaceTemplate<char>
     public ref readonly char? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public CharTemplate([AllowNull] params char?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new char?[1] { null } : fields;
+    public CharTemplate() => fields = Array.Empty<char?>();
+    public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<char>
         => TupleHelpers.Matches<char, CharTuple>(this, tuple);

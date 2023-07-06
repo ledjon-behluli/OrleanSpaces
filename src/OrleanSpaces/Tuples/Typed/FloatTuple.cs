@@ -14,8 +14,9 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
 
     Span<float> INumericTuple<float>.Fields => fields.AsSpan();
 
-    public FloatTuple() : this(Array.Empty<float>()) { }
-    public FloatTuple(params float[] fields) => this.fields = fields;
+    public FloatTuple() => fields = Array.Empty<float>();
+    public FloatTuple([AllowNull] params float[] fields) 
+        => this.fields = fields is null ? Array.Empty<float>() : fields;
 
     public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
     public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct FloatTemplate : ISpaceTemplate<float>
     public ref readonly float? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public FloatTemplate([AllowNull] params float?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new float?[1] { null } : fields;
+    public FloatTemplate() => fields = Array.Empty<float?>();
+    public FloatTemplate([AllowNull] params float?[] fields) 
+        => this.fields = fields is null ? Array.Empty<float?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<float>
         => TupleHelpers.Matches<float, FloatTuple>(this, tuple);

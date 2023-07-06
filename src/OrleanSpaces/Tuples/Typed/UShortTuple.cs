@@ -14,8 +14,9 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
 
     Span<ushort> INumericTuple<ushort>.Fields => fields.AsSpan();
 
-    public UShortTuple() : this(Array.Empty<ushort>()) { }
-    public UShortTuple(params ushort[] fields) => this.fields = fields;
+    public UShortTuple() => fields = Array.Empty<ushort>();
+    public UShortTuple([AllowNull] params ushort[] fields) 
+        => this.fields = fields is null ? Array.Empty<ushort>() : fields;
 
     public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
     public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct UShortTemplate : ISpaceTemplate<ushort>
     public ref readonly ushort? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public UShortTemplate([AllowNull] params ushort?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new ushort?[1] { null } : fields;
+    public UShortTemplate() => fields = Array.Empty<ushort?>();
+    public UShortTemplate([AllowNull] params ushort?[] fields) 
+        => this.fields = fields is null ? Array.Empty<ushort?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<ushort>
         => TupleHelpers.Matches<ushort, UShortTuple>(this, tuple);

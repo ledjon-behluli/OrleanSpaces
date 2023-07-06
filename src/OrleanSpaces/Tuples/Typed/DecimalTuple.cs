@@ -12,9 +12,10 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     [JsonIgnore] public int Length => fields.Length;
 
     public ref readonly decimal this[int index] => ref fields[index];
-    
-    public DecimalTuple() : this(Array.Empty<decimal>()) { }
-    public DecimalTuple(params decimal[] fields) => this.fields = fields;
+
+    public DecimalTuple() => fields = Array.Empty<decimal>();
+    public DecimalTuple([AllowNull] params decimal[] fields) 
+        => this.fields = fields is null ? Array.Empty<decimal>() : fields;
 
     public static bool operator ==(DecimalTuple left, DecimalTuple right) => left.Equals(right);
     public static bool operator !=(DecimalTuple left, DecimalTuple right) => !(left == right);
@@ -102,8 +103,9 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
     public ref readonly decimal? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public DecimalTemplate([AllowNull] params decimal?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new decimal?[1] { null } : fields;
+    public DecimalTemplate() => fields = Array.Empty<decimal?>();
+    public DecimalTemplate([AllowNull] params decimal?[] fields) 
+        => this.fields = fields is null ? Array.Empty<decimal?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
         => TupleHelpers.Matches<decimal, DecimalTuple>(this, tuple);

@@ -12,8 +12,9 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
 
     public ref readonly DateTime this[int index] => ref fields[index];
 
-    public DateTimeTuple() : this(Array.Empty<DateTime>()) { }
-    public DateTimeTuple(params DateTime[] fields) => this.fields = fields;
+    public DateTimeTuple() => fields = Array.Empty<DateTime>();
+    public DateTimeTuple([AllowNull] params DateTime[] fields)
+        => this.fields = fields is null ? Array.Empty<DateTime>() : fields;
 
     public static bool operator ==(DateTimeTuple left, DateTimeTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeTuple left, DateTimeTuple right) => !(left == right);
@@ -49,8 +50,9 @@ public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>
     public ref readonly DateTime? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public DateTimeTemplate([AllowNull] params DateTime?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new DateTime?[1] { null } : fields;
+    public DateTimeTemplate() => fields = Array.Empty<DateTime?>();
+    public DateTimeTemplate([AllowNull] params DateTime?[] fields) =>
+        this.fields = fields is null ? Array.Empty<DateTime?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTime>
         => TupleHelpers.Matches<DateTime, DateTimeTuple>(this, tuple);

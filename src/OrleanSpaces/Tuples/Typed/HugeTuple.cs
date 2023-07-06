@@ -16,8 +16,9 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
 
     Span<Int128> INumericTuple<Int128>.Fields => fields.AsSpan();
 
-    public HugeTuple() : this(Array.Empty<Int128>()) { }
-    public HugeTuple(params Int128[] fields) => this.fields = fields;
+    public HugeTuple() => fields = Array.Empty<Int128>();
+    public HugeTuple([AllowNull] params Int128[] fields) 
+        => this.fields = fields is null ? Array.Empty<Int128>() : fields;
 
     public static bool operator ==(HugeTuple left, HugeTuple right) => left.Equals(right);
     public static bool operator !=(HugeTuple left, HugeTuple right) => !(left == right);
@@ -97,8 +98,9 @@ public readonly record struct HugeTemplate : ISpaceTemplate<Int128>
     public ref readonly Int128? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public HugeTemplate([AllowNull] params Int128?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new Int128?[1] { null } : fields;
+    public HugeTemplate() => fields = Array.Empty<Int128?>();
+    public HugeTemplate([AllowNull] params Int128?[] fields) 
+        => this.fields = fields is null ? Array.Empty<Int128?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Int128>
         => TupleHelpers.Matches<Int128, HugeTuple>(this, tuple);

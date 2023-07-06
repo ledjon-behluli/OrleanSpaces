@@ -14,8 +14,9 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
 
     Span<double> INumericTuple<double>.Fields => fields.AsSpan();
 
-    public DoubleTuple() : this(Array.Empty<double>()) { }
-    public DoubleTuple(params double[] fields) => this.fields = fields;
+    public DoubleTuple() => fields = Array.Empty<double>();
+    public DoubleTuple([AllowNull] params double[] fields) 
+        => this.fields = fields is null ? Array.Empty<double>() : fields;
 
     public static bool operator ==(DoubleTuple left, DoubleTuple right) => left.Equals(right);
     public static bool operator !=(DoubleTuple left, DoubleTuple right) => !(left == right);
@@ -47,8 +48,9 @@ public readonly record struct DoubleTemplate : ISpaceTemplate<double>
     public ref readonly double? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
+    public DoubleTemplate() => fields = Array.Empty<double?>();
     public DoubleTemplate([AllowNull] params double?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new double?[1] { null } : fields;
+        => this.fields = fields is null ? Array.Empty<double?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<double>
         => TupleHelpers.Matches<double, DoubleTuple>(this, tuple);

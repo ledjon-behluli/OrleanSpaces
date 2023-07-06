@@ -13,8 +13,9 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 
     public ref readonly Guid this[int index] => ref fields[index];
     
-    public GuidTuple() : this(Array.Empty<Guid>()) { }
-    public GuidTuple(params Guid[] fields) => this.fields = fields;
+    public GuidTuple() => fields = Array.Empty<Guid>();
+    public GuidTuple([AllowNull] params Guid[] fields) 
+        => this.fields = fields is null ? Array.Empty<Guid>() : fields;
 
     public static bool operator ==(GuidTuple left, GuidTuple right) => left.Equals(right);
     public static bool operator !=(GuidTuple left, GuidTuple right) => !(left == right);
@@ -73,8 +74,9 @@ public readonly record struct GuidTemplate : ISpaceTemplate<Guid>
     public ref readonly Guid? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public GuidTemplate([AllowNull] params Guid?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new Guid?[1] { null } : fields;
+    public GuidTemplate() => fields = Array.Empty<Guid?>();
+    public GuidTemplate([AllowNull] params Guid?[] fields) 
+        => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Guid>
         => TupleHelpers.Matches<Guid, GuidTuple>(this, tuple);

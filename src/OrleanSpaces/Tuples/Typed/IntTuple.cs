@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -15,8 +14,9 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
 
     Span<int> INumericTuple<int>.Fields => fields.AsSpan();
 
-    public IntTuple() : this(Array.Empty<int>()) { }
-    public IntTuple(params int[] fields) => this.fields = fields;
+    public IntTuple() => fields = Array.Empty<int>();
+    public IntTuple([AllowNull] params int[] fields) 
+        => this.fields = fields is null ? Array.Empty<int>() : fields;
 
     public static bool operator ==(IntTuple left, IntTuple right) => left.Equals(right);
     public static bool operator !=(IntTuple left, IntTuple right) => !(left == right);
@@ -24,10 +24,6 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public static explicit operator IntTemplate(IntTuple tuple)
     {
         ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in tuple.fields);
-
-        ref var a = ref Unsafe.AsRef(in tuple.fields);
-            
-
         return new IntTemplate(fields);
     }
 
@@ -52,8 +48,9 @@ public readonly record struct IntTemplate : ISpaceTemplate<int>
     public ref readonly int? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public IntTemplate([AllowNull] params int?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new int?[1] { null } : fields;
+    public IntTemplate() => fields = Array.Empty<int?>();
+    public IntTemplate([AllowNull] params int?[] fields) 
+        => this.fields = fields is null ? Array.Empty<int?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<int>
         => TupleHelpers.Matches<int, IntTuple>(this, tuple);

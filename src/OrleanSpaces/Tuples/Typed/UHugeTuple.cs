@@ -16,8 +16,9 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
 
     Span<UInt128> INumericTuple<UInt128>.Fields => fields.AsSpan();
 
-    public UHugeTuple() : this(Array.Empty<UInt128>()) { }
-    public UHugeTuple(params UInt128[] fields) => this.fields = fields;
+    public UHugeTuple() => fields = Array.Empty<UInt128>();
+    public UHugeTuple([AllowNull] params UInt128[] fields) 
+        => this.fields = fields is null ? Array.Empty<UInt128>() : fields;
 
     public static bool operator ==(UHugeTuple left, UHugeTuple right) => left.Equals(right);
     public static bool operator !=(UHugeTuple left, UHugeTuple right) => !(left == right);
@@ -97,8 +98,9 @@ public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>
     public ref readonly UInt128? this[int index] => ref fields[index];
     public int Length => fields.Length;
 
-    public UHugeTemplate([AllowNull] params UInt128?[] fields)
-        => this.fields = fields == null || fields.Length == 0 ? new UInt128?[1] { null } : fields;
+    public UHugeTemplate() => fields = Array.Empty<UInt128?>();
+    public UHugeTemplate([AllowNull] params UInt128?[] fields) 
+        => this.fields = fields is null ? Array.Empty<UInt128?>() : fields;
 
     public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<UInt128>
         => TupleHelpers.Matches<UInt128, UHugeTuple>(this, tuple);
