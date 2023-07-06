@@ -25,7 +25,14 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
 
     public static explicit operator UHugeTemplate(UHugeTuple tuple)
     {
-        ref UInt128?[] fields = ref TupleHelpers.CastAs<UInt128[], UInt128?[]>(in tuple.fields);
+        int length = tuple.Length;
+        UInt128?[] fields = new UInt128?[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+        
         return new UHugeTemplate(fields);
     }
 

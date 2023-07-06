@@ -21,7 +21,14 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
 
     public static explicit operator CharTemplate(CharTuple tuple)
     {
-        ref char?[] fields = ref TupleHelpers.CastAs<char[], char?[]>(in tuple.fields);
+        int length = tuple.Length;
+        char?[] fields = new char?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new CharTemplate(fields);
     }
 

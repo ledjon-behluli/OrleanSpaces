@@ -23,7 +23,14 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
 
     public static explicit operator SByteTemplate(SByteTuple tuple)
     {
-        ref sbyte?[] fields = ref TupleHelpers.CastAs<sbyte[], sbyte?[]>(in tuple.fields);
+        int length = tuple.Length;
+        sbyte?[] fields = new sbyte?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new SByteTemplate(fields);
     }
 

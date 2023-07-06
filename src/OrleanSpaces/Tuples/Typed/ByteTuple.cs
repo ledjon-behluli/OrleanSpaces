@@ -23,7 +23,14 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
 
     public static explicit operator ByteTemplate(ByteTuple tuple)
     {
-        ref byte?[] fields = ref TupleHelpers.CastAs<byte[], byte?[]>(in tuple.fields);
+        int length = tuple.Length;
+        byte?[] fields = new byte?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new ByteTemplate(fields);
     }
 

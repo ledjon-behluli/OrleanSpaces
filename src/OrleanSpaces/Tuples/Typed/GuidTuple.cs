@@ -22,7 +22,14 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
 
     public static explicit operator GuidTemplate(GuidTuple tuple)
     {
-        ref Guid?[] fields = ref TupleHelpers.CastAs<Guid[], Guid?[]>(in tuple.fields);
+        int length = tuple.Length;
+        Guid?[] fields = new Guid?[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new GuidTemplate(fields);
     }
 

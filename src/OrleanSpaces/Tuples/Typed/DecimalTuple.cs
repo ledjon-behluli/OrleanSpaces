@@ -22,7 +22,14 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
 
     public static explicit operator DecimalTemplate(DecimalTuple tuple)
     {
-        ref decimal?[] fields = ref TupleHelpers.CastAs<decimal[], decimal?[]>(in tuple.fields);
+        int length = tuple.Length;
+        decimal?[] fields = new decimal?[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new DecimalTemplate(fields);
     }
 

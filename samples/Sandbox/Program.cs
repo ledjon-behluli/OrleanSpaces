@@ -13,11 +13,6 @@ var host = new HostBuilder()
     })
     .Build();
 
-var a = (SpaceTemplate)(new SpaceTuple(1, 2, 3));
-var b = (IntTemplate)(new IntTuple(1, 2, 3));
-var d = (ByteTemplate)(new ByteTuple(1, 2, 3));
-var c = (BoolTemplate)(new BoolTuple(true, false, true));
-
 var client = host.Services.GetRequiredService<IClusterClient>();
 await host.StartAsync();
 

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrleanSpaces.Helpers;
+using OrleanSpaces.Tuples.Typed;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -63,7 +64,14 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 
     public static explicit operator SpaceTemplate(SpaceTuple tuple)
     {
-        ref object?[] fields = ref TupleHelpers.CastAs<object[], object?[]>(in tuple.fields);
+        int length = tuple.Length;
+        object?[] fields = new object?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new SpaceTemplate(fields);
     }
 

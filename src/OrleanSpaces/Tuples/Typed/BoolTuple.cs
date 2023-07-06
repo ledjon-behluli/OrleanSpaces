@@ -21,7 +21,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
 
     public static explicit operator BoolTemplate(BoolTuple tuple)
     {
-        ref bool?[] fields = ref TupleHelpers.CastAs<bool[], bool?[]>(in tuple.fields);
+        int length = tuple.Length;
+        bool?[] fields = new bool?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+
         return new BoolTemplate(fields);
     }
 

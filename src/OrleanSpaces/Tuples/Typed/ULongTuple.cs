@@ -23,7 +23,14 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
 
     public static explicit operator ULongTemplate(ULongTuple tuple)
     {
-        ref ulong?[] fields = ref TupleHelpers.CastAs<ulong[], ulong?[]>(in tuple.fields);
+        int length = tuple.Length;
+        ulong?[] fields = new ulong?[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+        
         return new ULongTemplate(fields);
     }
 

@@ -23,7 +23,14 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
 
     public static explicit operator UIntTemplate(UIntTuple tuple)
     {
-        ref uint?[] fields = ref TupleHelpers.CastAs<uint[], uint?[]>(in tuple.fields);
+        int length = tuple.Length;
+        uint?[] fields = new uint?[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+        
         return new UIntTemplate(fields);
     }
 

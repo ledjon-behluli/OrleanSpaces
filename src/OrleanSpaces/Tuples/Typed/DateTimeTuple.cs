@@ -21,7 +21,14 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
 
     public static explicit operator DateTimeTemplate(DateTimeTuple tuple)
     {
-        ref DateTime?[] fields = ref TupleHelpers.CastAs<DateTime[], DateTime?[]>(in tuple.fields);
+        int length = tuple.Length;
+        DateTime?[] fields = new DateTime?[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            fields[i] = tuple[i];
+        }
+        
         return new DateTimeTemplate(fields);
     }
 
