@@ -7,11 +7,16 @@ using OrleanSpaces.Tuples.Typed;
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
     {
-        builder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceType.Generic | SpaceType.Ints);
+        builder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.Generic | SpaceKind.Int);
         builder.UseLocalhostClustering();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .Build();
+
+var a = (SpaceTemplate)(new SpaceTuple(1, 2, 3));
+var b = (IntTemplate)(new IntTuple(1, 2, 3));
+var d = (ByteTemplate)(new ByteTuple(1, 2, 3));
+var c = (BoolTemplate)(new BoolTuple(true, false, true));
 
 var client = host.Services.GetRequiredService<IClusterClient>();
 await host.StartAsync();

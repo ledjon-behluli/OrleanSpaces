@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Typed;
 
@@ -23,6 +24,10 @@ public readonly struct IntTuple : INumericTuple<int>, IEquatable<IntTuple>
     public static explicit operator IntTemplate(IntTuple tuple)
     {
         ref int?[] fields = ref TupleHelpers.CastAs<int[], int?[]>(in tuple.fields);
+
+        ref var a = ref Unsafe.AsRef(in tuple.fields);
+            
+
         return new IntTemplate(fields);
     }
 
