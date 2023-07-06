@@ -302,42 +302,6 @@ internal static class TupleHelpers
         where TIn : struct => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TTuple FindTuple<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
-        where T : unmanaged
-        where TTuple : struct, ISpaceTuple<T>
-        where TTemplate : struct, ISpaceTemplate<T>
-    {
-        foreach (var tuple in tuples)
-        {
-            if (template.Matches(tuple))
-            {
-                return tuple;
-            }
-        }
-
-        return new();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TTuple> FindAllTuples<T, TTuple, TTemplate>(this IEnumerable<TTuple> tuples, TTemplate template)
-        where T : unmanaged
-        where TTuple : struct, ISpaceTuple<T>
-        where TTemplate : struct, ISpaceTemplate<T>
-    {
-        List<TTuple> result = new();
-
-        foreach (var tuple in tuples)
-        {
-            if (template.Matches(tuple))
-            {
-                result.Add(tuple);
-            }
-        }
-
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString<T>(T[] fields) where T : unmanaged
         => $"({string.Join(", ", fields)})";
 

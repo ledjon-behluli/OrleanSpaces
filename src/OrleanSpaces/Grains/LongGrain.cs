@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class LongGrain : Grain<LongTuple>, ILongGrain
 {
     public LongGrain(
         [PersistentState(ILongGrain.Key, Constants.StorageName)]
-        IPersistentState<List<LongTuple>> space) : base(ILongGrain.Key, space) { }
+        IPersistentState<HashSet<LongTuple>> space) : base(ILongGrain.Key, space) { }
 }

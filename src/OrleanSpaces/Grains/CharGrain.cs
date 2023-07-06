@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class CharGrain : Grain<CharTuple>, ICharGrain
 {
     public CharGrain(
         [PersistentState(ICharGrain.Key, Constants.StorageName)]
-        IPersistentState<List<CharTuple>> space) : base(ICharGrain.Key, space) { }
+        IPersistentState<HashSet<CharTuple>> space) : base(ICharGrain.Key, space) { }
 }

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
@@ -27,6 +27,8 @@ SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
 
 await agent1.WriteAsync(s_tuple1);
+await agent1.WriteAsync(s_tuple1);
+
 var t1 = await agent1.PopAsync(s_template1);
 
 // IntTuple

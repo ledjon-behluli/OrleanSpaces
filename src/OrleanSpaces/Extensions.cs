@@ -4,8 +4,8 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Agents;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Typed;
 using Microsoft.Extensions.DependencyInjection;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces;
 

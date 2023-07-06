@@ -70,7 +70,7 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
     [AllowNull] private ITupleStore<TTuple> store;
-    private List<TTuple> tuples = new();
+    private HashSet<TTuple> tuples = new();
 
     public Agent(
         IClusterClient client,
@@ -90,7 +90,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(ITupleStore<TTuple> store)
     {
-        tuples = (await store.GetAll()).ToList();
+        tuples = (await store.GetAll()).ToHashSet();
         StreamId streamId = await store.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
@@ -156,7 +156,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public ValueTask<TTuple> PeekAsync(TTemplate template)
     {
-        TTuple tuple = tuples.FindTuple<T, TTuple, TTemplate>(template);
+        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
         return new(tuple);
     }
 
@@ -164,7 +164,7 @@ internal class Agent<T, TTuple, TTemplate> :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.FindTuple<T, TTuple, TTemplate>(template);
+        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
 
         if (tuple.Length > 0)
         {
@@ -178,7 +178,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
-        TTuple tuple = tuples.FindTuple<T, TTuple, TTemplate>(template);
+        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
 
         if (tuple.Length > 0)
         {
@@ -193,7 +193,7 @@ internal class Agent<T, TTuple, TTemplate> :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.FindTuple<T, TTuple, TTemplate>(template);
+        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
 
         if (tuple.Length > 0)
         {
@@ -209,7 +209,19 @@ internal class Agent<T, TTuple, TTemplate> :
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
-        => new(tuples.FindAllTuples<T, TTuple, TTemplate>(template));
+    {
+        List<TTuple> result = new();
+
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple))
+            {
+                result.Add(tuple);
+            }
+        }
+
+        return new(result);
+    }
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 

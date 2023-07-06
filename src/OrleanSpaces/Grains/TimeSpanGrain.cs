@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class TimeSpanGrain : Grain<TimeSpanTuple>, ITimeSpanGrain
 {
     public TimeSpanGrain(
         [PersistentState(ITimeSpanGrain.Key, Constants.StorageName)]
-        IPersistentState<List<TimeSpanTuple>> space) : base(ITimeSpanGrain.Key, space) { }
+        IPersistentState<HashSet<TimeSpanTuple>> space) : base(ITimeSpanGrain.Key, space) { }
 }

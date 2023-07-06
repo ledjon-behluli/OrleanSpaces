@@ -2,7 +2,7 @@
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Observers;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Agents;
 

@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class DateTimeOffsetGrain : Grain<DateTimeOffsetTuple>, IDateTim
 {
     public DateTimeOffsetGrain(
         [PersistentState(IDateTimeOffsetGrain.Key, Constants.StorageName)]
-        IPersistentState<List<DateTimeOffsetTuple>> space) : base(IDateTimeOffsetGrain.Key, space) { }
+        IPersistentState<HashSet<DateTimeOffsetTuple>> space) : base(IDateTimeOffsetGrain.Key, space) { }
 }

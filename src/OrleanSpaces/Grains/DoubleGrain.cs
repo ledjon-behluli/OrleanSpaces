@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class DoubleGrain : Grain<DoubleTuple>, IDoubleGrain
 {
     public DoubleGrain(
         [PersistentState(IDoubleGrain.Key, Constants.StorageName)]
-        IPersistentState<List<DoubleTuple>> space) : base(IDoubleGrain.Key, space) { }
+        IPersistentState<HashSet<DoubleTuple>> space) : base(IDoubleGrain.Key, space) { }
 }

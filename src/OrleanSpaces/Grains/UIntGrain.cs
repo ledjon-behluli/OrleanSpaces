@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class UIntGrain : Grain<UIntTuple>, IUIntGrain
 {
     public UIntGrain(
         [PersistentState(IUIntGrain.Key, Constants.StorageName)]
-        IPersistentState<List<UIntTuple>> space) : base(IUIntGrain.Key, space) { }
+        IPersistentState<HashSet<UIntTuple>> space) : base(IUIntGrain.Key, space) { }
 }

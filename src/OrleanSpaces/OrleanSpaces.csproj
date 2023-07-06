@@ -64,4 +64,8 @@
 	  <Orleans_CodeGenInputs Remove="Tuples\ThrowHelpers.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Tuples\Typed\" />
+	</ItemGroup>
+
 </Project>

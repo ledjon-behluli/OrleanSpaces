@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class ByteGrain : Grain<ByteTuple>, IByteGrain
 {
     public ByteGrain(
         [PersistentState(IByteGrain.Key, Constants.StorageName)]
-        IPersistentState<List<ByteTuple>> space) : base(IByteGrain.Key, space) { }
+        IPersistentState<HashSet<ByteTuple>> space) : base(IByteGrain.Key, space) { }
 }

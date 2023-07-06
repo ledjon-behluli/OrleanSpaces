@@ -10,12 +10,12 @@ namespace OrleanSpaces.Grains;
 internal abstract class Grain<T> : Grain
     where T : struct, ISpaceTuple, IEquatable<T>
 {
-    private readonly IPersistentState<List<T>> space;
+    private readonly IPersistentState<HashSet<T>> space;
     private readonly StreamId streamId;
 
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
-    public Grain(string key, IPersistentState<List<T>> space)
+    public Grain(string key, IPersistentState<HashSet<T>> space)
     {
         streamId = StreamId.Create(Constants.StreamName, key ?? throw new ArgumentNullException(nameof(key)));
         this.space = space ?? throw new ArgumentNullException(nameof(space));

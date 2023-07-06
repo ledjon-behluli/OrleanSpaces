@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class DecimalGrain : Grain<DecimalTuple>, IDecimalGrain
 {
     public DecimalGrain(
         [PersistentState(IDecimalGrain.Key, Constants.StorageName)]
-        IPersistentState<List<DecimalTuple>> space) : base(IDecimalGrain.Key, space) { }
+        IPersistentState<HashSet<DecimalTuple>> space) : base(IDecimalGrain.Key, space) { }
 }

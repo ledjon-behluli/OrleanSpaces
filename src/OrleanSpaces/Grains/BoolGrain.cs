@@ -1,5 +1,5 @@
 ﻿using Orleans.Runtime;
-using OrleanSpaces.Tuples.Typed;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains;
 
@@ -12,5 +12,5 @@ internal sealed class BoolGrain : Grain<BoolTuple>, IBoolGrain
 {
     public BoolGrain(
         [PersistentState(IBoolGrain.Key, Constants.StorageName)]
-        IPersistentState<List<BoolTuple>> space) : base(IBoolGrain.Key, space) { }
+        IPersistentState<HashSet<BoolTuple>> space) : base(IBoolGrain.Key, space) { }
 }
