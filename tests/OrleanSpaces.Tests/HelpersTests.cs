@@ -1,0 +1,87 @@
+﻿using OrleanSpaces.Helpers;
+using OrleanSpaces.Tuples;
+using System.Dynamic;
+
+namespace OrleanSpaces.Tests;
+
+public class HelpersTests
+{
+    [Theory]
+    [MemberData(nameof(SupportedTypes))]
+    public void Should_Be_Of_Supported_Type(Type type)
+        => Assert.True(type.IsSupportedType());
+
+    [Theory]
+    [MemberData(nameof(OtherTypes))]
+    public void Should_Not_Be_Of_Supported_Type(Type type)
+        => Assert.False(type.IsSupportedType());
+
+    [Theory]
+    [ClassData(typeof(EmptyTupleGenerator))]
+    public void Should_Throw_On_Empty_Tuple(ISpaceTuple tuple)
+    {
+        var ex = Record.Exception(() => ThrowHelpers.EmptyTuple(tuple));
+
+        Assert.IsType<ArgumentException>(ex);
+        Assert.Equal("Empty tuple is not allowed to be writen in the tuple space", ex.Message);
+    }
+
+    [Fact]
+    public void Should_Throw_On_Invalid_Filed_Type()
+    {
+        var ex = Record.Exception(() => ThrowHelpers.InvalidFieldType(0));
+
+        Assert.IsType<ArgumentException>(ex);
+        Assert.Equal("The field at position = 0 is not a valid type.", ex.Message);
+    }
+
+    [Fact]
+    public void Should_Throw_On_Null_Filed_Type()
+    {
+        var ex = Record.Exception(() => ThrowHelpers.NullField(0));
+
+        Assert.IsType<ArgumentNullException>(ex);
+        Assert.Equal("The field at position = 0 can not be null", ex.Message);
+    }
+   
+    private static object[][] SupportedTypes() =>
+        new[]
+        {
+            // Primitives
+            new object[] { typeof(bool) },
+            new object[] { typeof(byte) },
+            new object[] { typeof(sbyte) },
+            new object[] { typeof(char) },
+            new object[] { typeof(double) },
+            new object[] { typeof(float) },
+            new object[] { typeof(short) },
+            new object[] { typeof(ushort) },
+            new object[] { typeof(int) },
+            new object[] { typeof(uint) },
+            new object[] { typeof(long) },
+            new object[] { typeof(ulong) },
+            // Others
+            new object[] { typeof(TestEnum) },
+            new object[] { typeof(string) },
+            new object[] { typeof(decimal) },
+            new object[] { typeof(Int128) },
+            new object[] { typeof(UInt128) },
+            new object[] { typeof(DateTime) },
+            new object[] { typeof(DateTimeOffset) },
+            new object[] { typeof(TimeSpan) },
+            new object[] { typeof(Guid) }
+        };
+
+    private static object[][] OtherTypes() =>
+        new[]
+        {
+            new object[] { typeof(TestStruct) },
+            new object[] { typeof(TestClass) },
+            new object[] { typeof(object) },
+            new object[] { typeof(DynamicObject) },
+        };
+
+    private enum TestEnum { }
+    private struct TestStruct { }
+    private class TestClass { }
+}
