@@ -1,12 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orleans;
-using Orleans.Hosting;
 using Orleans.TestingHost;
-using OrleanSpaces.Callbacks;
-using OrleanSpaces.Continuations;
-using OrleanSpaces.Evaluations;
-using OrleanSpaces.Observers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrleanSpaces.Tests;
 
@@ -25,11 +18,6 @@ public class ClusterFixture : IDisposable
         cluster.Deploy();
 
         Client = cluster.Client;
-
-        Client.ServiceProvider.GetRequiredService<EvaluationChannel>().IsBeingConsumed = true;
-        Client.ServiceProvider.GetRequiredService<CallbackChannel>().IsBeingConsumed = true;
-        Client.ServiceProvider.GetRequiredService<ContinuationChannel>().IsBeingConsumed = true;
-        Client.ServiceProvider.GetRequiredService<ObserverChannel>().IsBeingConsumed = true;
     }
 
     public void Dispose()
@@ -42,10 +30,9 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(ISiloBuilder siloBuilder)
         {
-            siloBuilder.AddSimpleMessageStreamProvider(Constants.PubSubProvider);
+            siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
             siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-            siloBuilder.AddMemoryGrainStorage(Constants.TupleSpaceStore);
-            siloBuilder.AddTupleSpace();
+            siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
         }
     }
 
@@ -53,8 +40,8 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
         {
-            clientBuilder.AddSimpleMessageStreamProvider(Constants.PubSubProvider);
-            clientBuilder.AddTupleSpace();
+            clientBuilder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All);
+            clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
         }
     }
 }

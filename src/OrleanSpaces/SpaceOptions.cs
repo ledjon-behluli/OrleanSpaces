@@ -8,6 +8,7 @@ public sealed class SpaceOptions
 [Flags]
 public enum SpaceKind
 {
+    All = Generic | Bool | Byte | Char | DateTimeOffset | DateTime | Decimal | Double | Float | Guid | Huge | Int | Long | SByte | Short | TimeSpan | UHuge | UInt | ULong | UShort,
     Generic = 1,
     Bool = 2,
     Byte = 4,

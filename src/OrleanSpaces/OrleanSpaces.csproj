@@ -52,16 +52,4 @@
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Orleans_CodeGenInputs Remove="Tuples\ISpaceTemplate.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Orleans_CodeGenInputs Remove="Tuples\TupleStreamAction.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Orleans_CodeGenInputs Remove="Tuples\ThrowHelpers.cs" />
-	</ItemGroup>
-
 </Project>
