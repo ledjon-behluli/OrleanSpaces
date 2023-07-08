@@ -5,21 +5,15 @@ namespace OrleanSpaces.Tests.Continuations;
 
 public class ChannelTests
 {
-    private readonly ContinuationChannel channel = new();
-
-    [Fact]
-    public void Should_Be_An_IConsumable()
-    {
-        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(ContinuationChannel)));
-    }
+    private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> channel = new();
 
     [Fact]
     public async Task Should_Read_Tuple_If_Tuple_Was_Writen()
     {
         SpaceTuple tuple = new(1);
 
-        await channel.Writer.WriteAsync(tuple);
-        ISpaceTuple result = await channel.Reader.ReadAsync();
+        await channel.TupleWriter.WriteAsync(tuple);
+        ISpaceTuple result = await channel.TupleReader.ReadAsync();
 
         Assert.Equal(tuple, result);
         Assert.Equal(typeof(SpaceTuple), result.GetType());
@@ -31,8 +25,8 @@ public class ChannelTests
     {
         SpaceTemplate template = new(1);
 
-        await channel.Writer.WriteAsync(template);
-        ISpaceTuple result = await channel.Reader.ReadAsync();
+        await channel.TemplateWriter.WriteAsync(template);
+        ISpaceTemplate result = await channel.TemplateReader.ReadAsync();
 
         Assert.Equal(template, result);
         Assert.Equal(typeof(SpaceTemplate), result.GetType());

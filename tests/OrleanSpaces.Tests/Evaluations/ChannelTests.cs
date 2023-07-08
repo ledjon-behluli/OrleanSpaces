@@ -5,13 +5,7 @@ namespace OrleanSpaces.Tests.Evaluations;
 
 public class ChannelTests
 {
-    private readonly EvaluationChannel channel = new();
-
-    [Fact]
-    public void Should_Be_An_IConsumable()
-    {
-        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(EvaluationChannel)));
-    }
+    private readonly EvaluationChannel<SpaceTuple> channel = new();
 
     [Fact]
     public async Task Should_Read_What_Was_Writen()

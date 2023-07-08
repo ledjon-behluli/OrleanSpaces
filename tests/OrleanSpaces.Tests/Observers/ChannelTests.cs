@@ -5,22 +5,16 @@ namespace OrleanSpaces.Tests.Observers;
 
 public class ChannelTests
 {
-    private readonly ObserverChannel channel = new();
-
-    [Fact]
-    public void Should_Be_An_IConsumable()
-    {
-        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(ObserverChannel)));
-    }
+    private readonly ObserverChannel<SpaceTuple> channel = new();
 
     [Fact]
     public async Task Should_Read_What_Was_Writen()
     {
-        SpaceTuple tuple = new(1);
+        TupleAction<SpaceTuple> action = new(Guid.NewGuid(), new(1), TupleActionType.Insert);
 
-        await channel.Writer.WriteAsync(tuple);
-        ISpaceTuple result = await channel.Reader.ReadAsync();
+        await channel.Writer.WriteAsync(action);
+        TupleAction<SpaceTuple> result = await channel.Reader.ReadAsync();
 
-        Assert.Equal(tuple, result);
+        Assert.Equal(action, result);
     }
 }

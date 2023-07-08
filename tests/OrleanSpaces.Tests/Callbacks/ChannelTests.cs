@@ -5,13 +5,7 @@ namespace OrleanSpaces.Tests.Callbacks;
 
 public class ChannelTests
 {
-    private readonly CallbackChannel channel = new();
-
-    [Fact]
-    public void Should_Be_An_IConsumable()
-    {
-        Assert.True(typeof(IConsumable).IsAssignableFrom(typeof(CallbackChannel)));
-    }
+    private readonly CallbackChannel<SpaceTuple> channel = new();
 
     [Fact]
     public async Task Should_Read_What_Was_Writen()

@@ -167,7 +167,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     #region PeekAsync
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -177,7 +177,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_Return_Null_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -187,7 +187,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_Invoke_Callback_If_Tuple_Is_Available_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -263,7 +263,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     #region PopAsync
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -273,7 +273,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_Return_Null_Tuple_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
@@ -283,7 +283,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_Invoke_Callback_If_Tuple_Is_Available_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);

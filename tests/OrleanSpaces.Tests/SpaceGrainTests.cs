@@ -61,7 +61,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Theory]
-    [ClassData(typeof(TupleGenerator))]
+    [ClassData(typeof(SpaceTupleGenerator))]
     public async Task Should_Notify_Observer_On_Expansion_And_Contraction(SpaceTuple tuple)
     {
         // Add

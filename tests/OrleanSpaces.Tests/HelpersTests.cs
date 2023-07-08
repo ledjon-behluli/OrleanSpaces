@@ -19,30 +19,15 @@ public class HelpersTests
     [Theory]
     [ClassData(typeof(EmptyTupleGenerator))]
     public void Should_Throw_On_Empty_Tuple(ISpaceTuple tuple)
-    {
-        var ex = Record.Exception(() => ThrowHelpers.EmptyTuple(tuple));
-
-        Assert.IsType<ArgumentException>(ex);
-        Assert.Equal("Empty tuple is not allowed to be writen in the tuple space", ex.Message);
-    }
+        => Assert.Throws<ArgumentException>(() => ThrowHelpers.EmptyTuple(tuple));
 
     [Fact]
     public void Should_Throw_On_Invalid_Filed_Type()
-    {
-        var ex = Record.Exception(() => ThrowHelpers.InvalidFieldType(0));
-
-        Assert.IsType<ArgumentException>(ex);
-        Assert.Equal("The field at position = 0 is not a valid type.", ex.Message);
-    }
+        => Assert.Throws<ArgumentException>(() => ThrowHelpers.InvalidFieldType(0));
 
     [Fact]
     public void Should_Throw_On_Null_Filed_Type()
-    {
-        var ex = Record.Exception(() => ThrowHelpers.NullField(0));
-
-        Assert.IsType<ArgumentNullException>(ex);
-        Assert.Equal("The field at position = 0 can not be null", ex.Message);
-    }
+        => Assert.Throws<ArgumentNullException>(() => ThrowHelpers.NullField(0));
    
     private static object[][] SupportedTypes() =>
         new[]
