@@ -3,6 +3,8 @@
 public sealed class SpaceOptions
 {
     public SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
+    public bool IgnoreEvaluationExceptions { get; set; } = true;
+    public bool IgnoreCallbackExceptions { get; set; } = true;
 }
 
 [Flags]

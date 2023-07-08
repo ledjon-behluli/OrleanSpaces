@@ -23,6 +23,12 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 var agent1 = await provider1.GetAsync();
 
+await agent1.EvaluateAsync(async () =>
+{
+    await Task.Delay(1);
+    return new SpaceTuple();
+});
+
 SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
 

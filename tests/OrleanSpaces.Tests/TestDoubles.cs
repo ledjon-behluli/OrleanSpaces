@@ -2,6 +2,7 @@
 using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Tests;
 
@@ -9,14 +10,23 @@ public struct TestStruct { }
 public class TestClass { }
 public enum TestEnum { A }
 
-public class TestTupleRouter : ITupleRouter
+public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
+    where TTuple : struct, ISpaceTuple
+    where TTemplate : struct, ISpaceTemplate
 {
-    public ISpaceTuple Tuple { get; set; }
+    public TTuple Tuple { get; set; } = new();
+    public TTemplate Template { get; set; } = new();
 
-    public Task RouteAsync(ISpaceTuple tuple)
+    public Task RouteAsync(TTuple tuple)
     {
         Tuple = tuple;
         return Task.CompletedTask;
+    }
+
+    public ValueTask RouteAsync(TTemplate template)
+    {
+        Template = template;
+        return ValueTask.CompletedTask;
     }
 }
 
@@ -53,4 +63,10 @@ public class ThrowingObserver : TestObserver
     {
         throw new Exception("Test");
     }
+}
+
+public static class AssertHelpers
+{
+    public static void AssertEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.Equal(0, tuple.Length);
+    public static void AssertNotEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.NotEqual(0, tuple.Length);
 }

@@ -26,7 +26,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
 
         continuationChannel.TupleReader.TryRead(out SpaceTuple result);
 
-        Assert.Equal(0, result.Length);
+        result.AssertEmpty();
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
             CallbackChannel = new();
             ContinuationChannel = new();
             Registry = new();
-            processor = new(Registry, CallbackChannel, ContinuationChannel);
+            processor = new(new(), Registry, CallbackChannel, ContinuationChannel);
         }
 
         public Task InitializeAsync() => processor.StartAsync(default);
@@ -99,7 +99,7 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
 
         continuationChannel.TupleReader.TryRead(out IntTuple result);
 
-        Assert.Equal(0, result.Length);
+        result.AssertEmpty();
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
             CallbackChannel = new();
             ContinuationChannel = new();
             Registry = new();
-            processor = new(Registry, CallbackChannel, ContinuationChannel);
+            processor = new(new(), Registry, CallbackChannel, ContinuationChannel);
         }
 
         public Task InitializeAsync() => processor.StartAsync(default);

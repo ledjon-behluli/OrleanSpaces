@@ -4,13 +4,15 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Evaluations;
 
-public class ProcessorTests : IClassFixture<Fixture>
+public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
 {
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly ContinuationChannel continuationChannel;
+    private readonly SpaceOptions options;
+    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
+    private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
-    public ProcessorTests(Fixture fixture)
+    public SpaceProcessorTests(Fixture fixture)
     {
+        options = fixture.Options;
         evaluationChannel = fixture.EvaluationChannel;
         continuationChannel = fixture.ContinuationChannel; 
     }
@@ -21,19 +23,52 @@ public class ProcessorTests : IClassFixture<Fixture>
         SpaceTuple tuple = new("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        ISpaceTuple result = await continuationChannel.Reader.ReadAsync(default);
+        SpaceTuple result = await continuationChannel.TupleReader.ReadAsync(default);
 
-        Assert.NotNull(result);
-        Assert.True(result is SpaceTuple);
-        Assert.Equal(tuple, (SpaceTuple)result);
+        result.AssertNotEmpty();
+        Assert.Equal(tuple, result);
     }
 
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
-        await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
-        continuationChannel.Reader.TryRead(out ISpaceTuple result);
+        options.IgnoreEvaluationExceptions = true;
 
-        Assert.Null(result);
+        await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
+        continuationChannel.TupleReader.TryRead(out SpaceTuple result);
+
+        result.AssertEmpty();
+
+        options.IgnoreEvaluationExceptions = false;
+    }
+
+    [Fact]
+    public void Should_Throw_If_Evaluation_Throws()
+    {
+        options.IgnoreEvaluationExceptions = false;
+       
+        _ = Assert.ThrowsAsync<Exception>(async () => await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test")));
+        
+        options.IgnoreEvaluationExceptions = true;
+    }
+
+    public class Fixture : IAsyncLifetime
+    {
+        private readonly EvaluationProcessor<SpaceTuple, SpaceTemplate> processor;
+
+        internal SpaceOptions Options { get; }
+        internal EvaluationChannel<SpaceTuple> EvaluationChannel { get; }
+        internal ContinuationChannel<SpaceTuple, SpaceTemplate> ContinuationChannel { get; }
+
+        public Fixture()
+        {
+            Options = new();
+            EvaluationChannel = new();
+            ContinuationChannel = new();
+            processor = new(Options, EvaluationChannel, ContinuationChannel);
+        }
+
+        public Task InitializeAsync() => processor.StartAsync(default);
+        public Task DisposeAsync() => processor.StopAsync(default);
     }
 }

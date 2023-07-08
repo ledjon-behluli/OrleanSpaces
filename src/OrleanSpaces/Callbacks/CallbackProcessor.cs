@@ -6,15 +6,18 @@ namespace OrleanSpaces.Callbacks;
 
 internal sealed class CallbackProcessor : BackgroundService
 {
+    private readonly SpaceOptions options;
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
     public CallbackProcessor(
+        SpaceOptions options,
         CallbackRegistry registry,
         CallbackChannel<SpaceTuple> callbackChannel,
         ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel)
     {
+        this.options = options;
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
@@ -50,15 +53,18 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
     where TTuple : ISpaceTuple<T>
     where TTemplate : ISpaceTemplate<T>
 {
+    private readonly SpaceOptions options;
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> registry;
     private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public CallbackProcessor(
+        SpaceOptions options,
         CallbackRegistry<T, TTuple, TTemplate> registry,
         CallbackChannel<TTuple> callbackChannel,
         ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {
+        this.options = options;
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.continuationChannel = continuationChannel ?? throw new ArgumentNullException(nameof(continuationChannel));
@@ -81,7 +87,18 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
 
     private async Task CallbackAsync(TTuple tuple, CallbackEntry<TTuple> entry, CancellationToken cancellationToken)
     {
-        await entry.Callback(tuple);
+        try
+        {
+            await entry.Callback(tuple);
+        }
+        catch
+        {
+            if (!options.IgnoreCallbackExceptions)
+            {
+                throw;
+            }
+        }
+
         if (entry.HasContinuation)
         {
             await continuationChannel.TemplateWriter.WriteAsync((TTemplate)tuple.ToTemplate(), cancellationToken);
