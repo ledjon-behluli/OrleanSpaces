@@ -16,6 +16,8 @@ public class ExtensionTests
     {
         IHost host = CreateHost(SpaceKind.Generic);
 
+        Assert.NotNull(host.Services.GetService<SpaceOptions>());
+
         Assert.NotNull(host.Services.GetService<CallbackRegistry>());
         Assert.NotNull(host.Services.GetService<ObserverRegistry<SpaceTuple>>());
 
@@ -70,6 +72,8 @@ public class ExtensionTests
         where TTuple : struct, ISpaceTuple<T>
         where TTemplate : struct, ISpaceTemplate<T>
     {
+        Assert.NotNull(host.Services.GetService<SpaceOptions>());
+
         Assert.NotNull(host.Services.GetService<CallbackRegistry<T, TTuple, TTemplate>>());
         Assert.NotNull(host.Services.GetService<ObserverRegistry<TTuple>>());
 

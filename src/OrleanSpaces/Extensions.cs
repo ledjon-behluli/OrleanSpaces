@@ -21,6 +21,8 @@ public static class Extensions
         SpaceOptions options = new();
         action?.Invoke(options);
 
+        builder.Services.AddSingleton(options);
+
         if (options.EnabledSpaces.HasFlag(SpaceKind.Generic))
         {
             builder.Services.AddSingleton<ObserverRegistry<SpaceTuple>>();
