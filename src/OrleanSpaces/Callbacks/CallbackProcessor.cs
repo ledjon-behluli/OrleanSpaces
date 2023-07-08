@@ -55,8 +55,8 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
     private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public CallbackProcessor(
-        CallbackChannel<TTuple> callbackChannel,
         CallbackRegistry<T, TTuple, TTemplate> registry,
+        CallbackChannel<TTuple> callbackChannel,
         ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));

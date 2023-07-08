@@ -4,7 +4,7 @@ using System.Dynamic;
 
 namespace OrleanSpaces.Tests;
 
-public class HelpersTests
+public class HelperTests
 {
     [Theory]
     [MemberData(nameof(SupportedTypes))]

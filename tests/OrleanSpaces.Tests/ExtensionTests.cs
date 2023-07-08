@@ -9,7 +9,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Tests;
 
-public class ExtensionsTests
+public class ExtensionTests
 {
     [Fact]
     public void Should_Register_Generic_Services()

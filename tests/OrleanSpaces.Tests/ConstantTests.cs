@@ -1,6 +1,6 @@
 ﻿namespace OrleanSpaces.Tests;
 
-public class ConstantsTests
+public class ConstantTests
 {
     [Fact]
     public void Should_Equal()
