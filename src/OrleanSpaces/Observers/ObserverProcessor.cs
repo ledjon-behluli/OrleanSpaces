@@ -10,8 +10,8 @@ internal sealed class ObserverProcessor<T> : BackgroundService
     private readonly ObserverRegistry<T> registry;
 
     public ObserverProcessor(
-        ObserverChannel<T> channel,
-        ObserverRegistry<T> registry)
+        ObserverRegistry<T> registry,
+        ObserverChannel<T> channel)
     {
         this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));

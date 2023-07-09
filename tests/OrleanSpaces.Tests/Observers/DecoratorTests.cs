@@ -10,36 +10,36 @@ public class DecoratorTests
     [Fact]
     public async Task Should_Forward_Expansions()
     {
-        ObserverDecorator decorator = new(observer);
+        ObserverDecorator<SpaceTuple> decorator = new(observer);
 
         SpaceTuple tuple = new(1);
         await decorator.OnExpansionAsync(tuple, default);
 
-        Assert.Equal(tuple, observer.LastTuple);
+        Assert.Equal(tuple, observer.LastExpansionTuple);
     }
 
     [Fact]
     public async Task Should_Forward_Contractions()
     {
-        ObserverDecorator decorator = new(observer);
+        ObserverDecorator<SpaceTuple> decorator = new(observer);
 
-        SpaceTemplate template = new(1);
-        await decorator.OnContractionAsync(template, default);
+        SpaceTuple tuple = new(2);
+        await decorator.OnContractionAsync(tuple, default);
 
-        Assert.Equal(template, observer.LastTemplate);
+        Assert.Equal(tuple, observer.LastContractionTuple);
     }
 
     [Fact]
     public async Task Should_Forward_Flattenings()
     {
-        ObserverDecorator decorator = new(observer);
+        ObserverDecorator<SpaceTuple> decorator = new(observer);
 
         await decorator.OnFlatteningAsync(default);
 
-        Assert.True(observer.LastFlattening);
+        Assert.True(observer.HasFlattened);
     }
 
-    private class MutedObserver : TestObserver
+    private class MutedObserver : TestObserver<SpaceTuple>
     {
         public MutedObserver() => ListenTo(Nothing);
     }

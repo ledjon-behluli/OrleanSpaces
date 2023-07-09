@@ -1,14 +1,15 @@
 ﻿using OrleanSpaces.Observers;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Observers;
 
-public class RegistryTests
+public class SpaceRegistryTests
 {
-    private readonly ObserverRegistry registry = new();
-    private readonly TestObserver observer = new();
+    private readonly ObserverRegistry<SpaceTuple> registry = new();
+    private readonly TestObserver<SpaceTuple> observer = new();
     private readonly Guid observerId;
 
-    public RegistryTests()
+    public SpaceRegistryTests()
     {
         observerId = registry.Add(observer);
     }
@@ -22,7 +23,7 @@ public class RegistryTests
     [Fact]
     public void Should_Add_Observer()
     {
-        registry.Add(new TestObserver());
+        registry.Add(new TestObserver<SpaceTuple>());
         Assert.Equal(2, registry.Observers.Count());
     }
 
@@ -43,13 +44,13 @@ public class RegistryTests
     [Fact]
     public void Should_Return_New_Id()
     {
-        Guid id = registry.Add(new TestObserver());
+        Guid id = registry.Add(new TestObserver<SpaceTuple>());
         Assert.NotEqual(id, observerId);
     }
 
     [Fact]
     public void Should_Throw_If_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => registry.Add(null));
+        Assert.Throws<ArgumentNullException>(() => registry.Add(null!));
     }
 }

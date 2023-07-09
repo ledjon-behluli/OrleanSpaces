@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Continuations;
+﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Tests;
 
@@ -30,36 +28,38 @@ public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate
     }
 }
 
-public class TestObserver : SpaceObserver
+public class TestObserver<T> : SpaceObserver<T>
+    where T : struct, ISpaceTuple
 {
-    public SpaceTuple LastTuple { get; private set; } = new();
-    public SpaceTemplate LastTemplate { get; private set; } = new();
-    public bool LastFlattening { get; private set; }
+    public T LastExpansionTuple { get; protected set; } = new();
+    public T LastContractionTuple { get; protected set; } = new();
+    public bool HasFlattened { get; protected set; }
 
     public TestObserver() => ListenTo(Everything);
 
-    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
     {
-        LastTuple = tuple;
+        LastExpansionTuple = tuple;
         return Task.CompletedTask;
     }
 
-    public override Task OnContractionAsync(SpaceTemplate template, CancellationToken cancellationToken)
+    public override Task OnContractionAsync(T tuple, CancellationToken cancellationToken)
     {
-        LastTemplate = template;
+        LastContractionTuple = tuple;
         return Task.CompletedTask;
     }
 
     public override Task OnFlatteningAsync(CancellationToken cancellationToken)
     {
-        LastFlattening = true;
+        HasFlattened = true;
         return Task.CompletedTask;
     }
 }
 
-public class ThrowingObserver : TestObserver
+public class ThrowingObserver<T> : TestObserver<T>
+     where T : struct, ISpaceTuple
 {
-    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
     {
         throw new Exception("Test");
     }
