@@ -95,6 +95,11 @@ public interface ISpaceAgent
     /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
     /// </summary>
     ValueTask<int> CountAsync();
+
+    /// <summary>
+    /// Removes all <see cref="SpaceTuple"/>'s in the space.
+    /// </summary>
+    Task ClearAsync();
 }
 
 public interface ISpaceAgent<T, TTuple, TTemplate>
@@ -118,4 +123,5 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
 
     ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template);
     ValueTask<int> CountAsync();
+    Task ClearAsync();
 }

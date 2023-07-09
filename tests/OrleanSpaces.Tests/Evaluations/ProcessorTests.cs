@@ -33,24 +33,24 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
-        options.IgnoreEvaluationExceptions = true;
+        options.HandleEvaluationExceptions = true;
 
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
         continuationChannel.TupleReader.TryRead(out SpaceTuple result);
 
         result.AssertEmpty();
 
-        options.IgnoreEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = false;
     }
 
     [Fact]
     public void Should_Throw_If_Evaluation_Throws()
     {
-        options.IgnoreEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = false;
        
         _ = Assert.ThrowsAsync<Exception>(async () => await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test")));
         
-        options.IgnoreEvaluationExceptions = true;
+        options.HandleEvaluationExceptions = true;
     }
 
     public class Fixture : IAsyncLifetime
@@ -102,24 +102,24 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
     [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
-        options.IgnoreEvaluationExceptions = true;
+        options.HandleEvaluationExceptions = true;
 
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
         continuationChannel.TupleReader.TryRead(out IntTuple result);
 
         result.AssertEmpty();
 
-        options.IgnoreEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = false;
     }
 
     [Fact]
     public void Should_Throw_If_Evaluation_Throws()
     {
-        options.IgnoreEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = false;
 
         _ = Assert.ThrowsAsync<Exception>(async () => await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test")));
 
-        options.IgnoreEvaluationExceptions = true;
+        options.HandleEvaluationExceptions = true;
     }
 
     public class Fixture : IAsyncLifetime

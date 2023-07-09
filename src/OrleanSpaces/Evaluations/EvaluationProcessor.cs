@@ -34,7 +34,7 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
             }
             catch 
             {
-                if (!options.IgnoreEvaluationExceptions)
+                if (!options.HandleEvaluationExceptions)
                 {
                     throw;
                 }

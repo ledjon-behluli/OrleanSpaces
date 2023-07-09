@@ -10,4 +10,5 @@ internal interface ITupleStore<T> where T : ISpaceTuple
     ValueTask<ImmutableArray<T>> GetAll();
     Task Insert(TupleAction<T> action);
     Task Remove(TupleAction<T> action);
+    Task RemoveAll();
 }

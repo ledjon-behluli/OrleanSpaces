@@ -49,4 +49,10 @@ internal abstract class Grain<T> : Grain
             await stream.OnNextAsync(action);
         }
     }
+
+    public async Task RemoveAll()
+    {
+        space.State.Clear();
+        await space.WriteStateAsync();
+    }
 }

@@ -225,5 +225,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
+    public Task ClearAsync() => store.RemoveAll();
+
     #endregion
 }

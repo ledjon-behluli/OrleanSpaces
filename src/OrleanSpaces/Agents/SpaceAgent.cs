@@ -181,6 +181,8 @@ internal sealed class SpaceAgent :
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
+    public Task ClearAsync() => grain.RemoveAll();
+
     private SpaceTuple FindTuple(SpaceTemplate template)
     {
         foreach (var tuple in tuples)

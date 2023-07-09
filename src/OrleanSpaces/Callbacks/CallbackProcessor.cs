@@ -93,7 +93,7 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
         }
         catch
         {
-            if (!options.IgnoreCallbackExceptions)
+            if (!options.HandleCallbackExceptions)
             {
                 throw;
             }
