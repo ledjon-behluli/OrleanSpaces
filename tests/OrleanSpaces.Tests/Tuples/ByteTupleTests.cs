@@ -115,7 +115,7 @@ public class ByteTemplateTests
     [Fact]
     public void Should_Be_An_IByteTemplate()
     {
-        Assert.True(typeof(ISpaceTemplate).IsAssignableFrom(typeof(ByteTemplate)));
+        Assert.True(typeof(ISpaceTemplate<byte>).IsAssignableFrom(typeof(ByteTemplate)));
     }
 
     [Fact]

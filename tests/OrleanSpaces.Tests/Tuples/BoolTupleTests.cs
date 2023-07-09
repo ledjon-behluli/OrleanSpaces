@@ -115,7 +115,7 @@ public class BoolTemplateTests
     [Fact]
     public void Should_Be_An_IBoolTemplate()
     {
-        Assert.True(typeof(ISpaceTemplate).IsAssignableFrom(typeof(BoolTemplate)));
+        Assert.True(typeof(ISpaceTemplate<bool>).IsAssignableFrom(typeof(BoolTemplate)));
     }
 
     [Fact]
