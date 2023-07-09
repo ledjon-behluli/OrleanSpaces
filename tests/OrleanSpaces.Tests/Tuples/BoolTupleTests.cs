@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Tuples.Specialized;
 using OrleanSpaces.Tuples;
-using Newtonsoft.Json.Bson;
 
 namespace OrleanBools.Tests.Tuples;
 
@@ -15,13 +14,12 @@ public class BoolTupleTests
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
-        BoolTuple tuple = new(true, false, true, false);
+        BoolTuple tuple = new(true, false, true);
 
-        Assert.Equal(4, tuple.Length);
+        Assert.Equal(3, tuple.Length);
         Assert.True(tuple[0]);
         Assert.False(tuple[1]);
         Assert.True(tuple[2]);
-        Assert.False(tuple[3]);
     }
 
     [Fact]
@@ -307,11 +305,11 @@ public class BoolTemplateTests
        };
 }
 
-public class MatchTests
+public class BoolMatchTests
 {
     private readonly BoolTuple tuple;
 
-    public MatchTests()
+    public BoolMatchTests()
     {
         tuple = new(true, false, true);
     }

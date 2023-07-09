@@ -369,11 +369,11 @@ public class SpaceTemplateTests
     }
 }
 
-public class MatchTests
+public class SpaceMatchTests
 {
     private readonly SpaceTuple tuple;
 
-    public MatchTests()
+    public SpaceMatchTests()
     {
         tuple = new(1, "a", 1.5f);
     }
