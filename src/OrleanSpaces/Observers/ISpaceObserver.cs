@@ -16,7 +16,7 @@ public interface ISpaceObserver<T>
     /// Occurs whenever a <see cref="T"/> is removed from the space.
     /// </summary>
     /// <param name="tuple">The tuple that was removed.</param>
-    ///<param name="cancellationToken">A token used to propagate cancellations.</param>
+    /// <param name="cancellationToken">A token used to propagate cancellations.</param>
     Task OnContractionAsync(T tuple, CancellationToken cancellationToken = default);
 
     /// <summary>

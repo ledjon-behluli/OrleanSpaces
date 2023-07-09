@@ -24,7 +24,7 @@ internal sealed class SpaceAgent :
     private readonly ObserverChannel<SpaceTuple> observerChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
-  
+
     [AllowNull] private ISpaceGrain grain;
     private List<SpaceTuple> tuples = new();
 

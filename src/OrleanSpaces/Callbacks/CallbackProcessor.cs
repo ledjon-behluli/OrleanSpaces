@@ -40,7 +40,18 @@ internal sealed class CallbackProcessor : BackgroundService
 
     private async Task CallbackAsync(SpaceTuple tuple, CallbackEntry<SpaceTuple> entry, CancellationToken cancellationToken)
     {
-        await entry.Callback(tuple);
+        try
+        {
+            await entry.Callback(tuple);
+        }
+        catch
+        {
+            if (!options.HandleCallbackExceptions)
+            {
+                throw;
+            }
+        }
+
         if (entry.HasContinuation)
         {
             await continuationChannel.TemplateWriter.WriteAsync((SpaceTemplate)tuple, cancellationToken);

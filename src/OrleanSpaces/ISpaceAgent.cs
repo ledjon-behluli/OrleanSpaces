@@ -22,8 +22,7 @@ public interface ISpaceAgent
     /// <summary>
     /// Directly writes the <paramref name="tuple"/> in the space.
     /// </summary>
-    /// <param name="tuple">Any non-<see cref="SpaceTuple.Null"/>.</param>
-    /// <remarks><i>Analogous to the "OUT" operation in the tuple space paradigm.</i></remarks>
+    /// <param name="tuple">Any <see cref="SpaceTuple"/> with non-zero length.</param>
     Task WriteAsync(SpaceTuple tuple);
     /// <summary>
     /// Indirectly writes a <see cref="SpaceTuple"/> in the space.
@@ -32,19 +31,17 @@ public interface ISpaceAgent
     /// <item><description>Proceeds to write the resulting <see cref="SpaceTuple"/> in the space.</description></item>
     /// </list>
     /// </summary>
-    /// <param name="evaluation">Any function that returns a non-<see cref="SpaceTuple.Null"/>.</param>
-    /// <remarks><i>Analogous to the "EVAL" operation in the tuple space paradigm.</i></remarks>
+    /// <param name="evaluation">Any function that returns a <see cref="SpaceTuple"/> with non-zero length.</param>
     ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation);
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
     /// <item><description>If one such tuple exists, then a <u>copy</u> is returned thereby keeping the original in the space.</description></item>
-    /// <item><description>Otherwise a <see cref="SpaceTuple.Null"/> is returned to indicate a "no-match".</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple"/> with zero length is returned to indicate a "no-match".</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <remarks><i>Analogous to the "RDP" operation in the tuple space paradigm.</i></remarks>
-    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
+    /// <returns><see cref="SpaceTuple"/> (potentially one with zero length).</returns>
     ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -55,21 +52,17 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
-    /// <remarks>
-    /// <para><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></para>
-    /// <para><i>Analogous to the "RD" operation in the tuple space paradigm.</i></para>
-    /// </remarks>
+    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">
     /// <item><description>If one such tuple exists, then the <u>original</u> is returned thereby removing it from the space.</description></item>
-    /// <item><description>Otherwise a <see cref="SpaceTuple.Null"/> is returned to indicate a "no-match".</description></item>
+    /// <item><description>Otherwise a <see cref="SpaceTuple"/> with zero length is returned to indicate a "no-match".</description></item>
     /// </list>
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
-    /// <remarks><i>Analogous to the "INP" operation in the tuple space paradigm.</i></remarks>
-    /// <returns><see cref="SpaceTuple"/> or <see cref="SpaceTuple.Null"/>.</returns>
+    /// <returns><see cref="SpaceTuple"/> (potentially one with zero length)>.</returns>
     ValueTask<SpaceTuple> PopAsync(SpaceTemplate template);
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -80,10 +73,7 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
-    /// <remarks>
-    /// <para><i>Same as with <see cref="PopAsync(SpaceTemplate)"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></para>
-    /// <para><i>Analogous to the "IN" operation in the tuple space paradigm.</i></para>
-    /// </remarks>
+    /// <remarks><i>Same as with <see cref="PopAsync(SpaceTemplate)"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
     /// <summary>
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
@@ -95,7 +85,6 @@ public interface ISpaceAgent
     /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
     /// </summary>
     ValueTask<int> CountAsync();
-
     /// <summary>
     /// Removes all <see cref="SpaceTuple"/>'s in the space.
     /// </summary>
