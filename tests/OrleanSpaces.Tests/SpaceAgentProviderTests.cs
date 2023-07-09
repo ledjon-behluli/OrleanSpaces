@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orleans;
 using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tests;
