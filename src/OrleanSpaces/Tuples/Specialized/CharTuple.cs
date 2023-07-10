@@ -55,7 +55,7 @@ public readonly struct CharTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static CharTuple ISpaceFactory<char, CharTuple>.Create(char[] fields) => new(fields);
 
@@ -73,8 +73,8 @@ public readonly record struct CharTemplate : ISpaceTemplate<char>, ISpaceMatchab
     public CharTemplate() => fields = Array.Empty<char?>();
     public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;
 
-    public bool Matches(CharTuple tuple) => TupleHelpers.Matches<char, CharTuple>(this, tuple);
+    public bool Matches(CharTuple tuple) => SpaceHelpers.Matches<char, CharTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();
 }

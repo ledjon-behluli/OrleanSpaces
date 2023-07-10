@@ -43,7 +43,7 @@ public readonly struct FloatTuple :
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static FloatTuple ISpaceFactory<float, FloatTuple>.Create(float[] fields) => new(fields);
 
@@ -62,8 +62,8 @@ public readonly record struct FloatTemplate : ISpaceTemplate<float>, ISpaceMatch
     public FloatTemplate([AllowNull] params float?[] fields)
         => this.fields = fields is null ? Array.Empty<float?>() : fields;
 
-    public bool Matches(FloatTuple tuple) => TupleHelpers.Matches<float, FloatTuple>(this, tuple);
+    public bool Matches(FloatTuple tuple) => SpaceHelpers.Matches<float, FloatTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<float?>.Enumerator GetEnumerator() => new ReadOnlySpan<float?>(fields).GetEnumerator();
 }

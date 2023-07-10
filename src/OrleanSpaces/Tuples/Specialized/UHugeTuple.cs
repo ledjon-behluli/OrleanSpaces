@@ -57,7 +57,7 @@ public readonly struct UHugeTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static UHugeTuple ISpaceFactory<UInt128, UHugeTuple>.Create(UInt128[] fields) => new(fields);
 
@@ -112,8 +112,8 @@ public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>, ISpaceMat
     public UHugeTemplate([AllowNull] params UInt128?[] fields)
         => this.fields = fields is null ? Array.Empty<UInt128?>() : fields;
 
-    public bool Matches(UHugeTuple tuple) => TupleHelpers.Matches<UInt128, UHugeTuple>(this, tuple);
+    public bool Matches(UHugeTuple tuple) => SpaceHelpers.Matches<UInt128, UHugeTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128?>(fields).GetEnumerator();
 }

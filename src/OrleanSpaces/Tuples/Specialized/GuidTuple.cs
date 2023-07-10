@@ -56,8 +56,8 @@ public readonly struct GuidTuple :
             // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
             // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
 
-            ref Vector128<byte> vLeft = ref TupleHelpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
-            ref Vector128<byte> vRight = ref TupleHelpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
+            ref Vector128<byte> vLeft = ref SpaceHelpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
+            ref Vector128<byte> vRight = ref SpaceHelpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
 
             if (vLeft != vRight)
             {
@@ -69,7 +69,7 @@ public readonly struct GuidTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static GuidTuple ISpaceFactory<Guid, GuidTuple>.Create(Guid[] fields) => new(fields);
 
@@ -88,8 +88,8 @@ public readonly record struct GuidTemplate : ISpaceTemplate<Guid>, ISpaceMatchab
     public GuidTemplate([AllowNull] params Guid?[] fields)
         => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
 
-    public bool Matches(GuidTuple tuple) => TupleHelpers.Matches<Guid, GuidTuple>(this, tuple);
+    public bool Matches(GuidTuple tuple) => SpaceHelpers.Matches<Guid, GuidTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
 }

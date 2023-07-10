@@ -45,7 +45,7 @@ public readonly struct TimeSpanTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static TimeSpanTuple ISpaceFactory<TimeSpan, TimeSpanTuple>.Create(TimeSpan[] fields) => new(fields);
 
@@ -64,8 +64,8 @@ public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>, ISpac
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan?>() : fields;
 
-    public bool Matches(TimeSpanTuple tuple) => TupleHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);
+    public bool Matches(TimeSpanTuple tuple) => SpaceHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();
 }

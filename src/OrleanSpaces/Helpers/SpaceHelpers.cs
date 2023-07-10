@@ -6,7 +6,7 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Helpers;
 
-internal static class TupleHelpers
+internal static class SpaceHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsSupportedType(this Type type) =>

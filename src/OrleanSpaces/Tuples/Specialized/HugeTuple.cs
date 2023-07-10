@@ -57,7 +57,7 @@ public readonly struct HugeTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static HugeTuple ISpaceFactory<Int128, HugeTuple>.Create(Int128[] fields) => new(fields);
 
@@ -112,8 +112,8 @@ public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ISpaceMatch
     public HugeTemplate([AllowNull] params Int128?[] fields)
         => this.fields = fields is null ? Array.Empty<Int128?>() : fields;
 
-    public bool Matches(HugeTuple tuple) => TupleHelpers.Matches<Int128, HugeTuple>(this, tuple);
+    public bool Matches(HugeTuple tuple) => SpaceHelpers.Matches<Int128, HugeTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();
 }

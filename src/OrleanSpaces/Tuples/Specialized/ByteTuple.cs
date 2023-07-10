@@ -43,7 +43,7 @@ public readonly struct ByteTuple :
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static ByteTuple ISpaceFactory<byte, ByteTuple>.Create(byte[] fields) => new(fields);
 
@@ -62,8 +62,8 @@ public readonly record struct ByteTemplate : ISpaceTemplate<byte>, ISpaceMatchab
     public ByteTemplate([AllowNull] params byte?[] fields)
         => this.fields = fields is null ? Array.Empty<byte?>() : fields;
 
-    public bool Matches(ByteTuple tuple) => TupleHelpers.Matches<byte, ByteTuple>(this, tuple);
+    public bool Matches(ByteTuple tuple) => SpaceHelpers.Matches<byte, ByteTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();
 }

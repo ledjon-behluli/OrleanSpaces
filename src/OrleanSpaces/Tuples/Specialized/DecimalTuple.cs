@@ -69,7 +69,7 @@ public readonly struct DecimalTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static DecimalTuple ISpaceFactory<decimal, DecimalTuple>.Create(decimal[] fields) => new(fields);
 
@@ -117,8 +117,8 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ISpaceM
     public DecimalTemplate([AllowNull] params decimal?[] fields)
         => this.fields = fields is null ? Array.Empty<decimal?>() : fields;
 
-    public bool Matches(DecimalTuple tuple) => TupleHelpers.Matches<decimal, DecimalTuple>(this, tuple);
+    public bool Matches(DecimalTuple tuple) => SpaceHelpers.Matches<decimal, DecimalTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
 }

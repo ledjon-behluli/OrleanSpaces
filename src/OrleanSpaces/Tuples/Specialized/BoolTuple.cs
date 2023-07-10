@@ -45,7 +45,7 @@ public readonly struct BoolTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static BoolTuple ISpaceFactory<bool, BoolTuple>.Create(bool[] fields) => new(fields);
 
@@ -96,8 +96,8 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ISpaceMatchab
     public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields is null ? Array.Empty<bool?>() : fields;
 
-    public bool Matches(BoolTuple tuple) => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);
+    public bool Matches(BoolTuple tuple) => SpaceHelpers.Matches<bool, BoolTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
 }

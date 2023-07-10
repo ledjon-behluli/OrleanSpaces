@@ -43,7 +43,7 @@ public readonly struct SByteTuple :
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static SByteTuple ISpaceFactory<sbyte, SByteTuple>.Create(sbyte[] fields) => new(fields);
 
@@ -62,9 +62,9 @@ public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>, ISpaceMatch
     public SByteTemplate([AllowNull] params sbyte?[] fields)
         => this.fields = fields is null ? Array.Empty<sbyte?>() : fields;
 
-    public bool Matches(SByteTuple tuple) => TupleHelpers.Matches<sbyte, SByteTuple>(this, tuple);
+    public bool Matches(SByteTuple tuple) => SpaceHelpers.Matches<sbyte, SByteTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();
 }
 

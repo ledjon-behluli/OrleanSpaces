@@ -43,7 +43,7 @@ public readonly struct LongTuple :
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static LongTuple ISpaceFactory<long, LongTuple>.Create(long[] fields) => new(fields);
 
@@ -62,8 +62,8 @@ public readonly record struct LongTemplate : ISpaceTemplate<long>, ISpaceMatchab
     public LongTemplate([AllowNull] params long?[] fields)
         => this.fields = fields is null ? Array.Empty<long?>() : fields;
 
-    public bool Matches(LongTuple tuple) => TupleHelpers.Matches<long, LongTuple>(this, tuple);
+    public bool Matches(LongTuple tuple) => SpaceHelpers.Matches<long, LongTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<long?>.Enumerator GetEnumerator() => new ReadOnlySpan<long?>(fields).GetEnumerator();
 }

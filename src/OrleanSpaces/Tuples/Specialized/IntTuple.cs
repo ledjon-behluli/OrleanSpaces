@@ -43,7 +43,7 @@ public readonly struct IntTuple :
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static IntTuple ISpaceFactory<int, IntTuple>.Create(int[] fields) => new(fields);
 
@@ -62,8 +62,8 @@ public readonly record struct IntTemplate : ISpaceTemplate<int>, ISpaceMatchable
     public IntTemplate([AllowNull] params int?[] fields)
         => this.fields = fields is null ? Array.Empty<int?>() : fields;
 
-    public bool Matches(IntTuple tuple) => TupleHelpers.Matches<int, IntTuple>(this, tuple);
+    public bool Matches(IntTuple tuple) => SpaceHelpers.Matches<int, IntTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
 }

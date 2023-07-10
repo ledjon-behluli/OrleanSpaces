@@ -45,7 +45,7 @@ public readonly struct DateTimeOffsetTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
 
     static DateTimeOffsetTuple ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>.Create(DateTimeOffset[] fields) => new(fields);
 
@@ -64,8 +64,8 @@ public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOf
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>
         this.fields = fields is null ? Array.Empty<DateTimeOffset?>() : fields;
 
-    public bool Matches(DateTimeOffsetTuple tuple) => TupleHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
+    public bool Matches(DateTimeOffsetTuple tuple) => SpaceHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
 
-    public override string ToString() => TupleHelpers.ToString(fields);
+    public override string ToString() => SpaceHelpers.ToString(fields);
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
 }
