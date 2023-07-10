@@ -196,7 +196,6 @@ public class ByteTupleBenchmarks
 
         public bool Equals(SequentialByteTuple other) => this.SequentialEquals(other);
 
-        ISpaceTemplate<byte> ISpaceTuple<byte>.ToTemplate() => throw new NotImplementedException();
         static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<byte>.Enumerator GetEnumerator() => throw new NotImplementedException();

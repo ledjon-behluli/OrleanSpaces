@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
+public readonly struct SByteTuple : 
+    INumericTuple<sbyte>, ISpaceConvertible<sbyte, SByteTemplate>, IEquatable<SByteTuple>
 {
     [Id(0), JsonProperty] private readonly sbyte[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
     public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);
 
-    public static explicit operator SByteTemplate(SByteTuple tuple)
+    public SByteTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         sbyte?[] fields = new sbyte?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new SByteTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct SByteTuple : INumericTuple<sbyte>, IEquatable<SByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<sbyte> ISpaceTuple<sbyte>.ToTemplate() => (SByteTemplate)this;
     static ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 
-public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>, ITupleMatcher<sbyte, SByteTuple>
+public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>, ISpaceMatchable<sbyte, SByteTuple>
 {
     private readonly sbyte?[] fields;
 

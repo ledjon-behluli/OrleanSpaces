@@ -6,7 +6,8 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTuple>
+public readonly struct DecimalTuple : 
+    ISpaceTuple<decimal>, ISpaceConvertible<decimal, DecimalTemplate>, IEquatable<DecimalTuple>
 {
     [Id(0), JsonProperty] private readonly decimal[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -20,14 +21,14 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public static bool operator ==(DecimalTuple left, DecimalTuple right) => left.Equals(right);
     public static bool operator !=(DecimalTuple left, DecimalTuple right) => !(left == right);
 
-    public static explicit operator DecimalTemplate(DecimalTuple tuple)
+    public DecimalTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         decimal?[] fields = new decimal?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new DecimalTemplate(fields);
@@ -67,7 +68,6 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<decimal> ISpaceTuple<decimal>.ToTemplate() => (DecimalTemplate)this;
     static ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
@@ -103,7 +103,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     }
 }
 
-public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ITupleMatcher<decimal, DecimalTuple>
+public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ISpaceMatchable<decimal, DecimalTuple>
 {
     private readonly decimal?[] fields;
 

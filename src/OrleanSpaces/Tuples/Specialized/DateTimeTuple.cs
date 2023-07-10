@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTimeTuple>
+public readonly struct DateTimeTuple : 
+    ISpaceTuple<DateTime>, ISpaceConvertible<DateTime, DateTimeTemplate>, IEquatable<DateTimeTuple>
 {
     [Id(0), JsonProperty] private readonly DateTime[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -19,14 +20,14 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public static bool operator ==(DateTimeTuple left, DateTimeTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeTuple left, DateTimeTuple right) => !(left == right);
 
-    public static explicit operator DateTimeTemplate(DateTimeTuple tuple)
+    public DateTimeTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         DateTime?[] fields = new DateTime?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new DateTimeTemplate(fields);
@@ -43,14 +44,13 @@ public readonly struct DateTimeTuple : ISpaceTuple<DateTime>, IEquatable<DateTim
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<DateTime> ISpaceTuple<DateTime>.ToTemplate() => (DateTimeTemplate)this;
     static ISpaceTuple<DateTime> ISpaceTuple<DateTime>.Create(DateTime[] fields) => new DateTimeTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }
 
-public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>, ITupleMatcher<DateTime, DateTimeTuple>
+public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>, ISpaceMatchable<DateTime, DateTimeTuple>
 {
     private readonly DateTime?[] fields;
 

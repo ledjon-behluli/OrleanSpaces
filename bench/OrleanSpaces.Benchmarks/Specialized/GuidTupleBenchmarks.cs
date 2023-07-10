@@ -250,7 +250,6 @@ public class GuidTupleBenchmarks
 
         public bool Equals(SequentialGuidTuple other) => this.SequentialEquals(other);
 
-        ISpaceTemplate<Guid> ISpaceTuple<Guid>.ToTemplate() => throw new NotImplementedException();
         static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => throw new NotImplementedException();

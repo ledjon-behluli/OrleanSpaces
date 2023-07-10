@@ -59,14 +59,14 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
     public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
     public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
 
-    public static explicit operator SpaceTemplate(SpaceTuple tuple)
+    public SpaceTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         object?[] fields = new object?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new SpaceTemplate(fields);

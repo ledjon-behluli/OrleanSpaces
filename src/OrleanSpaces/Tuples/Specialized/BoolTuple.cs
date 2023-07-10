@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
+public readonly struct BoolTuple :
+    ISpaceTuple<bool>, ISpaceConvertible<bool, BoolTemplate>, IEquatable<BoolTuple>
 {
     [Id(0), JsonProperty] private readonly bool[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -19,14 +20,14 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public static bool operator ==(BoolTuple left, BoolTuple right) => left.Equals(right);
     public static bool operator !=(BoolTuple left, BoolTuple right) => !(left == right);
 
-    public static explicit operator BoolTemplate(BoolTuple tuple)
+    public BoolTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         bool?[] fields = new bool?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new BoolTemplate(fields);
@@ -43,7 +44,6 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<bool> ISpaceTuple<bool>.ToTemplate() => (BoolTemplate)this;
     static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
 
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
@@ -69,11 +69,10 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
         public ref readonly SFBool this[int index] => ref Fields[index];
         public int Length => Fields.Length;
 
+        static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
+
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();
-
-        ISpaceTemplate<SFBool> ISpaceTuple<SFBool>.ToTemplate() => throw new NotImplementedException();
-        static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
     }
 
     readonly record struct SFBool(bool Value) : ISpanFormattable
@@ -85,7 +84,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     }
 }
 
-public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ITupleMatcher<bool, BoolTuple>
+public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ISpaceMatchable<bool, BoolTuple>
 {
     private readonly bool?[] fields;
 

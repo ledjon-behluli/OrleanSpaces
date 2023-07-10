@@ -10,13 +10,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Agents;
 
-internal class Agent<T, TTuple, TTemplate> : 
-    ISpaceAgent<T, TTuple, TTemplate>,
-    ITupleRouter<TTuple, TTemplate>,
-    IAsyncObserver<TupleAction<TTuple>>
+internal class Agent<T, TTuple, TTemplate> :
+    ISpaceAgent<T, TTuple, TTemplate>, ITupleRouter<TTuple, TTemplate>, IAsyncObserver<TupleAction<TTuple>>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
-    where TTemplate : struct, ISpaceTemplate<T>, ITupleMatcher<T, TTuple>
+    where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
     private readonly Guid agentId = Guid.NewGuid();
     private readonly IClusterClient client;

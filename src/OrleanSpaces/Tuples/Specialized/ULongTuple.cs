@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
+public readonly struct ULongTuple : 
+    INumericTuple<ulong>, ISpaceConvertible<ulong, ULongTemplate>, IEquatable<ULongTuple>
 {
     [Id(0), JsonProperty] private readonly ulong[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public static bool operator ==(ULongTuple left, ULongTuple right) => left.Equals(right);
     public static bool operator !=(ULongTuple left, ULongTuple right) => !(left == right);
 
-    public static explicit operator ULongTemplate(ULongTuple tuple)
+    public ULongTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         ulong?[] fields = new ulong?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new ULongTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<ulong> ISpaceTuple<ulong>.ToTemplate() => (ULongTemplate)this;
     static ISpaceTuple<ulong> ISpaceTuple<ulong>.Create(ulong[] fields) => new ULongTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_ULong);
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
 }
 
-public readonly record struct ULongTemplate : ISpaceTemplate<ulong>, ITupleMatcher<ulong, ULongTuple>
+public readonly record struct ULongTemplate : ISpaceTemplate<ulong>, ISpaceMatchable<ulong, ULongTuple>
 {
     private readonly ulong?[] fields;
 

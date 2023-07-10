@@ -15,7 +15,6 @@ public interface ISpaceTuple<T> : ISpaceTuple
     ReadOnlySpan<char> AsSpan();
     ReadOnlySpan<T>.Enumerator GetEnumerator();
 
-    internal ISpaceTemplate<T> ToTemplate();
     internal static abstract ISpaceTuple<T> Create(T[] fields);
 }
 
@@ -23,4 +22,11 @@ internal interface INumericTuple<T> : ISpaceTuple<T>
     where T : unmanaged, INumber<T>
 {
     Span<T> Fields { get; }
+}
+
+internal interface ISpaceConvertible<T, TTemplate>
+    where T : unmanaged
+    where TTemplate : ISpaceTemplate<T>
+{
+    TTemplate ToTemplate();
 }

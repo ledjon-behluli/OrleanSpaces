@@ -7,7 +7,8 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
+public readonly struct HugeTuple : 
+    INumericTuple<Int128>, ISpaceConvertible<Int128, HugeTemplate>, IEquatable<HugeTuple>
 {
     [Id(0), JsonProperty] private readonly Int128[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -23,14 +24,14 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     public static bool operator ==(HugeTuple left, HugeTuple right) => left.Equals(right);
     public static bool operator !=(HugeTuple left, HugeTuple right) => !(left == right);
 
-    public static explicit operator HugeTemplate(HugeTuple tuple)
+    public HugeTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         Int128?[] fields = new Int128?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new HugeTemplate(fields);
@@ -55,7 +56,6 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<Int128> ISpaceTuple<Int128>.ToTemplate() => (HugeTemplate)this;
     static ISpaceTuple<Int128> ISpaceTuple<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
@@ -98,7 +98,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     }
 }
 
-public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ITupleMatcher<Int128, HugeTuple>
+public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ISpaceMatchable<Int128, HugeTuple>
 {
     private readonly Int128?[] fields;
 

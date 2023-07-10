@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTuple>
+public readonly struct DoubleTuple : 
+    INumericTuple<double>, ISpaceConvertible<double, DoubleTemplate>, IEquatable<DoubleTuple>
 {
     [Id(0), JsonProperty] private readonly double[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
     public static bool operator ==(DoubleTuple left, DoubleTuple right) => left.Equals(right);
     public static bool operator !=(DoubleTuple left, DoubleTuple right) => !(left == right);
 
-    public static explicit operator DoubleTemplate(DoubleTuple tuple)
+    public DoubleTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         double?[] fields = new double?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new DoubleTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct DoubleTuple : INumericTuple<double>, IEquatable<DoubleTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<double> ISpaceTuple<double>.ToTemplate() => (DoubleTemplate)this;
     static ISpaceTuple<double> ISpaceTuple<double>.Create(double[] fields) => new DoubleTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Double);
     public ReadOnlySpan<double>.Enumerator GetEnumerator() => new ReadOnlySpan<double>(fields).GetEnumerator();
 }
 
-public readonly record struct DoubleTemplate : ISpaceTemplate<double>, ITupleMatcher<double, DoubleTuple>
+public readonly record struct DoubleTemplate : ISpaceTemplate<double>, ISpaceMatchable<double, DoubleTuple>
 {
     private readonly double?[] fields;
 

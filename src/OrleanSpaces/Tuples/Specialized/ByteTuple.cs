@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
+public readonly struct ByteTuple :
+    INumericTuple<byte>, ISpaceConvertible<byte, ByteTemplate>, IEquatable<ByteTuple>
 {
     [Id(0), JsonProperty] private readonly byte[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public static bool operator ==(ByteTuple left, ByteTuple right) => left.Equals(right);
     public static bool operator !=(ByteTuple left, ByteTuple right) => !(left == right);
 
-    public static explicit operator ByteTemplate(ByteTuple tuple)
+    public ByteTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         byte?[] fields = new byte?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new ByteTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct ByteTuple : INumericTuple<byte>, IEquatable<ByteTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<byte> ISpaceTuple<byte>.ToTemplate() => (ByteTemplate)this;
     static ISpaceTuple<byte> ISpaceTuple<byte>.Create(byte[] fields) => new ByteTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Byte);
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }
 
-public readonly record struct ByteTemplate : ISpaceTemplate<byte>, ITupleMatcher<byte, ByteTuple>
+public readonly record struct ByteTemplate : ISpaceTemplate<byte>, ISpaceMatchable<byte, ByteTuple>
 {
     private readonly byte?[] fields;
 

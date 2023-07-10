@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
+public readonly struct FloatTuple : 
+    INumericTuple<float>, ISpaceConvertible<float, FloatTemplate>, IEquatable<FloatTuple>
 {
     [Id(0), JsonProperty] private readonly float[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
     public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
 
-    public static explicit operator FloatTemplate(FloatTuple tuple)
+    public FloatTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         float?[] fields = new float?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new FloatTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<float> ISpaceTuple<float>.ToTemplate() => (FloatTemplate)this;
     static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => new FloatTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }
 
-public readonly record struct FloatTemplate : ISpaceTemplate<float>, ITupleMatcher<float, FloatTuple>
+public readonly record struct FloatTemplate : ISpaceTemplate<float>, ISpaceMatchable<float, FloatTuple>
 {
     private readonly float?[] fields;
 

@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTuple>
+public readonly struct UShortTuple : 
+    INumericTuple<ushort>, ISpaceConvertible<ushort, UShortTemplate>, IEquatable<UShortTuple>
 {
     [Id(0), JsonProperty] private readonly ushort[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
     public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
 
-    public static explicit operator UShortTemplate(UShortTuple tuple)
+    public UShortTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         ushort?[] fields = new ushort?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new UShortTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<ushort> ISpaceTuple<ushort>.ToTemplate() => (UShortTemplate)this;
     static ISpaceTuple<ushort> ISpaceTuple<ushort>.Create(ushort[] fields) => new UShortTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
-public readonly record struct UShortTemplate : ISpaceTemplate<ushort>, ITupleMatcher<ushort, UShortTuple>
+public readonly record struct UShortTemplate : ISpaceTemplate<ushort>, ISpaceMatchable<ushort, UShortTuple>
 {
     private readonly ushort?[] fields;
 

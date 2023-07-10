@@ -250,7 +250,6 @@ public class TimeSpanTupleBenchmarks
 
         public bool Equals(SequentialTimeSpanTuple other) => this.SequentialEquals(other);
 
-        ISpaceTemplate<TimeSpan> ISpaceTuple<TimeSpan>.ToTemplate() => throw new NotImplementedException();
         static ISpaceTuple<TimeSpan> ISpaceTuple<TimeSpan>.Create(TimeSpan[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => throw new NotImplementedException();

@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
+public readonly struct UIntTuple :
+    INumericTuple<uint>, ISpaceConvertible<uint, UIntTemplate>, IEquatable<UIntTuple>
 {
     [Id(0), JsonProperty] private readonly uint[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -21,14 +22,14 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
     public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
     public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
 
-    public static explicit operator UIntTemplate(UIntTuple tuple)
+    public UIntTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         uint?[] fields = new uint?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new UIntTemplate(fields);
@@ -41,14 +42,13 @@ public readonly struct UIntTuple : INumericTuple<uint>, IEquatable<UIntTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<uint> ISpaceTuple<uint>.ToTemplate() => (UIntTemplate)this;
     static ISpaceTuple<uint> ISpaceTuple<uint>.Create(uint[] fields) => new UIntTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
     public ReadOnlySpan<uint>.Enumerator GetEnumerator() => new ReadOnlySpan<uint>(fields).GetEnumerator();
 }
 
-public readonly record struct UIntTemplate : ISpaceTemplate<uint>, ITupleMatcher<uint, UIntTuple>
+public readonly record struct UIntTemplate : ISpaceTemplate<uint>, ISpaceMatchable<uint, UIntTuple>
 {
     private readonly uint?[] fields;
 

@@ -7,7 +7,8 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTuple>
+public readonly struct UHugeTuple : 
+    INumericTuple<UInt128>, ISpaceConvertible<UInt128, UHugeTemplate>, IEquatable<UHugeTuple>
 {
     [Id(0), JsonProperty] private readonly UInt128[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -23,14 +24,14 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public static bool operator ==(UHugeTuple left, UHugeTuple right) => left.Equals(right);
     public static bool operator !=(UHugeTuple left, UHugeTuple right) => !(left == right);
 
-    public static explicit operator UHugeTemplate(UHugeTuple tuple)
+    public UHugeTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         UInt128?[] fields = new UInt128?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new UHugeTemplate(fields);
@@ -55,7 +56,6 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<UInt128> ISpaceTuple<UInt128>.ToTemplate() => (UHugeTemplate)this;
     static ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
@@ -98,7 +98,7 @@ public readonly struct UHugeTuple : INumericTuple<UInt128>, IEquatable<UHugeTupl
     }
 }
 
-public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>, ITupleMatcher<UInt128, UHugeTuple>
+public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>, ISpaceMatchable<UInt128, UHugeTuple>
 {
     private readonly UInt128?[] fields;
 

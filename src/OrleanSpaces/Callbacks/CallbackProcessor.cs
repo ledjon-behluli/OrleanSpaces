@@ -54,15 +54,15 @@ internal sealed class CallbackProcessor : BackgroundService
 
         if (entry.HasContinuation)
         {
-            await continuationChannel.TemplateWriter.WriteAsync((SpaceTemplate)tuple, cancellationToken);
+            await continuationChannel.TemplateWriter.WriteAsync(tuple.ToTemplate(), cancellationToken);
         }
     }
 }
 
 internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundService
     where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>, ITupleMatcher<T, TTuple>
+    where TTuple : ISpaceTuple<T>, ISpaceConvertible<T, TTemplate>
+    where TTemplate : ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
     private readonly SpaceOptions options;
     private readonly CallbackChannel<TTuple> callbackChannel;
@@ -112,7 +112,7 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
 
         if (entry.HasContinuation)
         {
-            await continuationChannel.TemplateWriter.WriteAsync((TTemplate)tuple.ToTemplate(), cancellationToken);
+            await continuationChannel.TemplateWriter.WriteAsync(tuple.ToTemplate(), cancellationToken);
         }
     }
 }

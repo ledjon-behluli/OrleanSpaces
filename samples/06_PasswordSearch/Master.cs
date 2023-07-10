@@ -47,7 +47,7 @@ public class Master : SpaceObserver<SpaceTuple>
             string hash = (string)tuple[1];
 
             Console.WriteLine($"MASTER: Received solution to Hash = {hash}");
-            await agent.PopAsync((SpaceTemplate)tuple);
+            await agent.PopAsync(tuple.ToTemplate());
 
             string password = (string)tuple[2];
             hashPasswordPairs[hash] = password;

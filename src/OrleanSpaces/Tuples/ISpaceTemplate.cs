@@ -12,7 +12,7 @@ public interface ISpaceTemplate<T> : ISpaceTemplate
     ReadOnlySpan<T?>.Enumerator GetEnumerator();
 }
 
-public interface ITupleMatcher<T, TTuple>
+internal interface ISpaceMatchable<T, TTuple>
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
 {

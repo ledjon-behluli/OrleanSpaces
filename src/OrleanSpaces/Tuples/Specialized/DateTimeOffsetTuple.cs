@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquatable<DateTimeOffsetTuple>
+public readonly struct DateTimeOffsetTuple :
+    ISpaceTuple<DateTimeOffset>, ISpaceConvertible<DateTimeOffset, DateTimeOffsetTemplate>, IEquatable<DateTimeOffsetTuple>
 {
     [Id(0), JsonProperty] private readonly DateTimeOffset[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -19,14 +20,14 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public static bool operator ==(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => left.Equals(right);
     public static bool operator !=(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => !(left == right);
 
-    public static explicit operator DateTimeOffsetTemplate(DateTimeOffsetTuple tuple)
+    public DateTimeOffsetTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         DateTimeOffset?[] fields = new DateTimeOffset?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new DateTimeOffsetTemplate(fields);
@@ -43,14 +44,13 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<DateTimeOffset> ISpaceTuple<DateTimeOffset>.ToTemplate() => (DateTimeOffsetTemplate)this;
     static ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTimeOffset);
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
-public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>, ITupleMatcher<DateTimeOffset, DateTimeOffsetTuple>
+public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>, ISpaceMatchable<DateTimeOffset, DateTimeOffsetTuple>
 {
     private readonly DateTimeOffset?[] fields;
 

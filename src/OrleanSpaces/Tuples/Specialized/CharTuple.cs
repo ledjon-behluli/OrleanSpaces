@@ -5,7 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
+public readonly struct CharTuple : 
+    ISpaceTuple<char>, ISpaceConvertible<char, CharTemplate>, IEquatable<CharTuple>
 {
     [Id(0), JsonProperty] private readonly char[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -19,14 +20,14 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public static bool operator ==(CharTuple left, CharTuple right) => left.Equals(right);
     public static bool operator !=(CharTuple left, CharTuple right) => !(left == right);
 
-    public static explicit operator CharTemplate(CharTuple tuple)
+    public CharTemplate ToTemplate()
     {
-        int length = tuple.Length;
+        int length = Length;
         char?[] fields = new char?[length];
 
         for (int i = 0; i < length; i++)
         {
-            fields[i] = tuple[i];
+            fields[i] = this[i];
         }
 
         return new CharTemplate(fields);
@@ -53,14 +54,13 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    ISpaceTemplate<char> ISpaceTuple<char>.ToTemplate() => (CharTemplate)this;
     static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => new CharTuple(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
-public readonly record struct CharTemplate : ISpaceTemplate<char>, ITupleMatcher<char, CharTuple>
+public readonly record struct CharTemplate : ISpaceTemplate<char>, ISpaceMatchable<char, CharTuple>
 {
     private readonly char?[] fields;
 
