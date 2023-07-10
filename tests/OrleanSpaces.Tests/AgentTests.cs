@@ -5,44 +5,42 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tests;
 
 public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 {
     private readonly ISpaceAgentProvider spaceChannel;
-    private readonly ITupleRouter router;
-    private readonly ObserverRegistry observerRegistry;
+    private readonly ITupleRouter<SpaceTuple, SpaceTemplate> router;
+    private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
-    private readonly ObserverChannel observerChannel;
-    private readonly EvaluationChannel evaluationChannel;
-    private readonly CallbackChannel callbackChannel;
+    private readonly ObserverChannel<SpaceTuple> observerChannel;
+    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
+    private readonly CallbackChannel<SpaceTuple> callbackChannel;
 
-    private ISpaceAgent agent;
+    [AllowNull] private ISpaceAgent agent;
     
     public SpaceAgentTests(ClusterFixture fixture)
     {
         spaceChannel = fixture.Client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
-        router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter>();
-        observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry>();
+        router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter<SpaceTuple, SpaceTemplate>>();
+        observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry<SpaceTuple>>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
-        observerChannel = fixture.Client.ServiceProvider.GetRequiredService<ObserverChannel>();
-        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel>();
-        callbackChannel = fixture.Client.ServiceProvider.GetRequiredService<CallbackChannel>();
+        observerChannel = fixture.Client.ServiceProvider.GetRequiredService<ObserverChannel<SpaceTuple>>();
+        evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel<SpaceTuple>>();
+        callbackChannel = fixture.Client.ServiceProvider.GetRequiredService<CallbackChannel<SpaceTuple>>();
     }
 
     public async Task InitializeAsync() => agent = await spaceChannel.GetAsync();
     public Task DisposeAsync() => Task.CompletedTask;
-
-    private static void ToggleChannelConsumerState(IConsumable channel) =>
-        channel.IsBeingConsumed = !channel.IsBeingConsumed;
 
     #region Subscriptions
 
     [Fact]
     public void Should_Handle_Observer_Subscriptions()
     {
-        TestSpaceObserver observer = new();
+        TestSpaceObserver<SpaceTuple> observer = new();
 
         // Subscribe
         Guid id = agent.Subscribe(observer);
@@ -61,17 +59,6 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         Assert.Equal(0, observerRegistry.Observers.Count(x => x.Equals(observer)));
     }
 
-    [Fact]
-    public void Should_Throw_On_Observer_Subscriptions_If_Unconsumed_Channel()
-    {
-        ToggleChannelConsumerState(observerChannel);
-
-        Assert.Throws<InvalidOperationException>(() => agent.Subscribe(new TestSpaceObserver()));
-        Assert.Throws<InvalidOperationException>(() => agent.Unsubscribe(Guid.NewGuid()));
-
-        ToggleChannelConsumerState(observerChannel);
-    }
-
     #endregion
 
     #region Router
@@ -79,33 +66,25 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     static readonly SpaceTuple routingTuple = new("routing");
 
     [Fact]
-    public async Task Should_WriteAsync_When_Tuple_Is_A_SpaceTuple()
+    public async Task Should_WriteAsync_When_Routing_Tuple()
     {
         await router.RouteAsync(routingTuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple);
+        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
 
-        Assert.False(peekedTuple.IsNull);
         Assert.Equal(routingTuple, peekedTuple);
     }
 
     [Fact]
-    public async Task Should_PopAsync_When_Tuple_Is_A_SpaceTemplate()
+    public async Task Should_PopAsync_When_Routing_Template()
     {
-        SpaceTemplate template = routingTuple;
+        SpaceTemplate template = routingTuple.ToTemplate();
 
         await router.RouteAsync(template);
 
         SpaceTuple peekedTuple = await agent.PeekAsync(template);
 
-        Assert.True(peekedTuple.IsNull);
         Assert.NotEqual(routingTuple, peekedTuple);
-    }
-
-    [Fact]
-    public Task Should_Throw_If_Tuple_Is_Null()
-    {
-        return Assert.ThrowsAsync<ArgumentNullException>(async () => await router.RouteAsync(null));
     }
 
     #endregion
@@ -118,17 +97,14 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         SpaceTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
 
     [Fact]
-    public async Task Should_Throw_On_WriteAsync_If_Null_Tuple()
-    {
-        await Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(SpaceTuple.Null));
-        await Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(new()));
-    }
+    public void Should_Throw_On_WriteAsync_If_Empty_Tuple()
+        => Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(new()));
 
     #endregion
 
@@ -146,21 +122,9 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public Task Should_Throw_On_EvaluateAsync_If_Null()
-    {
-        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.EvaluateAsync(null));
-    }
-
-    [Fact]
-    public async Task Should_Throw_On_EvaluateAsync_If_Unconsumed_Channel()
-    {
-        ToggleChannelConsumerState(evaluationChannel);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await agent.EvaluateAsync(() => Task.FromResult(new SpaceTuple(1))));
-
-        ToggleChannelConsumerState(evaluationChannel);
-    }
+    public void Should_Throw_On_EvaluateAsync_If_Empty()
+        => Assert.ThrowsAsync<ArgumentNullException>(async () => 
+                await agent.EvaluateAsync(() => Task.FromResult(new SpaceTuple())));
 
     #endregion
 
@@ -171,19 +135,19 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
 
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
-    public async Task Should_Return_Null_Tuple_On_PeekAsync(SpaceTuple tuple)
+    public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
         SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
 
-        Assert.True(peekedTuple.IsNull);
+        peekedTuple.AssertEmpty();
     }
 
     [Theory]
@@ -192,17 +156,16 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = new();
+        SpaceTuple? peekedTuple = null;
 
-        await agent.PeekAsync(tuple, tuple =>
+        await agent.PeekAsync(tuple.ToTemplate(), tuple =>
         {
             peekedTuple = tuple;
             return Task.CompletedTask;
         });
 
-        Assert.False(peekedTuple.IsNull);
+        Assert.NotNull(peekedTuple);
         Assert.Equal(tuple, peekedTuple);
-
     }
 
     [Fact]
@@ -213,13 +176,13 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
        
         await agent.PeekAsync(template, callback);
 
-        ReadOnlyCollection<CallbackEntry> entries;
+        ReadOnlyCollection<CallbackEntry<SpaceTuple>>? entries;
         while (!callbackRegistry.Entries.TryGetValue(template, out entries))
         {
 
         }
 
-        Assert.True(peekedTuple.IsNull);
+        peekedTuple.AssertEmpty();
         Assert.Equal(callback, entries.Single().Callback);
 
         Task callback(SpaceTuple tuple) => Task.FromResult(peekedTuple = tuple);
@@ -234,28 +197,15 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple peekedTuple = await agent.PeekAsync(tuple);
-
-            Assert.False(peekedTuple.IsNull);
+            SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
             Assert.Equal(tuple, peekedTuple);
         }
     }
 
     [Fact]
-    public Task Should_Throw_On_PeekAsync_If_Null()
+    public Task Should_Throw_On_PeekAsync_If_Null_Callback()
     {
-        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null));
-    }
-
-    [Fact]
-    public async Task Should_Throw_On_PeekAsync_If_Unconsumed_Channel()
-    {
-        ToggleChannelConsumerState(callbackChannel);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await agent.PeekAsync(new(0), tuple => Task.FromResult(_ = tuple)));
-
-        ToggleChannelConsumerState(callbackChannel);
+        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null!));
     }
 
     #endregion
