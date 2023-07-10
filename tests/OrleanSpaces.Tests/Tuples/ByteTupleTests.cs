@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class ByteTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<byte>).IsAssignableFrom(typeof(ByteTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         ByteTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class ByteTupleTests
 
 public class ByteTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IByteTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<byte>).IsAssignableFrom(typeof(ByteTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class ByteTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_ByteTuple()
-    {
-        ByteTemplate template1 = new();
-        ByteTemplate explicit1 = (ByteTemplate)new ByteTuple();
-
-        ByteTemplate template2 = new(1);
-        ByteTemplate explicit2 = (ByteTemplate)new ByteTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_ByteTuple()
     {
         ByteTemplate template1 = new();
-        ISpaceTemplate<byte> explicit1 = (new ByteTuple() as ISpaceTuple<byte>).ToTemplate();
+        ISpaceTemplate<byte> explicit1 = new ByteTuple().ToTemplate();
 
         ByteTemplate template2 = new(1);
-        ISpaceTemplate<byte> explicit2 = (new ByteTuple(1) as ISpaceTuple<byte>).ToTemplate();
+        ISpaceTemplate<byte> explicit2 = new ByteTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class ByteTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<byte> Create<T>(byte[] fields)
-            where T : ISpaceTuple<byte> => T.Create(fields);
+            where T : ISpaceFactory<byte, ByteTuple> => T.Create(fields);
     }
 
     [Fact]

@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class DoubleTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<double>).IsAssignableFrom(typeof(DoubleTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         DoubleTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class DoubleTupleTests
 
 public class DoubleTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IDoubleTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<double>).IsAssignableFrom(typeof(DoubleTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class DoubleTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_DoubleTuple()
-    {
-        DoubleTemplate template1 = new();
-        DoubleTemplate explicit1 = (DoubleTemplate)new DoubleTuple();
-
-        DoubleTemplate template2 = new(1);
-        DoubleTemplate explicit2 = (DoubleTemplate)new DoubleTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_DoubleTuple()
     {
         DoubleTemplate template1 = new();
-        ISpaceTemplate<double> explicit1 = (new DoubleTuple() as ISpaceTuple<double>).ToTemplate();
+        ISpaceTemplate<double> explicit1 = new DoubleTuple().ToTemplate();
 
         DoubleTemplate template2 = new(1);
-        ISpaceTemplate<double> explicit2 = (new DoubleTuple(1) as ISpaceTuple<double>).ToTemplate();
+        ISpaceTemplate<double> explicit2 = new DoubleTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class DoubleTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<double> Create<T>(double[] fields)
-            where T : ISpaceTuple<double> => T.Create(fields);
+            where T : ISpaceFactory<double, DoubleTuple> => T.Create(fields);
     }
 
     [Fact]

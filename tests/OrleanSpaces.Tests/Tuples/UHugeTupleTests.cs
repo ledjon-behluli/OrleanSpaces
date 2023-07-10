@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class UHugeTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<UInt128>).IsAssignableFrom(typeof(UHugeTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         UHugeTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class UHugeTupleTests
 
 public class UHugeTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IUHugeTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<UInt128>).IsAssignableFrom(typeof(UHugeTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class UHugeTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_UHugeTuple()
-    {
-        UHugeTemplate template1 = new();
-        UHugeTemplate explicit1 = (UHugeTemplate)new UHugeTuple();
-
-        UHugeTemplate template2 = new(1);
-        UHugeTemplate explicit2 = (UHugeTemplate)new UHugeTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_UHugeTuple()
     {
         UHugeTemplate template1 = new();
-        ISpaceTemplate<UInt128> explicit1 = (new UHugeTuple() as ISpaceTuple<UInt128>).ToTemplate();
+        ISpaceTemplate<UInt128> explicit1 = new UHugeTuple().ToTemplate();
 
         UHugeTemplate template2 = new(1);
-        ISpaceTemplate<UInt128> explicit2 = (new UHugeTuple(1) as ISpaceTuple<UInt128>).ToTemplate();
+        ISpaceTemplate<UInt128> explicit2 = new UHugeTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class UHugeTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<UInt128> Create<T>(UInt128[] fields)
-            where T : ISpaceTuple<UInt128> => T.Create(fields);
+            where T : ISpaceFactory<UInt128, UHugeTuple> => T.Create(fields);
     }
 
     [Fact]

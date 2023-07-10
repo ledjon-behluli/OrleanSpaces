@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class UIntTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<uint>).IsAssignableFrom(typeof(UIntTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         UIntTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class UIntTupleTests
 
 public class UIntTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IUIntTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<uint>).IsAssignableFrom(typeof(UIntTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class UIntTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_UIntTuple()
-    {
-        UIntTemplate template1 = new();
-        UIntTemplate explicit1 = (UIntTemplate)new UIntTuple();
-
-        UIntTemplate template2 = new(1);
-        UIntTemplate explicit2 = (UIntTemplate)new UIntTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_UIntTuple()
     {
         UIntTemplate template1 = new();
-        ISpaceTemplate<uint> explicit1 = (new UIntTuple() as ISpaceTuple<uint>).ToTemplate();
+        ISpaceTemplate<uint> explicit1 = new UIntTuple().ToTemplate();
 
         UIntTemplate template2 = new(1);
-        ISpaceTemplate<uint> explicit2 = (new UIntTuple(1) as ISpaceTuple<uint>).ToTemplate();
+        ISpaceTemplate<uint> explicit2 = new UIntTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class UIntTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<uint> Create<T>(uint[] fields)
-            where T : ISpaceTuple<uint> => T.Create(fields);
+            where T : ISpaceFactory<uint, UIntTuple> => T.Create(fields);
     }
 
     [Fact]

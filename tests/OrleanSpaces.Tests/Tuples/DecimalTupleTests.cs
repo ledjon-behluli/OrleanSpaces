@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class DecimalTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<decimal>).IsAssignableFrom(typeof(DecimalTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         DecimalTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class DecimalTupleTests
 
 public class DecimalTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IDecimalTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<decimal>).IsAssignableFrom(typeof(DecimalTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class DecimalTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_DecimalTuple()
-    {
-        DecimalTemplate template1 = new();
-        DecimalTemplate explicit1 = (DecimalTemplate)new DecimalTuple();
-
-        DecimalTemplate template2 = new(1);
-        DecimalTemplate explicit2 = (DecimalTemplate)new DecimalTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_DecimalTuple()
     {
         DecimalTemplate template1 = new();
-        ISpaceTemplate<decimal> explicit1 = (new DecimalTuple() as ISpaceTuple<decimal>).ToTemplate();
+        ISpaceTemplate<decimal> explicit1 = new DecimalTuple().ToTemplate();
 
         DecimalTemplate template2 = new(1);
-        ISpaceTemplate<decimal> explicit2 = (new DecimalTuple(1) as ISpaceTuple<decimal>).ToTemplate();
+        ISpaceTemplate<decimal> explicit2 = new DecimalTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class DecimalTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<decimal> Create<T>(decimal[] fields)
-            where T : ISpaceTuple<decimal> => T.Create(fields);
+            where T : ISpaceFactory<decimal, DecimalTuple> => T.Create(fields);
     }
 
     [Fact]

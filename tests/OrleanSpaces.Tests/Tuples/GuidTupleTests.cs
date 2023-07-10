@@ -11,12 +11,6 @@ public class GuidTupleTests
     private static readonly Guid guid4 = Guid.Parse("e5fd4745-1020-42fa-92eb-9a67df9093eb");
 
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<Guid>).IsAssignableFrom(typeof(GuidTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         GuidTuple tuple = new(guid1, guid2, guid3);
@@ -121,12 +115,6 @@ public class GuidTemplateTests
     private static readonly Guid guid2 = Guid.Parse("bc34dd3d-5971-498f-82fd-e08a8cf2d165");
     private static readonly Guid guid3 = Guid.Parse("a45c3bd9-ea58-4bf8-9f51-8a9265d58a78");
     private static readonly Guid guid4 = Guid.Parse("e5fd4745-1020-42fa-92eb-9a67df9093eb");
-
-    [Fact]
-    public void Should_Be_An_IGuidTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<Guid>).IsAssignableFrom(typeof(GuidTemplate)));
-    }
 
     [Fact]
     public void Should_Be_Created_On_Object_Array()
@@ -243,26 +231,13 @@ public class GuidTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_GuidTuple()
-    {
-        GuidTemplate template1 = new();
-        GuidTemplate explicit1 = (GuidTemplate)new GuidTuple();
-
-        GuidTemplate template2 = new(guid1);
-        GuidTemplate explicit2 = (GuidTemplate)new GuidTuple(guid1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_GuidTuple()
     {
         GuidTemplate template1 = new();
-        ISpaceTemplate<Guid> explicit1 = (new GuidTuple() as ISpaceTuple<Guid>).ToTemplate();
+        ISpaceTemplate<Guid> explicit1 = new GuidTuple().ToTemplate();
 
         GuidTemplate template2 = new(guid1);
-        ISpaceTemplate<Guid> explicit2 = (new GuidTuple(guid1) as ISpaceTuple<Guid>).ToTemplate();
+        ISpaceTemplate<Guid> explicit2 = new GuidTuple(guid1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -279,7 +254,7 @@ public class GuidTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<Guid> Create<T>(Guid[] fields)
-            where T : ISpaceTuple<Guid> => T.Create(fields);
+            where T : ISpaceFactory<Guid, GuidTuple> => T.Create(fields);
     }
 
     [Fact]

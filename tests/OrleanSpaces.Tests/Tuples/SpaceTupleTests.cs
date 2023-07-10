@@ -5,12 +5,6 @@ namespace OrleanSpaces.Tests.Tuples;
 public class SpaceTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple).IsAssignableFrom(typeof(SpaceTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         SpaceTuple tuple = new(1, "a", 1.5f, TestEnum.A);
@@ -201,13 +195,13 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_SpaceTuple()
+    public void Should_Convert_From_SpaceTuple()
     {
         SpaceTemplate template1 = new();
-        SpaceTemplate explicit1 = (SpaceTemplate)new SpaceTuple();
+        SpaceTemplate explicit1 = new SpaceTuple().ToTemplate();
 
         SpaceTemplate template2 = new(1);
-        SpaceTemplate explicit2 = (SpaceTemplate)new SpaceTuple(1);
+        SpaceTemplate explicit2 = new SpaceTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -421,7 +415,7 @@ public class SpaceMatchTests
     [Fact]
     public void Should_Be_True_If_All_Items_Match_OnValues()
     {
-        SpaceTemplate template = (SpaceTemplate)tuple;
+        SpaceTemplate template = tuple.ToTemplate();
         Assert.True(template.Matches(tuple));
     }
 

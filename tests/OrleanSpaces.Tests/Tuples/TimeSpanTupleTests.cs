@@ -11,12 +11,6 @@ public class TimeSpanTupleTests
     private static readonly TimeSpan timeSpan4 = new(4, 0, 0);
 
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<TimeSpan>).IsAssignableFrom(typeof(TimeSpanTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         TimeSpanTuple tuple = new(timeSpan1, timeSpan2, timeSpan3);
@@ -121,12 +115,6 @@ public class TimeSpanTemplateTests
     private static readonly TimeSpan timeSpan2 = new(2, 0, 0);
     private static readonly TimeSpan timeSpan3 = new(3, 0, 0);
     private static readonly TimeSpan timeSpan4 = new(4, 0, 0);
-
-    [Fact]
-    public void Should_Be_An_ITimeSpanTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<TimeSpan>).IsAssignableFrom(typeof(TimeSpanTemplate)));
-    }
 
     [Fact]
     public void Should_Be_Created_On_Object_Array()
@@ -243,26 +231,13 @@ public class TimeSpanTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_TimeSpanTuple()
-    {
-        TimeSpanTemplate template1 = new();
-        TimeSpanTemplate explicit1 = (TimeSpanTemplate)new TimeSpanTuple();
-
-        TimeSpanTemplate template2 = new(timeSpan1);
-        TimeSpanTemplate explicit2 = (TimeSpanTemplate)new TimeSpanTuple(timeSpan1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_TimeSpanTuple()
     {
         TimeSpanTemplate template1 = new();
-        ISpaceTemplate<TimeSpan> explicit1 = (new TimeSpanTuple() as ISpaceTuple<TimeSpan>).ToTemplate();
+        ISpaceTemplate<TimeSpan> explicit1 = new TimeSpanTuple().ToTemplate();
 
         TimeSpanTemplate template2 = new(timeSpan1);
-        ISpaceTemplate<TimeSpan> explicit2 = (new TimeSpanTuple(timeSpan1) as ISpaceTuple<TimeSpan>).ToTemplate();
+        ISpaceTemplate<TimeSpan> explicit2 = new TimeSpanTuple(timeSpan1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -279,7 +254,7 @@ public class TimeSpanTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<TimeSpan> Create<T>(TimeSpan[] fields)
-            where T : ISpaceTuple<TimeSpan> => T.Create(fields);
+            where T : ISpaceFactory<TimeSpan, TimeSpanTuple> => T.Create(fields);
     }
 
     [Fact]

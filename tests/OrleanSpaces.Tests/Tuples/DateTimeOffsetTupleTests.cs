@@ -11,12 +11,6 @@ public class DateTimeOffsetTupleTests
     private static readonly DateTimeOffset offset4 = new(2023, 1, 4, 0, 0, 0, 0, TimeSpan.Zero);
 
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<DateTimeOffset>).IsAssignableFrom(typeof(DateTimeOffsetTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         DateTimeOffsetTuple tuple = new(offset1, offset2, offset3);
@@ -121,12 +115,6 @@ public class DateTimeOffsetTemplateTests
     private static readonly DateTimeOffset offset2 = new(2023, 1, 2, 0, 0, 0, 0, TimeSpan.Zero);
     private static readonly DateTimeOffset offset3 = new(2023, 1, 3, 0, 0, 0, 0, TimeSpan.Zero);
     private static readonly DateTimeOffset offset4 = new(2023, 1, 4, 0, 0, 0, 0, TimeSpan.Zero);
-
-    [Fact]
-    public void Should_Be_An_IDateTimeOffsetTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<DateTimeOffset>).IsAssignableFrom(typeof(DateTimeOffsetTemplate)));
-    }
 
     [Fact]
     public void Should_Be_Created_On_Object_Array()
@@ -243,26 +231,13 @@ public class DateTimeOffsetTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_DateTimeOffsetTuple()
-    {
-        DateTimeOffsetTemplate template1 = new();
-        DateTimeOffsetTemplate explicit1 = (DateTimeOffsetTemplate)new DateTimeOffsetTuple();
-
-        DateTimeOffsetTemplate template2 = new(offset1);
-        DateTimeOffsetTemplate explicit2 = (DateTimeOffsetTemplate)new DateTimeOffsetTuple(offset1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_DateTimeOffsetTuple()
     {
         DateTimeOffsetTemplate template1 = new();
-        ISpaceTemplate<DateTimeOffset> explicit1 = (new DateTimeOffsetTuple() as ISpaceTuple<DateTimeOffset>).ToTemplate();
+        ISpaceTemplate<DateTimeOffset> explicit1 = new DateTimeOffsetTuple().ToTemplate();
 
         DateTimeOffsetTemplate template2 = new(offset1);
-        ISpaceTemplate<DateTimeOffset> explicit2 = (new DateTimeOffsetTuple(offset1) as ISpaceTuple<DateTimeOffset>).ToTemplate();
+        ISpaceTemplate<DateTimeOffset> explicit2 = new DateTimeOffsetTuple(offset1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -279,7 +254,7 @@ public class DateTimeOffsetTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<DateTimeOffset> Create<T>(DateTimeOffset[] fields)
-            where T : ISpaceTuple<DateTimeOffset> => T.Create(fields);
+            where T : ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple> => T.Create(fields);
     }
 
     [Fact]

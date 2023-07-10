@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class BoolTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<bool>).IsAssignableFrom(typeof(BoolTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         BoolTuple tuple = new(true, false, true);
@@ -112,12 +106,6 @@ public class BoolTupleTests
 
 public class BoolTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IBoolTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<bool>).IsAssignableFrom(typeof(BoolTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class BoolTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_BoolTuple()
-    {
-        BoolTemplate template1 = new();
-        BoolTemplate explicit1 = (BoolTemplate)new BoolTuple();
-
-        BoolTemplate template2 = new(true);
-        BoolTemplate explicit2 = (BoolTemplate)new BoolTuple(true);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_BoolTuple()
     {
         BoolTemplate template1 = new();
-        ISpaceTemplate<bool> explicit1 = (new BoolTuple() as ISpaceTuple<bool>).ToTemplate();
+        BoolTemplate explicit1 = new BoolTuple().ToTemplate();
 
         BoolTemplate template2 = new(true);
-        ISpaceTemplate<bool> explicit2 = (new BoolTuple(true) as ISpaceTuple<bool>).ToTemplate();
+        BoolTemplate explicit2 = new BoolTuple(true).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class BoolTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<bool> Create<T>(bool[] fields)
-            where T : ISpaceTuple<bool> => T.Create(fields);
+            where T : ISpaceFactory<bool, BoolTuple> => T.Create(fields);
     }
 
     [Fact]

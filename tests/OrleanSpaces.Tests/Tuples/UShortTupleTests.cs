@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class UShortTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<ushort>).IsAssignableFrom(typeof(UShortTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         UShortTuple tuple = new(1, 2, 3);
@@ -233,26 +227,13 @@ public class UShortTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_UShortTuple()
-    {
-        UShortTemplate template1 = new();
-        UShortTemplate explicit1 = (UShortTemplate)new UShortTuple();
-
-        UShortTemplate template2 = new(1);
-        UShortTemplate explicit2 = (UShortTemplate)new UShortTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_UShortTuple()
     {
         UShortTemplate template1 = new();
-        ISpaceTemplate<ushort> explicit1 = (new UShortTuple() as ISpaceTuple<ushort>).ToTemplate();
+        ISpaceTemplate<ushort> explicit1 = new UShortTuple().ToTemplate();
 
         UShortTemplate template2 = new(1);
-        ISpaceTemplate<ushort> explicit2 = (new UShortTuple(1) as ISpaceTuple<ushort>).ToTemplate();
+        ISpaceTemplate<ushort> explicit2 = new UShortTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +250,7 @@ public class UShortTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<ushort> Create<T>(ushort[] fields)
-            where T : ISpaceTuple<ushort> => T.Create(fields);
+            where T : ISpaceFactory<ushort, UShortTuple> => T.Create(fields);
     }
 
     [Fact]

@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class HugeTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<Int128>).IsAssignableFrom(typeof(HugeTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         HugeTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class HugeTupleTests
 
 public class HugeTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IHugeTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<Int128>).IsAssignableFrom(typeof(HugeTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class HugeTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_HugeTuple()
-    {
-        HugeTemplate template1 = new();
-        HugeTemplate explicit1 = (HugeTemplate)new HugeTuple();
-
-        HugeTemplate template2 = new(1);
-        HugeTemplate explicit2 = (HugeTemplate)new HugeTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_HugeTuple()
     {
         HugeTemplate template1 = new();
-        ISpaceTemplate<Int128> explicit1 = (new HugeTuple() as ISpaceTuple<Int128>).ToTemplate();
+        ISpaceTemplate<Int128> explicit1 = new HugeTuple().ToTemplate();
 
         HugeTemplate template2 = new(1);
-        ISpaceTemplate<Int128> explicit2 = (new HugeTuple(1) as ISpaceTuple<Int128>).ToTemplate();
+        ISpaceTemplate<Int128> explicit2 = new HugeTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class HugeTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<Int128> Create<T>(Int128[] fields)
-            where T : ISpaceTuple<Int128> => T.Create(fields);
+            where T : ISpaceFactory<Int128, HugeTuple> => T.Create(fields);
     }
 
     [Fact]

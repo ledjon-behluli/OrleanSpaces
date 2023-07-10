@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class LongTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<long>).IsAssignableFrom(typeof(LongTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         LongTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class LongTupleTests
 
 public class LongTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_ILongTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<long>).IsAssignableFrom(typeof(LongTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class LongTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_LongTuple()
-    {
-        LongTemplate template1 = new();
-        LongTemplate explicit1 = (LongTemplate)new LongTuple();
-
-        LongTemplate template2 = new(1);
-        LongTemplate explicit2 = (LongTemplate)new LongTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_LongTuple()
     {
         LongTemplate template1 = new();
-        ISpaceTemplate<long> explicit1 = (new LongTuple() as ISpaceTuple<long>).ToTemplate();
+        ISpaceTemplate<long> explicit1 = new LongTuple().ToTemplate();
 
         LongTemplate template2 = new(1);
-        ISpaceTemplate<long> explicit2 = (new LongTuple(1) as ISpaceTuple<long>).ToTemplate();
+        ISpaceTemplate<long> explicit2 = new LongTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class LongTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<long> Create<T>(long[] fields)
-            where T : ISpaceTuple<long> => T.Create(fields);
+            where T : ISpaceFactory<long, LongTuple> => T.Create(fields);
     }
 
     [Fact]

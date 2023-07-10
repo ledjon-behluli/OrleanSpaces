@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class ShortTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<short>).IsAssignableFrom(typeof(ShortTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         ShortTuple tuple = new(1, 2, 3);
@@ -112,12 +106,6 @@ public class ShortTupleTests
 
 public class ShortTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_IShortTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<short>).IsAssignableFrom(typeof(ShortTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class ShortTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_ShortTuple()
-    {
-        ShortTemplate template1 = new();
-        ShortTemplate explicit1 = (ShortTemplate)new ShortTuple();
-
-        ShortTemplate template2 = new(1);
-        ShortTemplate explicit2 = (ShortTemplate)new ShortTuple(1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_ShortTuple()
     {
         ShortTemplate template1 = new();
-        ISpaceTemplate<short> explicit1 = (new ShortTuple() as ISpaceTuple<short>).ToTemplate();
+        ISpaceTemplate<short> explicit1 = new ShortTuple().ToTemplate();
 
         ShortTemplate template2 = new(1);
-        ISpaceTemplate<short> explicit2 = (new ShortTuple(1) as ISpaceTuple<short>).ToTemplate();
+        ISpaceTemplate<short> explicit2 = new ShortTuple(1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class ShortTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<short> Create<T>(short[] fields)
-            where T : ISpaceTuple<short> => T.Create(fields);
+            where T : ISpaceFactory<short, ShortTuple> => T.Create(fields);
     }
 
     [Fact]

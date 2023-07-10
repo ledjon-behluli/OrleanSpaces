@@ -11,12 +11,6 @@ public class DateTimeTupleTests
     private static readonly DateTime dateTime4 = new(2023, 1, 4, 0, 0, 0, 0);
 
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<DateTime>).IsAssignableFrom(typeof(DateTimeTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         DateTimeTuple tuple = new(dateTime1, dateTime2, dateTime3);
@@ -121,12 +115,6 @@ public class DateTimeTemplateTests
     private static readonly DateTime dateTime2 = new(2023, 1, 2, 0, 0, 0, 0);
     private static readonly DateTime dateTime3 = new(2023, 1, 3, 0, 0, 0, 0);
     private static readonly DateTime dateTime4 = new(2023, 1, 4, 0, 0, 0, 0);
-
-    [Fact]
-    public void Should_Be_An_IDateTimeTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<DateTime>).IsAssignableFrom(typeof(DateTimeTemplate)));
-    }
 
     [Fact]
     public void Should_Be_Created_On_Object_Array()
@@ -243,26 +231,13 @@ public class DateTimeTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_DateTimeTuple()
-    {
-        DateTimeTemplate template1 = new();
-        DateTimeTemplate explicit1 = (DateTimeTemplate)new DateTimeTuple();
-
-        DateTimeTemplate template2 = new(dateTime1);
-        DateTimeTemplate explicit2 = (DateTimeTemplate)new DateTimeTuple(dateTime1);
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_DateTimeTuple()
     {
         DateTimeTemplate template1 = new();
-        ISpaceTemplate<DateTime> explicit1 = (new DateTimeTuple() as ISpaceTuple<DateTime>).ToTemplate();
+        ISpaceTemplate<DateTime> explicit1 = new DateTimeTuple().ToTemplate();
 
         DateTimeTemplate template2 = new(dateTime1);
-        ISpaceTemplate<DateTime> explicit2 = (new DateTimeTuple(dateTime1) as ISpaceTuple<DateTime>).ToTemplate();
+        ISpaceTemplate<DateTime> explicit2 = new DateTimeTuple(dateTime1).ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -279,7 +254,7 @@ public class DateTimeTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<DateTime> Create<T>(DateTime[] fields)
-            where T : ISpaceTuple<DateTime> => T.Create(fields);
+            where T : ISpaceFactory<DateTime, DateTimeTuple> => T.Create(fields);
     }
 
     [Fact]

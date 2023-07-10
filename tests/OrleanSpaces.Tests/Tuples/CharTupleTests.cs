@@ -6,12 +6,6 @@ namespace OrleanBools.Tests.Tuples;
 public class CharTupleTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTuple()
-    {
-        Assert.True(typeof(ISpaceTuple<char>).IsAssignableFrom(typeof(CharTuple)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         CharTuple tuple = new('a', 'b', 'c');
@@ -112,12 +106,6 @@ public class CharTupleTests
 
 public class CharTemplateTests
 {
-    [Fact]
-    public void Should_Be_An_ICharTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate<char>).IsAssignableFrom(typeof(CharTemplate)));
-    }
-
     [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
@@ -233,26 +221,13 @@ public class CharTemplateTests
     }
 
     [Fact]
-    public void Should_Explicitly_Convert_From_CharTuple()
-    {
-        CharTemplate template1 = new();
-        CharTemplate explicit1 = (CharTemplate)new CharTuple();
-
-        CharTemplate template2 = new('a');
-        CharTemplate explicit2 = (CharTemplate)new CharTuple('a');
-
-        Assert.Equal(template1, explicit1);
-        Assert.Equal(template2, explicit2);
-    }
-
-    [Fact]
     public void Should_Convert_From_CharTuple()
     {
         CharTemplate template1 = new();
-        ISpaceTemplate<char> explicit1 = (new CharTuple() as ISpaceTuple<char>).ToTemplate();
+        ISpaceTemplate<char> explicit1 = new CharTuple().ToTemplate();
 
         CharTemplate template2 = new('a');
-        ISpaceTemplate<char> explicit2 = (new CharTuple('a') as ISpaceTuple<char>).ToTemplate();
+        ISpaceTemplate<char> explicit2 = new CharTuple('a').ToTemplate();
 
         Assert.Equal(template1, explicit1);
         Assert.Equal(template2, explicit2);
@@ -269,7 +244,7 @@ public class CharTemplateTests
         Assert.Equal(tuple1, tuple2);
 
         static ISpaceTuple<char> Create<T>(char[] fields)
-            where T : ISpaceTuple<char> => T.Create(fields);
+            where T : ISpaceFactory<char, CharTuple> => T.Create(fields);
     }
 
     [Fact]
