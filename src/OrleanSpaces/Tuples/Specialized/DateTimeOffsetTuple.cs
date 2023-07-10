@@ -50,7 +50,7 @@ public readonly struct DateTimeOffsetTuple : ISpaceTuple<DateTimeOffset>, IEquat
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
-public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>
+public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>, ITupleMatcher<DateTimeOffset, DateTimeOffsetTuple>
 {
     private readonly DateTimeOffset?[] fields;
 
@@ -61,8 +61,7 @@ public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOf
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>
         this.fields = fields is null ? Array.Empty<DateTimeOffset?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<DateTimeOffset>
-        => TupleHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
+    public bool Matches(DateTimeOffsetTuple tuple) => TupleHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();

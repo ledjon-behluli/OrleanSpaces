@@ -103,7 +103,7 @@ public readonly struct DecimalTuple : ISpaceTuple<decimal>, IEquatable<DecimalTu
     }
 }
 
-public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
+public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ITupleMatcher<decimal, DecimalTuple>
 {
     private readonly decimal?[] fields;
 
@@ -114,8 +114,7 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>
     public DecimalTemplate([AllowNull] params decimal?[] fields)
         => this.fields = fields is null ? Array.Empty<decimal?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<decimal>
-        => TupleHelpers.Matches<decimal, DecimalTuple>(this, tuple);
+    public bool Matches(DecimalTuple tuple) => TupleHelpers.Matches<decimal, DecimalTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();

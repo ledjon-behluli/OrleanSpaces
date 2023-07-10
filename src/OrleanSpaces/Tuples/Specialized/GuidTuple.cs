@@ -74,7 +74,7 @@ public readonly struct GuidTuple : ISpaceTuple<Guid>, IEquatable<GuidTuple>
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
-public readonly record struct GuidTemplate : ISpaceTemplate<Guid>
+public readonly record struct GuidTemplate : ISpaceTemplate<Guid>, ITupleMatcher<Guid, GuidTuple>
 {
     private readonly Guid?[] fields;
 
@@ -85,8 +85,7 @@ public readonly record struct GuidTemplate : ISpaceTemplate<Guid>
     public GuidTemplate([AllowNull] params Guid?[] fields)
         => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Guid>
-        => TupleHelpers.Matches<Guid, GuidTuple>(this, tuple);
+    public bool Matches(GuidTuple tuple) => TupleHelpers.Matches<Guid, GuidTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();

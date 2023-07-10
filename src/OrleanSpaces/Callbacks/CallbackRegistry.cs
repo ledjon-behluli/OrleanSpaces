@@ -41,7 +41,7 @@ internal sealed class CallbackRegistry
 internal sealed class CallbackRegistry<T, TTuple, TTemplate>
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
+    where TTemplate : ISpaceTemplate<T>, ITupleMatcher<T, TTuple>
 {
     private readonly ConcurrentDictionary<TTemplate, List<CallbackEntry<TTuple>>> entries = new();
 

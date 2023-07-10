@@ -98,7 +98,7 @@ public readonly struct HugeTuple : INumericTuple<Int128>, IEquatable<HugeTuple>
     }
 }
 
-public readonly record struct HugeTemplate : ISpaceTemplate<Int128>
+public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ITupleMatcher<Int128, HugeTuple>
 {
     private readonly Int128?[] fields;
 
@@ -109,8 +109,7 @@ public readonly record struct HugeTemplate : ISpaceTemplate<Int128>
     public HugeTemplate([AllowNull] params Int128?[] fields)
         => this.fields = fields is null ? Array.Empty<Int128?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<Int128>
-        => TupleHelpers.Matches<Int128, HugeTuple>(this, tuple);
+    public bool Matches(HugeTuple tuple) => TupleHelpers.Matches<Int128, HugeTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();

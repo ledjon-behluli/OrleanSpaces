@@ -48,7 +48,7 @@ public readonly struct FloatTuple : INumericTuple<float>, IEquatable<FloatTuple>
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }
 
-public readonly record struct FloatTemplate : ISpaceTemplate<float>
+public readonly record struct FloatTemplate : ISpaceTemplate<float>, ITupleMatcher<float, FloatTuple>
 {
     private readonly float?[] fields;
 
@@ -59,8 +59,7 @@ public readonly record struct FloatTemplate : ISpaceTemplate<float>
     public FloatTemplate([AllowNull] params float?[] fields)
         => this.fields = fields is null ? Array.Empty<float?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<float>
-        => TupleHelpers.Matches<float, FloatTuple>(this, tuple);
+    public bool Matches(FloatTuple tuple) => TupleHelpers.Matches<float, FloatTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<float?>.Enumerator GetEnumerator() => new ReadOnlySpan<float?>(fields).GetEnumerator();

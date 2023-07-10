@@ -16,7 +16,7 @@ internal class Agent<T, TTuple, TTemplate> :
     IAsyncObserver<TupleAction<TTuple>>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
-    where TTemplate : struct, ISpaceTemplate<T>
+    where TTemplate : struct, ISpaceTemplate<T>, ITupleMatcher<T, TTuple>
 {
     private readonly Guid agentId = Guid.NewGuid();
     private readonly IClusterClient client;
@@ -125,7 +125,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public ValueTask<TTuple> PeekAsync(TTemplate template)
     {
-        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
+        TTuple tuple = tuples.FirstOrDefault(template.Matches);
         return new(tuple);
     }
 
@@ -133,7 +133,7 @@ internal class Agent<T, TTuple, TTemplate> :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
+        TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {
@@ -147,7 +147,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
-        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
+        TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {
@@ -162,7 +162,7 @@ internal class Agent<T, TTuple, TTemplate> :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.FirstOrDefault(x => template.Matches(x));
+        TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {

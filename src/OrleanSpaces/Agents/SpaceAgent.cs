@@ -124,7 +124,7 @@ internal sealed class SpaceAgent :
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = FindTuple(template);
+        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
         return new(tuple);
     }
 
@@ -132,7 +132,7 @@ internal sealed class SpaceAgent :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = FindTuple(template);
+        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {
@@ -146,7 +146,7 @@ internal sealed class SpaceAgent :
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = FindTuple(template);
+        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {
@@ -161,7 +161,7 @@ internal sealed class SpaceAgent :
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
      
-        SpaceTuple tuple = FindTuple(template);
+        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
         {
@@ -197,19 +197,6 @@ internal sealed class SpaceAgent :
     {
         await grain.RemoveAll(agentId);
         tuples.Clear();
-    }
-
-    private SpaceTuple FindTuple(SpaceTemplate template)
-    {
-        foreach (var tuple in tuples)
-        {
-            if (template.Matches(tuple))
-            {
-                return tuple;
-            }
-        }
-
-        return new();
     }
 
     #endregion

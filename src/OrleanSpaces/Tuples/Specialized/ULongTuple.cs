@@ -48,7 +48,7 @@ public readonly struct ULongTuple : INumericTuple<ulong>, IEquatable<ULongTuple>
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
 }
 
-public readonly record struct ULongTemplate : ISpaceTemplate<ulong>
+public readonly record struct ULongTemplate : ISpaceTemplate<ulong>, ITupleMatcher<ulong, ULongTuple>
 {
     private readonly ulong?[] fields;
 
@@ -59,8 +59,7 @@ public readonly record struct ULongTemplate : ISpaceTemplate<ulong>
     public ULongTemplate([AllowNull] params ulong?[] fields)
         => this.fields = fields is null ? Array.Empty<ulong?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<ulong>
-        => TupleHelpers.Matches<ulong, ULongTuple>(this, tuple);
+    public bool Matches(ULongTuple tuple) => TupleHelpers.Matches<ulong, ULongTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<ulong?>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong?>(fields).GetEnumerator();

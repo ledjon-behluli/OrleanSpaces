@@ -50,7 +50,7 @@ public readonly struct TimeSpanTuple : ISpaceTuple<TimeSpan>, IEquatable<TimeSpa
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }
 
-public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
+public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>, ITupleMatcher<TimeSpan, TimeSpanTuple>
 {
     private readonly TimeSpan?[] fields;
 
@@ -61,8 +61,7 @@ public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<TimeSpan>
-        => TupleHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);
+    public bool Matches(TimeSpanTuple tuple) => TupleHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();

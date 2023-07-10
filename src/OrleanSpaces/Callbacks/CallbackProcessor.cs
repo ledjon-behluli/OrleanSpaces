@@ -62,7 +62,7 @@ internal sealed class CallbackProcessor : BackgroundService
 internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundService
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
+    where TTemplate : ISpaceTemplate<T>, ITupleMatcher<T, TTuple>
 {
     private readonly SpaceOptions options;
     private readonly CallbackChannel<TTuple> callbackChannel;

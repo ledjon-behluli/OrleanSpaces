@@ -9,7 +9,12 @@ public interface ISpaceTemplate<T> : ISpaceTemplate
     where T : unmanaged
 {
     ref readonly T? this[int index] { get; }
-
-    bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<T>;
     ReadOnlySpan<T?>.Enumerator GetEnumerator();
+}
+
+public interface ITupleMatcher<T, TTuple>
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+{
+    bool Matches(TTuple tuple);
 }

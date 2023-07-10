@@ -85,7 +85,7 @@ public readonly struct BoolTuple : ISpaceTuple<bool>, IEquatable<BoolTuple>
     }
 }
 
-public readonly record struct BoolTemplate : ISpaceTemplate<bool>
+public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ITupleMatcher<bool, BoolTuple>
 {
     private readonly bool?[] fields;
 
@@ -96,8 +96,7 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>
     public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields is null ? Array.Empty<bool?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<bool>
-        => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);
+    public bool Matches(BoolTuple tuple) => TupleHelpers.Matches<bool, BoolTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();

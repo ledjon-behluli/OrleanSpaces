@@ -60,7 +60,7 @@ public readonly struct CharTuple : ISpaceTuple<char>, IEquatable<CharTuple>
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
-public readonly record struct CharTemplate : ISpaceTemplate<char>
+public readonly record struct CharTemplate : ISpaceTemplate<char>, ITupleMatcher<char, CharTuple>
 {
     private readonly char?[] fields;
 
@@ -70,8 +70,7 @@ public readonly record struct CharTemplate : ISpaceTemplate<char>
     public CharTemplate() => fields = Array.Empty<char?>();
     public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<char>
-        => TupleHelpers.Matches<char, CharTuple>(this, tuple);
+    public bool Matches(CharTuple tuple) => TupleHelpers.Matches<char, CharTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();

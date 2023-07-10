@@ -48,7 +48,7 @@ public readonly struct UShortTuple : INumericTuple<ushort>, IEquatable<UShortTup
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
-public readonly record struct UShortTemplate : ISpaceTemplate<ushort>
+public readonly record struct UShortTemplate : ISpaceTemplate<ushort>, ITupleMatcher<ushort, UShortTuple>
 {
     private readonly ushort?[] fields;
 
@@ -59,8 +59,7 @@ public readonly record struct UShortTemplate : ISpaceTemplate<ushort>
     public UShortTemplate([AllowNull] params ushort?[] fields)
         => this.fields = fields is null ? Array.Empty<ushort?>() : fields;
 
-    public bool Matches<TTuple>(TTuple tuple) where TTuple : ISpaceTuple<ushort>
-        => TupleHelpers.Matches<ushort, UShortTuple>(this, tuple);
+    public bool Matches(UShortTuple tuple) => TupleHelpers.Matches<ushort, UShortTuple>(this, tuple);
 
     public override string ToString() => TupleHelpers.ToString(fields);
     public ReadOnlySpan<ushort?>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort?>(fields).GetEnumerator();
