@@ -5,8 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct FloatTuple : 
-    INumericTuple<float>, ISpaceConvertible<float, FloatTemplate>, IEquatable<FloatTuple>
+public readonly struct FloatTuple :
+    IEquatable<FloatTuple>,
+    INumericTuple<float>, 
+    ISpaceFactory<float, FloatTuple>,
+    ISpaceConvertible<float, FloatTemplate>
 {
     [Id(0), JsonProperty] private readonly float[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -42,7 +45,7 @@ public readonly struct FloatTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<float> ISpaceTuple<float>.Create(float[] fields) => new FloatTuple(fields);
+    static FloatTuple ISpaceFactory<float, FloatTuple>.Create(float[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();

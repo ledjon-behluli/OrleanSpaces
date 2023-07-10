@@ -5,8 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct SByteTuple : 
-    INumericTuple<sbyte>, ISpaceConvertible<sbyte, SByteTemplate>, IEquatable<SByteTuple>
+public readonly struct SByteTuple :
+    IEquatable<SByteTuple>,
+    INumericTuple<sbyte>, 
+    ISpaceFactory<sbyte, SByteTuple>,
+    ISpaceConvertible<sbyte, SByteTemplate>
 {
     [Id(0), JsonProperty] private readonly sbyte[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -42,7 +45,7 @@ public readonly struct SByteTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<sbyte> ISpaceTuple<sbyte>.Create(sbyte[] fields) => new SByteTuple(fields);
+    static SByteTuple ISpaceFactory<sbyte, SByteTuple>.Create(sbyte[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();

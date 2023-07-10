@@ -6,7 +6,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct LongTuple :
-    INumericTuple<long>, ISpaceConvertible<long, LongTemplate>, IEquatable<LongTuple>
+    IEquatable<LongTuple>,
+    INumericTuple<long>, 
+    ISpaceFactory<long, LongTuple>,
+    ISpaceConvertible<long, LongTemplate>
 {
     [Id(0), JsonProperty] private readonly long[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -42,7 +45,7 @@ public readonly struct LongTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<long> ISpaceTuple<long>.Create(long[] fields) => new LongTuple(fields);
+    static LongTuple ISpaceFactory<long, LongTuple>.Create(long[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Long);
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();

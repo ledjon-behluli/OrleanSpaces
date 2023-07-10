@@ -249,7 +249,6 @@ public class BoolTupleBenchmarks
 
         public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
 
-        static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<bool>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }

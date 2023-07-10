@@ -249,7 +249,6 @@ public class CharTupleBenchmarks
 
         public bool Equals(SequentialCharTuple other) => this.SequentialEquals(other);
 
-        static ISpaceTuple<char> ISpaceTuple<char>.Create(char[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<char>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }

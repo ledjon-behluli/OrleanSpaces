@@ -6,7 +6,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct ShortTuple :
-    INumericTuple<short>, ISpaceConvertible<short, ShortTemplate>, IEquatable<ShortTuple>
+    IEquatable<ShortTuple>,
+    INumericTuple<short>, 
+    ISpaceFactory<short, ShortTuple>,
+    ISpaceConvertible<short, ShortTemplate>
 {
     [Id(0), JsonProperty] private readonly short[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -42,7 +45,7 @@ public readonly struct ShortTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<short> ISpaceTuple<short>.Create(short[] fields) => new ShortTuple(fields);
+    static ShortTuple ISpaceFactory<short, ShortTuple>.Create(short[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Short);
     public ReadOnlySpan<short>.Enumerator GetEnumerator() => new ReadOnlySpan<short>(fields).GetEnumerator();

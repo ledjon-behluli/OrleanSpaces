@@ -7,8 +7,11 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct HugeTuple : 
-    INumericTuple<Int128>, ISpaceConvertible<Int128, HugeTemplate>, IEquatable<HugeTuple>
+public readonly struct HugeTuple :
+    IEquatable<HugeTuple>,
+    INumericTuple<Int128>,
+    ISpaceFactory<Int128, HugeTuple>,
+    ISpaceConvertible<Int128, HugeTemplate>
 {
     [Id(0), JsonProperty] private readonly Int128[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -56,7 +59,7 @@ public readonly struct HugeTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<Int128> ISpaceTuple<Int128>.Create(Int128[] fields) => new HugeTuple(fields);
+    static HugeTuple ISpaceFactory<Int128, HugeTuple>.Create(Int128[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
     public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128>(fields).GetEnumerator();

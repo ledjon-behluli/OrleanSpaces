@@ -5,8 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct TimeSpanTuple : 
-    ISpaceTuple<TimeSpan>, ISpaceConvertible<TimeSpan, TimeSpanTemplate>, IEquatable<TimeSpanTuple>
+public readonly struct TimeSpanTuple :
+    IEquatable<TimeSpanTuple>,
+    ISpaceTuple<TimeSpan>, 
+    ISpaceFactory<TimeSpan, TimeSpanTuple>,
+    ISpaceConvertible<TimeSpan, TimeSpanTemplate>
 {
     [Id(0), JsonProperty] private readonly TimeSpan[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -44,7 +47,7 @@ public readonly struct TimeSpanTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<TimeSpan> ISpaceTuple<TimeSpan>.Create(TimeSpan[] fields) => new TimeSpanTuple(fields);
+    static TimeSpanTuple ISpaceFactory<TimeSpan, TimeSpanTuple>.Create(TimeSpan[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_TimeSpan);
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();

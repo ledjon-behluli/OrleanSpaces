@@ -7,7 +7,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct GuidTuple :
-    ISpaceTuple<Guid>, ISpaceConvertible<Guid, GuidTemplate>, IEquatable<GuidTuple>
+    IEquatable<GuidTuple>,
+    ISpaceTuple<Guid>, 
+    ISpaceFactory<Guid, GuidTuple>,
+    ISpaceConvertible<Guid, GuidTemplate>
 {
     [Id(0), JsonProperty] private readonly Guid[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -68,7 +71,7 @@ public readonly struct GuidTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<Guid> ISpaceTuple<Guid>.Create(Guid[] fields) => new GuidTuple(fields);
+    static GuidTuple ISpaceFactory<Guid, GuidTuple>.Create(Guid[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Guid);
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();

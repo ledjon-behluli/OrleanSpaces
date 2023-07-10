@@ -196,7 +196,6 @@ public class LongTupleBenchmarks
 
         public bool Equals(SequentialLongTuple other) => this.SequentialEquals(other);
 
-        static ISpaceTuple<long> ISpaceTuple<long>.Create(long[] fields) => throw new NotImplementedException();
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<long>.Enumerator GetEnumerator() => throw new NotImplementedException();
     }

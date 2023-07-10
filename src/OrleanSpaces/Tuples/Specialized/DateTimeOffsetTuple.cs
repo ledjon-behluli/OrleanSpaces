@@ -6,7 +6,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct DateTimeOffsetTuple :
-    ISpaceTuple<DateTimeOffset>, ISpaceConvertible<DateTimeOffset, DateTimeOffsetTemplate>, IEquatable<DateTimeOffsetTuple>
+    IEquatable<DateTimeOffsetTuple>,
+    ISpaceTuple<DateTimeOffset>, 
+    ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>,
+    ISpaceConvertible<DateTimeOffset, DateTimeOffsetTemplate>
 {
     [Id(0), JsonProperty] private readonly DateTimeOffset[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -44,7 +47,7 @@ public readonly struct DateTimeOffsetTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<DateTimeOffset> ISpaceTuple<DateTimeOffset>.Create(DateTimeOffset[] fields) => new DateTimeOffsetTuple(fields);
+    static DateTimeOffsetTuple ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>.Create(DateTimeOffset[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTimeOffset);
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();

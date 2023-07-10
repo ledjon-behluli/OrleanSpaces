@@ -6,8 +6,11 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DecimalTuple : 
-    ISpaceTuple<decimal>, ISpaceConvertible<decimal, DecimalTemplate>, IEquatable<DecimalTuple>
+public readonly struct DecimalTuple :
+    IEquatable<DecimalTuple>,
+    ISpaceTuple<decimal>,
+    ISpaceFactory<decimal, DecimalTuple>,
+    ISpaceConvertible<decimal, DecimalTemplate>
 {
     [Id(0), JsonProperty] private readonly decimal[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -68,7 +71,7 @@ public readonly struct DecimalTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<decimal> ISpaceTuple<decimal>.Create(decimal[] fields) => new DecimalTuple(fields);
+    static DecimalTuple ISpaceFactory<decimal, DecimalTuple>.Create(decimal[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();

@@ -6,7 +6,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct UIntTuple :
-    INumericTuple<uint>, ISpaceConvertible<uint, UIntTemplate>, IEquatable<UIntTuple>
+    IEquatable<UIntTuple>,
+    INumericTuple<uint>, 
+    ISpaceFactory<uint, UIntTuple>,
+    ISpaceConvertible<uint, UIntTemplate>
 {
     [Id(0), JsonProperty] private readonly uint[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -42,7 +45,7 @@ public readonly struct UIntTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<uint> ISpaceTuple<uint>.Create(uint[] fields) => new UIntTuple(fields);
+    static UIntTuple ISpaceFactory<uint, UIntTuple>.Create(uint[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UInt);
     public ReadOnlySpan<uint>.Enumerator GetEnumerator() => new ReadOnlySpan<uint>(fields).GetEnumerator();

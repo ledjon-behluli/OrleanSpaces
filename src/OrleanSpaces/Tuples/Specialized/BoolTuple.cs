@@ -6,7 +6,10 @@ namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
 public readonly struct BoolTuple :
-    ISpaceTuple<bool>, ISpaceConvertible<bool, BoolTemplate>, IEquatable<BoolTuple>
+    IEquatable<BoolTuple>,
+    ISpaceTuple<bool>,
+    ISpaceFactory<bool, BoolTuple>,
+    ISpaceConvertible<bool, BoolTemplate>
 {
     [Id(0), JsonProperty] private readonly bool[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -44,7 +47,7 @@ public readonly struct BoolTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<bool> ISpaceTuple<bool>.Create(bool[] fields) => new BoolTuple(fields);
+    static BoolTuple ISpaceFactory<bool, BoolTuple>.Create(bool[] fields) => new(fields);
 
     public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
 
@@ -68,8 +71,6 @@ public readonly struct BoolTuple :
     {
         public ref readonly SFBool this[int index] => ref Fields[index];
         public int Length => Fields.Length;
-
-        static ISpaceTuple<SFBool> ISpaceTuple<SFBool>.Create(SFBool[] fields) => new SFBoolTuple(fields);
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();

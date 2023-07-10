@@ -7,8 +7,11 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UHugeTuple : 
-    INumericTuple<UInt128>, ISpaceConvertible<UInt128, UHugeTemplate>, IEquatable<UHugeTuple>
+public readonly struct UHugeTuple :
+    IEquatable<UHugeTuple>,
+    INumericTuple<UInt128>, 
+    ISpaceFactory<UInt128, UHugeTuple>,
+    ISpaceConvertible<UInt128, UHugeTemplate>
 {
     [Id(0), JsonProperty] private readonly UInt128[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -56,7 +59,7 @@ public readonly struct UHugeTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => TupleHelpers.ToString(fields);
 
-    static ISpaceTuple<UInt128> ISpaceTuple<UInt128>.Create(UInt128[] fields) => new UHugeTuple(fields);
+    static UHugeTuple ISpaceFactory<UInt128, UHugeTuple>.Create(UInt128[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UHuge);
     public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
