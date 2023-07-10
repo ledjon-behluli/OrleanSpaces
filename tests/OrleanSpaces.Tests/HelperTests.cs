@@ -65,8 +65,4 @@ public class HelperTests
             new object[] { typeof(object) },
             new object[] { typeof(DynamicObject) },
         };
-
-    private enum TestEnum { }
-    private struct TestStruct { }
-    private class TestClass { }
 }

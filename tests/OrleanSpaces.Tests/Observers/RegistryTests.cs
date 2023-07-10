@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Observers;
 public class SpaceRegistryTests
 {
     private readonly ObserverRegistry<SpaceTuple> registry = new();
-    private readonly TestObserver<SpaceTuple> observer = new();
+    private readonly TestSpaceObserver<SpaceTuple> observer = new();
     private readonly Guid observerId;
 
     public SpaceRegistryTests()
@@ -23,7 +23,7 @@ public class SpaceRegistryTests
     [Fact]
     public void Should_Add_Observer()
     {
-        registry.Add(new TestObserver<SpaceTuple>());
+        registry.Add(new TestSpaceObserver<SpaceTuple>());
         Assert.Equal(2, registry.Observers.Count());
     }
 
@@ -44,7 +44,7 @@ public class SpaceRegistryTests
     [Fact]
     public void Should_Return_New_Id()
     {
-        Guid id = registry.Add(new TestObserver<SpaceTuple>());
+        Guid id = registry.Add(new TestSpaceObserver<SpaceTuple>());
         Assert.NotEqual(id, observerId);
     }
 

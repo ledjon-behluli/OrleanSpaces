@@ -1,6 +1,5 @@
 ﻿using Orleans.Runtime;
 using Orleans.Streams;
-using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -23,7 +22,7 @@ internal abstract class Grain<T> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStream<T>(streamId);
+        stream = this.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
         return Task.CompletedTask;
     }
 
@@ -50,9 +49,11 @@ internal abstract class Grain<T> : Grain
         }
     }
 
-    public async Task RemoveAll()
+    public async Task RemoveAll(Guid agentId)
     {
         space.State.Clear();
+
         await space.WriteStateAsync();
+        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clean));
     }
 }

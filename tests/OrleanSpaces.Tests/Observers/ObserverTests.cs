@@ -126,37 +126,37 @@ public class ObserverTests
 
     #region Observers
 
-    private class EverythingObserver : TestObserver<SpaceTuple>
+    private class EverythingObserver : TestSpaceObserver<SpaceTuple>
     {
         public EverythingObserver() => ListenTo(Everything);
     }
 
-    private class ExpansionsObserver : TestObserver<SpaceTuple>
+    private class ExpansionsObserver : TestSpaceObserver<SpaceTuple>
     {
         public ExpansionsObserver() => ListenTo(Expansions);
     }
 
-    private class ContractionsObserver : TestObserver<SpaceTuple>
+    private class ContractionsObserver : TestSpaceObserver<SpaceTuple>
     {
         public ContractionsObserver() => ListenTo(Contractions);
     }
 
-    private class CombinedObserver : TestObserver<SpaceTuple>
+    private class CombinedObserver : TestSpaceObserver<SpaceTuple>
     {
         public CombinedObserver() => ListenTo(Expansions | Contractions);
     }
 
-    private class FlatteningsObserver : TestObserver<SpaceTuple>
+    private class FlatteningsObserver : TestSpaceObserver<SpaceTuple>
     {
         public FlatteningsObserver() => ListenTo(Flattenings);
     }
 
-    private class NothingObserver : TestObserver<SpaceTuple>
+    private class NothingObserver : TestSpaceObserver<SpaceTuple>
     {
         public NothingObserver() => ListenTo(Nothing);
     }
 
-    private class DynamicObserver : TestObserver<SpaceTuple>
+    private class DynamicObserver : TestSpaceObserver<SpaceTuple>
     {
         public DynamicObserver() => ListenTo(Expansions);
 

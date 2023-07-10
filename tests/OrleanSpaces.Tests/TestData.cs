@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Continuations;
+﻿using Orleans.Streams;
+using OrleanSpaces.Continuations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
@@ -6,7 +7,7 @@ using System.Collections;
 
 namespace OrleanSpaces.Tests;
 
-public class SpaceTupleGenerator : IEnumerable<object[]>
+internal class SpaceTupleGenerator : IEnumerable<object[]>
 {
     private readonly List<object[]> data = new()
     {
@@ -20,7 +21,21 @@ public class SpaceTupleGenerator : IEnumerable<object[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
+internal class IntTupleGenerator : IEnumerable<object[]>
+{
+    private readonly List<object[]> data = new()
+    {
+        new object[] { new IntTuple(1) },
+        new object[] { new IntTuple(1, 2) },
+        new object[] { new IntTuple(1, 2, 3) },
+        new object[] { new IntTuple(1, 2, 3, 4) }
+    };
+
+    public IEnumerator<object[]> GetEnumerator() => data.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
+
+internal class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
 {
     private readonly List<ISpaceTuple[]> data = new()
     {
@@ -49,7 +64,7 @@ public class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
+internal class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
 {
     private readonly List<ISpaceTemplate[]> data = new()
     {
@@ -78,40 +93,11 @@ public class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public class TupleTypeGenerator : IEnumerable<Type[]>
-{
-    private readonly List<Type[]> data = new()
-    {
-        new Type[] { typeof(object), typeof(SpaceTuple), typeof(SpaceTemplate) },
-        new Type[] { typeof(bool), typeof(BoolTuple), typeof(BoolTemplate) },
-        new Type[] { typeof(char), typeof(CharTuple), typeof(CharTemplate) },
-        new Type[] { typeof(DateTimeOffset), typeof(DateTimeOffsetTuple), typeof(DateTimeOffsetTemplate) },
-        new Type[] { typeof(DateTime), typeof(DateTimeTuple), typeof(DateTimeTemplate) },
-        new Type[] { typeof(decimal), typeof(DecimalTuple), typeof(DecimalTemplate) },
-        new Type[] { typeof(double), typeof(DoubleTuple), typeof(DoubleTemplate) },
-        new Type[] { typeof(float), typeof(FloatTuple), typeof(FloatTemplate) },
-        new Type[] { typeof(Guid), typeof(GuidTuple), typeof(GuidTemplate) },
-        new Type[] { typeof(Int128), typeof(HugeTuple), typeof(HugeTemplate) },
-        new Type[] { typeof(int), typeof(IntTuple), typeof(IntTemplate) },
-        new Type[] { typeof(long), typeof(LongTuple), typeof(LongTemplate) },
-        new Type[] { typeof(sbyte), typeof(SByteTuple), typeof(SByteTemplate) },
-        new Type[] { typeof(short), typeof(ShortTuple), typeof(ShortTemplate) },
-        new Type[] { typeof(TimeSpan), typeof(TimeSpanTuple), typeof(TimeSpanTemplate) },
-        new Type[] { typeof(UInt128), typeof(UHugeTuple), typeof(UHugeTemplate) },
-        new Type[] { typeof(uint), typeof(UIntTuple), typeof(UIntTemplate) },
-        new Type[] { typeof(ulong), typeof(ULongTuple), typeof(ULongTemplate) },
-        new Type[] { typeof(ushort), typeof(UShortTuple), typeof(UShortTemplate) }
-    };
+internal struct TestStruct { }
+internal class TestClass { }
+internal enum TestEnum { A }
 
-    public IEnumerator<Type[]> GetEnumerator() => data.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-}
-
-public struct TestStruct { }
-public class TestClass { }
-public enum TestEnum { A }
-
-public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
+internal class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
     where TTuple : struct, ISpaceTuple
     where TTemplate : struct, ISpaceTemplate
 {
@@ -131,14 +117,14 @@ public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate
     }
 }
 
-public class TestObserver<T> : SpaceObserver<T>
+internal class TestSpaceObserver<T> : SpaceObserver<T>
     where T : struct, ISpaceTuple
 {
     public T LastExpansionTuple { get; protected set; } = new();
     public T LastContractionTuple { get; protected set; } = new();
     public bool HasFlattened { get; protected set; }
 
-    public TestObserver() => ListenTo(Everything);
+    public TestSpaceObserver() => ListenTo(Everything);
 
     public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
     {
@@ -159,7 +145,7 @@ public class TestObserver<T> : SpaceObserver<T>
     }
 }
 
-public class ThrowingObserver<T> : TestObserver<T>
+internal class ThrowingObserver<T> : TestSpaceObserver<T>
      where T : struct, ISpaceTuple
 {
     public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
@@ -168,7 +154,43 @@ public class ThrowingObserver<T> : TestObserver<T>
     }
 }
 
-public static class AssertHelpers
+internal class TestAsyncObserver<T> : IAsyncObserver<TupleAction<T>>
+    where T : struct, ISpaceTuple
+{
+    public T LastExpansionTuple { get; private set; } = new();
+    public T LastContractionTuple { get; private set; } = new();
+    public bool HasFlattened { get; private set; }
+
+    public Task OnNextAsync(TupleAction<T> action, StreamSequenceToken? token)
+    {
+        if (action.Type == TupleActionType.Insert)
+        {
+            LastExpansionTuple = action.Tuple;
+        }
+        else if (action.Type == TupleActionType.Remove)
+        {
+            LastContractionTuple = action.Tuple;
+        }
+        else if (action.Type == TupleActionType.Clean)
+        {
+            HasFlattened = true;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnCompletedAsync() => Task.CompletedTask;
+    public Task OnErrorAsync(Exception ex) => Task.CompletedTask;
+
+    public void Reset()
+    {
+        LastExpansionTuple = new();
+        LastContractionTuple = new();
+        HasFlattened = false;
+    }
+}
+
+internal static class AssertHelpers
 {
     public static void AssertEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.Equal(0, tuple.Length);
     public static void AssertNotEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.NotEqual(0, tuple.Length);

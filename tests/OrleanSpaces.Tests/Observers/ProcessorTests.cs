@@ -20,9 +20,9 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     {
         using var scope = fixture.StartScope();
 
-        scope.AddObserver(new TestObserver<SpaceTuple>());
-        scope.AddObserver(new TestObserver<SpaceTuple>());
-        scope.AddObserver(new TestObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
 
         SpaceTuple tuple = new(1);
 
@@ -56,9 +56,9 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     {
         using var scope = fixture.StartScope();
 
-        scope.AddObserver(new TestObserver<SpaceTuple>());
-        scope.AddObserver(new TestObserver<SpaceTuple>());
-        scope.AddObserver(new TestObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
+        scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
 
         TupleAction<SpaceTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clean);
         await channel.Writer.WriteAsync(cleanAction);
@@ -109,9 +109,9 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
     {
         using var scope = fixture.StartScope();
 
-        scope.AddObserver(new TestObserver<IntTuple>());
-        scope.AddObserver(new TestObserver<IntTuple>());
-        scope.AddObserver(new TestObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
 
         IntTuple tuple = new(1);
 
@@ -145,9 +145,9 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
     {
         using var scope = fixture.StartScope();
 
-        scope.AddObserver(new TestObserver<IntTuple>());
-        scope.AddObserver(new TestObserver<IntTuple>());
-        scope.AddObserver(new TestObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
+        scope.AddObserver(new TestSpaceObserver<IntTuple>());
 
         TupleAction<IntTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clean);
         await channel.Writer.WriteAsync(cleanAction);
@@ -186,9 +186,9 @@ public class TestObserverScope<T> : IDisposable
     where T : struct, ISpaceTuple
 {
     private readonly ObserverRegistry<T> registry;
-    private readonly Dictionary<Guid, TestObserver<T>> localRegistry;
+    private readonly Dictionary<Guid, TestSpaceObserver<T>> localRegistry;
 
-    public IEnumerable<TestObserver<T>> Observers => localRegistry.Values;
+    public IEnumerable<TestSpaceObserver<T>> Observers => localRegistry.Values;
 
     internal TestObserverScope(ObserverRegistry<T> registry)
     {
@@ -196,9 +196,9 @@ public class TestObserverScope<T> : IDisposable
         this.localRegistry = new();
     }
 
-    public int TotalInvoked(Func<TestObserver<T>, bool> func) => Observers.Count(observer => func(observer));
+    public int TotalInvoked(Func<TestSpaceObserver<T>, bool> func) => Observers.Count(observer => func(observer));
 
-    public void AddObserver(TestObserver<T> observer)
+    public void AddObserver(TestSpaceObserver<T> observer)
     {
         localRegistry.Add(Guid.NewGuid(), observer);
         registry.Add(observer);

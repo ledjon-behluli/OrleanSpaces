@@ -10,49 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Agents;
 
-internal class AgentProvider<T, TTuple, TTemplate> : ISpaceAgentProvider<T, TTuple, TTemplate>
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
-{
-    private static readonly SemaphoreSlim semaphore = new(1, 1);
-
-    private readonly ITupleStore<TTuple> store;
-    private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
-
-    private bool initialized;
-
-    public AgentProvider(
-        ITupleStore<TTuple> store,
-        ISpaceAgent<T, TTuple, TTemplate> agent)
-    {
-        this.store = store;
-        this.agent = agent;
-    }
-
-    public async ValueTask<ISpaceAgent<T, TTuple, TTemplate>> GetAsync()
-    {
-        if (initialized)
-        {
-            return agent;
-        }
-
-        await semaphore.WaitAsync();
-
-        try
-        {
-            await agent.InitializeAsync(store);
-            initialized = true;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-
-        return agent;
-    }
-}
-
 internal class Agent<T, TTuple, TTemplate> : 
     ISpaceAgent<T, TTuple, TTemplate>,
     ITupleRouter<TTuple, TTemplate>,
@@ -111,12 +68,24 @@ internal class Agent<T, TTuple, TTemplate> :
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
+            return;
         }
-        else
+
+        if (action.Type == TupleActionType.Remove)
         {
             if (action.AgentId != agentId)
             {
                 tuples.Remove(action.Tuple);
+            }
+
+            return;
+        }
+
+        if (action.Type == TupleActionType.Clean)
+        {
+            if (action.AgentId != agentId)
+            {
+                tuples.Clear();
             }
         }
     }
@@ -225,7 +194,54 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
-    public Task ClearAsync() => store.RemoveAll();
+    public async Task ClearAsync()
+    {
+        await store.RemoveAll(agentId);
+        tuples.Clear();
+    }
 
     #endregion
+}
+
+internal class AgentProvider<T, TTuple, TTemplate> : ISpaceAgentProvider<T, TTuple, TTemplate>
+    where T : unmanaged
+    where TTuple : ISpaceTuple<T>
+    where TTemplate : ISpaceTemplate<T>
+{
+    private static readonly SemaphoreSlim semaphore = new(1, 1);
+
+    private readonly ITupleStore<TTuple> store;
+    private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
+
+    private bool initialized;
+
+    public AgentProvider(
+        ITupleStore<TTuple> store,
+        ISpaceAgent<T, TTuple, TTemplate> agent)
+    {
+        this.store = store;
+        this.agent = agent;
+    }
+
+    public async ValueTask<ISpaceAgent<T, TTuple, TTemplate>> GetAsync()
+    {
+        if (initialized)
+        {
+            return agent;
+        }
+
+        await semaphore.WaitAsync();
+
+        try
+        {
+            await agent.InitializeAsync(store);
+            initialized = true;
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+
+        return agent;
+    }
 }

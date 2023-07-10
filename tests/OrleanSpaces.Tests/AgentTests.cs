@@ -42,7 +42,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public void Should_Handle_Observer_Subscriptions()
     {
-        TestObserver observer = new();
+        TestSpaceObserver observer = new();
 
         // Subscribe
         Guid id = agent.Subscribe(observer);
@@ -66,7 +66,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     {
         ToggleChannelConsumerState(observerChannel);
 
-        Assert.Throws<InvalidOperationException>(() => agent.Subscribe(new TestObserver()));
+        Assert.Throws<InvalidOperationException>(() => agent.Subscribe(new TestSpaceObserver()));
         Assert.Throws<InvalidOperationException>(() => agent.Unsubscribe(Guid.NewGuid()));
 
         ToggleChannelConsumerState(observerChannel);

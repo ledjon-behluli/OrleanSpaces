@@ -15,11 +15,11 @@ public static class Extensions
     /// Configures the tuple space on the <see cref="IClientBuilder"/>.
     /// </summary>
     /// <param name="builder">The orleans client builder.</param>
-    /// <param name="action">An optional delegate to configure the <see cref="SpaceOptions"/></param>
-    public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceOptions>? action = null)
+    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceOptions"/></param>
+    public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceOptions>? configureOptions = null)
     {
         SpaceOptions options = new();
-        action?.Invoke(options);
+        configureOptions?.Invoke(options);
 
         builder.Services.AddSingleton(options);
 

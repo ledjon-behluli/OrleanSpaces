@@ -67,12 +67,24 @@ internal sealed class SpaceAgent :
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
+            return;
         }
-        else
+
+        if (action.Type == TupleActionType.Remove)
         {
             if (action.AgentId != agentId)
             {
                 tuples.Remove(action.Tuple);
+            }
+
+            return;
+        }
+
+        if (action.Type == TupleActionType.Clean)
+        {
+            if (action.AgentId != agentId)
+            {
+                tuples.Clear();
             }
         }
     }
@@ -181,7 +193,11 @@ internal sealed class SpaceAgent :
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
-    public Task ClearAsync() => grain.RemoveAll();
+    public async Task ClearAsync()
+    {
+        await grain.RemoveAll(agentId);
+        tuples.Clear();
+    }
 
     private SpaceTuple FindTuple(SpaceTemplate template)
     {

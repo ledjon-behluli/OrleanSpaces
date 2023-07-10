@@ -39,7 +39,7 @@ public class DecoratorTests
         Assert.True(observer.HasFlattened);
     }
 
-    private class MutedObserver : TestObserver<SpaceTuple>
+    private class MutedObserver : TestSpaceObserver<SpaceTuple>
     {
         public MutedObserver() => ListenTo(Nothing);
     }

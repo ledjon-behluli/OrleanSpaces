@@ -8,11 +8,6 @@ namespace OrleanSpaces.Helpers;
 internal static class OrleansHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IAsyncStream<TupleAction<T>> GetStream<T>(this Grain grain, StreamId streamId)
-        where T : ISpaceTuple
-        => grain.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task SubscribeAsync<T>(this IClusterClient client, IAsyncObserver<TupleAction<T>> observer, StreamId streamId)
         where T : ISpaceTuple
     {
