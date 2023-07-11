@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples.Specialized;
 using OrleanSpaces.Tuples;
 
-namespace OrleanBools.Tests.Tuples;
+namespace OrleanSpaces.Tests.Tuples;
 
 public class LongTupleTests
 {

@@ -25,7 +25,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     {
         SpaceTuple tuple = new(1);
         await callbackChannel.Writer.WriteAsync(tuple);
-
+        
         continuationChannel.TupleReader.TryRead(out SpaceTuple result);
 
         result.AssertEmpty();
@@ -53,7 +53,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     [Fact]
     public void Should_Throw_If_Callback_Throws()
     {
-        options.HandleCallbackExceptions = true;
+        options.HandleCallbackExceptions = false;
 
         SpaceTuple tuple = new(1);
         SpaceTemplate template = new(1, 2);
@@ -62,7 +62,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
 
         _ = Assert.ThrowsAsync<Exception>(async () => await callbackChannel.Writer.WriteAsync(tuple));
 
-        options.HandleEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = true;
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
     [Fact]
     public void Should_Throw_If_Callback_Throws()
     {
-        options.HandleCallbackExceptions = true;
+        options.HandleCallbackExceptions = false;
 
         IntTuple tuple = new(1);
         IntTemplate template = new(1, 2);
@@ -173,7 +173,7 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
 
         _ = Assert.ThrowsAsync<Exception>(async () => await callbackChannel.Writer.WriteAsync(tuple));
 
-        options.HandleEvaluationExceptions = false;
+        options.HandleEvaluationExceptions = true;
     }
 
     [Fact]
