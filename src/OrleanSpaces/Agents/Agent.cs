@@ -7,6 +7,7 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
 
@@ -24,7 +25,9 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
-    [AllowNull] private ITupleStore<TTuple> store;
+    [AllowNull] private ITupleStore<TTuple> tupleStore;
+    
+    private Channel<TTuple>? streamChannel;
     private HashSet<TTuple> tuples = new();
 
     public Agent(
@@ -49,7 +52,7 @@ internal class Agent<T, TTuple, TTemplate> :
         StreamId streamId = await store.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
-        this.store = store;
+        this.tupleStore = store;
     }
 
     #region IAsyncObserver
@@ -66,6 +69,12 @@ internal class Agent<T, TTuple, TTemplate> :
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
+
+            if (streamChannel is not null)
+            {
+                await streamChannel.Writer.WriteAsync(action.Tuple);
+            }
+
             return;
         }
 
@@ -111,7 +120,7 @@ internal class Agent<T, TTuple, TTemplate> :
     public async Task WriteAsync(TTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        await store.Insert(new(agentId, tuple, TupleActionType.Insert));
+        await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         tuples.Add(tuple);
     }
 
@@ -149,7 +158,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
         if (tuple.Length > 0)
         {
-            await store.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -165,7 +174,7 @@ internal class Agent<T, TTuple, TTemplate> :
         if (tuple.Length > 0)
         {
             await callback(tuple);
-            await store.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }
@@ -190,11 +199,33 @@ internal class Agent<T, TTuple, TTemplate> :
         return new(result);
     }
 
+    public async IAsyncEnumerable<TTuple> ConsumeAsync()
+    {
+        if (streamChannel is null)
+        {
+            streamChannel = Channel.CreateUnbounded<TTuple>(new()
+            {
+                SingleReader = true,
+                SingleWriter = true
+            });
+
+            foreach (var tuple in tuples)
+            {
+                _ = streamChannel.Writer.TryWrite(tuple); // will always be able to write to the channel
+            }
+        }
+
+        await foreach (TTuple tuple in streamChannel.Reader.ReadAllAsync())
+        {
+            yield return tuple;
+        }
+    }
+
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
     public async Task ClearAsync()
     {
-        await store.RemoveAll(agentId);
+        await tupleStore.RemoveAll(agentId);
         tuples.Clear();
     }
 

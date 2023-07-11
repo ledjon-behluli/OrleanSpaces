@@ -23,17 +23,36 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
 var agent1 = await provider1.GetAsync();
 
-await agent1.EvaluateAsync(async () =>
-{
-    await Task.Delay(1);
-    return new SpaceTuple();
-});
-
 SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
 
-await agent1.WriteAsync(s_tuple1);
-await agent1.WriteAsync(s_tuple1);
+//await agent1.WriteAsync(s_tuple1);
+
+_ = Task.Run(async () =>
+{
+    await foreach (var tuple in agent1.ConsumeAsync())
+    {
+        Console.WriteLine($"PROD1: {tuple}");
+    }
+});
+
+_ = Task.Run(async () =>
+{
+    await foreach (var tuple in agent1.ConsumeAsync())
+    {
+        Console.WriteLine($"PROD2: {tuple}");
+    }
+});
+
+int i = 0;
+while (true)
+{
+    await agent1.WriteAsync(new(i));
+    await Task.Delay(1000);
+
+    i++;
+}
+
 
 var t1 = await agent1.PopAsync(s_template1);
 

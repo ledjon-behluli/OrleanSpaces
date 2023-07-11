@@ -19,12 +19,6 @@ internal sealed class SpaceAgent :
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>(new()
-    {
-        SingleReader = true,
-        SingleWriter = true
-    });
-
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
@@ -32,9 +26,11 @@ internal sealed class SpaceAgent :
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
 
-    [AllowNull] private ISpaceGrain grain;
-    private List<SpaceTuple> tuples = new();
-
+    [AllowNull] private ISpaceGrain spaceGrain;
+    
+    private Channel<SpaceTuple>? streamChannel;
+    private HashSet<SpaceTuple> tuples = new();
+  
     public SpaceAgent(
         IClusterClient client,
         CallbackRegistry callbackRegistry,
@@ -53,11 +49,11 @@ internal sealed class SpaceAgent :
 
     public async Task InitializeAsync(ISpaceGrain grain)
     {
-        tuples = (await grain.GetAll()).ToList();
+        tuples = (await grain.GetAll()).ToHashSet();
         StreamId streamId = await grain.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
-        this.grain = grain;
+        this.spaceGrain = grain;
     }
 
     #region IAsyncObserver
@@ -74,6 +70,12 @@ internal sealed class SpaceAgent :
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
+
+            if (streamChannel is not null)
+            {
+                await streamChannel.Writer.WriteAsync(action.Tuple);
+            }
+
             return;
         }
 
@@ -119,7 +121,7 @@ internal sealed class SpaceAgent :
     public async Task WriteAsync(SpaceTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        await grain.Insert(new(agentId, tuple, TupleActionType.Insert));
+        await spaceGrain.Insert(new(agentId, tuple, TupleActionType.Insert));
         tuples.Add(tuple);
     }
 
@@ -157,7 +159,7 @@ internal sealed class SpaceAgent :
 
         if (tuple.Length > 0)
         {
-            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
             tuples.Remove(tuple);
         }
 
@@ -173,7 +175,7 @@ internal sealed class SpaceAgent :
         if (tuple.Length > 0)
         {
             await callback(tuple);
-            await grain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
 
             tuples.Remove(tuple);
         }
@@ -198,16 +200,33 @@ internal sealed class SpaceAgent :
         return new(result);
     }
 
-    public IAsyncEnumerable<SpaceTuple> ConsumeAsync()
+    public async IAsyncEnumerable<SpaceTuple> ConsumeAsync()
     {
+        if (streamChannel is null)
+        {
+            streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
+            {
+                SingleReader = true,
+                SingleWriter = true
+            });
 
+            foreach (var tuple in tuples)
+            {
+                _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+            }
+        }
+
+        await foreach(SpaceTuple tuple in streamChannel.Reader.ReadAllAsync())
+        {
+            yield return tuple;
+        }
     }
 
     public ValueTask<int> CountAsync() => new(tuples.Count);
 
     public async Task ClearAsync()
     {
-        await grain.RemoveAll(agentId);
+        await spaceGrain.RemoveAll(agentId);
         tuples.Clear();
     }
 
