@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DateTimeTuple :
+public readonly record struct DateTimeTuple :
     IEquatable<DateTimeTuple>,
     ISpaceTuple<DateTime>,
     ISpaceFactory<DateTime, DateTimeTuple>,
@@ -20,9 +20,6 @@ public readonly struct DateTimeTuple :
     public DateTimeTuple([AllowNull] params DateTime[] fields)
         => this.fields = fields is null ? Array.Empty<DateTime>() : fields;
 
-    public static bool operator ==(DateTimeTuple left, DateTimeTuple right) => left.Equals(right);
-    public static bool operator !=(DateTimeTuple left, DateTimeTuple right) => !(left == right);
-
     public DateTimeTemplate ToTemplate()
     {
         int length = Length;
@@ -35,8 +32,6 @@ public readonly struct DateTimeTuple :
 
         return new DateTimeTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is DateTimeTuple tuple && Equals(tuple);
 
     public bool Equals(DateTimeTuple other)
     {
@@ -53,7 +48,10 @@ public readonly struct DateTimeTuple :
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }
 
-public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>, ISpaceMatchable<DateTime, DateTimeTuple>
+public readonly record struct DateTimeTemplate : 
+    IEquatable<DateTimeTemplate>,
+    ISpaceTemplate<DateTime>, 
+    ISpaceMatchable<DateTime, DateTimeTuple>
 {
     private readonly DateTime?[] fields;
 
@@ -64,8 +62,11 @@ public readonly record struct DateTimeTemplate : ISpaceTemplate<DateTime>, ISpac
     public DateTimeTemplate([AllowNull] params DateTime?[] fields) =>
         this.fields = fields is null ? Array.Empty<DateTime?>() : fields;
 
-    public bool Matches(DateTimeTuple tuple) => SpaceHelpers.Matches<DateTime, DateTimeTuple>(this, tuple);
+    public bool Matches(DateTimeTuple tuple) => this.Matches<DateTime, DateTimeTuple>(tuple);
+    public bool Equals(DateTimeTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<DateTime?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime?>(fields).GetEnumerator();
 }

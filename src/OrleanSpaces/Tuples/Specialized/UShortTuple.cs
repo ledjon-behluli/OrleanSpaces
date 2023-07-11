@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UShortTuple :
+public readonly record struct UShortTuple :
     IEquatable<UShortTuple>,
     INumericTuple<ushort>, 
     ISpaceFactory<ushort, UShortTuple>,
@@ -22,9 +22,6 @@ public readonly struct UShortTuple :
     public UShortTuple([AllowNull] params ushort[] fields)
         => this.fields = fields is null ? Array.Empty<ushort>() : fields;
 
-    public static bool operator ==(UShortTuple left, UShortTuple right) => left.Equals(right);
-    public static bool operator !=(UShortTuple left, UShortTuple right) => !(left == right);
-
     public UShortTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct UShortTuple :
         return new UShortTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is UShortTuple tuple && Equals(tuple);
     public bool Equals(UShortTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct UShortTuple :
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
-public readonly record struct UShortTemplate : ISpaceTemplate<ushort>, ISpaceMatchable<ushort, UShortTuple>
+public readonly record struct UShortTemplate :
+    IEquatable<UShortTemplate>,
+    ISpaceTemplate<ushort>, 
+    ISpaceMatchable<ushort, UShortTuple>
 {
     private readonly ushort?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct UShortTemplate : ISpaceTemplate<ushort>, ISpaceMat
     public UShortTemplate([AllowNull] params ushort?[] fields)
         => this.fields = fields is null ? Array.Empty<ushort?>() : fields;
 
-    public bool Matches(UShortTuple tuple) => SpaceHelpers.Matches<ushort, UShortTuple>(this, tuple);
+    public bool Matches(UShortTuple tuple) => this.Matches<ushort, UShortTuple>(tuple);
+    public bool Equals(UShortTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<ushort?>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort?>(fields).GetEnumerator();
 }

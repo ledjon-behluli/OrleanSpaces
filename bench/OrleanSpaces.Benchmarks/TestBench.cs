@@ -17,18 +17,12 @@ public class TestBench
     [Benchmark]
     public void ToTemplate()
     {
-        for (int i = 0; i < Iterations; i++)
-        {
-            IntTemplate tem = inttuple.ToTemplate();
-        }    
+      
     }
 
     [Benchmark]
     public void ToTemplateCopy()
     {
-        for (int i = 0; i < Iterations; i++)
-        {
-            IntTemplate tem = inttuple.ToTemplateCopy();
-        }
+      
     }
 }

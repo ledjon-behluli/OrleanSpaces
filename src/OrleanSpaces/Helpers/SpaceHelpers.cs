@@ -176,7 +176,33 @@ internal static class SpaceHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T, TTuple>(ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
+    public static bool SequentialEquals<T>(this ISpaceTemplate<T> left, ISpaceTemplate<T> right)
+        where T : unmanaged
+    {
+        int length = left.Length;
+        if (length != right.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < length; i++)
+        {
+            ref readonly T? iLeft = ref left[i];
+            ref readonly T? iRight = ref right[i];
+
+            if ((iLeft is null && iRight is not null) ||
+                (iLeft is not null && iLeft is null) ||
+                !iLeft.Equals(iRight))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Matches<T, TTuple>(this ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
         where T : unmanaged
         where TTuple : ISpaceTuple<T>, IEquatable<TTuple>, ISpaceFactory<T, TTuple>
     {

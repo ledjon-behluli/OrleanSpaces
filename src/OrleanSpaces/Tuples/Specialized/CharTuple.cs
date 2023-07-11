@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct CharTuple :
+public readonly record struct CharTuple :
     IEquatable<CharTuple>,
     ISpaceTuple<char>, 
     ISpaceFactory<char, CharTuple>,
@@ -20,9 +20,6 @@ public readonly struct CharTuple :
     public CharTuple([AllowNull] params char[] fields)
         => this.fields = fields is null ? Array.Empty<char>() : fields;
 
-    public static bool operator ==(CharTuple left, CharTuple right) => left.Equals(right);
-    public static bool operator !=(CharTuple left, CharTuple right) => !(left == right);
-
     public CharTemplate ToTemplate()
     {
         int length = Length;
@@ -35,8 +32,6 @@ public readonly struct CharTuple :
 
         return new CharTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is CharTuple tuple && Equals(tuple);
 
     public bool Equals(CharTuple other)
     {
@@ -63,7 +58,10 @@ public readonly struct CharTuple :
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
-public readonly record struct CharTemplate : ISpaceTemplate<char>, ISpaceMatchable<char, CharTuple>
+public readonly record struct CharTemplate : 
+    IEquatable<CharTemplate>,
+    ISpaceTemplate<char>, 
+    ISpaceMatchable<char, CharTuple>
 {
     private readonly char?[] fields;
 
@@ -73,8 +71,11 @@ public readonly record struct CharTemplate : ISpaceTemplate<char>, ISpaceMatchab
     public CharTemplate() => fields = Array.Empty<char?>();
     public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;
 
-    public bool Matches(CharTuple tuple) => SpaceHelpers.Matches<char, CharTuple>(this, tuple);
+    public bool Matches(CharTuple tuple) => this.Matches<char, CharTuple>(tuple);
+    public bool Equals(CharTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();
 }

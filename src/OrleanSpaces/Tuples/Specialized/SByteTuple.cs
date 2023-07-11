@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct SByteTuple :
+public readonly record struct SByteTuple :
     IEquatable<SByteTuple>,
     INumericTuple<sbyte>, 
     ISpaceFactory<sbyte, SByteTuple>,
@@ -22,9 +22,6 @@ public readonly struct SByteTuple :
     public SByteTuple([AllowNull] params sbyte[] fields)
         => this.fields = fields is null ? Array.Empty<sbyte>() : fields;
 
-    public static bool operator ==(SByteTuple left, SByteTuple right) => left.Equals(right);
-    public static bool operator !=(SByteTuple left, SByteTuple right) => !(left == right);
-
     public SByteTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct SByteTuple :
         return new SByteTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is SByteTuple tuple && Equals(tuple);
     public bool Equals(SByteTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct SByteTuple :
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 
-public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>, ISpaceMatchable<sbyte, SByteTuple>
+public readonly record struct SByteTemplate : 
+    IEquatable<SByteTemplate>,
+    ISpaceTemplate<sbyte>, 
+    ISpaceMatchable<sbyte, SByteTuple>
 {
     private readonly sbyte?[] fields;
 
@@ -62,9 +61,12 @@ public readonly record struct SByteTemplate : ISpaceTemplate<sbyte>, ISpaceMatch
     public SByteTemplate([AllowNull] params sbyte?[] fields)
         => this.fields = fields is null ? Array.Empty<sbyte?>() : fields;
 
-    public bool Matches(SByteTuple tuple) => SpaceHelpers.Matches<sbyte, SByteTuple>(this, tuple);
+    public bool Matches(SByteTuple tuple) => this.Matches<sbyte, SByteTuple>(tuple);
+    public bool Equals(SByteTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();
 }
 

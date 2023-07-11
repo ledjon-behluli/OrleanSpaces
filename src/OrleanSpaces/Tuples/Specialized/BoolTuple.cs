@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct BoolTuple :
+public readonly record struct BoolTuple :
     IEquatable<BoolTuple>,
     ISpaceTuple<bool>,
     ISpaceFactory<bool, BoolTuple>,
@@ -20,9 +20,6 @@ public readonly struct BoolTuple :
     public BoolTuple([AllowNull] params bool[] fields)
         => this.fields = fields is null ? Array.Empty<bool>() : fields;
 
-    public static bool operator ==(BoolTuple left, BoolTuple right) => left.Equals(right);
-    public static bool operator !=(BoolTuple left, BoolTuple right) => !(left == right);
-
     public BoolTemplate ToTemplate()
     {
         int length = Length;
@@ -35,8 +32,6 @@ public readonly struct BoolTuple :
 
         return new BoolTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is BoolTuple tuple && Equals(tuple);
 
     public bool Equals(BoolTuple other)
     {
@@ -85,7 +80,10 @@ public readonly struct BoolTuple :
     }
 }
 
-public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ISpaceMatchable<bool, BoolTuple>
+public readonly record struct BoolTemplate : 
+    IEquatable<BoolTemplate>, 
+    ISpaceTemplate<bool>,
+    ISpaceMatchable<bool, BoolTuple>
 {
     private readonly bool?[] fields;
 
@@ -96,8 +94,12 @@ public readonly record struct BoolTemplate : ISpaceTemplate<bool>, ISpaceMatchab
     public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields is null ? Array.Empty<bool?>() : fields;
 
-    public bool Matches(BoolTuple tuple) => SpaceHelpers.Matches<bool, BoolTuple>(this, tuple);
+    public bool Matches(BoolTuple tuple) => this.Matches<bool, BoolTuple>(tuple);
+    public bool Equals(BoolTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
+
 }

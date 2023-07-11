@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UHugeTuple :
+public readonly record struct UHugeTuple :
     IEquatable<UHugeTuple>,
     INumericTuple<UInt128>, 
     ISpaceFactory<UInt128, UHugeTuple>,
@@ -24,9 +24,6 @@ public readonly struct UHugeTuple :
     public UHugeTuple([AllowNull] params UInt128[] fields)
         => this.fields = fields is null ? Array.Empty<UInt128>() : fields;
 
-    public static bool operator ==(UHugeTuple left, UHugeTuple right) => left.Equals(right);
-    public static bool operator !=(UHugeTuple left, UHugeTuple right) => !(left == right);
-
     public UHugeTemplate ToTemplate()
     {
         int length = Length;
@@ -40,7 +37,6 @@ public readonly struct UHugeTuple :
         return new UHugeTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is UHugeTuple tuple && Equals(tuple);
     public bool Equals(UHugeTuple other)
     {
         if (Length != other.Length)
@@ -101,7 +97,10 @@ public readonly struct UHugeTuple :
     }
 }
 
-public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>, ISpaceMatchable<UInt128, UHugeTuple>
+public readonly record struct UHugeTemplate : 
+    IEquatable<UHugeTemplate>,
+    ISpaceTemplate<UInt128>, 
+    ISpaceMatchable<UInt128, UHugeTuple>
 {
     private readonly UInt128?[] fields;
 
@@ -112,8 +111,11 @@ public readonly record struct UHugeTemplate : ISpaceTemplate<UInt128>, ISpaceMat
     public UHugeTemplate([AllowNull] params UInt128?[] fields)
         => this.fields = fields is null ? Array.Empty<UInt128?>() : fields;
 
-    public bool Matches(UHugeTuple tuple) => SpaceHelpers.Matches<UInt128, UHugeTuple>(this, tuple);
+    public bool Matches(UHugeTuple tuple) => this.Matches<UInt128, UHugeTuple>(tuple);
+    public bool Equals(UHugeTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128?>(fields).GetEnumerator();
 }

@@ -6,7 +6,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DecimalTuple :
+public readonly record struct DecimalTuple :
     IEquatable<DecimalTuple>,
     ISpaceTuple<decimal>,
     ISpaceFactory<decimal, DecimalTuple>,
@@ -21,9 +21,6 @@ public readonly struct DecimalTuple :
     public DecimalTuple([AllowNull] params decimal[] fields)
         => this.fields = fields is null ? Array.Empty<decimal>() : fields;
 
-    public static bool operator ==(DecimalTuple left, DecimalTuple right) => left.Equals(right);
-    public static bool operator !=(DecimalTuple left, DecimalTuple right) => !(left == right);
-
     public DecimalTemplate ToTemplate()
     {
         int length = Length;
@@ -36,8 +33,6 @@ public readonly struct DecimalTuple :
 
         return new DecimalTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is DecimalTuple tuple && Equals(tuple);
 
     public bool Equals(DecimalTuple other)
     {
@@ -106,7 +101,10 @@ public readonly struct DecimalTuple :
     }
 }
 
-public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ISpaceMatchable<decimal, DecimalTuple>
+public readonly record struct DecimalTemplate :
+    IEquatable<DecimalTemplate>,
+    ISpaceTemplate<decimal>, 
+    ISpaceMatchable<decimal, DecimalTuple>
 {
     private readonly decimal?[] fields;
 
@@ -117,8 +115,11 @@ public readonly record struct DecimalTemplate : ISpaceTemplate<decimal>, ISpaceM
     public DecimalTemplate([AllowNull] params decimal?[] fields)
         => this.fields = fields is null ? Array.Empty<decimal?>() : fields;
 
-    public bool Matches(DecimalTuple tuple) => SpaceHelpers.Matches<decimal, DecimalTuple>(this, tuple);
+    public bool Matches(DecimalTuple tuple) => this.Matches<decimal, DecimalTuple>(tuple);
+    public bool Equals(DecimalTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
 }

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct TimeSpanTuple :
+public readonly record struct TimeSpanTuple :
     IEquatable<TimeSpanTuple>,
     ISpaceTuple<TimeSpan>, 
     ISpaceFactory<TimeSpan, TimeSpanTuple>,
@@ -20,9 +20,6 @@ public readonly struct TimeSpanTuple :
     public TimeSpanTuple([AllowNull] params TimeSpan[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan>() : fields;
 
-    public static bool operator ==(TimeSpanTuple left, TimeSpanTuple right) => left.Equals(right);
-    public static bool operator !=(TimeSpanTuple left, TimeSpanTuple right) => !(left == right);
-
     public TimeSpanTemplate ToTemplate()
     {
         int length = Length;
@@ -35,8 +32,6 @@ public readonly struct TimeSpanTuple :
 
         return new TimeSpanTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is TimeSpanTuple tuple && Equals(tuple);
 
     public bool Equals(TimeSpanTuple other)
     {
@@ -53,7 +48,10 @@ public readonly struct TimeSpanTuple :
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }
 
-public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>, ISpaceMatchable<TimeSpan, TimeSpanTuple>
+public readonly record struct TimeSpanTemplate : 
+    IEquatable<TimeSpanTemplate>,
+    ISpaceTemplate<TimeSpan>, 
+    ISpaceMatchable<TimeSpan, TimeSpanTuple>
 {
     private readonly TimeSpan?[] fields;
 
@@ -64,8 +62,11 @@ public readonly record struct TimeSpanTemplate : ISpaceTemplate<TimeSpan>, ISpac
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan?>() : fields;
 
-    public bool Matches(TimeSpanTuple tuple) => SpaceHelpers.Matches<TimeSpan, TimeSpanTuple>(this, tuple);
+    public bool Matches(TimeSpanTuple tuple) => this.Matches<TimeSpan, TimeSpanTuple>(tuple);
+    public bool Equals(TimeSpanTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();
 }

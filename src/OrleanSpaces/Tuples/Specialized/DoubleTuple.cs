@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DoubleTuple :
+public readonly record struct DoubleTuple :
     IEquatable<DoubleTuple>,
     INumericTuple<double>,
     ISpaceFactory<double, DoubleTuple>,
@@ -22,9 +22,6 @@ public readonly struct DoubleTuple :
     public DoubleTuple([AllowNull] params double[] fields)
         => this.fields = fields is null ? Array.Empty<double>() : fields;
 
-    public static bool operator ==(DoubleTuple left, DoubleTuple right) => left.Equals(right);
-    public static bool operator !=(DoubleTuple left, DoubleTuple right) => !(left == right);
-
     public DoubleTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct DoubleTuple :
         return new DoubleTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is DoubleTuple tuple && Equals(tuple);
     public bool Equals(DoubleTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct DoubleTuple :
     public ReadOnlySpan<double>.Enumerator GetEnumerator() => new ReadOnlySpan<double>(fields).GetEnumerator();
 }
 
-public readonly record struct DoubleTemplate : ISpaceTemplate<double>, ISpaceMatchable<double, DoubleTuple>
+public readonly record struct DoubleTemplate : 
+    IEquatable<DoubleTemplate>,
+    ISpaceTemplate<double>, 
+    ISpaceMatchable<double, DoubleTuple>
 {
     private readonly double?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct DoubleTemplate : ISpaceTemplate<double>, ISpaceMat
     public DoubleTemplate([AllowNull] params double?[] fields)
         => this.fields = fields is null ? Array.Empty<double?>() : fields;
 
-    public bool Matches(DoubleTuple tuple) => SpaceHelpers.Matches<double, DoubleTuple>(this, tuple);
+    public bool Matches(DoubleTuple tuple) => this.Matches<double, DoubleTuple>(tuple);
+    public bool Equals(DoubleTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<double?>.Enumerator GetEnumerator() => new ReadOnlySpan<double?>(fields).GetEnumerator();
 }

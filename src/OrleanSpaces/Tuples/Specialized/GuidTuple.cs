@@ -6,7 +6,7 @@ using System.Runtime.Intrinsics;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct GuidTuple :
+public readonly record struct GuidTuple :
     IEquatable<GuidTuple>,
     ISpaceTuple<Guid>, 
     ISpaceFactory<Guid, GuidTuple>,
@@ -21,9 +21,6 @@ public readonly struct GuidTuple :
     public GuidTuple([AllowNull] params Guid[] fields)
         => this.fields = fields is null ? Array.Empty<Guid>() : fields;
 
-    public static bool operator ==(GuidTuple left, GuidTuple right) => left.Equals(right);
-    public static bool operator !=(GuidTuple left, GuidTuple right) => !(left == right);
-
     public GuidTemplate ToTemplate()
     {
         int length = Length;
@@ -37,7 +34,6 @@ public readonly struct GuidTuple :
         return new GuidTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is GuidTuple tuple && Equals(tuple);
 
     public bool Equals(GuidTuple other)
     {
@@ -77,7 +73,10 @@ public readonly struct GuidTuple :
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
-public readonly record struct GuidTemplate : ISpaceTemplate<Guid>, ISpaceMatchable<Guid, GuidTuple>
+public readonly record struct GuidTemplate : 
+    IEquatable<GuidTemplate>,
+    ISpaceTemplate<Guid>, 
+    ISpaceMatchable<Guid, GuidTuple>
 {
     private readonly Guid?[] fields;
 
@@ -88,8 +87,11 @@ public readonly record struct GuidTemplate : ISpaceTemplate<Guid>, ISpaceMatchab
     public GuidTemplate([AllowNull] params Guid?[] fields)
         => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
 
-    public bool Matches(GuidTuple tuple) => SpaceHelpers.Matches<Guid, GuidTuple>(this, tuple);
+    public bool Matches(GuidTuple tuple) => this.Matches<Guid, GuidTuple>(tuple);
+    public bool Equals(GuidTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
 }

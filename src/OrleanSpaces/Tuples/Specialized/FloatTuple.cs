@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct FloatTuple :
+public readonly record struct FloatTuple :
     IEquatable<FloatTuple>,
     INumericTuple<float>, 
     ISpaceFactory<float, FloatTuple>,
@@ -22,9 +22,6 @@ public readonly struct FloatTuple :
     public FloatTuple([AllowNull] params float[] fields)
         => this.fields = fields is null ? Array.Empty<float>() : fields;
 
-    public static bool operator ==(FloatTuple left, FloatTuple right) => left.Equals(right);
-    public static bool operator !=(FloatTuple left, FloatTuple right) => !(left == right);
-
     public FloatTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct FloatTuple :
         return new FloatTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is FloatTuple tuple && Equals(tuple);
     public bool Equals(FloatTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct FloatTuple :
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }
 
-public readonly record struct FloatTemplate : ISpaceTemplate<float>, ISpaceMatchable<float, FloatTuple>
+public readonly record struct FloatTemplate : 
+    IEquatable<FloatTemplate>,
+    ISpaceTemplate<float>,
+    ISpaceMatchable<float, FloatTuple>
 {
     private readonly float?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct FloatTemplate : ISpaceTemplate<float>, ISpaceMatch
     public FloatTemplate([AllowNull] params float?[] fields)
         => this.fields = fields is null ? Array.Empty<float?>() : fields;
 
-    public bool Matches(FloatTuple tuple) => SpaceHelpers.Matches<float, FloatTuple>(this, tuple);
+    public bool Matches(FloatTuple tuple) => this.Matches<float, FloatTuple>(tuple);
+    public bool Equals(FloatTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<float?>.Enumerator GetEnumerator() => new ReadOnlySpan<float?>(fields).GetEnumerator();
 }

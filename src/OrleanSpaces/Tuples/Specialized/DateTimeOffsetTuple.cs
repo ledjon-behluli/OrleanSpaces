@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct DateTimeOffsetTuple :
+public readonly record struct DateTimeOffsetTuple :
     IEquatable<DateTimeOffsetTuple>,
     ISpaceTuple<DateTimeOffset>, 
     ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>,
@@ -20,9 +20,6 @@ public readonly struct DateTimeOffsetTuple :
     public DateTimeOffsetTuple([AllowNull] params DateTimeOffset[] fields)
         => this.fields = fields is null ? Array.Empty<DateTimeOffset>() : fields;
 
-    public static bool operator ==(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => left.Equals(right);
-    public static bool operator !=(DateTimeOffsetTuple left, DateTimeOffsetTuple right) => !(left == right);
-
     public DateTimeOffsetTemplate ToTemplate()
     {
         int length = Length;
@@ -35,8 +32,6 @@ public readonly struct DateTimeOffsetTuple :
 
         return new DateTimeOffsetTemplate(fields);
     }
-
-    public override bool Equals(object? obj) => obj is DateTimeOffsetTuple tuple && Equals(tuple);
 
     public bool Equals(DateTimeOffsetTuple other)
     {
@@ -53,7 +48,10 @@ public readonly struct DateTimeOffsetTuple :
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
-public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOffset>, ISpaceMatchable<DateTimeOffset, DateTimeOffsetTuple>
+public readonly record struct DateTimeOffsetTemplate : 
+    IEquatable<DateTimeOffsetTemplate>,
+    ISpaceTemplate<DateTimeOffset>, 
+    ISpaceMatchable<DateTimeOffset, DateTimeOffsetTuple>
 {
     private readonly DateTimeOffset?[] fields;
 
@@ -64,8 +62,11 @@ public readonly record struct DateTimeOffsetTemplate : ISpaceTemplate<DateTimeOf
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>
         this.fields = fields is null ? Array.Empty<DateTimeOffset?>() : fields;
 
-    public bool Matches(DateTimeOffsetTuple tuple) => SpaceHelpers.Matches<DateTimeOffset, DateTimeOffsetTuple>(this, tuple);
+    public bool Matches(DateTimeOffsetTuple tuple) => this.Matches<DateTimeOffset, DateTimeOffsetTuple>(tuple);
+    public bool Equals(DateTimeOffsetTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
 }

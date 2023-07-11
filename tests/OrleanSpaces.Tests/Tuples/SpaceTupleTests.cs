@@ -37,7 +37,7 @@ public class SpaceTupleTests
     [Fact]
     public void Should_Throw_If_Tuple_Contains_Null()
     {
-        Assert.Throws<ArgumentException>(() => new SpaceTuple(new object[] { null! }));
+        Assert.Throws<ArgumentNullException>(() => new SpaceTuple(new object[] { null! }));
     }
 
     [Fact]

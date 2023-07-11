@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct ByteTuple :
+public readonly record struct ByteTuple :
     IEquatable<ByteTuple>,
     INumericTuple<byte>,
     ISpaceFactory<byte, ByteTuple>,
@@ -22,9 +22,6 @@ public readonly struct ByteTuple :
     public ByteTuple([AllowNull] params byte[] fields)
         => this.fields = fields is null ? Array.Empty<byte>() : fields;
 
-    public static bool operator ==(ByteTuple left, ByteTuple right) => left.Equals(right);
-    public static bool operator !=(ByteTuple left, ByteTuple right) => !(left == right);
-
     public ByteTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct ByteTuple :
         return new ByteTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is ByteTuple tuple && Equals(tuple);
     public bool Equals(ByteTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct ByteTuple :
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }
 
-public readonly record struct ByteTemplate : ISpaceTemplate<byte>, ISpaceMatchable<byte, ByteTuple>
+public readonly record struct ByteTemplate : 
+    IEquatable<ByteTemplate>,
+    ISpaceTemplate<byte>, 
+    ISpaceMatchable<byte, ByteTuple>
 {
     private readonly byte?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct ByteTemplate : ISpaceTemplate<byte>, ISpaceMatchab
     public ByteTemplate([AllowNull] params byte?[] fields)
         => this.fields = fields is null ? Array.Empty<byte?>() : fields;
 
-    public bool Matches(ByteTuple tuple) => SpaceHelpers.Matches<byte, ByteTuple>(this, tuple);
+    public bool Matches(ByteTuple tuple) => this.Matches<byte, ByteTuple>(tuple);
+    public bool Equals(ByteTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+    
     public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();
 }

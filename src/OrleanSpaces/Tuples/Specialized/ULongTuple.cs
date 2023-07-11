@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct ULongTuple :
+public readonly record struct ULongTuple :
     IEquatable<ULongTuple>,
     INumericTuple<ulong>, 
     ISpaceFactory<ulong, ULongTuple>,
@@ -22,9 +22,6 @@ public readonly struct ULongTuple :
     public ULongTuple([AllowNull] params ulong[] fields)
         => this.fields = fields is null ? Array.Empty<ulong>() : fields;
 
-    public static bool operator ==(ULongTuple left, ULongTuple right) => left.Equals(right);
-    public static bool operator !=(ULongTuple left, ULongTuple right) => !(left == right);
-
     public ULongTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct ULongTuple :
         return new ULongTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is ULongTuple tuple && Equals(tuple);
     public bool Equals(ULongTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct ULongTuple :
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
 }
 
-public readonly record struct ULongTemplate : ISpaceTemplate<ulong>, ISpaceMatchable<ulong, ULongTuple>
+public readonly record struct ULongTemplate : 
+    IEquatable<ULongTemplate>,
+    ISpaceTemplate<ulong>, 
+    ISpaceMatchable<ulong, ULongTuple>
 {
     private readonly ulong?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct ULongTemplate : ISpaceTemplate<ulong>, ISpaceMatch
     public ULongTemplate([AllowNull] params ulong?[] fields)
         => this.fields = fields is null ? Array.Empty<ulong?>() : fields;
 
-    public bool Matches(ULongTuple tuple) => SpaceHelpers.Matches<ulong, ULongTuple>(this, tuple);
+    public bool Matches(ULongTuple tuple) => this.Matches<ulong, ULongTuple>(tuple);
+    public bool Equals(ULongTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<ulong?>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong?>(fields).GetEnumerator();
 }

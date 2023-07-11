@@ -129,7 +129,7 @@ public class BoolTemplateTests
     {
         BoolTemplate template = new(null);
 
-        Assert.Equal(1, template.Length);
+        Assert.Equal(0, template.Length);
         Assert.Null(template[0]);
     }
 

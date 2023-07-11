@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct UIntTuple :
+public readonly record struct UIntTuple :
     IEquatable<UIntTuple>,
     INumericTuple<uint>, 
     ISpaceFactory<uint, UIntTuple>,
@@ -22,9 +22,6 @@ public readonly struct UIntTuple :
     public UIntTuple([AllowNull] params uint[] fields)
         => this.fields = fields is null ? Array.Empty<uint>() : fields;
 
-    public static bool operator ==(UIntTuple left, UIntTuple right) => left.Equals(right);
-    public static bool operator !=(UIntTuple left, UIntTuple right) => !(left == right);
-
     public UIntTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct UIntTuple :
         return new UIntTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is UIntTuple tuple && Equals(tuple);
     public bool Equals(UIntTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -51,7 +47,10 @@ public readonly struct UIntTuple :
     public ReadOnlySpan<uint>.Enumerator GetEnumerator() => new ReadOnlySpan<uint>(fields).GetEnumerator();
 }
 
-public readonly record struct UIntTemplate : ISpaceTemplate<uint>, ISpaceMatchable<uint, UIntTuple>
+public readonly record struct UIntTemplate :
+    IEquatable<UIntTemplate>,
+    ISpaceTemplate<uint>, 
+    ISpaceMatchable<uint, UIntTuple>
 {
     private readonly uint?[] fields;
 
@@ -62,8 +61,11 @@ public readonly record struct UIntTemplate : ISpaceTemplate<uint>, ISpaceMatchab
     public UIntTemplate([AllowNull] params uint?[] fields)
         => this.fields = fields is null ? Array.Empty<uint?>() : fields;
 
-    public bool Matches(UIntTuple tuple) => SpaceHelpers.Matches<uint, UIntTuple>(this, tuple);
+    public bool Matches(UIntTuple tuple) => this.Matches<uint, UIntTuple>(tuple);
+    public bool Equals(UIntTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<uint?>.Enumerator GetEnumerator() => new ReadOnlySpan<uint?>(fields).GetEnumerator();
 }

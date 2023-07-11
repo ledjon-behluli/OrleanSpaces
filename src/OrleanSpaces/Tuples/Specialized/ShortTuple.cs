@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct ShortTuple :
+public readonly record struct ShortTuple :
     IEquatable<ShortTuple>,
     INumericTuple<short>, 
     ISpaceFactory<short, ShortTuple>,
@@ -22,9 +22,6 @@ public readonly struct ShortTuple :
     public ShortTuple([AllowNull] params short[] fields)
         => this.fields = fields is null ? Array.Empty<short>() : fields;
 
-    public static bool operator ==(ShortTuple left, ShortTuple right) => left.Equals(right);
-    public static bool operator !=(ShortTuple left, ShortTuple right) => !(left == right);
-
     public ShortTemplate ToTemplate()
     {
         int length = Length;
@@ -38,7 +35,6 @@ public readonly struct ShortTuple :
         return new ShortTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is ShortTuple tuple && Equals(tuple);
     public bool Equals(ShortTuple other)
         => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
 
@@ -62,8 +58,11 @@ public readonly record struct ShortTemplate : ISpaceTemplate<short>, ISpaceMatch
     public ShortTemplate([AllowNull] params short?[] fields)
         => this.fields = fields is null ? Array.Empty<short?>() : fields;
 
-    public bool Matches(ShortTuple tuple) => SpaceHelpers.Matches<short, ShortTuple>(this, tuple);
+    public bool Matches(ShortTuple tuple) => this.Matches<short, ShortTuple>(tuple);
+    public bool Equals(ShortTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<short?>.Enumerator GetEnumerator() => new ReadOnlySpan<short?>(fields).GetEnumerator();
 }

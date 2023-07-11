@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace OrleanSpaces.Tuples.Specialized;
 
 [GenerateSerializer, Immutable]
-public readonly struct HugeTuple :
+public readonly record struct HugeTuple :
     IEquatable<HugeTuple>,
     INumericTuple<Int128>,
     ISpaceFactory<Int128, HugeTuple>,
@@ -24,9 +24,6 @@ public readonly struct HugeTuple :
     public HugeTuple([AllowNull] params Int128[] fields)
         => this.fields = fields is null ? Array.Empty<Int128>() : fields;
 
-    public static bool operator ==(HugeTuple left, HugeTuple right) => left.Equals(right);
-    public static bool operator !=(HugeTuple left, HugeTuple right) => !(left == right);
-
     public HugeTemplate ToTemplate()
     {
         int length = Length;
@@ -40,7 +37,6 @@ public readonly struct HugeTuple :
         return new HugeTemplate(fields);
     }
 
-    public override bool Equals(object? obj) => obj is HugeTuple tuple && Equals(tuple);
     public bool Equals(HugeTuple other)
     {
         if (Length != other.Length)
@@ -101,7 +97,10 @@ public readonly struct HugeTuple :
     }
 }
 
-public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ISpaceMatchable<Int128, HugeTuple>
+public readonly record struct HugeTemplate :
+    IEquatable<HugeTemplate>,
+    ISpaceTemplate<Int128>, 
+    ISpaceMatchable<Int128, HugeTuple>
 {
     private readonly Int128?[] fields;
 
@@ -112,8 +111,11 @@ public readonly record struct HugeTemplate : ISpaceTemplate<Int128>, ISpaceMatch
     public HugeTemplate([AllowNull] params Int128?[] fields)
         => this.fields = fields is null ? Array.Empty<Int128?>() : fields;
 
-    public bool Matches(HugeTuple tuple) => SpaceHelpers.Matches<Int128, HugeTuple>(this, tuple);
+    public bool Matches(HugeTuple tuple) => this.Matches<Int128, HugeTuple>(tuple);
+    public bool Equals(HugeTemplate other) => this.SequentialEquals(other);
 
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => SpaceHelpers.ToString(fields);
+
     public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();
 }
