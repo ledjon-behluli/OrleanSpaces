@@ -243,7 +243,7 @@ public class CharTupleBenchmarks
         private readonly char[] fields;
 
         public ref readonly char this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialCharTuple(params char[] fields) => this.fields = fields;
 

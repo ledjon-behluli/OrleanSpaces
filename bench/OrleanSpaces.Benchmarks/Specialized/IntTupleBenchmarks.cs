@@ -190,7 +190,7 @@ public class IntTupleBenchmarks
         private readonly int[] fields;
 
         public ref readonly int this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialIntTuple(params int[] fields) => this.fields = fields;
 

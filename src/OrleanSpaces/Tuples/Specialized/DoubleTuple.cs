@@ -12,7 +12,7 @@ public readonly record struct DoubleTuple :
     ISpaceConvertible<double, DoubleTemplate>
 {
     [Id(0), JsonProperty] private readonly double[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly double this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct DoubleTemplate :
     private readonly double?[] fields;
 
     public ref readonly double? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public DoubleTemplate() => fields = Array.Empty<double?>();
     public DoubleTemplate([AllowNull] params double?[] fields)

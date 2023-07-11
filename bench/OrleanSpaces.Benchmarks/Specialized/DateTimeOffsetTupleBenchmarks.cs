@@ -244,7 +244,7 @@ public class DateTimeOffsetTupleBenchmarks
         private readonly DateTimeOffset[] fields;
 
         public ref readonly DateTimeOffset this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialDateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;
 

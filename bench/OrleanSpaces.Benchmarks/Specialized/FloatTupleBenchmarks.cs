@@ -244,7 +244,7 @@ public class FloatTupleBenchmarks
         private readonly float[] fields;
 
         public ref readonly float this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialFloatTuple(params float[] fields) => this.fields = fields;
 

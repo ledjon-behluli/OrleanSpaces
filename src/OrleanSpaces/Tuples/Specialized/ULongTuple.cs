@@ -12,7 +12,7 @@ public readonly record struct ULongTuple :
     ISpaceConvertible<ulong, ULongTemplate>
 {
     [Id(0), JsonProperty] private readonly ulong[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly ulong this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct ULongTemplate :
     private readonly ulong?[] fields;
 
     public ref readonly ulong? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public ULongTemplate() => fields = Array.Empty<ulong?>();
     public ULongTemplate([AllowNull] params ulong?[] fields)

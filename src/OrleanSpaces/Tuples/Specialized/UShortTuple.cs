@@ -12,7 +12,7 @@ public readonly record struct UShortTuple :
     ISpaceConvertible<ushort, UShortTemplate>
 {
     [Id(0), JsonProperty] private readonly ushort[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly ushort this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct UShortTemplate :
     private readonly ushort?[] fields;
 
     public ref readonly ushort? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public UShortTemplate() => fields = Array.Empty<ushort?>();
     public UShortTemplate([AllowNull] params ushort?[] fields)

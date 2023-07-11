@@ -154,15 +154,20 @@ public class ThrowingObserver<T> : TestSpaceObserver<T>
     }
 }
 
-internal class TestAsyncObserver<T> : IAsyncObserver<TupleAction<T>>
+[ImplicitStreamSubscription(Constants.StreamName)]
+internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
     where T : struct, ISpaceTuple
 {
     public T LastExpansionTuple { get; private set; } = new();
     public T LastContractionTuple { get; private set; } = new();
     public bool HasFlattened { get; private set; }
 
+    public int InvokedCount { get; private set; }
+
     public Task OnNextAsync(TupleAction<T> action, StreamSequenceToken? token)
     {
+        InvokedCount++;
+
         if (action.Type == TupleActionType.Insert)
         {
             LastExpansionTuple = action.Tuple;
@@ -187,6 +192,7 @@ internal class TestAsyncObserver<T> : IAsyncObserver<TupleAction<T>>
         LastExpansionTuple = new();
         LastContractionTuple = new();
         HasFlattened = false;
+        InvokedCount = 0;
     }
 }
 

@@ -14,7 +14,7 @@ public readonly record struct HugeTuple :
     ISpaceConvertible<Int128, HugeTemplate>
 {
     [Id(0), JsonProperty] private readonly Int128[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly Int128 this[int index] => ref fields[index];
 
@@ -105,7 +105,7 @@ public readonly record struct HugeTemplate :
     private readonly Int128?[] fields;
 
     public ref readonly Int128? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public HugeTemplate() => fields = Array.Empty<Int128?>();
     public HugeTemplate([AllowNull] params Int128?[] fields)

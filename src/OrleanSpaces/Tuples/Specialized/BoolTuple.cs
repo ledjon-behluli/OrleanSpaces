@@ -12,7 +12,7 @@ public readonly record struct BoolTuple :
     ISpaceConvertible<bool, BoolTemplate>
 {
     [Id(0), JsonProperty] private readonly bool[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly bool this[int index] => ref fields[index];
 
@@ -88,7 +88,7 @@ public readonly record struct BoolTemplate :
     private readonly bool?[] fields;
 
     public ref readonly bool? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public BoolTemplate() => fields = Array.Empty<bool?>();
     public BoolTemplate([AllowNull] params bool?[] fields)

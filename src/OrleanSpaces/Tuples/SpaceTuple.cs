@@ -13,7 +13,7 @@ public readonly record struct SpaceTuple :
     IEquatable<SpaceTuple>
 {
     [Id(0), JsonProperty] private readonly object[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public readonly object this[int index] => fields[index];
    
@@ -109,7 +109,7 @@ public readonly record struct SpaceTemplate :
     private readonly object?[] fields;
 
     public readonly object? this[int index] => fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     /// <summary>
     /// Default constructor which instantiates an empty <see cref="SpaceTemplate"/>.

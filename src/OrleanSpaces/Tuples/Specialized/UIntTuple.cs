@@ -12,7 +12,7 @@ public readonly record struct UIntTuple :
     ISpaceConvertible<uint, UIntTemplate>
 {
     [Id(0), JsonProperty] private readonly uint[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly uint this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct UIntTemplate :
     private readonly uint?[] fields;
 
     public ref readonly uint? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public UIntTemplate() => fields = Array.Empty<uint?>();
     public UIntTemplate([AllowNull] params uint?[] fields)

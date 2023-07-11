@@ -12,7 +12,7 @@ public readonly record struct TimeSpanTuple :
     ISpaceConvertible<TimeSpan, TimeSpanTemplate>
 {
     [Id(0), JsonProperty] private readonly TimeSpan[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
 
@@ -56,7 +56,7 @@ public readonly record struct TimeSpanTemplate :
     private readonly TimeSpan?[] fields;
 
     public ref readonly TimeSpan? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public TimeSpanTemplate() => fields = Array.Empty<TimeSpan?>();
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)

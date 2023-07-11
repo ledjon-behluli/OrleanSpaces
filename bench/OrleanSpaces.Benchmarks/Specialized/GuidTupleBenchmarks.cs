@@ -244,7 +244,7 @@ public class GuidTupleBenchmarks
         private readonly Guid[] fields;
 
         public ref readonly Guid this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialGuidTuple(params Guid[] fields) => this.fields = fields;
 

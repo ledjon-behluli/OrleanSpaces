@@ -190,7 +190,7 @@ public class ByteTupleBenchmarks
         private readonly byte[] fields;
 
         public ref readonly byte this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialByteTuple(params byte[] fields) => this.fields = fields;
 

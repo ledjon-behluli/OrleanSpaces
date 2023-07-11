@@ -12,7 +12,7 @@ public readonly record struct CharTuple :
     ISpaceConvertible<char, CharTemplate>
 {
     [Id(0), JsonProperty] private readonly char[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly char this[int index] => ref fields[index];
 
@@ -66,7 +66,7 @@ public readonly record struct CharTemplate :
     private readonly char?[] fields;
 
     public ref readonly char? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public CharTemplate() => fields = Array.Empty<char?>();
     public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;

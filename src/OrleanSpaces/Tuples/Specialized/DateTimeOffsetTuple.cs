@@ -12,7 +12,7 @@ public readonly record struct DateTimeOffsetTuple :
     ISpaceConvertible<DateTimeOffset, DateTimeOffsetTemplate>
 {
     [Id(0), JsonProperty] private readonly DateTimeOffset[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
 
@@ -56,7 +56,7 @@ public readonly record struct DateTimeOffsetTemplate :
     private readonly DateTimeOffset?[] fields;
 
     public ref readonly DateTimeOffset? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public DateTimeOffsetTemplate() => fields = Array.Empty<DateTimeOffset?>();
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>

@@ -3,6 +3,7 @@ using Orleans.Streams;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tests;
@@ -14,7 +15,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly ISpaceGrain grain;
     private readonly IClusterClient client;
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly TestAsyncObserver<SpaceTuple> observer;
+    private readonly TestStreamObserver<SpaceTuple> observer;
 
     private StreamId streamId;
     [AllowNull] private IAsyncStream<TupleAction<SpaceTuple>> stream;
@@ -35,35 +36,23 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    [Fact]
-    public async Task Should_Notify_Observer_On_Flattening()
-    {
-        SpaceTuple tuple1 = new(1);
-        SpaceTuple tuple2 = new(1, "a");
-
-        await grain.Insert(InsertAction(tuple1));
-        await grain.Insert(InsertAction(tuple2));
-
-        await grain.Remove(RemoveAction(tuple1));
-        Assert.False(observer.HasFlattened);
-
-        await grain.Remove(RemoveAction(tuple2));
-        Assert.True(observer.HasFlattened);
-
-        await ResetAll();
-    }
-
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
-    public async Task Should_Notify_Observer_On_Expansion_And_Contraction(SpaceTuple tuple)
+    public async Task Should_Notify_Observer(SpaceTuple tuple)
     {
+        await Reset();
+
         await grain.Insert(InsertAction(tuple));
         await grain.Remove(RemoveAction(tuple));
 
+        while (observer.InvokedCount < 3)
+        {
+            // wait until the messages reach the observer...
+        }
+
         Assert.Equal(tuple, observer.LastExpansionTuple);
         Assert.Equal(tuple, observer.LastContractionTuple);
-
-        await ResetAll();
+        Assert.True(observer.HasFlattened);
     }
 
     static TupleAction<SpaceTuple> InsertAction(SpaceTuple tuple)
@@ -72,7 +61,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     static TupleAction<SpaceTuple> RemoveAction(SpaceTuple tuple)
        => new(Guid.NewGuid(), tuple, TupleActionType.Remove);
 
-    async Task ResetAll()
+    async Task Reset()
     {
         await grain.RemoveAll(agentId);
         observer.Reset();
@@ -84,7 +73,7 @@ public class IntGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     private readonly IIntGrain grain;
     private readonly IClusterClient client;
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly TestAsyncObserver<IntTuple> observer;
+    private readonly TestStreamObserver<IntTuple> observer;
 
     private StreamId streamId;
     [AllowNull] private IAsyncStream<TupleAction<IntTuple>> stream;
@@ -105,35 +94,23 @@ public class IntGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    [Fact]
-    public async Task Should_Notify_Observer_On_Flattening()
-    {
-        IntTuple tuple1 = new(1);
-        IntTuple tuple2 = new(1, 2);
-
-        await grain.Insert(InsertAction(tuple1));
-        await grain.Insert(InsertAction(tuple2));
-
-        await grain.Remove(RemoveAction(tuple1));
-        Assert.False(observer.HasFlattened);
-
-        await grain.Remove(RemoveAction(tuple2));
-        Assert.True(observer.HasFlattened);
-
-        await ResetAll();
-    }
-
     [Theory]
     [ClassData(typeof(IntTupleGenerator))]
-    public async Task Should_Notify_Observer_On_Expansion_And_Contraction(IntTuple tuple)
+    public async Task Should_Notify_Observer(IntTuple tuple)
     {
+        await Reset();
+
         await grain.Insert(InsertAction(tuple));
         await grain.Remove(RemoveAction(tuple));
 
+        while (observer.InvokedCount < 3)
+        {
+            // wait until the messages reach the observer...
+        }
+
         Assert.Equal(tuple, observer.LastExpansionTuple);
         Assert.Equal(tuple, observer.LastContractionTuple);
-
-        await ResetAll();
+        Assert.True(observer.HasFlattened);
     }
 
     static TupleAction<IntTuple> InsertAction(IntTuple tuple)
@@ -142,7 +119,7 @@ public class IntGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     static TupleAction<IntTuple> RemoveAction(IntTuple tuple)
        => new(Guid.NewGuid(), tuple, TupleActionType.Remove);
 
-    async Task ResetAll()
+    async Task Reset()
     {
         await grain.RemoveAll(agentId);
         observer.Reset();
@@ -178,6 +155,6 @@ public class GrainIdentityTests
             new object[] { "UHugeStore", IUHugeGrain.Key },
             new object[] { "UIntStore", IUIntGrain.Key },
             new object[] { "ULongStore", IULongGrain.Key },
-            new object[] { "UShortStore", IShortGrain.Key }
+            new object[] { "UShortStore", IUShortGrain.Key }
         };
 }

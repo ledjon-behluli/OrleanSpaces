@@ -12,7 +12,7 @@ public readonly record struct SByteTuple :
     ISpaceConvertible<sbyte, SByteTemplate>
 {
     [Id(0), JsonProperty] private readonly sbyte[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly sbyte this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct SByteTemplate :
     private readonly sbyte?[] fields;
 
     public ref readonly sbyte? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public SByteTemplate() => fields = Array.Empty<sbyte?>();
     public SByteTemplate([AllowNull] params sbyte?[] fields)

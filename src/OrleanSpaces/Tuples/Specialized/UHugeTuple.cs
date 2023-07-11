@@ -14,7 +14,7 @@ public readonly record struct UHugeTuple :
     ISpaceConvertible<UInt128, UHugeTemplate>
 {
     [Id(0), JsonProperty] private readonly UInt128[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly UInt128 this[int index] => ref fields[index];
 
@@ -105,7 +105,7 @@ public readonly record struct UHugeTemplate :
     private readonly UInt128?[] fields;
 
     public ref readonly UInt128? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public UHugeTemplate() => fields = Array.Empty<UInt128?>();
     public UHugeTemplate([AllowNull] params UInt128?[] fields)

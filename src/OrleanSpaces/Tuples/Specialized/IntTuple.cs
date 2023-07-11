@@ -12,7 +12,7 @@ public readonly record struct IntTuple :
     ISpaceConvertible<int, IntTemplate>
 {
     [Id(0), JsonProperty] private readonly int[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly int this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct IntTemplate :
     private readonly int?[] fields;
 
     public ref readonly int? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public IntTemplate() => fields = Array.Empty<int?>();
     public IntTemplate([AllowNull] params int?[] fields)

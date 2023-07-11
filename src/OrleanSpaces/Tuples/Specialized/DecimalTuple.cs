@@ -13,7 +13,7 @@ public readonly record struct DecimalTuple :
     ISpaceConvertible<decimal, DecimalTemplate>
 {
     [Id(0), JsonProperty] private readonly decimal[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly decimal this[int index] => ref fields[index];
 
@@ -109,7 +109,7 @@ public readonly record struct DecimalTemplate :
     private readonly decimal?[] fields;
 
     public ref readonly decimal? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public DecimalTemplate() => fields = Array.Empty<decimal?>();
     public DecimalTemplate([AllowNull] params decimal?[] fields)

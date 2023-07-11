@@ -12,7 +12,7 @@ public readonly record struct ByteTuple :
     ISpaceConvertible<byte, ByteTemplate>
 {
     [Id(0), JsonProperty] private readonly byte[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly byte this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct ByteTemplate :
     private readonly byte?[] fields;
 
     public ref readonly byte? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public ByteTemplate() => fields = Array.Empty<byte?>();
     public ByteTemplate([AllowNull] params byte?[] fields)

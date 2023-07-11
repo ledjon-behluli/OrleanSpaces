@@ -243,7 +243,7 @@ public class BoolTupleBenchmarks
         private readonly bool[] fields;
 
         public ref readonly bool this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialBoolTuple(params bool[] fields) => this.fields = fields;
 

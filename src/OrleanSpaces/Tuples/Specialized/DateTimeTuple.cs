@@ -12,7 +12,7 @@ public readonly record struct DateTimeTuple :
     ISpaceConvertible<DateTime, DateTimeTemplate>
 {
     [Id(0), JsonProperty] private readonly DateTime[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly DateTime this[int index] => ref fields[index];
 
@@ -56,7 +56,7 @@ public readonly record struct DateTimeTemplate :
     private readonly DateTime?[] fields;
 
     public ref readonly DateTime? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public DateTimeTemplate() => fields = Array.Empty<DateTime?>();
     public DateTimeTemplate([AllowNull] params DateTime?[] fields) =>

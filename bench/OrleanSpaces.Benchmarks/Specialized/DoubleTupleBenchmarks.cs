@@ -244,7 +244,7 @@ public class DoubleTupleBenchmarks
         private readonly double[] fields;
 
         public ref readonly double this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialDoubleTuple(params double[] fields) => this.fields = fields;
 

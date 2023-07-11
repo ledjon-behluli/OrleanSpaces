@@ -13,7 +13,7 @@ public readonly record struct GuidTuple :
     ISpaceConvertible<Guid, GuidTemplate>
 {
     [Id(0), JsonProperty] private readonly Guid[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly Guid this[int index] => ref fields[index];
 
@@ -81,7 +81,7 @@ public readonly record struct GuidTemplate :
     private readonly Guid?[] fields;
 
     public ref readonly Guid? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public GuidTemplate() => fields = Array.Empty<Guid?>();
     public GuidTemplate([AllowNull] params Guid?[] fields)

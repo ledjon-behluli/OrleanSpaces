@@ -244,7 +244,7 @@ public class DecimalTupleBenchmarks
         private readonly decimal[] fields;
 
         public ref readonly decimal this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialDecimalTuple(params decimal[] fields) => this.fields = fields;
 

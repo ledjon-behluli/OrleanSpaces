@@ -190,7 +190,7 @@ public class ShortTupleBenchmarks
         private readonly short[] fields;
 
         public ref readonly short this[int index] => ref fields[index];
-        public int Length => fields.Length;
+        public int Length => fields?.Length ?? 0;
 
         public SequentialShortTuple(params short[] fields) => this.fields = fields;
 

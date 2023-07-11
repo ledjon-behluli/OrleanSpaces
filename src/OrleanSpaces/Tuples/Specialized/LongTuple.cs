@@ -12,7 +12,7 @@ public readonly record struct LongTuple :
     ISpaceConvertible<long, LongTemplate>
 {
     [Id(0), JsonProperty] private readonly long[] fields;
-    [JsonIgnore] public int Length => fields.Length;
+    [JsonIgnore] public int Length => fields?.Length ?? 0;
 
     public ref readonly long this[int index] => ref fields[index];
 
@@ -55,7 +55,7 @@ public readonly record struct LongTemplate :
     private readonly long?[] fields;
 
     public ref readonly long? this[int index] => ref fields[index];
-    public int Length => fields.Length;
+    public int Length => fields?.Length ?? 0;
 
     public LongTemplate() => fields = Array.Empty<long?>();
     public LongTemplate([AllowNull] params long?[] fields)
