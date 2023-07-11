@@ -8,6 +8,7 @@ using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using Orleans.Runtime;
+using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
 
@@ -18,6 +19,12 @@ internal sealed class SpaceAgent :
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
     private readonly Guid agentId = Guid.NewGuid();
+    private readonly Channel<SpaceTuple> channel = Channel.CreateUnbounded<SpaceTuple>(new()
+    {
+        SingleReader = true,
+        SingleWriter = true
+    });
+
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
@@ -189,6 +196,11 @@ internal sealed class SpaceAgent :
         }
 
         return new(result);
+    }
+
+    public IAsyncEnumerable<SpaceTuple> ConsumeAsync()
+    {
+
     }
 
     public ValueTask<int> CountAsync() => new(tuples.Count);

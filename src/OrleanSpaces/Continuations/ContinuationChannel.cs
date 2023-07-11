@@ -8,10 +8,18 @@ internal sealed class ContinuationChannel<TTuple, TTemplate>
     where TTemplate : ISpaceTemplate
 {
     private readonly Channel<TTuple> tupleChannel =
-        Channel.CreateUnbounded<TTuple>(new() { SingleReader = true });
+        Channel.CreateUnbounded<TTuple>(new()
+        {
+            SingleReader = true,
+            SingleWriter = true
+        });
 
     private readonly Channel<TTemplate> templateChannel =
-        Channel.CreateUnbounded<TTemplate>(new() { SingleReader = true });
+        Channel.CreateUnbounded<TTemplate>(new()
+        {
+            SingleReader = true,
+            SingleWriter = true
+        });
 
     public ChannelReader<TTuple> TupleReader => tupleChannel.Reader;
     public ChannelWriter<TTuple> TupleWriter => tupleChannel.Writer;
