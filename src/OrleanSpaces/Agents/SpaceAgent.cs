@@ -9,10 +9,12 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using Orleans.Runtime;
 using System.Threading.Channels;
+using Orleans.Concurrency;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
+[StatelessWorker(1)]
 internal sealed class SpaceAgent : 
     ISpaceAgent,
     ITupleRouter<SpaceTuple, SpaceTemplate>,
