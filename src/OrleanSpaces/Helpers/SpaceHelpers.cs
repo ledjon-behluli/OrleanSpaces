@@ -191,8 +191,8 @@ internal static class SpaceHelpers
             ref readonly T? iRight = ref right[i];
 
             if ((iLeft is null && iRight is not null) ||
-                (iLeft is not null && iLeft is null) ||
-                !iLeft.Equals(iRight))
+                (iLeft is not null && iRight is null) ||
+                (iLeft is { } l && !l.Equals(iRight)))
             {
                 return false;
             }
@@ -333,5 +333,5 @@ internal static class SpaceHelpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString<T>(T?[] fields) where T : unmanaged
-        => $"({string.Join(", ", fields.Select(field => field.ToString() ?? "{NULL}"))})";
+        => $"({string.Join(", ", fields.Select(field => field is null ? "{NULL}" : field.ToString()))})";
 }

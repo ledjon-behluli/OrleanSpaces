@@ -28,6 +28,12 @@ public class GuidTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        GuidTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -138,9 +144,7 @@ public class GuidTemplateTests
     public void Should_Be_Created_On_Null()
     {
         GuidTemplate template = new(null);
-
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

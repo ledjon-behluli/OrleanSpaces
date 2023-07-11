@@ -23,6 +23,12 @@ public class BoolTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        BoolTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -128,9 +134,7 @@ public class BoolTemplateTests
     public void Should_Be_Created_On_Null()
     {
         BoolTemplate template = new(null);
-
         Assert.Equal(0, template.Length);
-        Assert.Null(template[0]);
     }
 
     [Fact]

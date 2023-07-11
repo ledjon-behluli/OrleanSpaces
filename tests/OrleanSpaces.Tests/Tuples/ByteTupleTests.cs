@@ -54,6 +54,13 @@ public class ByteTupleTests
     }
 
     [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        ByteTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
+
+    [Fact]
     public void Should_Be_Equal_On_Object()
     {
         ByteTuple tuple = new(1, 2, 3);
@@ -128,9 +135,7 @@ public class ByteTemplateTests
     public void Should_Be_Created_On_Null()
     {
         ByteTemplate template = new(null);
-
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

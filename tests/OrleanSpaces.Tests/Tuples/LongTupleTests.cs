@@ -23,6 +23,12 @@ public class LongTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        LongTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -128,9 +134,7 @@ public class LongTemplateTests
     public void Should_Be_Created_On_Null()
     {
         LongTemplate template = new(null);
-
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

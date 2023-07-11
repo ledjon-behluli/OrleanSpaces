@@ -8,7 +8,9 @@ namespace OrleanSpaces.Tuples;
 /// Represents a tuple in the tuple space paradigm.
 /// </summary>
 [GenerateSerializer, Immutable]
-public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
+public readonly record struct SpaceTuple : 
+    ISpaceTuple,
+    IEquatable<SpaceTuple>
 {
     [Id(0), JsonProperty] private readonly object[] fields;
     [JsonIgnore] public int Length => fields.Length;
@@ -55,10 +57,6 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
             }
         }
     }
-
-    public static bool operator ==(SpaceTuple left, SpaceTuple right) => left.Equals(right);
-    public static bool operator !=(SpaceTuple left, SpaceTuple right) => !(left == right);
-
     public SpaceTemplate ToTemplate()
     {
         int length = Length;
@@ -72,12 +70,6 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
         return new SpaceTemplate(fields);
     }
 
-    /// <summary>
-    /// Determines whether the specified <see cref="object"/> is equal to this instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns><see langword="true"/>, if <paramref name="obj"/> is of type <see cref="SpaceTuple"/> and <see cref="Equals(SpaceTuple)"/> returns <see langword="true"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals(object? obj) => obj is SpaceTuple tuple && Equals(tuple);
     /// <summary>
     /// Determines whether the current object is equal to another object of the same type.
     /// </summary>
@@ -110,7 +102,9 @@ public readonly struct SpaceTuple : ISpaceTuple, IEquatable<SpaceTuple>
 /// <summary>
 /// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
 /// </summary>
-public readonly record struct SpaceTemplate : ISpaceTemplate
+public readonly record struct SpaceTemplate : 
+    ISpaceTemplate,
+    IEquatable<SpaceTemplate>
 {
     private readonly object?[] fields;
 
@@ -192,6 +186,31 @@ public readonly record struct SpaceTemplate : ISpaceTemplate
         return true;
     }
 
+    public bool Equals(SpaceTemplate other)
+    {
+        if (Length != other.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < Length; i++)
+        {
+            object? iLeft = this[i];
+            object? iRight = other[i];
+
+            if ((iLeft is null && iRight is not null) ||
+                (iLeft is not null && iRight is null) ||
+                (iLeft is { } l && !l.Equals(iRight)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
+
     public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();
 }

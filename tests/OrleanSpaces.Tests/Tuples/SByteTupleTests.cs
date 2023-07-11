@@ -11,9 +11,9 @@ public class SByteTupleTests
         SByteTuple tuple = new(-1, -2, -3);
 
         Assert.Equal(3, tuple.Length);
-        Assert.Equal((sbyte)1, tuple[0]);
-        Assert.Equal((sbyte)2, tuple[1]);
-        Assert.Equal((sbyte)3, tuple[2]);
+        Assert.Equal((sbyte)-1, tuple[0]);
+        Assert.Equal((sbyte)-2, tuple[1]);
+        Assert.Equal((sbyte)-3, tuple[2]);
     }
 
     [Fact]
@@ -23,6 +23,12 @@ public class SByteTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        SByteTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -112,9 +118,9 @@ public class SByteTemplateTests
         SByteTemplate template = new(-1, -2, -3);
 
         Assert.Equal(3, template.Length);
-        Assert.Equal((sbyte)1, template[0]);
-        Assert.Equal((sbyte)2, template[1]);
-        Assert.Equal((sbyte)3, template[2]);
+        Assert.Equal((sbyte)-1, template[0]);
+        Assert.Equal((sbyte)-2, template[1]);
+        Assert.Equal((sbyte)-3, template[2]);
     }
 
     [Fact]
@@ -128,9 +134,7 @@ public class SByteTemplateTests
     public void Should_Be_Created_On_Null()
     {
         SByteTemplate template = new(null);
-
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]
@@ -302,7 +306,7 @@ public class SByteMatchTests
         Assert.True(new SByteTemplate(-1, -2).Matches(new SByteTuple(-1, -2)));
         Assert.True(new SByteTemplate(-1, -2, -3).Matches(new SByteTuple(-1, -2, -3)));
         Assert.True(new SByteTemplate(-1, -2, -3, null).Matches(new SByteTuple(-1, -2, -3, -4)));
-        Assert.True(new SByteTemplate(1, null, 3, null).Matches(new SByteTuple(-1, -2, -3, -4)));
+        Assert.True(new SByteTemplate(-1, null, -3, null).Matches(new SByteTuple(-1, -2, -3, -4)));
     }
 
     [Fact]

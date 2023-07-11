@@ -76,6 +76,12 @@ public class SpaceTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        SpaceTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -160,12 +166,6 @@ public class SpaceTupleTests
 public class SpaceTemplateTests
 {
     [Fact]
-    public void Should_Be_An_ISpaceTemplate()
-    {
-        Assert.True(typeof(ISpaceTemplate).IsAssignableFrom(typeof(SpaceTemplate)));
-    }
-
-    [Fact]
     public void Should_Be_Created_On_Object_Array()
     {
         SpaceTemplate template = new(1, "a", 1.5f);
@@ -217,10 +217,8 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Created_On_Null()
     {
-        SpaceTemplate template = new(null);
-
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        SpaceTemplate tuple = new(null);
+        Assert.Equal(0, tuple.Length);
     }
 
     [Fact]

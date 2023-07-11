@@ -12,8 +12,8 @@ public class CharTupleTests
 
         Assert.Equal(3, tuple.Length);
         Assert.Equal('a', tuple[0]);
-        Assert.Equal('b', tuple['a']);
-        Assert.Equal('c', tuple['b']);
+        Assert.Equal('b', tuple[1]);
+        Assert.Equal('c', tuple[2]);
     }
 
     [Fact]
@@ -23,6 +23,12 @@ public class CharTupleTests
         Assert.Equal(0, tuple.Length);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        CharTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -113,8 +119,8 @@ public class CharTemplateTests
 
         Assert.Equal(3, template.Length);
         Assert.Equal('a', template[0]);
-        Assert.Equal('b', template['a']);
-        Assert.Equal('c', template['b']);
+        Assert.Equal('b', template[1]);
+        Assert.Equal('c', template[2]);
     }
 
     [Fact]
@@ -128,9 +134,7 @@ public class CharTemplateTests
     public void Should_Be_Created_On_Null()
     {
         CharTemplate template = new(null);
-
-        Assert.Equal('a', template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]
