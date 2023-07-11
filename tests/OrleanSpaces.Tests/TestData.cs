@@ -171,7 +171,7 @@ internal class TestAsyncObserver<T> : IAsyncObserver<TupleAction<T>>
         {
             LastContractionTuple = action.Tuple;
         }
-        else if (action.Type == TupleActionType.Clean)
+        else if (action.Type == TupleActionType.Clear)
         {
             HasFlattened = true;
         }

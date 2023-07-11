@@ -16,7 +16,7 @@ public class ObserverTests
         async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), contractionTuple, TupleActionType.Remove), default);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Flattening =>
-        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), flatteningTuple, TupleActionType.Clean), default);
+        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), flatteningTuple, TupleActionType.Clear), default);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Everything =>
         async (observer) =>

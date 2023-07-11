@@ -79,7 +79,7 @@ internal class Agent<T, TTuple, TTemplate> :
             return;
         }
 
-        if (action.Type == TupleActionType.Clean)
+        if (action.Type == TupleActionType.Clear)
         {
             if (action.AgentId != agentId)
             {

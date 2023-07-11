@@ -54,6 +54,6 @@ internal abstract class Grain<T> : Grain
         space.State.Clear();
 
         await space.WriteStateAsync();
-        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clean));
+        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
     }
 }

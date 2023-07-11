@@ -10,5 +10,5 @@ public enum TupleActionType
 {
     Insert,
     Remove,
-    Clean
+    Clear
 }

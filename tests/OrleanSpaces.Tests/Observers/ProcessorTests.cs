@@ -60,7 +60,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
         scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
         scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
 
-        TupleAction<SpaceTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clean);
+        TupleAction<SpaceTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clear);
         await channel.Writer.WriteAsync(cleanAction);
 
         while (scope.TotalInvoked(observer => observer.HasFlattened) < 3)
@@ -149,7 +149,7 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
         scope.AddObserver(new TestSpaceObserver<IntTuple>());
         scope.AddObserver(new TestSpaceObserver<IntTuple>());
 
-        TupleAction<IntTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clean);
+        TupleAction<IntTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clear);
         await channel.Writer.WriteAsync(cleanAction);
 
         while (scope.TotalInvoked(observer => observer.HasFlattened) < 3)
