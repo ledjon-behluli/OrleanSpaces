@@ -69,8 +69,8 @@ public class ExtensionTests
 
     static void EnsureAdded<T, TTuple, TTemplate>(IHost host)
         where T : unmanaged
-        where TTuple : struct, ISpaceTuple<T>
-        where TTemplate : struct, ISpaceTemplate<T>
+        where TTuple : struct, ISpaceTuple<T>, ISpaceConvertible<T, TTemplate>
+        where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
     {
         Assert.NotNull(host.Services.GetService<SpaceOptions>());
 

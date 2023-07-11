@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace OrleanSpaces.Tests;
 
-internal class SpaceTupleGenerator : IEnumerable<object[]>
+public class SpaceTupleGenerator : IEnumerable<object[]>
 {
     private readonly List<object[]> data = new()
     {
@@ -21,7 +21,7 @@ internal class SpaceTupleGenerator : IEnumerable<object[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal class IntTupleGenerator : IEnumerable<object[]>
+public class IntTupleGenerator : IEnumerable<object[]>
 {
     private readonly List<object[]> data = new()
     {
@@ -35,7 +35,7 @@ internal class IntTupleGenerator : IEnumerable<object[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
+public class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
 {
     private readonly List<ISpaceTuple[]> data = new()
     {
@@ -64,7 +64,7 @@ internal class EmptyTupleGenerator : IEnumerable<ISpaceTuple[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
+public class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
 {
     private readonly List<ISpaceTemplate[]> data = new()
     {
@@ -93,11 +93,11 @@ internal class EmptyTemplateGenerator : IEnumerable<ISpaceTemplate[]>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal struct TestStruct { }
-internal class TestClass { }
-internal enum TestEnum { A }
+public struct TestStruct { }
+public class TestClass { }
+public enum TestEnum { A }
 
-internal class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
+public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
     where TTuple : struct, ISpaceTuple
     where TTemplate : struct, ISpaceTemplate
 {
@@ -117,7 +117,7 @@ internal class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTempla
     }
 }
 
-internal class TestSpaceObserver<T> : SpaceObserver<T>
+public class TestSpaceObserver<T> : SpaceObserver<T>
     where T : struct, ISpaceTuple
 {
     public T LastExpansionTuple { get; protected set; } = new();
@@ -145,7 +145,7 @@ internal class TestSpaceObserver<T> : SpaceObserver<T>
     }
 }
 
-internal class ThrowingObserver<T> : TestSpaceObserver<T>
+public class ThrowingObserver<T> : TestSpaceObserver<T>
      where T : struct, ISpaceTuple
 {
     public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
@@ -190,7 +190,7 @@ internal class TestAsyncObserver<T> : IAsyncObserver<TupleAction<T>>
     }
 }
 
-internal static class AssertHelpers
+public static class AssertHelpers
 {
     public static void AssertEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.Equal(0, tuple.Length);
     public static void AssertNotEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.NotEqual(0, tuple.Length);
