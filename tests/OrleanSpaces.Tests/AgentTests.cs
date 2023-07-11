@@ -103,7 +103,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public void Should_Throw_On_WriteAsync_If_Empty_Tuple()
+    public Task Should_Throw_On_WriteAsync_If_Empty_Tuple()
         => Assert.ThrowsAsync<ArgumentException>(async () => await agent.WriteAsync(new()));
 
     #endregion
@@ -122,7 +122,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public void Should_Throw_On_EvaluateAsync_If_Empty()
+    public Task Should_Throw_On_EvaluateAsync_If_Empty()
         => Assert.ThrowsAsync<ArgumentNullException>(async () => 
                 await agent.EvaluateAsync(() => Task.FromResult(new SpaceTuple())));
 
@@ -204,9 +204,7 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
     [Fact]
     public Task Should_Throw_On_PeekAsync_If_Null_Callback()
-    {
-        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null!));
-    }
+        => Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null!));
 
     #endregion
 
@@ -217,19 +215,19 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     public async Task Should_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple popedTuple = await agent.PopAsync(tuple);
+        SpaceTuple popedTuple = await agent.PopAsync(tuple.ToTemplate());
 
         Assert.Equal(tuple, popedTuple);
     }
 
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
-    public async Task Should_Return_Null_Tuple_On_PopAsync(SpaceTuple tuple)
+    public async Task Should_Return_Empty_Tuple_On_PopAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
         SpaceTuple popedTuple = await agent.PopAsync(new(0));
 
-        Assert.True(popedTuple.IsNull);
+        popedTuple.AssertEmpty();
     }
 
     [Theory]
@@ -240,13 +238,12 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         SpaceTuple popedTuple = new();
 
-        await agent.PopAsync(tuple, tuple =>
+        await agent.PopAsync(tuple.ToTemplate(), tuple =>
         {
             popedTuple = tuple;
             return Task.CompletedTask;
         });
 
-        Assert.False(popedTuple.IsNull);
         Assert.Equal(tuple, popedTuple);
 
     }
@@ -259,13 +256,13 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
 
         await agent.PopAsync(template, callback);
 
-        ReadOnlyCollection<CallbackEntry> entries;
+        ReadOnlyCollection<CallbackEntry<SpaceTuple>>? entries;
         while (!callbackRegistry.Entries.TryGetValue(template, out entries))
         {
 
         }
 
-        Assert.True(peekedTuple.IsNull);
+        peekedTuple.AssertEmpty();
         Assert.Equal(callback, entries.Single().Callback);
 
         Task callback(SpaceTuple tuple) => Task.FromResult(peekedTuple = tuple);
@@ -281,16 +278,14 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         bool firstIteration = true;
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple popedTuple = await agent.PopAsync(tuple);
+            SpaceTuple popedTuple = await agent.PopAsync(tuple.ToTemplate());
 
             if (firstIteration)
             {
-                Assert.False(popedTuple.IsNull);
                 Assert.Equal(tuple, popedTuple);
             }
             else
             {
-                Assert.True(popedTuple.IsNull);
                 Assert.NotEqual(tuple, popedTuple);
             }
 
@@ -299,21 +294,8 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public Task Should_Throw_On_PopAsync_If_Null()
-    {
-        return Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null));
-    }
-
-    [Fact]
-    public async Task Should_Throw_On_PopAsync_If_Unconsumed_Channel()
-    {
-        ToggleChannelConsumerState(callbackChannel);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await agent.PopAsync(new(0), tuple => Task.FromResult(_ = tuple)));
-
-        ToggleChannelConsumerState(callbackChannel);
-    }
+    public Task Should_Throw_On_PopAsync_If_Null_Callback()
+        => Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PopAsync(new(0), null!));
 
     #endregion
 
@@ -322,16 +304,24 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_ScanAsync()
     {
-        const string key = "scan";
-
-        foreach (var tuple in TupleData(key))
+        foreach (var tuple in ScanData())
         {
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
-
+        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new("scan", 1, typeof(string), typeof(float), null));
         Assert.Equal(3, tuples.Count());
+    }
+
+    private static IEnumerable<SpaceTuple> ScanData()
+    {
+        yield return new("scan", 1, "a", 1.0f, 1.0m);
+        yield return new("scan", 1, "b", 1.2f, "d");
+        yield return new("scan", 1, "c", 1.5f, 'e');
+        yield return new("scan", 1, 1.5f, "c", 'e');
+        yield return new("scan", 1, "f", 1.7f, 'g', "f");
+        yield return new("scan", 2, "f", 1.7f, 'g');
+        yield return new("scan", 2, "f", 1.7f, 'g', "f");
     }
 
     #endregion
@@ -339,46 +329,38 @@ public class SpaceAgentTests : IAsyncLifetime, IClassFixture<ClusterFixture>
     #region CountAsync
 
     [Fact]
-    public async Task Should_CountAsync_Case_1()
+    public async Task Should_CountAsync()
     {
-        const string key = "count-case-1";
+        await agent.ClearAsync();
 
-        foreach (var tuple in TupleData(key))
-        {
-            await agent.WriteAsync(tuple);
-        }
+        int count = await agent.CountAsync();
+        Assert.Equal(0, count);
 
-        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(2));
 
-        Assert.Equal(3, matchingCount);
-    }
-
-    [Fact]
-    public async Task Should_CountAsync_Case_2()
-    {
-        const string key = "count-case-2";
-
-        foreach (var tuple in TupleData(key))
-        {
-            await agent.WriteAsync(tuple);
-        }
-
-        int totalCount = await agent.CountAsync();
-        int matchingCount = await agent.CountAsync(new(key, 1, typeof(string), typeof(float), new SpaceUnit()));
-
-        Assert.True(totalCount > matchingCount);
+        count = await agent.CountAsync();
+        Assert.Equal(3, count);
     }
 
     #endregion
 
-    private static IEnumerable<SpaceTuple> TupleData(string key)
+    #region ClearAsync
+
+    [Fact]
+    public async Task Should_ClearAsync()
     {
-        yield return new(key, 1, "a", 1.0f, 1.0m);
-        yield return new(key, 1, "b", 1.2f, "d");
-        yield return new(key, 1, "c", 1.5f, 'e');
-        yield return new(key, 1, 1.5f, "c", 'e');
-        yield return new(key, 1, "f", 1.7f, 'g', "f");
-        yield return new(key, 2, "f", 1.7f, 'g');
-        yield return new(key, 2, "f", 1.7f, 'g', "f");
+        await agent.WriteAsync(new(1));
+
+        int count = await agent.CountAsync();
+        Assert.NotEqual(0, count);
+
+        await agent.ClearAsync();
+
+        count = await agent.CountAsync();
+        Assert.Equal(0, count);
     }
+
+    #endregion
 }
