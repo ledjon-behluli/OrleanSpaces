@@ -40,7 +40,7 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
         {
-            clientBuilder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.Generic);
+            clientBuilder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All);
             clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
         }
     }

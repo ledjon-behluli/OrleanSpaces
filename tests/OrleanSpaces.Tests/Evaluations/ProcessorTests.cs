@@ -26,7 +26,6 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
 
         SpaceTuple result = await continuationChannel.TupleReader.ReadAsync(default);
 
-        result.AssertNotEmpty();
         Assert.Equal(tuple, result);
     }
 
@@ -95,7 +94,6 @@ public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
 
         IntTuple result = await continuationChannel.TupleReader.ReadAsync(default);
 
-        result.AssertNotEmpty();
         Assert.Equal(tuple, result);
     }
 
