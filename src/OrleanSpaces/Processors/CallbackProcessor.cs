@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Continuations;
+using OrleanSpaces.Channels;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Callbacks;
+namespace OrleanSpaces.Processors;
 
 internal sealed class CallbackProcessor : BackgroundService
 {

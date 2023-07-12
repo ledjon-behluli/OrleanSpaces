@@ -1,11 +1,11 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Threading.Channels;
 
-namespace OrleanSpaces.Callbacks;
+namespace OrleanSpaces.Channels;
 
 internal sealed class CallbackChannel<TTuple>
     where TTuple : ISpaceTuple
-{ 
+{
     private readonly Channel<TTuple> channel =
         Channel.CreateUnbounded<TTuple>(new()
         {

@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Threading.Channels;
 
-namespace OrleanSpaces.Continuations;
+namespace OrleanSpaces.Channels;
 
 internal sealed class ContinuationChannel<TTuple, TTemplate>
     where TTuple : ISpaceTuple

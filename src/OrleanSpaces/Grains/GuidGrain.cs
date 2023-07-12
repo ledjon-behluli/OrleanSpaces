@@ -8,7 +8,7 @@ internal interface IGuidGrain : ITupleStore<GuidTuple>, IGrainWithStringKey
     const string Key = "GuidStore";
 }
 
-internal sealed class GuidGrain : Grain<GuidTuple>, IGuidGrain
+internal sealed class GuidGrain : BaseGrain<GuidTuple>, IGuidGrain
 {
     public GuidGrain(
         [PersistentState(IGuidGrain.Key, Constants.StorageName)]

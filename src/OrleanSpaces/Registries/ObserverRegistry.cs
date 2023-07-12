@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Collections.Concurrent;
 
-namespace OrleanSpaces.Observers;
+namespace OrleanSpaces.Registries;
 
 internal sealed class ObserverRegistry<T>
     where T : ISpaceTuple

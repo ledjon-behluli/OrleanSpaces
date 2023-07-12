@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
+using OrleanSpaces.Channels;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Observers;
+namespace OrleanSpaces.Processors;
 
 internal sealed class ObserverProcessor<T> : BackgroundService
     where T : ISpaceTuple
@@ -27,7 +29,7 @@ internal sealed class ObserverProcessor<T> : BackgroundService
             {
                 tasks.Add(observer.NotifyAsync(action, cancellationToken));
             }
-            
+
             await Task.WhenAll(tasks);
         }
     }

@@ -8,7 +8,7 @@ internal interface IDateTimeGrain : ITupleStore<DateTimeTuple>, IGrainWithString
     const string Key = "DateTimeStore";
 }
 
-internal sealed class DateTimeGrain : Grain<DateTimeTuple>, IDateTimeGrain
+internal sealed class DateTimeGrain : BaseGrain<DateTimeTuple>, IDateTimeGrain
 {
     public DateTimeGrain(
         [PersistentState(IDateTimeGrain.Key, Constants.StorageName)]

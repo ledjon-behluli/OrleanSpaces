@@ -9,7 +9,7 @@ internal interface IUShortGrain : ITupleStore<UShortTuple>, IGrainWithStringKey
 }
 
 
-internal sealed class UShortGrain : Grain<UShortTuple>, IUShortGrain
+internal sealed class UShortGrain : BaseGrain<UShortTuple>, IUShortGrain
 {
     public UShortGrain(
         [PersistentState(IUShortGrain.Key, Constants.StorageName)]

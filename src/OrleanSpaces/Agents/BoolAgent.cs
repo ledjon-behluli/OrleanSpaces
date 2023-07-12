@@ -1,13 +1,12 @@
-﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Evaluations;
+﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Observers;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class BoolAgent : Agent<bool, BoolTuple, BoolTemplate>
+internal sealed class BoolAgent : BaseAgent<bool, BoolTuple, BoolTemplate>
 {
     public BoolAgent(
         IClusterClient client,
@@ -15,15 +14,4 @@ internal sealed class BoolAgent : Agent<bool, BoolTuple, BoolTemplate>
         ObserverRegistry<BoolTuple> observerRegistry,
         CallbackRegistry<bool, BoolTuple, BoolTemplate> callbackRegistry)
         : base(client.GetGrain<IBoolGrain>(IBoolGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
-}
-
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class BoolStreamProcessor : StreamProcessor<BoolTuple>
-{
-    public BoolStreamProcessor(
-        IClusterClient client,
-        ITupleActionReceiver<BoolTuple> receiver,
-        ObserverChannel<BoolTuple> observerChannel,
-        CallbackChannel<BoolTuple> callbackChannel)
-        : base(IBoolGrain.Key, client, receiver, observerChannel, callbackChannel) { }
 }

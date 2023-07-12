@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces;
-using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 
 public class Master : SpaceObserver<SpaceTuple>

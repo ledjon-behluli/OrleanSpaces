@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using OrleanSpaces.Callbacks;
+using OrleanSpaces.Channels;
 using OrleanSpaces.Continuations;
-using OrleanSpaces.Evaluations;
-using OrleanSpaces.Observers;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 using System.Collections.ObjectModel;

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
-using OrleanSpaces.Continuations;
+using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Evaluations;
+namespace OrleanSpaces.Processors;
 
 internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
     where TTuple : struct, ISpaceTuple
@@ -28,11 +28,11 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
         {
             TTuple tuple = default;
 
-            try 
+            try
             {
                 tuple = await evaluation();
             }
-            catch 
+            catch
             {
                 if (!options.HandleEvaluationExceptions)
                 {

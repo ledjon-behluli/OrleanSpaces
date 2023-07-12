@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Callbacks;
+﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Callbacks;

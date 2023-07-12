@@ -1,12 +1,10 @@
-﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Evaluations;
-using OrleanSpaces.Observers;
-using OrleanSpaces.Continuations;
+﻿using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using System.Threading.Channels;
 using System.Collections.Immutable;
+using OrleanSpaces.Channels;
+using OrleanSpaces.Registries;
 
 namespace OrleanSpaces.Agents;
 
@@ -198,15 +196,4 @@ internal sealed class SpaceAgent :
     }
 
     #endregion
-}
-
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class SpaceStreamProcessor : StreamProcessor<SpaceTuple>
-{
-    public SpaceStreamProcessor(
-        IClusterClient client,
-        ITupleActionReceiver<SpaceTuple> receiver,
-        ObserverChannel<SpaceTuple> observerChannel,
-        CallbackChannel<SpaceTuple> callbackChannel)
-        : base(ISpaceGrain.Key, client, receiver, observerChannel, callbackChannel) { }
 }

@@ -8,7 +8,7 @@ internal interface ISpaceGrain : ITupleStore<SpaceTuple>, IGrainWithStringKey
     const string Key = "SpaceStore";
 }
 
-internal sealed class SpaceGrain : Grain<SpaceTuple>, ISpaceGrain
+internal sealed class SpaceGrain : BaseGrain<SpaceTuple>, ISpaceGrain
 {
     public SpaceGrain(
         [PersistentState(ISpaceGrain.Key, Constants.StorageName)]

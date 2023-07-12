@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Observers;
+﻿using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Observers;

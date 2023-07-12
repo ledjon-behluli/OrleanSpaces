@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Observers;
+﻿using OrleanSpaces;
 using OrleanSpaces.Tuples;
 
 public class Completer : SpaceObserver<SpaceTuple>

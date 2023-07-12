@@ -2,7 +2,20 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 
-namespace OrleanSpaces.Callbacks;
+namespace OrleanSpaces.Registries;
+
+internal readonly struct CallbackEntry<T>
+    where T : ISpaceTuple
+{
+    public readonly Func<T, Task> Callback;
+    public readonly bool HasContinuation;
+
+    public CallbackEntry(Func<T, Task> callback, bool hasContinuation)
+    {
+        Callback = callback;
+        HasContinuation = hasContinuation;
+    }
+}
 
 internal sealed class CallbackRegistry
 {
@@ -57,7 +70,7 @@ internal sealed class CallbackRegistry<T, TTuple, TTemplate>
 
         entries[template].Add(entry);
     }
-    
+
     public IEnumerable<CallbackEntry<TTuple>> Take(TTuple tuple)
     {
         foreach (var pair in entries)

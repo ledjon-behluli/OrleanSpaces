@@ -8,7 +8,7 @@ internal interface ISByteGrain : ITupleStore<SByteTuple>, IGrainWithStringKey
     const string Key = "SByteStore";
 }
 
-internal sealed class SByteGrain : Grain<SByteTuple>, ISByteGrain
+internal sealed class SByteGrain : BaseGrain<SByteTuple>, ISByteGrain
 {
     public SByteGrain(
         [PersistentState(ISByteGrain.Key, Constants.StorageName)]

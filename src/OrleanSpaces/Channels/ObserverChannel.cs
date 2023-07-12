@@ -1,13 +1,13 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Threading.Channels;
 
-namespace OrleanSpaces.Observers;
+namespace OrleanSpaces.Channels;
 
 internal sealed class ObserverChannel<T>
     where T : ISpaceTuple
 {
     private readonly Channel<TupleAction<T>> tupleChannel =
-        Channel.CreateUnbounded<TupleAction<T>>(new() 
+        Channel.CreateUnbounded<TupleAction<T>>(new()
         {
             SingleReader = true,
             SingleWriter = true

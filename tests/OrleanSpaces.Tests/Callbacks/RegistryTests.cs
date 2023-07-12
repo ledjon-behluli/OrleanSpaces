@@ -1,4 +1,5 @@
 ﻿using OrleanSpaces.Callbacks;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 

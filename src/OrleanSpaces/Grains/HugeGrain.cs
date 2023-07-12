@@ -8,7 +8,7 @@ internal interface IHugeGrain : ITupleStore<HugeTuple>, IGrainWithStringKey
     const string Key = "HugeStore";
 }
 
-internal sealed class HugeGrain : Grain<HugeTuple>, IHugeGrain
+internal sealed class HugeGrain : BaseGrain<HugeTuple>, IHugeGrain
 {
     public HugeGrain(
         [PersistentState(IHugeGrain.Key, Constants.StorageName)]

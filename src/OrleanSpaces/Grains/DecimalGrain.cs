@@ -8,7 +8,7 @@ internal interface IDecimalGrain : ITupleStore<DecimalTuple>, IGrainWithStringKe
     const string Key = "DecimalStore";
 }
 
-internal sealed class DecimalGrain : Grain<DecimalTuple>, IDecimalGrain
+internal sealed class DecimalGrain : BaseGrain<DecimalTuple>, IDecimalGrain
 {
     public DecimalGrain(
         [PersistentState(IDecimalGrain.Key, Constants.StorageName)]

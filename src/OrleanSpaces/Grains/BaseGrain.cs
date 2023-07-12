@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains;
 
-internal abstract class Grain<T> : Grain
+internal abstract class BaseGrain<T> : Grain
     where T : struct, ISpaceTuple, IEquatable<T>
 {
     private readonly IPersistentState<List<T>> space;
@@ -14,7 +14,7 @@ internal abstract class Grain<T> : Grain
 
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
-    public Grain(string key, IPersistentState<List<T>> space)
+    public BaseGrain(string key, IPersistentState<List<T>> space)
     {
         streamId = StreamId.Create(Constants.StreamName, key ?? throw new ArgumentNullException(nameof(key)));
         this.space = space ?? throw new ArgumentNullException(nameof(space));

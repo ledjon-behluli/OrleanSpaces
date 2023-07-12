@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Evaluations;
+﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Evaluations;

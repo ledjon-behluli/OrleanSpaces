@@ -1,6 +1,30 @@
 ﻿using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Observers;
+namespace OrleanSpaces;
+
+public interface ISpaceObserver<T>
+    where T : ISpaceTuple
+{
+    /// <summary>
+    /// Occurs whenever a <see cref="T"/> is written in the space.
+    /// </summary>
+    /// <param name="tuple">The written tuple.</param>
+    /// <param name="cancellationToken">A token used to propagate cancellations.</param>
+    Task OnExpansionAsync(T tuple, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Occurs whenever a <see cref="T"/> is removed from the space.
+    /// </summary>
+    /// <param name="tuple">The tuple that was removed.</param>
+    /// <param name="cancellationToken">A token used to propagate cancellations.</param>
+    Task OnContractionAsync(T tuple, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Occurs whenever the space contains zero <see cref="T"/>'s.
+    /// </summary>
+    /// <param name="cancellationToken">A token used to propagate cancellations.</param>
+    Task OnFlatteningAsync(CancellationToken cancellationToken = default);
+}
 
 /// <summary>
 /// A base class which provides dynamic observation capabilities.
@@ -77,4 +101,25 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
     protected static readonly EventType Flattenings = EventType.Flattenings;
     /// <returns><see cref="EventType.Everything"/></returns>
     protected static readonly EventType Everything = EventType.Everything;
+}
+
+internal sealed class ObserverDecorator<T> : SpaceObserver<T>
+    where T : ISpaceTuple
+{
+    private readonly ISpaceObserver<T> observer;
+
+    public ObserverDecorator(ISpaceObserver<T> observer)
+    {
+        this.observer = observer;
+        ListenTo(Everything);
+    }
+
+    public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) =>
+        observer.OnExpansionAsync(tuple, cancellationToken);
+
+    public override Task OnContractionAsync(T tuple, CancellationToken cancellationToken) =>
+        observer.OnContractionAsync(tuple, cancellationToken);
+
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken) =>
+        observer.OnFlatteningAsync(cancellationToken);
 }

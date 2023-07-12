@@ -8,7 +8,7 @@ internal interface IDoubleGrain : ITupleStore<DoubleTuple>, IGrainWithStringKey
     const string Key = "DoubleStore";
 }
 
-internal sealed class DoubleGrain : Grain<DoubleTuple>, IDoubleGrain
+internal sealed class DoubleGrain : BaseGrain<DoubleTuple>, IDoubleGrain
 {
     public DoubleGrain(
         [PersistentState(IDoubleGrain.Key, Constants.StorageName)]

@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Continuations;
+﻿using OrleanSpaces.Channels;
+using OrleanSpaces.Processors;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 

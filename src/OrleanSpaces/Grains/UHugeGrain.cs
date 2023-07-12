@@ -8,7 +8,7 @@ internal interface IUHugeGrain : ITupleStore<UHugeTuple>, IGrainWithStringKey
     const string Key = "UHugeStore";
 }
 
-internal sealed class UHugeGrain : Grain<UHugeTuple>, IUHugeGrain
+internal sealed class UHugeGrain : BaseGrain<UHugeTuple>, IUHugeGrain
 {
     public UHugeGrain(
         [PersistentState(IUHugeGrain.Key, Constants.StorageName)]

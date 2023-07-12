@@ -1,5 +1,6 @@
-﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Continuations;
+﻿using OrleanSpaces.Channels;
+using OrleanSpaces.Processors;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 

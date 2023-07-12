@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
 using System.Threading.Channels;
 
-namespace OrleanSpaces.Evaluations;
+namespace OrleanSpaces.Channels;
 
 internal sealed class EvaluationChannel<T>
     where T : ISpaceTuple

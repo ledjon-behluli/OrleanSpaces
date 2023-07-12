@@ -8,7 +8,7 @@ internal interface ITimeSpanGrain : ITupleStore<TimeSpanTuple>, IGrainWithString
     const string Key = "TimeSpanStore";
 }
 
-internal sealed class TimeSpanGrain : Grain<TimeSpanTuple>, ITimeSpanGrain
+internal sealed class TimeSpanGrain : BaseGrain<TimeSpanTuple>, ITimeSpanGrain
 {
     public TimeSpanGrain(
         [PersistentState(ITimeSpanGrain.Key, Constants.StorageName)]

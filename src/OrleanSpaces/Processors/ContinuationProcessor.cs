@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
+using OrleanSpaces.Channels;
+using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Continuations;
+namespace OrleanSpaces.Processors;
 
 internal sealed class ContinuationProcessor<TTuple, TTemplate> : BackgroundService
     where TTuple : ISpaceTuple

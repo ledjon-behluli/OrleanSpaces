@@ -1,27 +1,17 @@
-﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Evaluations;
+﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Observers;
+using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class IntAgent : Agent<int, IntTuple, IntTemplate>
+internal sealed class IntAgent : BaseAgent<int, IntTuple, IntTemplate>
 {
     public IntAgent(
         IClusterClient client,
         EvaluationChannel<IntTuple> evaluationChannel,
-        ObserverChannel<IntTuple> observerChannel,
         ObserverRegistry<IntTuple> observerRegistry,
-        CallbackChannel<IntTuple> callbackChannel,
         CallbackRegistry<int, IntTuple, IntTemplate> callbackRegistry)
-        : base(client, evaluationChannel, observerChannel, observerRegistry, callbackChannel, callbackRegistry) { }
-}
-
-internal sealed class IntAgentProvider : AgentProvider<int, IntTuple, IntTemplate>
-{
-    public IntAgentProvider(IClusterClient client, IntAgent agent) :
-        base(client.GetGrain<IIntGrain>(IIntGrain.Key), agent)
-    { }
+        : base(client.GetGrain<IIntGrain>(IIntGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
 }

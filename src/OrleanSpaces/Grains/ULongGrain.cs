@@ -8,7 +8,7 @@ internal interface IULongGrain : ITupleStore<ULongTuple>, IGrainWithStringKey
     const string Key = "ULongStore";
 }
 
-internal sealed class ULongGrain : Grain<ULongTuple>, IULongGrain
+internal sealed class ULongGrain : BaseGrain<ULongTuple>, IULongGrain
 {
     public ULongGrain(
         [PersistentState(IULongGrain.Key, Constants.StorageName)]

@@ -8,7 +8,7 @@ internal interface IIntGrain : ITupleStore<IntTuple>, IGrainWithStringKey
     const string Key = "IntStore";
 }
 
-internal sealed class IntGrain : Grain<IntTuple>, IIntGrain
+internal sealed class IntGrain : BaseGrain<IntTuple>, IIntGrain
 {
     public IntGrain(
         [PersistentState(IIntGrain.Key, Constants.StorageName)]

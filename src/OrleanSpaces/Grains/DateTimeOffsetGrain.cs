@@ -8,7 +8,7 @@ internal interface IDateTimeOffsetGrain : ITupleStore<DateTimeOffsetTuple>, IGra
     const string Key = "DateTimeOffsetStore";
 }
 
-internal sealed class DateTimeOffsetGrain : Grain<DateTimeOffsetTuple>, IDateTimeOffsetGrain
+internal sealed class DateTimeOffsetGrain : BaseGrain<DateTimeOffsetTuple>, IDateTimeOffsetGrain
 {
     public DateTimeOffsetGrain(
         [PersistentState(IDateTimeOffsetGrain.Key, Constants.StorageName)]

@@ -8,7 +8,7 @@ internal interface IFloatGrain : ITupleStore<FloatTuple>, IGrainWithStringKey
     const string Key = "FloatStore";
 }
 
-internal sealed class FloatGrain : Grain<FloatTuple>, IFloatGrain
+internal sealed class FloatGrain : BaseGrain<FloatTuple>, IFloatGrain
 {
     public FloatGrain(
         [PersistentState(IFloatGrain.Key, Constants.StorageName)]
