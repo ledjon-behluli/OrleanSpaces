@@ -18,8 +18,9 @@ internal class Agent<T, TTuple, TTemplate> :
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
-    private readonly static object _lock = new();
+    private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
+    private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty;
 
     private readonly IClusterClient client;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
@@ -28,11 +29,9 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
-    private Channel<TTuple>? streamChannel;
-    private ImmutableArray<TTuple> tuples;
-
     [AllowNull] private ITupleStore<TTuple> tupleStore;
-    
+    private Channel<TTuple>? streamChannel;
+
     public Agent(
         IClusterClient client,
         EvaluationChannel<TTuple> evaluationChannel,
@@ -206,17 +205,21 @@ internal class Agent<T, TTuple, TTemplate> :
 
     public async IAsyncEnumerable<TTuple> ConsumeAsync()
     {
-        if (streamChannel is null)
+        lock (lockObj)
         {
-            streamChannel = Channel.CreateUnbounded<TTuple>(new()
+            if (streamChannel is null)
             {
-                SingleReader = true,
-                SingleWriter = true
-            });
+                streamChannel = Channel.CreateUnbounded<TTuple>(new()
+                {
+                    SingleReader = true,
+                    SingleWriter = true
+                });
 
-            foreach (var tuple in tuples)
-            {
-                _ = streamChannel.Writer.TryWrite(tuple); // will always be able to write to the channel
+
+                foreach (var tuple in tuples)
+                {
+                    _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+                }
             }
         }
 

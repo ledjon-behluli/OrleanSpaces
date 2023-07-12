@@ -19,8 +19,9 @@ internal sealed class SpaceAgent :
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
-    private readonly static object _lock = new();
+    private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
+    private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty;
 
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
@@ -29,10 +30,8 @@ internal sealed class SpaceAgent :
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
 
-    private Channel<SpaceTuple>? streamChannel;
-    private ImmutableArray<SpaceTuple> tuples;
-
     [AllowNull] private ISpaceGrain spaceGrain;
+    private Channel<SpaceTuple>? streamChannel;
 
     public SpaceAgent(
         IClusterClient client,
@@ -205,20 +204,21 @@ internal sealed class SpaceAgent :
 
     public async IAsyncEnumerable<SpaceTuple> ConsumeAsync()
     {
-        if (streamChannel is null)
+        lock (lockObj)
         {
-            lock (_lock)
+            if (streamChannel is null)
             {
                 streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
                 {
                     SingleReader = true,
                     SingleWriter = true
                 });
-            }
 
-            foreach (var tuple in tuples)
-            {
-                _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+
+                foreach (var tuple in tuples)
+                {
+                    _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+                }
             }
         }
 
