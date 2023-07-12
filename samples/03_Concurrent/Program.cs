@@ -16,18 +16,13 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
-
-//Normally you would call "var agent = await provider.GetAsync();" somewhere here.
-//But I want to showcase the thread-safety of the method.
+ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 const string EXCHANGE_KEY = "exchange-key";
 
 await Task.WhenAll(CreateTasks(10, async index =>
 {
-    ISpaceAgent agent = await provider.GetAsync();  // Only to showcase thread-safety (see comment above).
     SpaceTuple tuple = new(EXCHANGE_KEY, index);
-
     await agent.WriteAsync(tuple);
     Console.WriteLine($"WRITER {index}: {tuple}");
 }));
@@ -38,9 +33,7 @@ Console.WriteLine("----------------------");
 
 await Task.WhenAll(CreateTasks(10, async index =>
 {
-    ISpaceAgent agent = await provider.GetAsync();  // Only to showcase thread-safety (see comment above).
     SpaceTuple tuple = await agent.PeekAsync(new(EXCHANGE_KEY, index));
-
     Console.WriteLine($"READER {index}: {tuple}");
 }));
 

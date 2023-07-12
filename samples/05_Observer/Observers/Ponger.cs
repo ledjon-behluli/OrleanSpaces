@@ -4,13 +4,13 @@ using OrleanSpaces.Tuples;
 public class Ponger : SpaceObserver<SpaceTuple>
 {
     private readonly SpaceTemplate template;
-    private readonly ISpaceAgentProvider provider;
+    private readonly ISpaceAgent agent;
 
-    public Ponger(ISpaceAgentProvider provider)
+    public Ponger(ISpaceAgent agent)
     {
         ListenTo(EventType.Expansions);
 
-        this.provider = provider;
+        this.agent = agent;
         template = new("ping", null);
     }
 
@@ -19,8 +19,6 @@ public class Ponger : SpaceObserver<SpaceTuple>
         if (template.Matches(tuple))
         {
             Console.WriteLine("PONG-er: Got it");
-
-            var agent = await provider.GetAsync();
             await agent.WriteAsync(new("pong", DateTime.Now));
         }
     }

@@ -20,8 +20,7 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 // SpaceTuple
 
-var provider1 = client.ServiceProvider.GetRequiredService<ISpaceAgentProvider>();
-var agent1 = await provider1.GetAsync();
+var agent1 = client.ServiceProvider.GetRequiredService<ISpaceAgent>();
 
 SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
@@ -58,8 +57,7 @@ var t1 = await agent1.PopAsync(s_template1);
 
 // IntTuple
 
-var provider2 = client.ServiceProvider.GetRequiredService<IIntAgentProvider>();
-var agent2 = await provider2.GetAsync();
+var agent2 = client.ServiceProvider.GetRequiredService<IIntAgent>();
 
 IntTuple i_tuple1 = new(1, 2, 3);
 IntTemplate i_template1 = new(1, null, 3);

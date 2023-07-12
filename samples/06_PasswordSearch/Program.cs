@@ -62,8 +62,7 @@ while (true)
     break;
 }
 
-ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
-ISpaceAgent agent = await provider.GetAsync();
+ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 List<Slave> slaves = new();
 int size = Math.DivRem(hashPasswordPairs.Count, numOfPasswords, out int remainder);

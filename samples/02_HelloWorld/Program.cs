@@ -16,8 +16,7 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
-ISpaceAgent agent = await provider.GetAsync();
+ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 const string EXCHANGE_KEY = "exchange-key";
 

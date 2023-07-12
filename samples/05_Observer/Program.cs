@@ -25,14 +25,12 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceAgentProvider provider = host.Services.GetRequiredService<ISpaceAgentProvider>();
+ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
-Ponger ponger = new(provider);
+Ponger ponger = new(agent);
 Auditor auditor = new();
 Completer completer = new();
 Archiver archiver = new();
-
-ISpaceAgent agent = await provider.GetAsync();
 
 Console.WriteLine("----------------------");
 Console.WriteLine("Type -u to unsubscribe.");
