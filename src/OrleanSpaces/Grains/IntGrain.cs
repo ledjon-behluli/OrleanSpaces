@@ -12,5 +12,5 @@ internal sealed class IntGrain : Grain<IntTuple>, IIntGrain
 {
     public IntGrain(
         [PersistentState(IIntGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<IntTuple>> space) : base(IIntGrain.Key, space) { }
+        IPersistentState<List<IntTuple>> space) : base(IIntGrain.Key, space) { }
 }

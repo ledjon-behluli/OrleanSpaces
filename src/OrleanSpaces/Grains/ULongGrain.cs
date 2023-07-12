@@ -12,5 +12,5 @@ internal sealed class ULongGrain : Grain<ULongTuple>, IULongGrain
 {
     public ULongGrain(
         [PersistentState(IULongGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<ULongTuple>> space) : base(IULongGrain.Key, space) { }
+        IPersistentState<List<ULongTuple>> space) : base(IULongGrain.Key, space) { }
 }

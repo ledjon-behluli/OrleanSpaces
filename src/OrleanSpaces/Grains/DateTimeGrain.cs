@@ -12,5 +12,5 @@ internal sealed class DateTimeGrain : Grain<DateTimeTuple>, IDateTimeGrain
 {
     public DateTimeGrain(
         [PersistentState(IDateTimeGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<DateTimeTuple>> space) : base(IDateTimeGrain.Key, space) { }
+        IPersistentState<List<DateTimeTuple>> space) : base(IDateTimeGrain.Key, space) { }
 }

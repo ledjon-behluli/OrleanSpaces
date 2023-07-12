@@ -12,5 +12,5 @@ internal sealed class DoubleGrain : Grain<DoubleTuple>, IDoubleGrain
 {
     public DoubleGrain(
         [PersistentState(IDoubleGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<DoubleTuple>> space) : base(IDoubleGrain.Key, space) { }
+        IPersistentState<List<DoubleTuple>> space) : base(IDoubleGrain.Key, space) { }
 }

@@ -12,5 +12,5 @@ internal sealed class TimeSpanGrain : Grain<TimeSpanTuple>, ITimeSpanGrain
 {
     public TimeSpanGrain(
         [PersistentState(ITimeSpanGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<TimeSpanTuple>> space) : base(ITimeSpanGrain.Key, space) { }
+        IPersistentState<List<TimeSpanTuple>> space) : base(ITimeSpanGrain.Key, space) { }
 }

@@ -12,5 +12,5 @@ internal sealed class CharGrain : Grain<CharTuple>, ICharGrain
 {
     public CharGrain(
         [PersistentState(ICharGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<CharTuple>> space) : base(ICharGrain.Key, space) { }
+        IPersistentState<List<CharTuple>> space) : base(ICharGrain.Key, space) { }
 }

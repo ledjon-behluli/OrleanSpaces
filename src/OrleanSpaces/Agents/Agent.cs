@@ -6,6 +6,7 @@ using OrleanSpaces.Evaluations;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
@@ -17,7 +18,9 @@ internal class Agent<T, TTuple, TTemplate> :
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
+    private readonly static object _lock = new();
     private readonly Guid agentId = Guid.NewGuid();
+
     private readonly IClusterClient client;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverChannel<TTuple> observerChannel;
@@ -25,11 +28,11 @@ internal class Agent<T, TTuple, TTemplate> :
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
+    private Channel<TTuple>? streamChannel;
+    private ImmutableArray<TTuple> tuples;
+
     [AllowNull] private ITupleStore<TTuple> tupleStore;
     
-    private Channel<TTuple>? streamChannel;
-    private HashSet<TTuple> tuples = new();
-
     public Agent(
         IClusterClient client,
         EvaluationChannel<TTuple> evaluationChannel,
@@ -48,7 +51,7 @@ internal class Agent<T, TTuple, TTemplate> :
 
     async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(ITupleStore<TTuple> store)
     {
-        tuples = (await store.GetAll()).ToHashSet();
+        tuples = await store.GetAll();
         StreamId streamId = await store.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
@@ -65,7 +68,7 @@ internal class Agent<T, TTuple, TTemplate> :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Add(action.Tuple);
+                ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
@@ -82,7 +85,7 @@ internal class Agent<T, TTuple, TTemplate> :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Remove(action.Tuple);
+                ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
             }
 
             return;
@@ -92,7 +95,7 @@ internal class Agent<T, TTuple, TTemplate> :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Clear();
+                ImmutableHelpers<TTuple>.Clear(ref tuples);
             }
         }
     }
@@ -120,8 +123,10 @@ internal class Agent<T, TTuple, TTemplate> :
     public async Task WriteAsync(TTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
+
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        tuples.Add(tuple);
+
+        ImmutableHelpers<TTuple>.Add(ref tuples, tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -159,7 +164,7 @@ internal class Agent<T, TTuple, TTemplate> :
         if (tuple.Length > 0)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            tuples.Remove(tuple);
+            ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
         }
 
         return tuple;
@@ -176,7 +181,7 @@ internal class Agent<T, TTuple, TTemplate> :
             await callback(tuple);
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-            tuples.Remove(tuple);
+            ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
         }
         else
         {
@@ -221,12 +226,12 @@ internal class Agent<T, TTuple, TTemplate> :
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Count);
+    public ValueTask<int> CountAsync() => new(tuples.Length);
 
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        tuples.Clear();
+        ImmutableHelpers<TTuple>.Clear(ref tuples);
     }
 
     #endregion

@@ -12,5 +12,5 @@ internal sealed class SByteGrain : Grain<SByteTuple>, ISByteGrain
 {
     public SByteGrain(
         [PersistentState(ISByteGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<SByteTuple>> space) : base(ISByteGrain.Key, space) { }
+        IPersistentState<List<SByteTuple>> space) : base(ISByteGrain.Key, space) { }
 }

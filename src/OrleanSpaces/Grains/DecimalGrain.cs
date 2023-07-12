@@ -12,5 +12,5 @@ internal sealed class DecimalGrain : Grain<DecimalTuple>, IDecimalGrain
 {
     public DecimalGrain(
         [PersistentState(IDecimalGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<DecimalTuple>> space) : base(IDecimalGrain.Key, space) { }
+        IPersistentState<List<DecimalTuple>> space) : base(IDecimalGrain.Key, space) { }
 }

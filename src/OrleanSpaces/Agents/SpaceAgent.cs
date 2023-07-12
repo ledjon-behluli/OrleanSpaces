@@ -9,18 +9,19 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using Orleans.Runtime;
 using System.Threading.Channels;
-using Orleans.Concurrency;
+using System.Collections.Immutable;
 
 namespace OrleanSpaces.Agents;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-[StatelessWorker(1)]
-internal sealed class SpaceAgent : 
+internal sealed class SpaceAgent :
     ISpaceAgent,
     ITupleRouter<SpaceTuple, SpaceTemplate>,
     IAsyncObserver<TupleAction<SpaceTuple>>
 {
+    private readonly static object _lock = new();
     private readonly Guid agentId = Guid.NewGuid();
+
     private readonly IClusterClient client;
     private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
@@ -28,11 +29,11 @@ internal sealed class SpaceAgent :
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
 
-    [AllowNull] private ISpaceGrain spaceGrain;
-    
     private Channel<SpaceTuple>? streamChannel;
-    private HashSet<SpaceTuple> tuples = new();
-  
+    private ImmutableArray<SpaceTuple> tuples;
+
+    [AllowNull] private ISpaceGrain spaceGrain;
+
     public SpaceAgent(
         IClusterClient client,
         CallbackRegistry callbackRegistry,
@@ -51,7 +52,7 @@ internal sealed class SpaceAgent :
 
     public async Task InitializeAsync(ISpaceGrain grain)
     {
-        tuples = (await grain.GetAll()).ToHashSet();
+        tuples = await grain.GetAll();
         StreamId streamId = await grain.GetStreamId();
         await client.SubscribeAsync(this, streamId);
 
@@ -68,7 +69,7 @@ internal sealed class SpaceAgent :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Add(action.Tuple);
+                ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
             }
 
             await callbackChannel.Writer.WriteAsync(action.Tuple);
@@ -85,7 +86,7 @@ internal sealed class SpaceAgent :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Remove(action.Tuple);
+                ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
             }
 
             return;
@@ -95,7 +96,7 @@ internal sealed class SpaceAgent :
         {
             if (action.AgentId != agentId)
             {
-                tuples.Clear();
+                ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
             }
         }
     }
@@ -124,7 +125,7 @@ internal sealed class SpaceAgent :
     {
         ThrowHelpers.EmptyTuple(tuple);
         await spaceGrain.Insert(new(agentId, tuple, TupleActionType.Insert));
-        tuples.Add(tuple);
+        ImmutableHelpers<SpaceTuple>.Add(ref tuples, tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -162,7 +163,7 @@ internal sealed class SpaceAgent :
         if (tuple.Length > 0)
         {
             await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
-            tuples.Remove(tuple);
+            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
         }
 
         return tuple;
@@ -171,7 +172,7 @@ internal sealed class SpaceAgent :
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
-     
+
         SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
         if (tuple.Length > 0)
@@ -179,7 +180,7 @@ internal sealed class SpaceAgent :
             await callback(tuple);
             await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-            tuples.Remove(tuple);
+            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
         }
         else
         {
@@ -206,11 +207,14 @@ internal sealed class SpaceAgent :
     {
         if (streamChannel is null)
         {
-            streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
+            lock (_lock)
             {
-                SingleReader = true,
-                SingleWriter = true
-            });
+                streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
+                {
+                    SingleReader = true,
+                    SingleWriter = true
+                });
+            }
 
             foreach (var tuple in tuples)
             {
@@ -218,18 +222,18 @@ internal sealed class SpaceAgent :
             }
         }
 
-        await foreach(SpaceTuple tuple in streamChannel.Reader.ReadAllAsync())
+        await foreach (SpaceTuple tuple in streamChannel.Reader.ReadAllAsync())
         {
             yield return tuple;
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Count);
+    public ValueTask<int> CountAsync() => new(tuples.Length);
 
     public async Task ClearAsync()
     {
         await spaceGrain.RemoveAll(agentId);
-        tuples.Clear();
+        ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
     }
 
     #endregion

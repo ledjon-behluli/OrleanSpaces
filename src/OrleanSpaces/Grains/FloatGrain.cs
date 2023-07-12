@@ -12,5 +12,5 @@ internal sealed class FloatGrain : Grain<FloatTuple>, IFloatGrain
 {
     public FloatGrain(
         [PersistentState(IFloatGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<FloatTuple>> space) : base(IFloatGrain.Key, space) { }
+        IPersistentState<List<FloatTuple>> space) : base(IFloatGrain.Key, space) { }
 }

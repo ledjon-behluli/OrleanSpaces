@@ -13,5 +13,5 @@ internal sealed class UShortGrain : Grain<UShortTuple>, IUShortGrain
 {
     public UShortGrain(
         [PersistentState(IUShortGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<UShortTuple>> space) : base(IUShortGrain.Key, space) { }
+        IPersistentState<List<UShortTuple>> space) : base(IUShortGrain.Key, space) { }
 }

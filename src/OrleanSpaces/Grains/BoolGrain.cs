@@ -12,5 +12,5 @@ internal sealed class BoolGrain : Grain<BoolTuple>, IBoolGrain
 {
     public BoolGrain(
         [PersistentState(IBoolGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<BoolTuple>> space) : base(IBoolGrain.Key, space) { }
+        IPersistentState<List<BoolTuple>> space) : base(IBoolGrain.Key, space) { }
 }

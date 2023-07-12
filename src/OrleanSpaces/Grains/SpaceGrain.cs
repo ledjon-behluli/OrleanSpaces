@@ -12,5 +12,5 @@ internal sealed class SpaceGrain : Grain<SpaceTuple>, ISpaceGrain
 {
     public SpaceGrain(
         [PersistentState(ISpaceGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<SpaceTuple>> space) : base(ISpaceGrain.Key, space) { }
+        IPersistentState<List<SpaceTuple>> space) : base(ISpaceGrain.Key, space) { }
 }

@@ -12,5 +12,5 @@ internal sealed class DateTimeOffsetGrain : Grain<DateTimeOffsetTuple>, IDateTim
 {
     public DateTimeOffsetGrain(
         [PersistentState(IDateTimeOffsetGrain.Key, Constants.StorageName)]
-        IPersistentState<HashSet<DateTimeOffsetTuple>> space) : base(IDateTimeOffsetGrain.Key, space) { }
+        IPersistentState<List<DateTimeOffsetTuple>> space) : base(IDateTimeOffsetGrain.Key, space) { }
 }
