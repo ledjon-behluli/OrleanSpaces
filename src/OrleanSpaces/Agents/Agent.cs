@@ -207,26 +207,24 @@ internal class Agent<T, TTuple, TTemplate> :
     #endregion
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal class StreamProcessor<T, TTuple> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
-    where T : unmanaged
-    where TTuple : ISpaceTuple<T>
+internal class StreamProcessor<TTuple> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
+    where TTuple : ISpaceTuple
 {
+    private readonly string key;
     private readonly IClusterClient client;
-    private readonly ITupleStore<TTuple> tupleStore;
     private readonly ITupleActionReceiver<TTuple> receiver;
     private readonly ObserverChannel<TTuple> observerChannel;
     private readonly CallbackChannel<TTuple> callbackChannel;
 
     public StreamProcessor(
+        string key,
         IClusterClient client,
-        ITupleStore<TTuple> tupleStore,
         ITupleActionReceiver<TTuple> receiver,
         ObserverChannel<TTuple> observerChannel,
         CallbackChannel<TTuple> callbackChannel)
     {
+        this.key = key ?? throw new ArgumentNullException(nameof(key));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
-        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
         this.receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
@@ -234,9 +232,7 @@ internal class StreamProcessor<T, TTuple> : BackgroundService, IAsyncObserver<Tu
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        StreamId streamId = await tupleStore.GetStreamId();
-        await client.SubscribeAsync(this, streamId);
-
+        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, key));
         while (!cancellationToken.IsCancellationRequested)
         {
 

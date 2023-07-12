@@ -7,9 +7,6 @@ using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
 using System.Threading.Channels;
 using System.Collections.Immutable;
-using Microsoft.Extensions.Hosting;
-using Orleans.Runtime;
-using Orleans.Streams;
 
 namespace OrleanSpaces.Agents;
 
@@ -204,59 +201,12 @@ internal sealed class SpaceAgent :
 }
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class SpaceStreamProcessor : BackgroundService, IAsyncObserver<TupleAction<SpaceTuple>>
+internal sealed class SpaceStreamProcessor : StreamProcessor<SpaceTuple>
 {
-    private readonly IClusterClient client;
-    private readonly ITupleActionReceiver<SpaceTuple> receiver;
-    private readonly ObserverChannel<SpaceTuple> observerChannel;
-    private readonly CallbackChannel<SpaceTuple> callbackChannel;
-
     public SpaceStreamProcessor(
         IClusterClient client,
         ITupleActionReceiver<SpaceTuple> receiver,
         ObserverChannel<SpaceTuple> observerChannel,
         CallbackChannel<SpaceTuple> callbackChannel)
-    {
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
-        this.receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
-        this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
-        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-    {
-        StreamId streamId = await client.GetGrain<ISpaceGrain>(ISpaceGrain.Key).GetStreamId();
-        await client.SubscribeAsync(this, streamId);
-
-        while (!cancellationToken.IsCancellationRequested)
-        {
-
-        }
-    }
-
-    public async Task OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken? token = null)
-    {
-        await observerChannel.Writer.WriteAsync(action);
-
-        switch (action.Type)
-        {
-            case TupleActionType.Insert:
-                {
-                    receiver.Add(action);
-                    await callbackChannel.Writer.WriteAsync(action.Tuple);
-                }
-                break;
-            case TupleActionType.Remove:
-                receiver.Remove(action);
-                break;
-            case TupleActionType.Clear:
-                receiver.Clear(action);
-                break;
-            default:
-                throw new NotSupportedException();
-        }
-    }
-
-    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
+        : base(ISpaceGrain.Key, client, receiver, observerChannel, callbackChannel) { }
 }

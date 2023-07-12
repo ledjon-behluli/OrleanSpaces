@@ -14,15 +14,16 @@ internal sealed class BoolAgent : Agent<bool, BoolTuple, BoolTemplate>
         EvaluationChannel<BoolTuple> evaluationChannel,
         ObserverRegistry<BoolTuple> observerRegistry,
         CallbackRegistry<bool, BoolTuple, BoolTemplate> callbackRegistry)
-        : base(client, evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(client.GetGrain<IBoolGrain>(IBoolGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
 }
 
-internal sealed class BoolStreamProcessor : StreamProcessor<bool, BoolTuple>
+[ImplicitStreamSubscription(Constants.StreamName)]
+internal sealed class BoolStreamProcessor : StreamProcessor<BoolTuple>
 {
     public BoolStreamProcessor(
         IClusterClient client,
         ITupleActionReceiver<BoolTuple> receiver,
         ObserverChannel<BoolTuple> observerChannel,
         CallbackChannel<BoolTuple> callbackChannel)
-        : base(client, client.GetGrain<IBoolGrain>(IBoolGrain.Key), receiver, observerChannel, callbackChannel) { }
+        : base(IBoolGrain.Key, client, receiver, observerChannel, callbackChannel) { }
 }

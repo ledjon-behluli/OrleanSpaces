@@ -38,6 +38,7 @@ public static class Extensions
             builder.Services.AddSingleton<ITupleActionReceiver<SpaceTuple>>(sp => sp.GetRequiredService<SpaceAgent>());
             builder.Services.AddSingleton<ITupleRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
 
+            builder.Services.AddHostedService<SpaceStreamProcessor>();
             builder.Services.AddHostedService<CallbackProcessor>();
             builder.Services.AddHostedService<ObserverProcessor<SpaceTuple>>();
             builder.Services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
@@ -59,6 +60,7 @@ public static class Extensions
             builder.Services.AddSingleton<ITupleActionReceiver<BoolTuple>>(sp => sp.GetRequiredService<BoolAgent>());
             builder.Services.AddSingleton<ITupleRouter<BoolTuple, BoolTemplate>>(sp => sp.GetRequiredService<BoolAgent>());
 
+            builder.Services.AddHostedService<BoolStreamProcessor>();
             builder.Services.AddHostedService<ObserverProcessor<BoolTuple>>();
             builder.Services.AddHostedService<CallbackProcessor<bool, BoolTuple, BoolTemplate>>();
             builder.Services.AddHostedService<EvaluationProcessor<BoolTuple, BoolTemplate>>();
@@ -80,6 +82,7 @@ public static class Extensions
             builder.Services.AddSingleton<ITupleActionReceiver<ByteTuple>>(sp => sp.GetRequiredService<ByteAgent>());
             builder.Services.AddSingleton<ITupleRouter<ByteTuple, ByteTemplate>>(sp => sp.GetRequiredService<ByteAgent>());
 
+            builder.Services.AddHostedService<ByteStreamProcessor>();
             builder.Services.AddHostedService<ObserverProcessor<ByteTuple>>();
             builder.Services.AddHostedService<CallbackProcessor<byte, ByteTuple, ByteTemplate>>();
             builder.Services.AddHostedService<EvaluationProcessor<ByteTuple, ByteTemplate>>();
@@ -101,6 +104,7 @@ public static class Extensions
             builder.Services.AddSingleton<ITupleActionReceiver<CharTuple>>(sp => sp.GetRequiredService<CharAgent>());
             builder.Services.AddSingleton<ITupleRouter<CharTuple, CharTemplate>>(sp => sp.GetRequiredService<CharAgent>());
 
+            builder.Services.AddHostedService<StreamProcessor>();
             builder.Services.AddHostedService<ObserverProcessor<CharTuple>>();
             builder.Services.AddHostedService<CallbackProcessor<char, CharTuple, CharTemplate>>();
             builder.Services.AddHostedService<EvaluationProcessor<CharTuple, CharTemplate>>();
