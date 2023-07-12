@@ -1,107 +1,71 @@
-﻿using Orleans.Streams;
-using OrleanSpaces.Callbacks;
+﻿using OrleanSpaces.Callbacks;
 using OrleanSpaces.Evaluations;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Continuations;
-using System.Diagnostics.CodeAnalysis;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Grains;
 using OrleanSpaces.Helpers;
-using Orleans.Runtime;
 using System.Threading.Channels;
 using System.Collections.Immutable;
+using Microsoft.Extensions.Hosting;
+using Orleans.Runtime;
+using Orleans.Streams;
 
 namespace OrleanSpaces.Agents;
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SpaceAgent :
     ISpaceAgent,
-    ITupleRouter<SpaceTuple, SpaceTemplate>,
-    IAsyncObserver<TupleAction<SpaceTuple>>
+    ITupleActionReceiver<SpaceTuple>,
+    ITupleRouter<SpaceTuple, SpaceTemplate>
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
+
+    private readonly ITupleStore<SpaceTuple> tupleStore;
+    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
+    private readonly ObserverRegistry<SpaceTuple> observerRegistry;
+    private readonly CallbackRegistry callbackRegistry;
+
+    private Channel<SpaceTuple>? streamChannel;
     private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty;
 
-    private readonly IClusterClient client;
-    private readonly CallbackRegistry callbackRegistry;
-    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
-    private readonly ObserverChannel<SpaceTuple> observerChannel;
-    private readonly ObserverRegistry<SpaceTuple> observerRegistry;
-    private readonly CallbackChannel<SpaceTuple> callbackChannel;
-
-    [AllowNull] private ISpaceGrain spaceGrain;
-    private Channel<SpaceTuple>? streamChannel;
-
     public SpaceAgent(
-        IClusterClient client,
-        CallbackRegistry callbackRegistry,
+        ITupleStore<SpaceTuple> tupleStore,
         EvaluationChannel<SpaceTuple> evaluationChannel,
-        ObserverChannel<SpaceTuple> observerChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
-        CallbackChannel<SpaceTuple> callbackChannel)
+        CallbackRegistry callbackRegistry)
     {
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
-        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
+        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
-        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-        this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
+        this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    public async Task InitializeAsync(ISpaceGrain grain)
+    #region ITupleActionReceiver
+
+    void ITupleActionReceiver<SpaceTuple>.Add(TupleAction<SpaceTuple> action)
     {
-        tuples = await grain.GetAll();
-        StreamId streamId = await grain.GetStreamId();
-        await client.SubscribeAsync(this, streamId);
-
-        this.spaceGrain = grain;
+        if (action.AgentId != agentId)
+        {
+            ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
+        }
     }
 
-    #region IAsyncObserver
-
-    async Task IAsyncObserver<TupleAction<SpaceTuple>>.OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken? token)
+    void ITupleActionReceiver<SpaceTuple>.Remove(TupleAction<SpaceTuple> action)
     {
-        await observerChannel.Writer.WriteAsync(action);
-
-        if (action.Type == TupleActionType.Insert)
+        if (action.AgentId != agentId)
         {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
-            }
-
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
-
-            if (streamChannel is not null)
-            {
-                await streamChannel.Writer.WriteAsync(action.Tuple);
-            }
-
-            return;
-        }
-
-        if (action.Type == TupleActionType.Remove)
-        {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
-            }
-
-            return;
-        }
-
-        if (action.Type == TupleActionType.Clear)
-        {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
-            }
+            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
         }
     }
 
-    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    void ITupleActionReceiver<SpaceTuple>.Clear(TupleAction<SpaceTuple> action)
+    {
+        if (action.AgentId != agentId)
+        {
+            ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
+        }
+    }
 
     #endregion
 
@@ -123,7 +87,7 @@ internal sealed class SpaceAgent :
     public async Task WriteAsync(SpaceTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        await spaceGrain.Insert(new(agentId, tuple, TupleActionType.Insert));
+        await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         ImmutableHelpers<SpaceTuple>.Add(ref tuples, tuple);
     }
 
@@ -161,7 +125,7 @@ internal sealed class SpaceAgent :
 
         if (tuple.Length > 0)
         {
-            await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
             ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
         }
 
@@ -177,7 +141,7 @@ internal sealed class SpaceAgent :
         if (tuple.Length > 0)
         {
             await callback(tuple);
-            await spaceGrain.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
             ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
         }
@@ -232,50 +196,67 @@ internal sealed class SpaceAgent :
 
     public async Task ClearAsync()
     {
-        await spaceGrain.RemoveAll(agentId);
+        await tupleStore.RemoveAll(agentId);
         ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
     }
 
     #endregion
 }
 
-internal sealed class SpaceAgentProvider : ISpaceAgentProvider
+[ImplicitStreamSubscription(Constants.StreamName)]
+internal sealed class SpaceStreamProcessor : BackgroundService, IAsyncObserver<TupleAction<SpaceTuple>>
 {
-    private static readonly SemaphoreSlim semaphore = new(1, 1);
-
     private readonly IClusterClient client;
-    private readonly SpaceAgent agent;
+    private readonly ITupleActionReceiver<SpaceTuple> receiver;
+    private readonly ObserverChannel<SpaceTuple> observerChannel;
+    private readonly CallbackChannel<SpaceTuple> callbackChannel;
 
-    private bool initialized;
-
-    public SpaceAgentProvider(
+    public SpaceStreamProcessor(
         IClusterClient client,
-        SpaceAgent agent)
+        ITupleActionReceiver<SpaceTuple> receiver,
+        ObserverChannel<SpaceTuple> observerChannel,
+        CallbackChannel<SpaceTuple> callbackChannel)
     {
-        this.client = client;
-        this.agent = agent;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+        this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
+        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
     }
 
-    public async ValueTask<ISpaceAgent> GetAsync()
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        if (initialized)
-        {
-            return agent;
-        }
+        StreamId streamId = await client.GetGrain<ISpaceGrain>(ISpaceGrain.Key).GetStreamId();
+        await client.SubscribeAsync(this, streamId);
 
-        await semaphore.WaitAsync();
-
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            var grain = client.GetGrain<ISpaceGrain>(ISpaceGrain.Key);
-            await agent.InitializeAsync(grain);
-            initialized = true;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
 
-        return agent;
+        }
     }
+
+    public async Task OnNextAsync(TupleAction<SpaceTuple> action, StreamSequenceToken? token = null)
+    {
+        await observerChannel.Writer.WriteAsync(action);
+
+        switch (action.Type)
+        {
+            case TupleActionType.Insert:
+                {
+                    receiver.Add(action);
+                    await callbackChannel.Writer.WriteAsync(action.Tuple);
+                }
+                break;
+            case TupleActionType.Remove:
+                receiver.Remove(action);
+                break;
+            case TupleActionType.Clear:
+                receiver.Clear(action);
+                break;
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<TupleAction<SpaceTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 }

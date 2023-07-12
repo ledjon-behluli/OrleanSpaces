@@ -1,4 +1,5 @@
-﻿using Orleans.Runtime;
+﻿using Microsoft.Extensions.Hosting;
+using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Callbacks;
 using OrleanSpaces.Continuations;
@@ -7,100 +8,66 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Observers;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
 
 internal class Agent<T, TTuple, TTemplate> :
-    ISpaceAgent<T, TTuple, TTemplate>, ITupleRouter<TTuple, TTemplate>, IAsyncObserver<TupleAction<TTuple>>
+    ISpaceAgent<T, TTuple, TTemplate>,
+    ITupleActionReceiver<TTuple>, 
+    ITupleRouter<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-    private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty;
 
-    private readonly IClusterClient client;
+    private readonly ITupleStore<TTuple> tupleStore;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
-    private readonly ObserverChannel<TTuple> observerChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
-    private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
-    [AllowNull] private ITupleStore<TTuple> tupleStore;
     private Channel<TTuple>? streamChannel;
+    private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty;
 
     public Agent(
-        IClusterClient client,
+        ITupleStore<TTuple> tupleStore,
         EvaluationChannel<TTuple> evaluationChannel,
-        ObserverChannel<TTuple> observerChannel,
         ObserverRegistry<TTuple> observerRegistry,
-        CallbackChannel<TTuple> callbackChannel,
         CallbackRegistry<T, TTuple, TTemplate> callbackRegistry)
     {
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
-        this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
-        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    async Task ISpaceAgent<T, TTuple, TTemplate>.InitializeAsync(ITupleStore<TTuple> store)
+    #region ITupleActionReceiver
+
+    void ITupleActionReceiver<TTuple>.Add(TupleAction<TTuple> action)
     {
-        tuples = await store.GetAll();
-        StreamId streamId = await store.GetStreamId();
-        await client.SubscribeAsync(this, streamId);
-
-        this.tupleStore = store;
-    }
-
-    #region IAsyncObserver
-
-    async Task IAsyncObserver<TupleAction<TTuple>>.OnNextAsync(TupleAction<TTuple> action, StreamSequenceToken? token)
-    {
-        await observerChannel.Writer.WriteAsync(action);
-
-        if (action.Type == TupleActionType.Insert)
+        if (action.AgentId != agentId)
         {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
-            }
-
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
-
-            if (streamChannel is not null)
-            {
-                await streamChannel.Writer.WriteAsync(action.Tuple);
-            }
-
-            return;
-        }
-
-        if (action.Type == TupleActionType.Remove)
-        {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
-            }
-
-            return;
-        }
-
-        if (action.Type == TupleActionType.Clear)
-        {
-            if (action.AgentId != agentId)
-            {
-                ImmutableHelpers<TTuple>.Clear(ref tuples);
-            }
+            ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
         }
     }
 
-    Task IAsyncObserver<TupleAction<TTuple>>.OnCompletedAsync() => Task.CompletedTask;
-    Task IAsyncObserver<TupleAction<TTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
+    void ITupleActionReceiver<TTuple>.Remove(TupleAction<TTuple> action)
+    {
+        if (action.AgentId != agentId)
+        {
+            ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
+        }
+    }
+
+    void ITupleActionReceiver<TTuple>.Clear(TupleAction<TTuple> action)
+    {
+        if (action.AgentId != agentId)
+        {
+            ImmutableHelpers<TTuple>.Clear(ref tuples);
+        }
+    }
 
     #endregion
 
@@ -240,45 +207,65 @@ internal class Agent<T, TTuple, TTemplate> :
     #endregion
 }
 
-internal class AgentProvider<T, TTuple, TTemplate> : ISpaceAgentProvider<T, TTuple, TTemplate>
+[ImplicitStreamSubscription(Constants.StreamName)]
+internal class StreamProcessor<T, TTuple> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
     where T : unmanaged
     where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
 {
-    private static readonly SemaphoreSlim semaphore = new(1, 1);
+    private readonly IClusterClient client;
+    private readonly ITupleStore<TTuple> tupleStore;
+    private readonly ITupleActionReceiver<TTuple> receiver;
+    private readonly ObserverChannel<TTuple> observerChannel;
+    private readonly CallbackChannel<TTuple> callbackChannel;
 
-    private readonly ITupleStore<TTuple> store;
-    private readonly ISpaceAgent<T, TTuple, TTemplate> agent;
-
-    private bool initialized;
-
-    public AgentProvider(
-        ITupleStore<TTuple> store,
-        ISpaceAgent<T, TTuple, TTemplate> agent)
+    public StreamProcessor(
+        IClusterClient client,
+        ITupleStore<TTuple> tupleStore,
+        ITupleActionReceiver<TTuple> receiver,
+        ObserverChannel<TTuple> observerChannel,
+        CallbackChannel<TTuple> callbackChannel)
     {
-        this.store = store;
-        this.agent = agent;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
+        this.receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+        this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
+        this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
     }
 
-    public async ValueTask<ISpaceAgent<T, TTuple, TTemplate>> GetAsync()
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        if (initialized)
-        {
-            return agent;
-        }
+        StreamId streamId = await tupleStore.GetStreamId();
+        await client.SubscribeAsync(this, streamId);
 
-        await semaphore.WaitAsync();
-
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            await agent.InitializeAsync(store);
-            initialized = true;
-        }
-        finally
-        {
-            semaphore.Release();
-        }
 
-        return agent;
+        }
     }
+
+    public async Task OnNextAsync(TupleAction<TTuple> action, StreamSequenceToken? token = null)
+    {
+        await observerChannel.Writer.WriteAsync(action);
+
+        switch (action.Type)
+        {
+            case TupleActionType.Insert:
+                {
+                    receiver.Add(action);
+                    await callbackChannel.Writer.WriteAsync(action.Tuple);
+                }
+                break;
+            case TupleActionType.Remove:
+                receiver.Remove(action);
+                break;
+            case TupleActionType.Clear:
+                receiver.Clear(action);
+                break;
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    Task IAsyncObserver<TupleAction<TTuple>>.OnCompletedAsync() => Task.CompletedTask;
+    Task IAsyncObserver<TupleAction<TTuple>>.OnErrorAsync(Exception e) => Task.CompletedTask;
 }

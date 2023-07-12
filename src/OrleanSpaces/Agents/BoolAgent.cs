@@ -12,16 +12,17 @@ internal sealed class BoolAgent : Agent<bool, BoolTuple, BoolTemplate>
     public BoolAgent(
         IClusterClient client,
         EvaluationChannel<BoolTuple> evaluationChannel,
-        ObserverChannel<BoolTuple> observerChannel,
         ObserverRegistry<BoolTuple> observerRegistry,
-        CallbackChannel<BoolTuple> callbackChannel,
         CallbackRegistry<bool, BoolTuple, BoolTemplate> callbackRegistry)
-        : base(client, evaluationChannel, observerChannel, observerRegistry, callbackChannel, callbackRegistry) { }
+        : base(client, evaluationChannel, observerRegistry, callbackRegistry) { }
 }
 
-internal sealed class BoolAgentProvider : AgentProvider<bool, BoolTuple, BoolTemplate>
+internal sealed class BoolStreamProcessor : StreamProcessor<bool, BoolTuple>
 {
-    public BoolAgentProvider(IClusterClient client, BoolAgent agent) :
-        base(client.GetGrain<IBoolGrain>(IBoolGrain.Key), agent)
-    { }
+    public BoolStreamProcessor(
+        IClusterClient client,
+        ITupleActionReceiver<BoolTuple> receiver,
+        ObserverChannel<BoolTuple> observerChannel,
+        CallbackChannel<BoolTuple> callbackChannel)
+        : base(client, client.GetGrain<IBoolGrain>(IBoolGrain.Key), receiver, observerChannel, callbackChannel) { }
 }
