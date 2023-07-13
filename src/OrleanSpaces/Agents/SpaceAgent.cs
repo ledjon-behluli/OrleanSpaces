@@ -5,6 +5,7 @@ using System.Threading.Channels;
 using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
+using OrleanSpaces.Grains;
 
 namespace OrleanSpaces.Agents;
 
@@ -25,12 +26,12 @@ internal sealed class SpaceAgent :
     private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty;
 
     public SpaceAgent(
-        ITupleStore<SpaceTuple> tupleStore,
+        IClusterClient client,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
         CallbackRegistry callbackRegistry)
     {
-        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
+        tupleStore = (client ?? throw new ArgumentNullException(nameof(tupleStore))).GetGrain<ISpaceGrain>(ISpaceGrain.Key);
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));

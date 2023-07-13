@@ -25,7 +25,8 @@ var agent1 = client.ServiceProvider.GetRequiredService<ISpaceAgent>();
 SpaceTuple s_tuple1 = new(1, "2", 3);
 SpaceTemplate s_template1 = new(1, null, 3);
 
-//await agent1.WriteAsync(s_tuple1);
+await agent1.WriteAsync(s_tuple1);
+var t = await agent1.PeekAsync(s_template1);
 
 _ = Task.Run(async () =>
 {
