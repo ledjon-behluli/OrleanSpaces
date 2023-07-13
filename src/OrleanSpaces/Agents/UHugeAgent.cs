@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class UHugeAgent : BaseAgent<UInt128, UHugeTuple, UHugeTemplate>
 {
     public UHugeAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<UHugeTuple> evaluationChannel,
         ObserverRegistry<UHugeTuple> observerRegistry,
         CallbackRegistry<UInt128, UHugeTuple, UHugeTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

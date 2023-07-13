@@ -21,7 +21,7 @@
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-	  <PackageReference Include="Microsoft.Orleans.TestingHost" Version="7.2.0" />
+	  <PackageReference Include="Microsoft.Orleans.TestingHost" Version="7.2.1" />
   </ItemGroup>
 
   <ItemGroup>

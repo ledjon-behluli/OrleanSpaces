@@ -5,6 +5,7 @@ public sealed class SpaceOptions
     public SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
     public bool HandleEvaluationExceptions { get; set; } = true;
     public bool HandleCallbackExceptions { get; set; } = true;
+    public bool AllowMultipleAgentStreamConsumers { get; set; } = true;
 }
 
 [Flags]

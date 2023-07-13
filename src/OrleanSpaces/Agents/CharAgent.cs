@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class CharAgent : BaseAgent<char, CharTuple, CharTemplate>
 {
     public CharAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<CharTuple> evaluationChannel,
         ObserverRegistry<CharTuple> observerRegistry,
         CallbackRegistry<char, CharTuple, CharTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

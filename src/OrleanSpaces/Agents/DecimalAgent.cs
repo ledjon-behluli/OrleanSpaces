@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class DecimalAgent : BaseAgent<decimal, DecimalTuple, DecimalTemplate>
 {
     public DecimalAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<DecimalTuple> evaluationChannel,
         ObserverRegistry<DecimalTuple> observerRegistry,
         CallbackRegistry<decimal, DecimalTuple, DecimalTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

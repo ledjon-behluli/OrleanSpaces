@@ -18,7 +18,7 @@ internal class BaseAgent<T, TTuple, TTemplate> :
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-
+    private readonly SpaceOptions options;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
@@ -28,10 +28,12 @@ internal class BaseAgent<T, TTuple, TTemplate> :
     private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty; // chosen for thread safety reasons
 
     public BaseAgent(
+        SpaceOptions options,
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverRegistry<TTuple> observerRegistry,
         CallbackRegistry<T, TTuple, TTemplate> callbackRegistry)
     {
+        this.options = options;
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
@@ -178,7 +180,7 @@ internal class BaseAgent<T, TTuple, TTemplate> :
             {
                 streamChannel = Channel.CreateUnbounded<TTuple>(new()
                 {
-                    SingleReader = true,
+                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 

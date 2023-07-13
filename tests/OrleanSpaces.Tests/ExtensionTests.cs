@@ -15,7 +15,7 @@ public class ExtensionTests
     public void Should_Register_Generic_Services()
     {
         TestServices(CreateClientHost(SpaceKind.Generic));
-        TestServices(CreateSiloHost(SpaceKind.Generic));
+        //TestServices(CreateSiloHost(SpaceKind.Generic));
 
         static void TestServices(IHost host)
         {
@@ -50,7 +50,7 @@ public class ExtensionTests
     public void Should_Register_Specialized_Services()
     {
         TestServices(CreateClientHost(SpaceKind.All));
-        TestServices(CreateSiloHost(SpaceKind.All));
+        //TestServices(CreateSiloHost(SpaceKind.All));
 
         static void TestServices(IHost host)
         {

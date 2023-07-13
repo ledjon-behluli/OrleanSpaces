@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
-using System;
 
 namespace OrleanSpaces.Agents;
 
@@ -16,7 +15,7 @@ internal sealed class SpaceAgent :
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-
+    private readonly SpaceOptions options;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
@@ -26,10 +25,12 @@ internal sealed class SpaceAgent :
     private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty; // chosen for thread safety reasons
 
     public SpaceAgent(
+        SpaceOptions options,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
         CallbackRegistry callbackRegistry)
     {
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
@@ -178,7 +179,7 @@ internal sealed class SpaceAgent :
             {
                 streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
                 {
-                    SingleReader = false,
+                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 

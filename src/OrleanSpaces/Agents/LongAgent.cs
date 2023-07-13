@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class LongAgent : BaseAgent<long, LongTuple, LongTemplate>
 {
     public LongAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<LongTuple> evaluationChannel,
         ObserverRegistry<LongTuple> observerRegistry,
         CallbackRegistry<long, LongTuple, LongTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class HugeAgent : BaseAgent<Int128, HugeTuple, HugeTemplate>
 {
     public HugeAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<HugeTuple> evaluationChannel,
         ObserverRegistry<HugeTuple> observerRegistry,
         CallbackRegistry<Int128, HugeTuple, HugeTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

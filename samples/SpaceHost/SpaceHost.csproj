@@ -11,10 +11,10 @@
 	<ItemGroup>
 		<PackageReference Include="Npgsql" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="7.2.0" />
-		<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="7.2.0" />
-		<PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="7.2.0" />
-		<PackageReference Include="Microsoft.Orleans.Server" Version="7.2.0" />
+		<PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="7.2.1" />
+		<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="7.2.1" />
+		<PackageReference Include="Microsoft.Orleans.Streaming.AzureStorage" Version="7.2.1" />
+		<PackageReference Include="Microsoft.Orleans.Server" Version="7.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>

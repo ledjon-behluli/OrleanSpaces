@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class GuidAgent : BaseAgent<Guid, GuidTuple, GuidTemplate>
 {
     public GuidAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<GuidTuple> evaluationChannel,
         ObserverRegistry<GuidTuple> observerRegistry,
         CallbackRegistry<Guid, GuidTuple, GuidTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }

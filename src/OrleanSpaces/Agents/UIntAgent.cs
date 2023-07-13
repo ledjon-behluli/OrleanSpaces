@@ -8,9 +8,9 @@ namespace OrleanSpaces.Agents;
 internal sealed class UIntAgent : BaseAgent<uint, UIntTuple, UIntTemplate>
 {
     public UIntAgent(
-        IClusterClient client,
+        SpaceOptions options,
         EvaluationChannel<UIntTuple> evaluationChannel,
         ObserverRegistry<UIntTuple> observerRegistry,
         CallbackRegistry<uint, UIntTuple, UIntTemplate> callbackRegistry)
-        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(options, evaluationChannel, observerRegistry, callbackRegistry) { }
 }
