@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class BoolProcessor : BaseProcessor<BoolTuple>
 {
     public BoolProcessor(
         IClusterClient client,
-        ITupleActionReceiver<BoolTuple> receiver,
+        IAgentProcessorBridge<BoolTuple> bridge,
         ObserverChannel<BoolTuple> observerChannel,
         CallbackChannel<BoolTuple> callbackChannel)
-        : base(IBoolGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(IBoolGrain.Key, client, bridge, observerChannel, callbackChannel, 
+            () => client.GetGrain<IBoolGrain>(IBoolGrain.Key)) { }
 }

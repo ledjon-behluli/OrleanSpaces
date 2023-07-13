@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class CharAgent : BaseAgent<char, CharTuple, CharTemplate>
         EvaluationChannel<CharTuple> evaluationChannel,
         ObserverRegistry<CharTuple> observerRegistry,
         CallbackRegistry<char, CharTuple, CharTemplate> callbackRegistry)
-        : base(client.GetGrain<ICharGrain>(ICharGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

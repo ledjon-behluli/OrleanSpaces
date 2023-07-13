@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class DateTimeAgent : BaseAgent<DateTime, DateTimeTuple, DateTim
         EvaluationChannel<DateTimeTuple> evaluationChannel,
         ObserverRegistry<DateTimeTuple> observerRegistry,
         CallbackRegistry<DateTime, DateTimeTuple, DateTimeTemplate> callbackRegistry)
-        : base(client.GetGrain<IDateTimeGrain>(IDateTimeGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

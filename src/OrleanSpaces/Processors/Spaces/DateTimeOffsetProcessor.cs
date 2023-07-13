@@ -2,15 +2,17 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DateTimeOffsetProcessor : BaseProcessor<DateTimeOffsetTuple>
 {
     public DateTimeOffsetProcessor(
         IClusterClient client,
-        ITupleActionReceiver<DateTimeOffsetTuple> receiver,
+        IAgentProcessorBridge<DateTimeOffsetTuple> bridge,
         ObserverChannel<DateTimeOffsetTuple> observerChannel,
         CallbackChannel<DateTimeOffsetTuple> callbackChannel)
-        : base(IDateTimeOffsetGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(IDateTimeOffsetGrain.Key, client, bridge, observerChannel, callbackChannel,
+             () => client.GetGrain<IDateTimeOffsetGrain>(IDateTimeOffsetGrain.Key))
+    { }
 }

@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class TimeSpanAgent : BaseAgent<TimeSpan, TimeSpanTuple, TimeSpa
         EvaluationChannel<TimeSpanTuple> evaluationChannel,
         ObserverRegistry<TimeSpanTuple> observerRegistry,
         CallbackRegistry<TimeSpan, TimeSpanTuple, TimeSpanTemplate> callbackRegistry)
-        : base(client.GetGrain<ITimeSpanGrain>(ITimeSpanGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

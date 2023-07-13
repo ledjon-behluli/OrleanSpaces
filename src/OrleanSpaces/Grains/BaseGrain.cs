@@ -26,7 +26,6 @@ internal abstract class BaseGrain<T> : Grain
         return Task.CompletedTask;
     }
 
-    public ValueTask<StreamId> GetStreamId() => new(streamId);
     public ValueTask<ImmutableArray<T>> GetAll() => new(space.State.ToImmutableArray());
 
     public async Task Insert(TupleAction<T> action)

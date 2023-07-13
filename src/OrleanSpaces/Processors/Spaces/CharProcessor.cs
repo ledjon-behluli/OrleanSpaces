@@ -2,15 +2,17 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class CharProcessor : BaseProcessor<CharTuple>
 {
     public CharProcessor(
         IClusterClient client,
-        ITupleActionReceiver<CharTuple> receiver,
+        IAgentProcessorBridge<CharTuple> bridge,
         ObserverChannel<CharTuple> observerChannel,
         CallbackChannel<CharTuple> callbackChannel)
-        : base(ICharGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(ICharGrain.Key, client, bridge, observerChannel, callbackChannel,
+             () => client.GetGrain<ICharGrain>(ICharGrain.Key))
+    { }
 }

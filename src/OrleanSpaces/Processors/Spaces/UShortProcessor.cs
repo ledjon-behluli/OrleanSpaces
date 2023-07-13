@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UShortProcessor : BaseProcessor<UShortTuple>
 {
     public UShortProcessor(
         IClusterClient client,
-        ITupleActionReceiver<UShortTuple> receiver,
+        IAgentProcessorBridge<UShortTuple> bridge,
         ObserverChannel<UShortTuple> observerChannel,
         CallbackChannel<UShortTuple> callbackChannel)
-        : base(IUShortGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(IUShortGrain.Key, client, bridge, observerChannel, callbackChannel,
+            () => client.GetGrain<IUShortGrain>(IUShortGrain.Key)) { }
 }

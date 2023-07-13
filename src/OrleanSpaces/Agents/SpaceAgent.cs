@@ -5,61 +5,66 @@ using System.Threading.Channels;
 using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
-using OrleanSpaces.Grains;
+using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace OrleanSpaces.Agents;
 
 internal sealed class SpaceAgent :
     ISpaceAgent,
-    ITupleActionReceiver<SpaceTuple>,
+    IAgentProcessorBridge<SpaceTuple>,
     ITupleRouter<SpaceTuple, SpaceTemplate>
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
 
-    private readonly ITupleStore<SpaceTuple> tupleStore;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
 
+    [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
     private Channel<SpaceTuple>? streamChannel;
-    private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty;
+    private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty; // chosen for thread safety reasons
 
     public SpaceAgent(
-        IClusterClient client,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
         CallbackRegistry callbackRegistry)
     {
-        tupleStore = (client ?? throw new ArgumentNullException(nameof(tupleStore))).GetGrain<ISpaceGrain>(ISpaceGrain.Key);
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    #region ITupleActionReceiver
+    #region IAgentProcessorBridge
 
-    void ITupleActionReceiver<SpaceTuple>.Add(TupleAction<SpaceTuple> action)
+    void IAgentProcessorBridge<SpaceTuple>.SetStore(ITupleStore<SpaceTuple> tupleStore) 
+        => this.tupleStore = tupleStore;
+
+    async ValueTask IAgentProcessorBridge<SpaceTuple>.ConsumeAsync(TupleAction<SpaceTuple> action)
     {
         if (action.AgentId != agentId)
         {
-            ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
-        }
-    }
-
-    void ITupleActionReceiver<SpaceTuple>.Remove(TupleAction<SpaceTuple> action)
-    {
-        if (action.AgentId != agentId)
-        {
-            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
-        }
-    }
-
-    void ITupleActionReceiver<SpaceTuple>.Clear(TupleAction<SpaceTuple> action)
-    {
-        if (action.AgentId != agentId)
-        {
-            ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
+            switch (action.Type)
+            {
+                case TupleActionType.Insert:
+                    {
+                        ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
+                        if (streamChannel is not null)
+                        {
+                            await streamChannel.Writer.WriteAsync(action.Tuple);
+                        }
+                    }
+                    break;
+                case TupleActionType.Remove:
+                    ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
+                    break;
+                case TupleActionType.Clear:
+                    ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 
@@ -85,6 +90,10 @@ internal sealed class SpaceAgent :
         ThrowHelpers.EmptyTuple(tuple);
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         ImmutableHelpers<SpaceTuple>.Add(ref tuples, tuple);
+        if (streamChannel is not null)
+        {
+            await streamChannel.Writer.WriteAsync(tuple);
+        }
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -170,7 +179,7 @@ internal sealed class SpaceAgent :
             {
                 streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
                 {
-                    SingleReader = true,
+                    SingleReader = false,
                     SingleWriter = true
                 });
 

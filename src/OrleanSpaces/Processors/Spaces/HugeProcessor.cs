@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class HugeProcessor : BaseProcessor<HugeTuple>
 {
     public HugeProcessor(
         IClusterClient client,
-        ITupleActionReceiver<HugeTuple> receiver,
+        IAgentProcessorBridge<HugeTuple> bridge,
         ObserverChannel<HugeTuple> observerChannel,
         CallbackChannel<HugeTuple> callbackChannel)
-        : base(IHugeGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(IHugeGrain.Key, client, bridge, observerChannel, callbackChannel, 
+            () => client.GetGrain<IHugeGrain>(IHugeGrain.Key)) { }
 }

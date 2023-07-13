@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class LongAgent : BaseAgent<long, LongTuple, LongTemplate>
         EvaluationChannel<LongTuple> evaluationChannel,
         ObserverRegistry<LongTuple> observerRegistry,
         CallbackRegistry<long, LongTuple, LongTemplate> callbackRegistry)
-        : base(client.GetGrain<ILongGrain>(ILongGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

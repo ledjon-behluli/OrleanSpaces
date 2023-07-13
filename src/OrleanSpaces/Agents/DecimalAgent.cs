@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class DecimalAgent : BaseAgent<decimal, DecimalTuple, DecimalTem
         EvaluationChannel<DecimalTuple> evaluationChannel,
         ObserverRegistry<DecimalTuple> observerRegistry,
         CallbackRegistry<decimal, DecimalTuple, DecimalTemplate> callbackRegistry)
-        : base(client.GetGrain<IDecimalGrain>(IDecimalGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

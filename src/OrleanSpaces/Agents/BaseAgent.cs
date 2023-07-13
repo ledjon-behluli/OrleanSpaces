@@ -4,13 +4,14 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
 
 internal class BaseAgent<T, TTuple, TTemplate> :
     ISpaceAgent<T, TTuple, TTemplate>,
-    ITupleActionReceiver<TTuple>, 
+    IAgentProcessorBridge<TTuple>, 
     ITupleRouter<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
@@ -19,49 +20,53 @@ internal class BaseAgent<T, TTuple, TTemplate> :
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
 
-    private readonly ITupleStore<TTuple> tupleStore;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
+    [AllowNull] private ITupleStore<TTuple> tupleStore;
     private Channel<TTuple>? streamChannel;
-    private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty;
+    private ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty; // chosen for thread safety reasons
 
     public BaseAgent(
-        ITupleStore<TTuple> tupleStore,
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverRegistry<TTuple> observerRegistry,
         CallbackRegistry<T, TTuple, TTemplate> callbackRegistry)
     {
-        this.tupleStore = tupleStore ?? throw new ArgumentNullException(nameof(tupleStore));
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    #region ITupleActionReceiver
+    #region IAgentProcessorBridge
 
-    void ITupleActionReceiver<TTuple>.Add(TupleAction<TTuple> action)
+    void IAgentProcessorBridge<TTuple>.SetStore(ITupleStore<TTuple> tupleStore)
+        => this.tupleStore = tupleStore;
+
+    async ValueTask IAgentProcessorBridge<TTuple>.ConsumeAsync(TupleAction<TTuple> action)
     {
         if (action.AgentId != agentId)
         {
-            ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
-        }
-    }
-
-    void ITupleActionReceiver<TTuple>.Remove(TupleAction<TTuple> action)
-    {
-        if (action.AgentId != agentId)
-        {
-            ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
-        }
-    }
-
-    void ITupleActionReceiver<TTuple>.Clear(TupleAction<TTuple> action)
-    {
-        if (action.AgentId != agentId)
-        {
-            ImmutableHelpers<TTuple>.Clear(ref tuples);
+            switch (action.Type)
+            {
+                case TupleActionType.Insert:
+                    {
+                        ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
+                        if (streamChannel is not null)
+                        {
+                            await streamChannel.Writer.WriteAsync(action.Tuple);
+                        }
+                    }
+                    break;
+                case TupleActionType.Remove:
+                    ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
+                    break;
+                case TupleActionType.Clear:
+                    ImmutableHelpers<TTuple>.Clear(ref tuples);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 

@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class FloatProcessor : BaseProcessor<FloatTuple>
 {
     public FloatProcessor(
         IClusterClient client,
-        ITupleActionReceiver<FloatTuple> receiver,
+        IAgentProcessorBridge<FloatTuple> bridge,
         ObserverChannel<FloatTuple> observerChannel,
         CallbackChannel<FloatTuple> callbackChannel)
-        : base(IFloatGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(IFloatGrain.Key, client, bridge, observerChannel, callbackChannel, 
+            () => client.GetGrain<IFloatGrain>(IFloatGrain.Key)) { }
 }

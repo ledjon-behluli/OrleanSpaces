@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class BoolAgent : BaseAgent<bool, BoolTuple, BoolTemplate>
         EvaluationChannel<BoolTuple> evaluationChannel,
         ObserverRegistry<BoolTuple> observerRegistry,
         CallbackRegistry<bool, BoolTuple, BoolTemplate> callbackRegistry)
-        : base(client.GetGrain<IBoolGrain>(IBoolGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples.Specialized;
 
@@ -13,5 +12,5 @@ internal sealed class DoubleAgent : BaseAgent<double, DoubleTuple, DoubleTemplat
         EvaluationChannel<DoubleTuple> evaluationChannel,
         ObserverRegistry<DoubleTuple> observerRegistry,
         CallbackRegistry<double, DoubleTuple, DoubleTemplate> callbackRegistry)
-        : base(client.GetGrain<IDoubleGrain>(IDoubleGrain.Key), evaluationChannel, observerRegistry, callbackRegistry) { }
+        : base(evaluationChannel, observerRegistry, callbackRegistry) { }
 }

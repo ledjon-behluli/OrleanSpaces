@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SByteProcessor : BaseProcessor<SByteTuple>
 {
     public SByteProcessor(
         IClusterClient client,
-        ITupleActionReceiver<SByteTuple> receiver,
+        IAgentProcessorBridge<SByteTuple> bridge,
         ObserverChannel<SByteTuple> observerChannel,
         CallbackChannel<SByteTuple> callbackChannel)
-        : base(ISByteGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(ISByteGrain.Key, client, bridge, observerChannel, callbackChannel,
+            () => client.GetGrain<ISByteGrain>(ISByteGrain.Key)) { }
 }

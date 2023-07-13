@@ -2,15 +2,16 @@
 using OrleanSpaces.Grains;
 using OrleanSpaces.Channels;
 
-namespace OrleanSpaces.Processors.Streams;
+namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SpaceProcessor : BaseProcessor<SpaceTuple>
 {
     public SpaceProcessor(
         IClusterClient client,
-        ITupleActionReceiver<SpaceTuple> receiver,
+        IAgentProcessorBridge<SpaceTuple> bridge,
         ObserverChannel<SpaceTuple> observerChannel,
         CallbackChannel<SpaceTuple> callbackChannel)
-        : base(ISpaceGrain.Key, client, receiver, observerChannel, callbackChannel) { }
+        : base(ISpaceGrain.Key, client, bridge, observerChannel, callbackChannel,
+            () => client.GetGrain<ISpaceGrain>(ISpaceGrain.Key)) { }
 }
