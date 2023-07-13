@@ -12,6 +12,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     const string peek = "peek";
     const string pop = "pop";
     const string scan = "scan";
+    const string consume = "consume";
     const string peekNotAvailable = "peek-not-available";
     const string popNotAvailable = "pop-not-available";
 
@@ -316,6 +317,40 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
         yield return new(scan, 1, "f", 1.7f, 'g', "f");
         yield return new(scan, 2, "f", 1.7f, 'g');
         yield return new(scan, 2, "f", 1.7f, 'g', "f");
+    }
+
+    #endregion
+
+    #region ConsumeAsync
+
+    [Fact]
+    public async Task Should_ConsumeAsync()
+    {
+        SpaceTuple[] tuples = new SpaceTuple[5]
+        {
+            new(consume, 0),
+            new(consume, 1),
+            new(consume, 2),
+            new(consume, 3),
+            new(consume, 4)
+        };
+
+        _ = Task.Run(async () =>
+        {
+            int i = 1;
+            await foreach (SpaceTuple tuple in agent.ConsumeAsync())
+            {
+                Assert.Equal(tuples[i], tuple);
+                i++;
+            }
+        });
+
+        int i = 0;
+        while (i < 5)
+        {
+            await agent.WriteAsync(tuples[i]);
+            i++;
+        }
     }
 
     #endregion
