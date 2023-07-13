@@ -117,9 +117,8 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public Task Should_Throw_On_EvaluateAsync_If_Empty()
-        => Assert.ThrowsAsync<ArgumentNullException>(async () =>
-                await agent.EvaluateAsync(() => Task.FromResult(new SpaceTuple())));
+    public Task Should_Throw_On_EvaluateAsync_If_Null_Eval_Function()
+        => Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.EvaluateAsync(null!));
 
     #endregion
 

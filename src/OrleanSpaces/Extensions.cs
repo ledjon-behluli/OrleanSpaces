@@ -55,8 +55,8 @@ public static class Extensions
             services.AddSingleton<ISpaceRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
 
             services.AddHostedService<SpaceProcessor>();
-            services.AddHostedService<CallbackProcessor>();
             services.AddHostedService<ObserverProcessor<SpaceTuple>>();
+            services.AddHostedService<CallbackProcessor>();
             services.AddHostedService<EvaluationProcessor<SpaceTuple, SpaceTemplate>>();
             services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
         }

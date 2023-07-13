@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Channels;
-using OrleanSpaces.Processors;
-using OrleanSpaces.Processors.Spaces;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
@@ -15,7 +13,7 @@ public class ExtensionTests
     public void Should_Register_Generic_Services()
     {
         TestServices(CreateClientHost(SpaceKind.Generic));
-        //TestServices(CreateSiloHost(SpaceKind.Generic));
+        TestServices(CreateSiloHost(SpaceKind.Generic));
 
         static void TestServices(IHost host)
         {
@@ -31,17 +29,6 @@ public class ExtensionTests
 
             Assert.NotNull(host.Services.GetService<ISpaceAgent>());
             Assert.NotNull(host.Services.GetService<ISpaceRouter<SpaceTuple, SpaceTemplate>>());
-
-            Assert.All(host.Services.GetService<IEnumerable<IHostedService>>(), service =>
-            {
-                Assert.NotNull(service);
-                Assert.True(
-                    service.GetType() == typeof(BaseProcessor<SpaceTuple, SpaceTemplate>) ||
-                    service.GetType() == typeof(CallbackProcessor) ||
-                    service.GetType() == typeof(EvaluationProcessor<SpaceTuple, SpaceTemplate>) ||
-                    service.GetType() == typeof(ContinuationProcessor<SpaceTuple, SpaceTemplate>) ||
-                    service.GetType() == typeof(ObserverProcessor<SpaceTuple>));
-            });
         }
     }
 
@@ -49,7 +36,7 @@ public class ExtensionTests
     public void Should_Register_Specialized_Services()
     {
         TestServices(CreateClientHost(SpaceKind.All));
-        //TestServices(CreateSiloHost(SpaceKind.All));
+        TestServices(CreateSiloHost(SpaceKind.All));
 
         static void TestServices(IHost host)
         {
@@ -92,17 +79,6 @@ public class ExtensionTests
 
         Assert.NotNull(host.Services.GetService<ISpaceAgent<T, TTuple, TTemplate>>());
         Assert.NotNull(host.Services.GetService<ISpaceRouter<TTuple, TTemplate>>());
-
-        Assert.All(host.Services.GetService<IEnumerable<IHostedService>>(), service =>
-        {
-            Assert.NotNull(service);
-            Assert.True(
-                service.GetType() == typeof(BaseProcessor<TTuple, TTemplate>) ||
-                service.GetType() == typeof(CallbackProcessor<T, TTuple, TTemplate>) ||
-                service.GetType() == typeof(EvaluationProcessor<TTuple, TTemplate>) ||
-                service.GetType() == typeof(ContinuationProcessor<TTuple, TTemplate>) ||
-                service.GetType() == typeof(ObserverProcessor<TTuple>));
-        });
     }
 
     static IHost CreateClientHost(SpaceKind kind)

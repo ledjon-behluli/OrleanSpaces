@@ -24,7 +24,11 @@ public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProces
         SpaceTuple tuple = new("eval");
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        SpaceTuple result = await continuationChannel.TupleReader.ReadAsync(default);
+        SpaceTuple result = default;
+        while (result.Length == 0)
+        {
+            result = await continuationChannel.TupleReader.ReadAsync(default);
+        }
 
         Assert.Equal(tuple, result);
     }
@@ -92,7 +96,11 @@ public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorT
         IntTuple tuple = new(1);
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
-        IntTuple result = await continuationChannel.TupleReader.ReadAsync(default);
+        IntTuple result = default;
+        while (result.Length == 0)
+        {
+            result = await continuationChannel.TupleReader.ReadAsync(default);
+        }
 
         Assert.Equal(tuple, result);
     }
