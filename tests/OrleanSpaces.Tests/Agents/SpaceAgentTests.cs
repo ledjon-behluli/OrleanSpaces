@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Channels;
-using OrleanSpaces.Continuations;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using System.Collections.ObjectModel;
@@ -9,18 +8,18 @@ namespace OrleanSpaces.Tests.Agents;
 
 public class SpaceAgentTests : IClassFixture<ClusterFixture>
 {
-    private readonly ITupleRouter<SpaceTuple, SpaceTemplate> router;
-    private readonly ObserverRegistry<SpaceTuple> observerRegistry;
-    private readonly CallbackRegistry callbackRegistry;
-    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
-    private readonly ISpaceAgent agent;
-
     const string routingKey = "routing";
     const string peek = "peek";
     const string pop = "pop";
     const string scan = "scan";
     const string peekNotAvailable = "peek-not-available";
     const string popNotAvailable = "pop-not-available";
+
+    private readonly ISpaceAgent agent;
+    private readonly ITupleRouter<SpaceTuple, SpaceTemplate> router;
+    private readonly ObserverRegistry<SpaceTuple> observerRegistry;
+    private readonly CallbackRegistry callbackRegistry;
+    private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
 
     public SpaceAgentTests(ClusterFixture fixture)
     {

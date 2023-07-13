@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrleanSpaces.Channels;
-using OrleanSpaces.Continuations;
 using OrleanSpaces.Processors;
 using OrleanSpaces.Processors.Spaces;
 using OrleanSpaces.Registries;

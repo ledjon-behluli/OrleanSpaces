@@ -1,6 +1,6 @@
 ﻿using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Continuations;
+namespace OrleanSpaces;
 
 internal interface ITupleRouter<TTuple, TTemplate>
     where TTuple : ISpaceTuple

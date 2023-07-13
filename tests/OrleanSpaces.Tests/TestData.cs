@@ -1,5 +1,4 @@
 ﻿using Orleans.Streams;
-using OrleanSpaces.Continuations;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 using System.Collections;
@@ -192,6 +191,20 @@ internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
         LastContractionTuple = new();
         HasFlattened = false;
         InvokedCount = 0;
+    }
+}
+
+internal class TestAgentProcessorBridge<T> : IAgentProcessorBridge<T>
+    where T : ISpaceTuple
+{
+    public ITupleStore<T>? Store { get; private set; }
+    public TupleAction<T> LastAction { get; private set; }
+
+    public void SetStore(ITupleStore<T> store) => Store = store;
+    public ValueTask ConsumeAsync(TupleAction<T> action)
+    {
+        LastAction = action;
+        return ValueTask.CompletedTask;
     }
 }
 
