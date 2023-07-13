@@ -30,14 +30,13 @@ public class ExtensionTests
             Assert.NotNull(host.Services.GetService<ObserverChannel<SpaceTuple>>());
 
             Assert.NotNull(host.Services.GetService<ISpaceAgent>());
-            Assert.NotNull(host.Services.GetService<IAgentProcessorBridge<SpaceTuple>>());
-            Assert.NotNull(host.Services.GetService<ITupleRouter<SpaceTuple, SpaceTemplate>>());
+            Assert.NotNull(host.Services.GetService<ISpaceRouter<SpaceTuple, SpaceTemplate>>());
 
             Assert.All(host.Services.GetService<IEnumerable<IHostedService>>(), service =>
             {
                 Assert.NotNull(service);
                 Assert.True(
-                    service.GetType() == typeof(BaseProcessor<SpaceTuple>) ||
+                    service.GetType() == typeof(BaseProcessor<SpaceTuple, SpaceTemplate>) ||
                     service.GetType() == typeof(CallbackProcessor) ||
                     service.GetType() == typeof(EvaluationProcessor<SpaceTuple, SpaceTemplate>) ||
                     service.GetType() == typeof(ContinuationProcessor<SpaceTuple, SpaceTemplate>) ||
@@ -92,14 +91,13 @@ public class ExtensionTests
         Assert.NotNull(host.Services.GetService<ObserverChannel<TTuple>>());
 
         Assert.NotNull(host.Services.GetService<ISpaceAgent<T, TTuple, TTemplate>>());
-        Assert.NotNull(host.Services.GetService<IAgentProcessorBridge<TTuple>>());
-        Assert.NotNull(host.Services.GetService<ITupleRouter<TTuple, TTemplate>>());
+        Assert.NotNull(host.Services.GetService<ISpaceRouter<TTuple, TTemplate>>());
 
         Assert.All(host.Services.GetService<IEnumerable<IHostedService>>(), service =>
         {
             Assert.NotNull(service);
             Assert.True(
-                service.GetType() == typeof(BaseProcessor<TTuple>) ||
+                service.GetType() == typeof(BaseProcessor<TTuple, TTemplate>) ||
                 service.GetType() == typeof(CallbackProcessor<T, TTuple, TTemplate>) ||
                 service.GetType() == typeof(EvaluationProcessor<TTuple, TTemplate>) ||
                 service.GetType() == typeof(ContinuationProcessor<TTuple, TTemplate>) ||

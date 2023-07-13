@@ -5,14 +5,14 @@ using OrleanSpaces.Tuples.Specialized;
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class DateTimeOffsetProcessor : BaseProcessor<DateTimeOffsetTuple>
+internal sealed class DateTimeOffsetProcessor : BaseProcessor<DateTimeOffsetTuple, DateTimeOffsetTemplate>
 {
     public DateTimeOffsetProcessor(
         IClusterClient client,
-        IAgentProcessorBridge<DateTimeOffsetTuple> bridge,
+        ISpaceRouter<DateTimeOffsetTuple, DateTimeOffsetTemplate> router,
         ObserverChannel<DateTimeOffsetTuple> observerChannel,
         CallbackChannel<DateTimeOffsetTuple> callbackChannel)
-        : base(IDateTimeOffsetGrain.Key, client, bridge, observerChannel, callbackChannel,
+        : base(IDateTimeOffsetGrain.Key, client, router, observerChannel, callbackChannel,
              () => client.GetGrain<IDateTimeOffsetGrain>(IDateTimeOffsetGrain.Key))
     { }
 }

@@ -95,22 +95,33 @@ public struct TestStruct { }
 public class TestClass { }
 public enum TestEnum { A }
 
-public class TestTupleRouter<TTuple, TTemplate> : ITupleRouter<TTuple, TTemplate>
+internal class TestSpaceRouter<TTuple, TTemplate> : ISpaceRouter<TTuple, TTemplate>
     where TTuple : struct, ISpaceTuple
     where TTemplate : struct, ISpaceTemplate
 {
+    public ITupleStore<TTuple>? Store { get; private set; }
     public TTuple Tuple { get; set; } = new();
     public TTemplate Template { get; set; } = new();
+    public TupleAction<TTuple> Action { get; private set; }
 
-    public Task RouteAsync(TTuple tuple)
+
+    public void RouteStore(ITupleStore<TTuple> store) => Store = store;
+
+    public Task RouteTuple(TTuple tuple)
     {
         Tuple = tuple;
         return Task.CompletedTask;
     }
 
-    public ValueTask RouteAsync(TTemplate template)
+    public ValueTask RouteTemplate(TTemplate template)
     {
         Template = template;
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask RouteAction(TupleAction<TTuple> action)
+    {
+        Action = action;
         return ValueTask.CompletedTask;
     }
 }
@@ -191,20 +202,6 @@ internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
         LastContractionTuple = new();
         HasFlattened = false;
         InvokedCount = 0;
-    }
-}
-
-internal class TestAgentProcessorBridge<T> : IAgentProcessorBridge<T>
-    where T : ISpaceTuple
-{
-    public ITupleStore<T>? Store { get; private set; }
-    public TupleAction<T> LastAction { get; private set; }
-
-    public void SetStore(ITupleStore<T> store) => Store = store;
-    public ValueTask ConsumeAsync(TupleAction<T> action)
-    {
-        LastAction = action;
-        return ValueTask.CompletedTask;
     }
 }
 

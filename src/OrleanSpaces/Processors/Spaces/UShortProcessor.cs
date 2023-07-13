@@ -5,13 +5,13 @@ using OrleanSpaces.Tuples.Specialized;
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class UShortProcessor : BaseProcessor<UShortTuple>
+internal sealed class UShortProcessor : BaseProcessor<UShortTuple, UShortTemplate>
 {
     public UShortProcessor(
         IClusterClient client,
-        IAgentProcessorBridge<UShortTuple> bridge,
+        ISpaceRouter<UShortTuple, UShortTemplate> router,
         ObserverChannel<UShortTuple> observerChannel,
         CallbackChannel<UShortTuple> callbackChannel)
-        : base(IUShortGrain.Key, client, bridge, observerChannel, callbackChannel,
+        : base(IUShortGrain.Key, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<IUShortGrain>(IUShortGrain.Key)) { }
 }

@@ -5,13 +5,13 @@ using OrleanSpaces.Tuples.Specialized;
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class LongProcessor : BaseProcessor<LongTuple>
+internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate>
 {
     public LongProcessor(
         IClusterClient client,
-        IAgentProcessorBridge<LongTuple> bridge,
+        ISpaceRouter<LongTuple, LongTemplate> router,
         ObserverChannel<LongTuple> observerChannel,
         CallbackChannel<LongTuple> callbackChannel)
-        : base(ILongGrain.Key, client, bridge, observerChannel, callbackChannel, 
+        : base(ILongGrain.Key, client, router, observerChannel, callbackChannel, 
             () => client.GetGrain<ILongGrain>(ILongGrain.Key)) { }
 }

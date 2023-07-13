@@ -5,13 +5,13 @@ using OrleanSpaces.Tuples.Specialized;
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple>
+internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanTemplate>
 {
     public TimeSpanProcessor(
         IClusterClient client,
-        IAgentProcessorBridge<TimeSpanTuple> bridge,
+        ISpaceRouter<TimeSpanTuple, TimeSpanTemplate> router,
         ObserverChannel<TimeSpanTuple> observerChannel,
         CallbackChannel<TimeSpanTuple> callbackChannel)
-        : base(ITimeSpanGrain.Key, client, bridge, observerChannel, callbackChannel,
+        : base(ITimeSpanGrain.Key, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<ITimeSpanGrain>(ITimeSpanGrain.Key)) { }
 }

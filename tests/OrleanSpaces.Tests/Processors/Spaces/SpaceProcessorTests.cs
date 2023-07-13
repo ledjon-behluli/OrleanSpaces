@@ -20,9 +20,9 @@ public class SpaceProcessorTests : IClassFixture<ClusterFixture>
         SpaceTuple callbackResult = await fixture.CallbackChannel.Reader.ReadAsync(default);
         TupleAction<SpaceTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(callbackResult, action.Tuple);
         Assert.Equal(observerResult, action);
     }
@@ -36,9 +36,9 @@ public class SpaceProcessorTests : IClassFixture<ClusterFixture>
 
         TupleAction<SpaceTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }
 
@@ -50,10 +50,10 @@ public class SpaceProcessorTests : IClassFixture<ClusterFixture>
         await fixture.Processor.OnNextAsync(action);
 
         TupleAction<SpaceTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
-
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+                    
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }
 
@@ -61,7 +61,7 @@ public class SpaceProcessorTests : IClassFixture<ClusterFixture>
     {
         internal SpaceProcessor Processor { get; }
 
-        internal TestAgentProcessorBridge<SpaceTuple> Bridge { get; }
+        internal TestSpaceRouter<SpaceTuple, SpaceTemplate> Bridge { get; }
         internal ObserverChannel<SpaceTuple> ObserverChannel { get; }
         internal CallbackChannel<SpaceTuple> CallbackChannel { get; }
 

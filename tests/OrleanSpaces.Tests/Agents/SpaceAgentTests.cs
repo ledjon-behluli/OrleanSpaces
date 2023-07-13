@@ -16,7 +16,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     const string popNotAvailable = "pop-not-available";
 
     private readonly ISpaceAgent agent;
-    private readonly ITupleRouter<SpaceTuple, SpaceTemplate> router;
+    private readonly ISpaceRouter<SpaceTuple, SpaceTemplate> router;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
@@ -24,7 +24,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public SpaceAgentTests(ClusterFixture fixture)
     {
         agent = fixture.Client.ServiceProvider.GetRequiredService<ISpaceAgent>();
-        router = fixture.Client.ServiceProvider.GetRequiredService<ITupleRouter<SpaceTuple, SpaceTemplate>>();
+        router = fixture.Client.ServiceProvider.GetRequiredService<ISpaceRouter<SpaceTuple, SpaceTemplate>>();
         observerRegistry = fixture.Client.ServiceProvider.GetRequiredService<ObserverRegistry<SpaceTuple>>();
         callbackRegistry = fixture.Client.ServiceProvider.GetRequiredService<CallbackRegistry>();
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel<SpaceTuple>>();
@@ -63,7 +63,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_WriteAsync_When_Routing_Tuple()
     {
-        await router.RouteAsync(routingTuple);
+        await router.RouteTuple(routingTuple);
 
         SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
 
@@ -75,7 +75,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     {
         SpaceTemplate template = routingTuple.ToTemplate();
 
-        await router.RouteAsync(template);
+        await router.RouteTemplate(template);
 
         SpaceTuple peekedTuple = await agent.PeekAsync(template);
 

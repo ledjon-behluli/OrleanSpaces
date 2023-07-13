@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tests.Processors;
 public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpaceProcessorTests.Fixture>
 {
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> channel;
-    private readonly TestTupleRouter<SpaceTuple, SpaceTemplate> router;
+    private readonly TestSpaceRouter<SpaceTuple, SpaceTemplate> router;
 
     public ContinuationSpaceProcessorTests(Fixture fixture)
     {
@@ -50,13 +50,13 @@ public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpacePr
     {
         private readonly ContinuationProcessor<SpaceTuple, SpaceTemplate> processor;
 
-        internal TestTupleRouter<SpaceTuple, SpaceTemplate> Router { get; }
+        internal TestSpaceRouter<SpaceTuple, SpaceTemplate> Router { get; }
         internal ContinuationChannel<SpaceTuple, SpaceTemplate> Channel { get; }
 
         public Fixture()
         {
             Channel = new();
-            Router = new TestTupleRouter<SpaceTuple, SpaceTemplate>();
+            Router = new TestSpaceRouter<SpaceTuple, SpaceTemplate>();
 
             processor = new(Channel, Router);
         }
@@ -69,7 +69,7 @@ public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpacePr
 public class ContinuationIntProcessorTests : IClassFixture<ContinuationIntProcessorTests.Fixture>
 {
     private readonly ContinuationChannel<IntTuple, IntTemplate> channel;
-    private readonly TestTupleRouter<IntTuple, IntTemplate> router;
+    private readonly TestSpaceRouter<IntTuple, IntTemplate> router;
 
     public ContinuationIntProcessorTests(Fixture fixture)
     {
@@ -111,13 +111,13 @@ public class ContinuationIntProcessorTests : IClassFixture<ContinuationIntProces
     {
         private readonly ContinuationProcessor<IntTuple, IntTemplate> processor;
 
-        internal TestTupleRouter<IntTuple, IntTemplate> Router { get; }
+        internal TestSpaceRouter<IntTuple, IntTemplate> Router { get; }
         internal ContinuationChannel<IntTuple, IntTemplate> Channel { get; }
 
         public Fixture()
         {
             Channel = new();
-            Router = new TestTupleRouter<IntTuple, IntTemplate>();
+            Router = new TestSpaceRouter<IntTuple, IntTemplate>();
 
             processor = new(Channel, Router);
         }

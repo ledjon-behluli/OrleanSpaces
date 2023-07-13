@@ -20,9 +20,9 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
         IntTuple callbackResult = await fixture.CallbackChannel.Reader.ReadAsync(default);
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(callbackResult, action.Tuple);
         Assert.Equal(observerResult, action);
     }
@@ -36,9 +36,9 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
 
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }
 
@@ -51,9 +51,9 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
 
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
-        Assert.Equal(action.AgentId, fixture.Bridge.LastAction.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.LastAction.Tuple);
-        Assert.Equal(action.Type, fixture.Bridge.LastAction.Type);
+        Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
+        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }
 
@@ -61,7 +61,7 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
     {
         internal IntProcessor Processor { get; }
 
-        internal TestAgentProcessorBridge<IntTuple> Bridge { get; }
+        internal TestSpaceRouter<IntTuple, IntTemplate> Bridge { get; }
         internal ObserverChannel<IntTuple> ObserverChannel { get; }
         internal CallbackChannel<IntTuple> CallbackChannel { get; }
 

@@ -8,10 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Agents;
 
-internal sealed class SpaceAgent :
-    ISpaceAgent,
-    IAgentProcessorBridge<SpaceTuple>,
-    ITupleRouter<SpaceTuple, SpaceTemplate>
+internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTemplate>
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
@@ -36,12 +33,12 @@ internal sealed class SpaceAgent :
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    #region IAgentProcessorBridge
+    #region ISpaceRouter
 
-    void IAgentProcessorBridge<SpaceTuple>.SetStore(ITupleStore<SpaceTuple> tupleStore) 
+    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteStore(ITupleStore<SpaceTuple> tupleStore) 
         => this.tupleStore = tupleStore;
 
-    async ValueTask IAgentProcessorBridge<SpaceTuple>.ConsumeAsync(TupleAction<SpaceTuple> action)
+    async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
     {
         if (action.AgentId != agentId)
         {
@@ -68,12 +65,8 @@ internal sealed class SpaceAgent :
         }
     }
 
-    #endregion
-
-    #region ITupleRouter
-
-    Task ITupleRouter<SpaceTuple, SpaceTemplate>.RouteAsync(SpaceTuple tuple) => WriteAsync(tuple);
-    async ValueTask ITupleRouter<SpaceTuple, SpaceTemplate>.RouteAsync(SpaceTemplate template) => await PopAsync(template);
+    Task ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteTuple(SpaceTuple tuple) => WriteAsync(tuple);
+    async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteTemplate(SpaceTemplate template) => await PopAsync(template);
 
     #endregion
 

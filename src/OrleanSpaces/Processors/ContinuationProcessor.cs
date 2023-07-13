@@ -9,11 +9,11 @@ internal sealed class ContinuationProcessor<TTuple, TTemplate> : BackgroundServi
     where TTemplate : ISpaceTemplate
 {
     private readonly ContinuationChannel<TTuple, TTemplate> channel;
-    private readonly ITupleRouter<TTuple, TTemplate> router;
+    private readonly ISpaceRouter<TTuple, TTemplate> router;
 
     public ContinuationProcessor(
         ContinuationChannel<TTuple, TTemplate> channel,
-        ITupleRouter<TTuple, TTemplate> router)
+        ISpaceRouter<TTuple, TTemplate> router)
     {
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
@@ -31,7 +31,7 @@ internal sealed class ContinuationProcessor<TTuple, TTemplate> : BackgroundServi
     {
         await foreach (TTuple tuple in channel.TupleReader.ReadAllAsync(cancellationToken))
         {
-            await router.RouteAsync(tuple);
+            await router.RouteTuple(tuple);
         }
     }
 
@@ -39,7 +39,7 @@ internal sealed class ContinuationProcessor<TTuple, TTemplate> : BackgroundServi
     {
         await foreach (TTemplate template in channel.TemplateReader.ReadAllAsync(cancellationToken))
         {
-            await router.RouteAsync(template);
+            await router.RouteTemplate(template);
         }
     }
 }

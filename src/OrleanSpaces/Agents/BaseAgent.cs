@@ -8,10 +8,7 @@ using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
 
-internal class BaseAgent<T, TTuple, TTemplate> :
-    ISpaceAgent<T, TTuple, TTemplate>,
-    IAgentProcessorBridge<TTuple>, 
-    ITupleRouter<TTuple, TTemplate>
+internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplate>, ISpaceRouter<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
@@ -39,12 +36,12 @@ internal class BaseAgent<T, TTuple, TTemplate> :
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
     }
 
-    #region IAgentProcessorBridge
+    #region ISpaceRouter
 
-    void IAgentProcessorBridge<TTuple>.SetStore(ITupleStore<TTuple> tupleStore)
+    void ISpaceRouter<TTuple, TTemplate>.RouteStore(ITupleStore<TTuple> tupleStore)
         => this.tupleStore = tupleStore;
 
-    async ValueTask IAgentProcessorBridge<TTuple>.ConsumeAsync(TupleAction<TTuple> action)
+    async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteAction(TupleAction<TTuple> action)
     {
         if (action.AgentId != agentId)
         {
@@ -71,12 +68,8 @@ internal class BaseAgent<T, TTuple, TTemplate> :
         }
     }
 
-    #endregion
-
-    #region ITupleRouter
-
-    Task ITupleRouter<TTuple, TTemplate>.RouteAsync(TTuple tuple) => WriteAsync(tuple);
-    async ValueTask ITupleRouter<TTuple, TTemplate>.RouteAsync(TTemplate template) => await PopAsync(template);
+    Task ISpaceRouter<TTuple, TTemplate>.RouteTuple(TTuple tuple) => WriteAsync(tuple);
+    async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteTemplate(TTemplate template) => await PopAsync(template);
 
     #endregion
 
