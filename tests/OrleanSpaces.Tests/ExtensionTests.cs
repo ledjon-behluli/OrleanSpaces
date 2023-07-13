@@ -106,18 +106,14 @@ public class ExtensionTests
     }
 
     static IHost CreateClientHost(SpaceKind kind)
-    {
-        return new HostBuilder()
-            .UseOrleansClient(builder =>
+        => new HostBuilder()
+            .UseOrleansClient(builder => 
                 builder.AddOrleanSpaces(options => options.EnabledSpaces = kind))
             .Build();
-    }
 
     static IHost CreateSiloHost(SpaceKind kind)
-    {
-        return new HostBuilder()
-            .UseOrleans(builder =>
+        => new HostBuilder()
+            .UseOrleans(builder => 
                 builder.AddOrleanSpaces(options => options.EnabledSpaces = kind))
             .Build();
-    }
 }

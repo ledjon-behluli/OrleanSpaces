@@ -53,7 +53,6 @@ public static class Extensions
             services.AddSingleton<SpaceAgent>();
             services.AddSingleton<ISpaceAgent>(sp => sp.GetRequiredService<SpaceAgent>());
             services.AddSingleton<ISpaceRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
-            services.AddSingleton<ISpaceRouter<SpaceTuple, SpaceTemplate>>(sp => sp.GetRequiredService<SpaceAgent>());
 
             services.AddHostedService<SpaceProcessor>();
             services.AddHostedService<CallbackProcessor>();
@@ -74,7 +73,6 @@ public static class Extensions
 
             services.AddSingleton<BoolAgent>();
             services.AddSingleton<ISpaceAgent<bool, BoolTuple, BoolTemplate>>(sp => sp.GetRequiredService<BoolAgent>());
-            services.AddSingleton<ISpaceRouter<BoolTuple, BoolTemplate>>(sp => sp.GetRequiredService<BoolAgent>());
             services.AddSingleton<ISpaceRouter<BoolTuple, BoolTemplate>>(sp => sp.GetRequiredService<BoolAgent>());
 
             services.AddHostedService<BoolProcessor>();
@@ -97,7 +95,6 @@ public static class Extensions
             services.AddSingleton<ByteAgent>();
             services.AddSingleton<ISpaceAgent<byte, ByteTuple, ByteTemplate>>(sp => sp.GetRequiredService<ByteAgent>());
             services.AddSingleton<ISpaceRouter<ByteTuple, ByteTemplate>>(sp => sp.GetRequiredService<ByteAgent>());
-            services.AddSingleton<ISpaceRouter<ByteTuple, ByteTemplate>>(sp => sp.GetRequiredService<ByteAgent>());
 
             services.AddHostedService<ByteProcessor>();
             services.AddHostedService<ObserverProcessor<ByteTuple>>();
@@ -118,7 +115,6 @@ public static class Extensions
 
             services.AddSingleton<CharAgent>();
             services.AddSingleton<ISpaceAgent<char, CharTuple, CharTemplate>>(sp => sp.GetRequiredService<CharAgent>());
-            services.AddSingleton<ISpaceRouter<CharTuple, CharTemplate>>(sp => sp.GetRequiredService<CharAgent>());
             services.AddSingleton<ISpaceRouter<CharTuple, CharTemplate>>(sp => sp.GetRequiredService<CharAgent>());
 
             services.AddHostedService<CharProcessor>();
@@ -141,7 +137,6 @@ public static class Extensions
             services.AddSingleton<DateTimeOffsetAgent>();
             services.AddSingleton<ISpaceAgent<DateTimeOffset, DateTimeOffsetTuple, DateTimeOffsetTemplate>>(sp => sp.GetRequiredService<DateTimeOffsetAgent>());
             services.AddSingleton<ISpaceRouter<DateTimeOffsetTuple, DateTimeOffsetTemplate>>(sp => sp.GetRequiredService<DateTimeOffsetAgent>());
-            services.AddSingleton<ISpaceRouter<DateTimeOffsetTuple, DateTimeOffsetTemplate>>(sp => sp.GetRequiredService<DateTimeOffsetAgent>());
 
             services.AddHostedService<DateTimeOffsetProcessor>();
             services.AddHostedService<ObserverProcessor<DateTimeOffsetTuple>>();
@@ -162,7 +157,6 @@ public static class Extensions
 
             services.AddSingleton<DateTimeAgent>();
             services.AddSingleton<ISpaceAgent<DateTime, DateTimeTuple, DateTimeTemplate>>(sp => sp.GetRequiredService<DateTimeAgent>());
-            services.AddSingleton<ISpaceRouter<DateTimeTuple, DateTimeTemplate>>(sp => sp.GetRequiredService<DateTimeAgent>());
             services.AddSingleton<ISpaceRouter<DateTimeTuple, DateTimeTemplate>>(sp => sp.GetRequiredService<DateTimeAgent>());
 
             services.AddHostedService<DateTimeProcessor>();
@@ -185,7 +179,6 @@ public static class Extensions
             services.AddSingleton<DecimalAgent>();
             services.AddSingleton<ISpaceAgent<decimal, DecimalTuple, DecimalTemplate>>(sp => sp.GetRequiredService<DecimalAgent>());
             services.AddSingleton<ISpaceRouter<DecimalTuple, DecimalTemplate>>(sp => sp.GetRequiredService<DecimalAgent>());
-            services.AddSingleton<ISpaceRouter<DecimalTuple, DecimalTemplate>>(sp => sp.GetRequiredService<DecimalAgent>());
 
             services.AddHostedService<DecimalProcessor>();
             services.AddHostedService<ObserverProcessor<DecimalTuple>>();
@@ -206,7 +199,6 @@ public static class Extensions
 
             services.AddSingleton<DoubleAgent>();
             services.AddSingleton<ISpaceAgent<double, DoubleTuple, DoubleTemplate>>(sp => sp.GetRequiredService<DoubleAgent>());
-            services.AddSingleton<ISpaceRouter<DoubleTuple, DoubleTemplate>>(sp => sp.GetRequiredService<DoubleAgent>());
             services.AddSingleton<ISpaceRouter<DoubleTuple, DoubleTemplate>>(sp => sp.GetRequiredService<DoubleAgent>());
 
             services.AddHostedService<DoubleProcessor>();
@@ -229,7 +221,6 @@ public static class Extensions
             services.AddSingleton<FloatAgent>();
             services.AddSingleton<ISpaceAgent<float, FloatTuple, FloatTemplate>>(sp => sp.GetRequiredService<FloatAgent>());
             services.AddSingleton<ISpaceRouter<FloatTuple, FloatTemplate>>(sp => sp.GetRequiredService<FloatAgent>());
-            services.AddSingleton<ISpaceRouter<FloatTuple, FloatTemplate>>(sp => sp.GetRequiredService<FloatAgent>());
 
             services.AddHostedService<FloatProcessor>();
             services.AddHostedService<ObserverProcessor<FloatTuple>>();
@@ -250,7 +241,6 @@ public static class Extensions
 
             services.AddSingleton<GuidAgent>();
             services.AddSingleton<ISpaceAgent<Guid, GuidTuple, GuidTemplate>>(sp => sp.GetRequiredService<GuidAgent>());
-            services.AddSingleton<ISpaceRouter<GuidTuple, GuidTemplate>>(sp => sp.GetRequiredService<GuidAgent>());
             services.AddSingleton<ISpaceRouter<GuidTuple, GuidTemplate>>(sp => sp.GetRequiredService<GuidAgent>());
 
             services.AddHostedService<GuidProcessor>();
@@ -273,7 +263,6 @@ public static class Extensions
             services.AddSingleton<HugeAgent>();
             services.AddSingleton<ISpaceAgent<Int128, HugeTuple, HugeTemplate>>(sp => sp.GetRequiredService<HugeAgent>());
             services.AddSingleton<ISpaceRouter<HugeTuple, HugeTemplate>>(sp => sp.GetRequiredService<HugeAgent>());
-            services.AddSingleton<ISpaceRouter<HugeTuple, HugeTemplate>>(sp => sp.GetRequiredService<HugeAgent>());
 
             services.AddHostedService<HugeProcessor>();
             services.AddHostedService<ObserverProcessor<HugeTuple>>();
@@ -294,7 +283,6 @@ public static class Extensions
 
             services.AddSingleton<IntAgent>();
             services.AddSingleton<ISpaceAgent<int, IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
-            services.AddSingleton<ISpaceRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
             services.AddSingleton<ISpaceRouter<IntTuple, IntTemplate>>(sp => sp.GetRequiredService<IntAgent>());
 
             services.AddHostedService<IntProcessor>();
@@ -317,7 +305,6 @@ public static class Extensions
             services.AddSingleton<LongAgent>();
             services.AddSingleton<ISpaceAgent<long, LongTuple, LongTemplate>>(sp => sp.GetRequiredService<LongAgent>());
             services.AddSingleton<ISpaceRouter<LongTuple, LongTemplate>>(sp => sp.GetRequiredService<LongAgent>());
-            services.AddSingleton<ISpaceRouter<LongTuple, LongTemplate>>(sp => sp.GetRequiredService<LongAgent>());
 
             services.AddHostedService<LongProcessor>();
             services.AddHostedService<ObserverProcessor<LongTuple>>();
@@ -338,7 +325,6 @@ public static class Extensions
 
             services.AddSingleton<SByteAgent>();
             services.AddSingleton<ISpaceAgent<sbyte, SByteTuple, SByteTemplate>>(sp => sp.GetRequiredService<SByteAgent>());
-            services.AddSingleton<ISpaceRouter<SByteTuple, SByteTemplate>>(sp => sp.GetRequiredService<SByteAgent>());
             services.AddSingleton<ISpaceRouter<SByteTuple, SByteTemplate>>(sp => sp.GetRequiredService<SByteAgent>());
 
             services.AddHostedService<SByteProcessor>();
@@ -361,7 +347,6 @@ public static class Extensions
             services.AddSingleton<ShortAgent>();
             services.AddSingleton<ISpaceAgent<short, ShortTuple, ShortTemplate>>(sp => sp.GetRequiredService<ShortAgent>());
             services.AddSingleton<ISpaceRouter<ShortTuple, ShortTemplate>>(sp => sp.GetRequiredService<ShortAgent>());
-            services.AddSingleton<ISpaceRouter<ShortTuple, ShortTemplate>>(sp => sp.GetRequiredService<ShortAgent>());
 
             services.AddHostedService<ShortProcessor>();
             services.AddHostedService<ObserverProcessor<ShortTuple>>();
@@ -382,7 +367,6 @@ public static class Extensions
 
             services.AddSingleton<TimeSpanAgent>();
             services.AddSingleton<ISpaceAgent<TimeSpan, TimeSpanTuple, TimeSpanTemplate>>(sp => sp.GetRequiredService<TimeSpanAgent>());
-            services.AddSingleton<ISpaceRouter<TimeSpanTuple, TimeSpanTemplate>>(sp => sp.GetRequiredService<TimeSpanAgent>());
             services.AddSingleton<ISpaceRouter<TimeSpanTuple, TimeSpanTemplate>>(sp => sp.GetRequiredService<TimeSpanAgent>());
 
             services.AddHostedService<TimeSpanProcessor>();
@@ -405,7 +389,6 @@ public static class Extensions
             services.AddSingleton<UHugeAgent>();
             services.AddSingleton<ISpaceAgent<UInt128, UHugeTuple, UHugeTemplate>>(sp => sp.GetRequiredService<UHugeAgent>());
             services.AddSingleton<ISpaceRouter<UHugeTuple, UHugeTemplate>>(sp => sp.GetRequiredService<UHugeAgent>());
-            services.AddSingleton<ISpaceRouter<UHugeTuple, UHugeTemplate>>(sp => sp.GetRequiredService<UHugeAgent>());
 
             services.AddHostedService<UHugeProcessor>();
             services.AddHostedService<ObserverProcessor<UHugeTuple>>();
@@ -426,7 +409,6 @@ public static class Extensions
 
             services.AddSingleton<UIntAgent>();
             services.AddSingleton<ISpaceAgent<uint, UIntTuple, UIntTemplate>>(sp => sp.GetRequiredService<UIntAgent>());
-            services.AddSingleton<ISpaceRouter<UIntTuple, UIntTemplate>>(sp => sp.GetRequiredService<UIntAgent>());
             services.AddSingleton<ISpaceRouter<UIntTuple, UIntTemplate>>(sp => sp.GetRequiredService<UIntAgent>());
 
             services.AddHostedService<UIntProcessor>();
@@ -449,7 +431,6 @@ public static class Extensions
             services.AddSingleton<ULongAgent>();
             services.AddSingleton<ISpaceAgent<ulong, ULongTuple, ULongTemplate>>(sp => sp.GetRequiredService<ULongAgent>());
             services.AddSingleton<ISpaceRouter<ULongTuple, ULongTemplate>>(sp => sp.GetRequiredService<ULongAgent>());
-            services.AddSingleton<ISpaceRouter<ULongTuple, ULongTemplate>>(sp => sp.GetRequiredService<ULongAgent>());
 
             services.AddHostedService<ULongProcessor>();
             services.AddHostedService<ObserverProcessor<ULongTuple>>();
@@ -470,7 +451,6 @@ public static class Extensions
 
             services.AddSingleton<UShortAgent>();
             services.AddSingleton<ISpaceAgent<ushort, UShortTuple, UShortTemplate>>(sp => sp.GetRequiredService<UShortAgent>());
-            services.AddSingleton<ISpaceRouter<UShortTuple, UShortTemplate>>(sp => sp.GetRequiredService<UShortAgent>());
             services.AddSingleton<ISpaceRouter<UShortTuple, UShortTemplate>>(sp => sp.GetRequiredService<UShortAgent>());
 
             services.AddHostedService<UShortProcessor>();
