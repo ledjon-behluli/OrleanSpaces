@@ -1,15 +1,14 @@
-﻿using OrleanSpaces.Callbacks;
-using OrleanSpaces.Registries;
+﻿using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Tests.Callbacks;
+namespace OrleanSpaces.Tests.Registries;
 
-public class SpaceRegistryTests
+public class CallbackSpaceRegistryTests
 {
     private readonly CallbackRegistry registry = new();
 
-    public SpaceRegistryTests()
+    public CallbackSpaceRegistryTests()
     {
         registry.Add(new(1), new(tuple => Task.CompletedTask, false));
         registry.Add(new(1), new(tuple => Task.CompletedTask, true));
@@ -41,7 +40,7 @@ public class SpaceRegistryTests
     public void Should_Get_Callback()
     {
         bool hasContinuation = false;
-       
+
         registry.Add(new("test"), new(callback, hasContinuation));
 
         var entry = registry.Take(new("test")).ElementAt(0);
@@ -55,11 +54,11 @@ public class SpaceRegistryTests
     }
 }
 
-public class IntRegistryTests
+public class CallbackIntRegistryTests
 {
     private readonly CallbackRegistry<int, IntTuple, IntTemplate> registry = new();
 
-    public IntRegistryTests()
+    public CallbackIntRegistryTests()
     {
         registry.Add(new(1), new(tuple => Task.CompletedTask, false));
         registry.Add(new(1), new(tuple => Task.CompletedTask, true));

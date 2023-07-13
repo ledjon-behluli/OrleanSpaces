@@ -1,9 +1,9 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tests.Observers;
+namespace OrleanSpaces.Tests.Channels;
 
-public class ChannelTests
+public class ObserverChannelTests
 {
     private readonly ObserverChannel<SpaceTuple> channel = new();
 

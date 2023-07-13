@@ -4,16 +4,16 @@ using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Tests.Callbacks;
+namespace OrleanSpaces.Tests.Processors;
 
-public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
+public class CallbackSpaceProcessorTests : IClassFixture<CallbackSpaceProcessorTests.Fixture>
 {
     private readonly SpaceOptions options;
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
-    public SpaceProcessorTests(Fixture fixture)
+    public CallbackSpaceProcessorTests(Fixture fixture)
     {
         options = fixture.Options;
         registry = fixture.Registry;
@@ -26,7 +26,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     {
         SpaceTuple tuple = new(1);
         await callbackChannel.Writer.WriteAsync(tuple);
-        
+
         continuationChannel.TupleReader.TryRead(out SpaceTuple result);
 
         result.AssertEmpty();
@@ -41,7 +41,7 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
         SpaceTemplate template = new(1, 2);
 
         registry.Add(template, new(tuple => throw new Exception("Test"), false));
-       
+
         await callbackChannel.Writer.WriteAsync(tuple);
 
         continuationChannel.TupleReader.TryRead(out SpaceTuple result);
@@ -116,14 +116,14 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     }
 }
 
-public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
+public class CallbackIntProcessorTests : IClassFixture<CallbackIntProcessorTests.Fixture>
 {
     private readonly SpaceOptions options;
     private readonly CallbackRegistry<int, IntTuple, IntTemplate> registry;
     private readonly CallbackChannel<IntTuple> callbackChannel;
     private readonly ContinuationChannel<IntTuple, IntTemplate> continuationChannel;
 
-    public IntProcessorTests(Fixture fixture)
+    public CallbackIntProcessorTests(Fixture fixture)
     {
         options = fixture.Options;
         registry = fixture.Registry;

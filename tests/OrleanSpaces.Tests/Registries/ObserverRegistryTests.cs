@@ -1,15 +1,15 @@
 ﻿using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tests.Observers;
+namespace OrleanSpaces.Tests.Registries;
 
-public class SpaceRegistryTests
+public class ObserverRegistryTests
 {
     private readonly ObserverRegistry<SpaceTuple> registry = new();
     private readonly TestSpaceObserver<SpaceTuple> observer = new();
     private readonly Guid observerId;
 
-    public SpaceRegistryTests()
+    public ObserverRegistryTests()
     {
         observerId = registry.Add(observer);
     }

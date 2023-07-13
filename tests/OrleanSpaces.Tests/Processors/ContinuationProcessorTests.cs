@@ -3,14 +3,14 @@ using OrleanSpaces.Processors;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Tests.Continuations;
+namespace OrleanSpaces.Tests.Processors;
 
-public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
+public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpaceProcessorTests.Fixture>
 {
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> channel;
     private readonly TestTupleRouter<SpaceTuple, SpaceTemplate> router;
 
-    public SpaceProcessorTests(Fixture fixture)
+    public ContinuationSpaceProcessorTests(Fixture fixture)
     {
         channel = fixture.Channel;
         router = fixture.Router;
@@ -66,12 +66,12 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     }
 }
 
-public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
+public class ContinuationIntProcessorTests : IClassFixture<ContinuationIntProcessorTests.Fixture>
 {
     private readonly ContinuationChannel<IntTuple, IntTemplate> channel;
     private readonly TestTupleRouter<IntTuple, IntTemplate> router;
 
-    public IntProcessorTests(Fixture fixture)
+    public ContinuationIntProcessorTests(Fixture fixture)
     {
         channel = fixture.Channel;
         router = fixture.Router;

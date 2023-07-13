@@ -4,15 +4,15 @@ using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Tests.Observers;
+namespace OrleanSpaces.Tests.Processors;
 
-public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
+public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorTests.Fixture>
 {
     private readonly Fixture fixture;
     private readonly ObserverChannel<SpaceTuple> channel;
 
-    public SpaceProcessorTests(Fixture fixture)
-	{
+    public ObserverSpaceProcessorTests(Fixture fixture)
+    {
         this.fixture = fixture;
         channel = fixture.Channel;
     }
@@ -95,12 +95,12 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     }
 }
 
-public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
+public class ObserverIntProcessorTests : IClassFixture<ObserverIntProcessorTests.Fixture>
 {
     private readonly Fixture fixture;
     private readonly ObserverChannel<IntTuple> channel;
 
-    public IntProcessorTests(Fixture fixture)
+    public ObserverIntProcessorTests(Fixture fixture)
     {
         this.fixture = fixture;
         channel = fixture.Channel;
@@ -195,7 +195,7 @@ public class TestObserverScope<T> : IDisposable
     internal TestObserverScope(ObserverRegistry<T> registry)
     {
         this.registry = registry;
-        this.localRegistry = new();
+        localRegistry = new();
     }
 
     public int TotalInvoked(Func<TestSpaceObserver<T>, bool> func) => Observers.Count(observer => func(observer));

@@ -1,9 +1,9 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tests.Evaluations;
+namespace OrleanSpaces.Tests.Channels;
 
-public class ChannelTests
+public class EvaluationChannelTests
 {
     private readonly EvaluationChannel<SpaceTuple> channel = new();
 
@@ -11,7 +11,7 @@ public class ChannelTests
     public async Task Should_Read_What_Was_Writen()
     {
         SpaceTuple tuple = new(1);
-        
+
         await channel.Writer.WriteAsync(evaluation);
         Func<Task<SpaceTuple>> result = await channel.Reader.ReadAsync();
 

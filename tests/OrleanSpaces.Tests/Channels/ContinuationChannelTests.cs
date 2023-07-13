@@ -1,9 +1,9 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tests.Continuations;
+namespace OrleanSpaces.Tests.Channels;
 
-public class ChannelTests
+public class ContinuationChannelTests
 {
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> channel = new();
 

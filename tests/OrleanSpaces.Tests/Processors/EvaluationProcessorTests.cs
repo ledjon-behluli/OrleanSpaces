@@ -3,19 +3,19 @@ using OrleanSpaces.Processors;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
-namespace OrleanSpaces.Tests.Evaluations;
+namespace OrleanSpaces.Tests.Processors;
 
-public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
+public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProcessorTests.Fixture>
 {
     private readonly SpaceOptions options;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
-    public SpaceProcessorTests(Fixture fixture)
+    public EvaluationSpaceProcessorTests(Fixture fixture)
     {
         options = fixture.Options;
         evaluationChannel = fixture.EvaluationChannel;
-        continuationChannel = fixture.ContinuationChannel; 
+        continuationChannel = fixture.ContinuationChannel;
     }
 
     [Fact]
@@ -46,9 +46,9 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     public void Should_Throw_If_Evaluation_Throws()
     {
         options.HandleEvaluationExceptions = false;
-       
+
         _ = Assert.ThrowsAsync<Exception>(async () => await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test")));
-        
+
         options.HandleEvaluationExceptions = true;
     }
 
@@ -73,13 +73,13 @@ public class SpaceProcessorTests : IClassFixture<SpaceProcessorTests.Fixture>
     }
 }
 
-public class IntProcessorTests : IClassFixture<IntProcessorTests.Fixture>
+public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorTests.Fixture>
 {
     private readonly SpaceOptions options;
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
     private readonly ContinuationChannel<IntTuple, IntTemplate> continuationChannel;
 
-    public IntProcessorTests(Fixture fixture)
+    public EvaluationIntProcessorTests(Fixture fixture)
     {
         options = fixture.Options;
         evaluationChannel = fixture.EvaluationChannel;

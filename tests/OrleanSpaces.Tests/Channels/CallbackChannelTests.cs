@@ -1,9 +1,9 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Tests.Callbacks;
+namespace OrleanSpaces.Tests.Channels;
 
-public class ChannelTests
+public class CallbackChannelTests
 {
     private readonly CallbackChannel<SpaceTuple> channel = new();
 
