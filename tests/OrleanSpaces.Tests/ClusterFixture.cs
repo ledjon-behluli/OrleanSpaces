@@ -30,6 +30,8 @@ public class ClusterFixture : IDisposable
     {
         public void Configure(ISiloBuilder siloBuilder)
         {
+            // we dont register (though we could) the space services in the silo, since we are using the client to test.
+
             siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
             siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
             siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
