@@ -80,11 +80,12 @@ public readonly record struct ShortTemplate :
     public ShortTemplate() => fields = Array.Empty<short?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public ShortTemplate([AllowNull] params short?[] fields)
-        => this.fields = fields is null ? Array.Empty<short?>() : fields;
+        => this.fields = fields is null ? new short?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

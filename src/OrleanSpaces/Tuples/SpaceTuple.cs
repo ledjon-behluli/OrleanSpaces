@@ -127,17 +127,20 @@ public readonly record struct SpaceTemplate :
     public SpaceTemplate() => fields = Array.Empty<object?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    /// <remarks><i>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
-    /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
+    /// <remarks><i>
+    /// <para>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
+    /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</para>
+    /// <para>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</para>
+    /// </i></remarks>
     /// <exception cref="ArgumentException"/>
     public SpaceTemplate([AllowNull] params object?[] fields)
     {
         if (fields is null)
         {
-            this.fields = Array.Empty<object?>();
+            this.fields = new object?[1] { null };
             return;
         }
 

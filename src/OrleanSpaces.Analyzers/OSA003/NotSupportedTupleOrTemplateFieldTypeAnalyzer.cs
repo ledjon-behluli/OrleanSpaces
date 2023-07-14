@@ -20,9 +20,9 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
         messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA003.md");
 
+    // Int128 & UInt128 are not available in netstandard2.0, so they are not part of the list of types
     private static readonly List<Type> simpleTypes = new()
     {
-        // Primitives
         typeof(bool),
         typeof(byte),
         typeof(sbyte),
@@ -35,7 +35,6 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
         typeof(uint),
         typeof(long),
         typeof(ulong),
-        // Others
         typeof(Enum),
         typeof(string),
         typeof(decimal),
@@ -76,15 +75,13 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
 
         if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
-            var spaceUnitSymbol = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceUnit);
-
             foreach (var argument in creationOperation.GetArguments())
             {
                 var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
                 if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
                     type.IsOfClrType(typeof(Type), context.Compilation) ||
-                    type.IsOfType(spaceUnitSymbol))
+                    type?.SpecialType == SpecialType.System_Nullable_T)
                 {
                     continue;
                 }

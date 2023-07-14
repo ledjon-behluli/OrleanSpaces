@@ -3,5 +3,6 @@
 public enum Namespace
 {
     OrleansSpaces,
-    OrleanSpaces_Tuples
+    OrleanSpaces_Tuples,
+    OrleanSpaces_Tuples_Specialized
 }

@@ -80,11 +80,12 @@ public readonly record struct FloatTemplate :
     public FloatTemplate() => fields = Array.Empty<float?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public FloatTemplate([AllowNull] params float?[] fields)
-        => this.fields = fields is null ? Array.Empty<float?>() : fields;
+        => this.fields = fields is null ? new float?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

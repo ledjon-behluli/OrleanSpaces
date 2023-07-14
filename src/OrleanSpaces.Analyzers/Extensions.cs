@@ -18,7 +18,7 @@ internal static class TypeSymbolExtensions
     /// </summary>
     /// <param name="symbol">Symbol type being compared.</param>
     /// <param name="candidateSymbols">Collection of symbol types to compare against.</param>
-    public static bool IsOfAnyType(this ITypeSymbol? symbol, IEnumerable<ITypeSymbol?> candidateSymbols)
+    public static bool IsOfAnyType(this ITypeSymbol? symbol, List<ITypeSymbol?> candidateSymbols)
     {
         if (symbol == null || candidateSymbols == null || candidateSymbols.Count() == 0)
         {
@@ -43,7 +43,7 @@ internal static class TypeSymbolExtensions
     /// <param name="symbol">Symbol type being compared.</param>
     /// <param name="candidateTypes">Collection of CLR types to compare against.</param>
     /// <param name="compilation">Compilation unit.</param>
-    public static bool IsOfAnyClrType(this ITypeSymbol? symbol, IEnumerable<Type> candidateTypes, Compilation compilation)
+    public static bool IsOfAnyClrType(this ITypeSymbol? symbol, List<Type> candidateTypes, Compilation compilation)
     {
         if (symbol == null)
         {

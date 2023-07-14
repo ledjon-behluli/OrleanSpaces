@@ -29,7 +29,6 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = new([|typeof(char)|]);")]
     [InlineData("SpaceTuple tuple = new([|typeof(int)|]);")]
     [InlineData("SpaceTuple tuple = new([|typeof(decimal)|]);")]
-    [InlineData("SpaceTuple tuple = new([|new SpaceUnit()|]);")]
 
     [InlineData("SpaceTuple tuple = new([|new TestClass()|]); class TestClass {}")]
     [InlineData("SpaceTuple tuple = new([|new TestStruct()|]); struct TestStruct {}")]
@@ -102,7 +101,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new([|typeof(int)|]);")]
     [InlineData("SpaceTemplate template = new([|typeof(decimal)|]);")]
 
-    [InlineData("SpaceTemplate template = new([|new SpaceUnit()|]);")]
+    [InlineData("SpaceTemplate template = new([|null|]);")]
 
     [InlineData("SpaceTemplate template = new([|TestEnum.A|]); enum TestEnum { A }")]
     [InlineData("TestEnum e = TestEnum.A; SpaceTemplate template = new([|e|]); enum TestEnum { A }")]

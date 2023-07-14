@@ -80,11 +80,12 @@ public readonly record struct LongTemplate :
     public LongTemplate() => fields = Array.Empty<long?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public LongTemplate([AllowNull] params long?[] fields)
-        => this.fields = fields is null ? Array.Empty<long?>() : fields;
+        => this.fields = fields is null ? new long?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

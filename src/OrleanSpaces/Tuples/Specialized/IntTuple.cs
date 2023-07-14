@@ -80,11 +80,12 @@ public readonly record struct IntTemplate :
     public IntTemplate() => fields = Array.Empty<int?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public IntTemplate([AllowNull] params int?[] fields)
-        => this.fields = fields is null ? Array.Empty<int?>() : fields;
+        => this.fields = fields is null ? new int?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

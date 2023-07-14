@@ -106,10 +106,12 @@ public readonly record struct GuidTemplate :
     public GuidTemplate() => fields = Array.Empty<Guid?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
+    /// <param name="fields">The elements of this template.</param>
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public GuidTemplate([AllowNull] params Guid?[] fields)
-        => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
+        => this.fields = fields is null ? new Guid?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

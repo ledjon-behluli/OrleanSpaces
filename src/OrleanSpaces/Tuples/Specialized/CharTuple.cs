@@ -75,9 +75,9 @@ public readonly record struct CharTuple :
 /// <summary>
 /// Represents a template which has <see cref="char"/> field types only.
 /// </summary>
-public readonly record struct CharTemplate : 
+public readonly record struct CharTemplate :
     IEquatable<CharTemplate>,
-    ISpaceTemplate<char>, 
+    ISpaceTemplate<char>,
     ISpaceMatchable<char, CharTuple>
 {
     private readonly char?[] fields;
@@ -91,10 +91,12 @@ public readonly record struct CharTemplate :
     public CharTemplate() => fields = Array.Empty<char?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// Main constructor which instantiates a non-empty template.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    public CharTemplate([AllowNull] params char?[] fields) => this.fields = fields is null ? Array.Empty<char?>() : fields;
+    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
+    public CharTemplate([AllowNull] params char?[] fields)
+        => this.fields = fields is null ? new char?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
