@@ -11,7 +11,7 @@ public class DateTimeOffsetTupleTests
     private static readonly DateTimeOffset offset4 = new(2023, 1, 4, 0, 0, 0, 0, TimeSpan.Zero);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DateTimeOffsetTuple tuple = new(offset1, offset2, offset3);
 
@@ -123,7 +123,7 @@ public class DateTimeOffsetTemplateTests
     private static readonly DateTimeOffset offset4 = new(2023, 1, 4, 0, 0, 0, 0, TimeSpan.Zero);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DateTimeOffsetTemplate template = new(offset1, offset2, offset3);
 
@@ -134,17 +134,27 @@ public class DateTimeOffsetTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        DateTimeOffsetTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        DateTimeOffsetTemplate template = new(Array.Empty<DateTimeOffset?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        DateTimeOffsetTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         DateTimeOffsetTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -226,7 +236,7 @@ public class DateTimeOffsetTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new DateTimeOffsetTemplate().ToString());
+        Assert.Equal("({NULL})", new DateTimeOffsetTemplate().ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1).ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1, offset2).ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1, offset2, offset3).ToString());

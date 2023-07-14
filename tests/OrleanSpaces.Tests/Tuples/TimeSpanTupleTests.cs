@@ -11,7 +11,7 @@ public class TimeSpanTupleTests
     private static readonly TimeSpan timeSpan4 = new(4, 0, 0);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         TimeSpanTuple tuple = new(timeSpan1, timeSpan2, timeSpan3);
 
@@ -123,7 +123,7 @@ public class TimeSpanTemplateTests
     private static readonly TimeSpan timeSpan4 = new(4, 0, 0);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         TimeSpanTemplate template = new(timeSpan1, timeSpan2, timeSpan3);
 
@@ -134,17 +134,27 @@ public class TimeSpanTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        TimeSpanTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        TimeSpanTemplate template = new(Array.Empty<TimeSpan?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        TimeSpanTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         TimeSpanTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -226,7 +236,7 @@ public class TimeSpanTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new TimeSpanTemplate().ToString());
+        Assert.Equal("({NULL})", new TimeSpanTemplate().ToString());
         Assert.Equal("(01:00:00)", new TimeSpanTemplate(timeSpan1).ToString());
         Assert.Equal("(01:00:00, 02:00:00)", new TimeSpanTemplate(timeSpan1, timeSpan2).ToString());
         Assert.Equal("(01:00:00, 02:00:00, 03:00:00)", new TimeSpanTemplate(timeSpan1, timeSpan2, timeSpan3).ToString());

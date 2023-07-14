@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class HugeTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         HugeTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class HugeTupleTests
 public class HugeTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         HugeTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class HugeTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        HugeTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        HugeTemplate template = new(Array.Empty<Int128?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        HugeTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         HugeTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class HugeTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new HugeTemplate().ToString());
+        Assert.Equal("({NULL})", new HugeTemplate().ToString());
         Assert.Equal("(1)", new HugeTemplate(1).ToString());
         Assert.Equal("(1, 2)", new HugeTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new HugeTemplate(1, 2, 3).ToString());

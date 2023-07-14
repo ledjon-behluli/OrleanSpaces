@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class DoubleTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DoubleTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class DoubleTupleTests
 public class DoubleTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DoubleTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class DoubleTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        DoubleTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        DoubleTemplate template = new(Array.Empty<double?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        DoubleTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         DoubleTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class DoubleTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new DoubleTemplate().ToString());
+        Assert.Equal("({NULL})", new DoubleTemplate().ToString());
         Assert.Equal("(1)", new DoubleTemplate(1).ToString());
         Assert.Equal("(1, 2)", new DoubleTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new DoubleTemplate(1, 2, 3).ToString());

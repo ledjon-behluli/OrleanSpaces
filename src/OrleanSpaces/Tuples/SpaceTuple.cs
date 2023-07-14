@@ -19,14 +19,14 @@ public readonly record struct SpaceTuple :
     /// Returns the field specified by <paramref name="index"/>.
     /// </summary>
     public readonly object this[int index] => fields[index];
-   
-    /// <summary>
-    /// Default constructor which instantiates an empty tuple. 
-    /// </summary>
-    public SpaceTuple() => fields = Array.Empty<object>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// Initializes an empty tuple.
+    /// </summary>
+    public SpaceTuple() : this(null) { }
+
+    /// <summary>
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes an empty tuple.
     /// </summary>
     /// <param name="fields">The elements of this tuple.</param>
     /// <remarks><i>Tuple fields can be of type: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
@@ -122,23 +122,20 @@ public readonly record struct SpaceTemplate :
     public readonly object? this[int index] => fields[index];
 
     /// <summary>
-    /// Default constructor which instantiates an empty template.
+    /// Initializes a template with a single <see langword="null"/> field.
     /// </summary>
-    public SpaceTemplate() => fields = Array.Empty<object?>();
+    public SpaceTemplate() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes a template with a single <see langword="null"/> field.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    /// <remarks><i>
-    /// <para>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
-    /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</para>
-    /// <para>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</para>
-    /// </i></remarks>
+    /// <remarks><i>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
+    /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
     public SpaceTemplate([AllowNull] params object?[] fields)
     {
-        if (fields is null)
+        if (fields is null || fields.Length == 0)
         {
             this.fields = new object?[1] { null };
             return;

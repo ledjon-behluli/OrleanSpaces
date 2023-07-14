@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class ByteTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         ByteTuple tuple = new(1, 2, 3);
 
@@ -114,7 +114,7 @@ public class ByteTupleTests
 public class ByteTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         ByteTemplate template = new(1, 2, 3);
 
@@ -125,17 +125,27 @@ public class ByteTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        ByteTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        ByteTemplate template = new(Array.Empty<byte?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        ByteTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         ByteTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -217,7 +227,7 @@ public class ByteTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new ByteTemplate().ToString());
+        Assert.Equal("({NULL})", new ByteTemplate().ToString());
         Assert.Equal("(1)", new ByteTemplate(1).ToString());
         Assert.Equal("(1, 2)", new ByteTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new ByteTemplate(1, 2, 3).ToString());

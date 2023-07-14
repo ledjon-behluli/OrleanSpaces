@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class LongTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         LongTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class LongTupleTests
 public class LongTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         LongTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class LongTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        LongTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        LongTemplate template = new(Array.Empty<long?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        LongTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         LongTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class LongTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new LongTemplate().ToString());
+        Assert.Equal("({NULL})", new LongTemplate().ToString());
         Assert.Equal("(1)", new LongTemplate(1).ToString());
         Assert.Equal("(1, 2)", new LongTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new LongTemplate(1, 2, 3).ToString());

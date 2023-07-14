@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class BoolTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         BoolTuple tuple = new(true, false, true);
 
@@ -113,7 +113,7 @@ public class BoolTupleTests
 public class BoolTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         BoolTemplate template = new(true, false, true);
 
@@ -124,17 +124,27 @@ public class BoolTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        BoolTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        BoolTemplate template = new(Array.Empty<bool?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        BoolTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         BoolTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class BoolTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new BoolTemplate().ToString());
+        Assert.Equal("({NULL})", new BoolTemplate().ToString());
         Assert.Equal("(True)", new BoolTemplate(true).ToString());
         Assert.Equal("(True, False)", new BoolTemplate(true, false).ToString());
         Assert.Equal("(True, False, True)", new BoolTemplate(true, false, true).ToString());

@@ -20,12 +20,12 @@ public readonly record struct TimeSpanTuple :
     public ref readonly TimeSpan this[int index] => ref fields[index];
 
     /// <summary>
-    /// Default constructor which instantiates an empty tuple. 
+    /// Initializes an empty tuple.
     /// </summary>
-    public TimeSpanTuple() => fields = Array.Empty<TimeSpan>();
+    public TimeSpanTuple() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes an empty tuple.
     /// </summary>
     /// <param name="fields">The elements of this tuple.</param>
     public TimeSpanTuple([AllowNull] params TimeSpan[] fields)
@@ -76,17 +76,16 @@ public readonly record struct TimeSpanTemplate :
     public int Length => fields?.Length ?? 0;
 
     /// <summary>
-    /// Default constructor which instantiates an empty template. 
+    /// Initializes a template with a single <see langword="null"/> field.
     /// </summary>
-    public TimeSpanTemplate() => fields = Array.Empty<TimeSpan?>();
+    public TimeSpanTemplate() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes a template with a single <see langword="null"/> field.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
-        => this.fields = fields is null ? new TimeSpan?[1] { null } : fields;
+        => this.fields = fields is null || fields.Length == 0 ? new TimeSpan?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

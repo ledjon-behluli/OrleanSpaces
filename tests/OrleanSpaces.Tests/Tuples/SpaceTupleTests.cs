@@ -5,7 +5,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class SpaceTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         SpaceTuple tuple = new(1, "a", 1.5f, TestEnum.A);
 
@@ -166,7 +166,7 @@ public class SpaceTupleTests
 public class SpaceTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         SpaceTemplate template = new(1, "a", 1.5f);
 
@@ -174,6 +174,14 @@ public class SpaceTemplateTests
         Assert.Equal(1, template[0]);
         Assert.Equal("a", template[1]);
         Assert.Equal(1.5f, template[2]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Empty_Array()
+    {
+        SpaceTemplate template = new(Array.Empty<object?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -208,17 +216,19 @@ public class SpaceTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Default_Constructor()
     {
-        SpaceTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        SpaceTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
-        SpaceTemplate tuple = new(null);
-        Assert.Equal(0, tuple.Length);
+        SpaceTemplate template = new(null);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -351,7 +361,7 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new SpaceTemplate().ToString());
+        Assert.Equal("({NULL})", new SpaceTemplate().ToString());
         Assert.Equal("(1)", new SpaceTemplate(1).ToString());
         Assert.Equal("(1, a)", new SpaceTemplate(1, "a").ToString());
         Assert.Equal("(1, a, 1.5)", new SpaceTemplate(1, "a", 1.5f).ToString());

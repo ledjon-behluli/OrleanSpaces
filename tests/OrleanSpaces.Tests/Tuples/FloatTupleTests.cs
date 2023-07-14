@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class FloatTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         FloatTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class FloatTupleTests
 public class FloatTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         FloatTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class FloatTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        FloatTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        FloatTemplate template = new(Array.Empty<float?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        FloatTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         FloatTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class FloatTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new FloatTemplate().ToString());
+        Assert.Equal("({NULL})", new FloatTemplate().ToString());
         Assert.Equal("(1)", new FloatTemplate(1).ToString());
         Assert.Equal("(1, 2)", new FloatTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new FloatTemplate(1, 2, 3).ToString());

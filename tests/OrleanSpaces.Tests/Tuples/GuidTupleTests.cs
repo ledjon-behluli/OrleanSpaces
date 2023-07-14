@@ -11,7 +11,7 @@ public class GuidTupleTests
     private static readonly Guid guid4 = Guid.Parse("e5fd4745-1020-42fa-92eb-9a67df9093eb");
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         GuidTuple tuple = new(guid1, guid2, guid3);
 
@@ -123,7 +123,7 @@ public class GuidTemplateTests
     private static readonly Guid guid4 = Guid.Parse("e5fd4745-1020-42fa-92eb-9a67df9093eb");
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         GuidTemplate template = new(guid1, guid2, guid3);
 
@@ -134,17 +134,27 @@ public class GuidTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        GuidTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        GuidTemplate template = new(Array.Empty<Guid?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        GuidTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         GuidTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -226,7 +236,7 @@ public class GuidTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new GuidTemplate().ToString());
+        Assert.Equal("({NULL})", new GuidTemplate().ToString());
         Assert.Equal("(347eb792-406e-46cf-93d3-14c67e2d9e08)", new GuidTemplate(guid1).ToString());
         Assert.Equal("(347eb792-406e-46cf-93d3-14c67e2d9e08, bc34dd3d-5971-498f-82fd-e08a8cf2d165)", new GuidTemplate(guid1, guid2).ToString());
         Assert.Equal("(347eb792-406e-46cf-93d3-14c67e2d9e08, bc34dd3d-5971-498f-82fd-e08a8cf2d165, a45c3bd9-ea58-4bf8-9f51-8a9265d58a78)", new GuidTemplate(guid1, guid2, guid3).ToString());

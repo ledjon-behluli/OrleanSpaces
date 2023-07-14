@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class SByteTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         SByteTuple tuple = new(-1, -2, -3);
 
@@ -113,7 +113,7 @@ public class SByteTupleTests
 public class SByteTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         SByteTemplate template = new(-1, -2, -3);
 
@@ -124,17 +124,27 @@ public class SByteTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        SByteTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        SByteTemplate template = new(Array.Empty<sbyte?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        SByteTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         SByteTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class SByteTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new SByteTemplate().ToString());
+        Assert.Equal("({NULL})", new SByteTemplate().ToString());
         Assert.Equal("(-1)", new SByteTemplate(-1).ToString());
         Assert.Equal("(-1, -2)", new SByteTemplate(-1, -2).ToString());
         Assert.Equal("(-1, -2, -3)", new SByteTemplate(-1, -2, -3).ToString());

@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class CharTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         CharTuple tuple = new('a', 'b', 'c');
 
@@ -113,7 +113,7 @@ public class CharTupleTests
 public class CharTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         CharTemplate template = new('a', 'b', 'c');
 
@@ -124,17 +124,27 @@ public class CharTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        CharTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        CharTemplate template = new(Array.Empty<char?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        CharTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         CharTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class CharTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new CharTemplate().ToString());
+        Assert.Equal("({NULL})", new CharTemplate().ToString());
         Assert.Equal("(a)", new CharTemplate('a').ToString());
         Assert.Equal("(a, b)", new CharTemplate('a', 'b').ToString());
         Assert.Equal("(a, b, c)", new CharTemplate('a', 'b', 'c').ToString());

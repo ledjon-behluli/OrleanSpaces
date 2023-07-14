@@ -22,12 +22,12 @@ public readonly record struct SByteTuple :
     Span<sbyte> INumericTuple<sbyte>.Fields => fields.AsSpan();
 
     /// <summary>
-    /// Default constructor which instantiates an empty tuple. 
+    /// Initializes an empty tuple.
     /// </summary>
-    public SByteTuple() => fields = Array.Empty<sbyte>();
+    public SByteTuple() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes an empty tuple.
     /// </summary>
     /// <param name="fields">The elements of this tuple.</param>
     public SByteTuple([AllowNull] params sbyte[] fields)
@@ -75,17 +75,16 @@ public readonly record struct SByteTemplate :
     public int Length => fields?.Length ?? 0;
 
     /// <summary>
-    /// Default constructor which instantiates an empty template. 
+    /// Initializes a template with a single <see langword="null"/> field.
     /// </summary>
-    public SByteTemplate() => fields = Array.Empty<sbyte?>();
+    public SByteTemplate() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes a template with a single <see langword="null"/> field.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public SByteTemplate([AllowNull] params sbyte?[] fields)
-        => this.fields = fields is null ? new sbyte?[1] { null } : fields;
+        => this.fields = fields is null || fields.Length == 0 ? new sbyte?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

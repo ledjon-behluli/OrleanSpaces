@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class ShortTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         ShortTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class ShortTupleTests
 public class ShortTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         ShortTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class ShortTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        ShortTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        ShortTemplate template = new(Array.Empty<short?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        ShortTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         ShortTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class ShortTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new ShortTemplate().ToString());
+        Assert.Equal("({NULL})", new ShortTemplate().ToString());
         Assert.Equal("(1)", new ShortTemplate(1).ToString());
         Assert.Equal("(1, 2)", new ShortTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new ShortTemplate(1, 2, 3).ToString());

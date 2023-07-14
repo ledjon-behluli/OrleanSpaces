@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class DecimalTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DecimalTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class DecimalTupleTests
 public class DecimalTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DecimalTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class DecimalTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        DecimalTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        DecimalTemplate template = new(Array.Empty<decimal?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        DecimalTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         DecimalTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class DecimalTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new DecimalTemplate().ToString());
+        Assert.Equal("({NULL})", new DecimalTemplate().ToString());
         Assert.Equal("(1)", new DecimalTemplate(1).ToString());
         Assert.Equal("(1, 2)", new DecimalTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new DecimalTemplate(1, 2, 3).ToString());

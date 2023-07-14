@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class IntTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         IntTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class IntTupleTests
 public class IntTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         IntTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class IntTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        IntTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        IntTemplate template = new(Array.Empty<int?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        IntTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         IntTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class IntTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new IntTemplate().ToString());
+        Assert.Equal("({NULL})", new IntTemplate().ToString());
         Assert.Equal("(1)", new IntTemplate(1).ToString());
         Assert.Equal("(1, 2)", new IntTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new IntTemplate(1, 2, 3).ToString());

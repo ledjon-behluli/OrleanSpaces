@@ -6,7 +6,7 @@ namespace OrleanSpaces.Tests.Tuples;
 public class UHugeTupleTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         UHugeTuple tuple = new(1, 2, 3);
 
@@ -113,7 +113,7 @@ public class UHugeTupleTests
 public class UHugeTemplateTests
 {
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         UHugeTemplate template = new(1, 2, 3);
 
@@ -124,17 +124,27 @@ public class UHugeTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        UHugeTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        UHugeTemplate template = new(Array.Empty<UInt128?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        UHugeTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         UHugeTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -216,7 +226,7 @@ public class UHugeTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new UHugeTemplate().ToString());
+        Assert.Equal("({NULL})", new UHugeTemplate().ToString());
         Assert.Equal("(1)", new UHugeTemplate(1).ToString());
         Assert.Equal("(1, 2)", new UHugeTemplate(1, 2).ToString());
         Assert.Equal("(1, 2, 3)", new UHugeTemplate(1, 2, 3).ToString());

@@ -20,12 +20,12 @@ public readonly record struct DateTimeOffsetTuple :
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
 
     /// <summary>
-    /// Default constructor which instantiates an empty tuple. 
+    /// Initializes an empty tuple.
     /// </summary>
-    public DateTimeOffsetTuple() => fields = Array.Empty<DateTimeOffset>();
+    public DateTimeOffsetTuple() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes an empty tuple.
     /// </summary>
     /// <param name="fields">The elements of this tuple.</param>
     public DateTimeOffsetTuple([AllowNull] params DateTimeOffset[] fields)
@@ -76,17 +76,16 @@ public readonly record struct DateTimeOffsetTemplate :
     public int Length => fields?.Length ?? 0;
 
     /// <summary>
-    /// Default constructor which instantiates an empty template. 
+    /// Initializes a template with a single <see langword="null"/> field.
     /// </summary>
-    public DateTimeOffsetTemplate() => fields = Array.Empty<DateTimeOffset?>();
+    public DateTimeOffsetTemplate() : this(null) { }
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty template.
+    /// If <paramref name="fields"/> is <see langword="null"/>, initializes a template with a single <see langword="null"/> field.
     /// </summary>
     /// <param name="fields">The elements of this template.</param>
-    /// <remarks><i>If <paramref name="fields"/> is <see langword="null"/>, a template with a single <see langword="null"/> field is returned.</i></remarks>
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>
-        this.fields = fields is null ? new DateTimeOffset?[1] { null } : fields;
+        this.fields = fields is null || fields.Length == 0 ? new DateTimeOffset?[1] { null } : fields;
 
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.

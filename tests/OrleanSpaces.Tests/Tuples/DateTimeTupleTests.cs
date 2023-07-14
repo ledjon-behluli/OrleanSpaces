@@ -11,7 +11,7 @@ public class DateTimeTupleTests
     private static readonly DateTime dateTime4 = new(2023, 1, 4, 0, 0, 0, 0);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DateTimeTuple tuple = new(dateTime1, dateTime2, dateTime3);
 
@@ -123,7 +123,7 @@ public class DateTimeTemplateTests
     private static readonly DateTime dateTime4 = new(2023, 1, 4, 0, 0, 0, 0);
 
     [Fact]
-    public void Should_Be_Created_On_Object_Array()
+    public void Should_Be_Created_On_Array()
     {
         DateTimeTemplate template = new(dateTime1, dateTime2, dateTime3);
 
@@ -134,17 +134,27 @@ public class DateTimeTemplateTests
     }
 
     [Fact]
-    public void Should_Create_Empty_Template_On_Default_Constructor()
+    public void Should_Be_Created_On_Empty_Array()
     {
-        DateTimeTemplate tuple = new();
-        Assert.Equal(0, tuple.Length);
+        DateTimeTemplate template = new(Array.Empty<DateTime?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Constructor()
+    {
+        DateTimeTemplate template = new();
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
     public void Should_Be_Created_On_Null()
     {
         DateTimeTemplate template = new(null);
-        Assert.Equal(0, template.Length);
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
     }
 
     [Fact]
@@ -226,7 +236,7 @@ public class DateTimeTemplateTests
     [Fact]
     public void Should_ToString()
     {
-        Assert.Equal("()", new DateTimeTemplate().ToString());
+        Assert.Equal("({NULL})", new DateTimeTemplate().ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1).ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1, dateTime2).ToString());
         Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1, dateTime2, dateTime3).ToString());
