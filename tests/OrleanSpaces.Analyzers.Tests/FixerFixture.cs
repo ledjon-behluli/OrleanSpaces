@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using RoslynTestKit.CodeActionLocators;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 

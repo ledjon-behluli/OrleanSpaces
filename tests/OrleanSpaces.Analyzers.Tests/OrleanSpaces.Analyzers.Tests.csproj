@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<IsPackable>false</IsPackable>
 		<NoWarn>NU1608</NoWarn>
+		<WarningsAsErrors>Nullable;IDE0005</WarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -40,6 +40,7 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
 
         if (!creationOperation.Type.IsOfAnyType(new()
         {
+            context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate),
             context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.BoolTemplate),
             context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.ByteTemplate),
             context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.CharTemplate),
@@ -73,7 +74,7 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         foreach (var argument in arguments)
         {
             var argumentType = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
-            if (argumentType?.SpecialType != SpecialType.System_Nullable_T)
+            if (argumentType is not null && argumentType.SpecialType != SpecialType.System_Nullable_T)
             {
                 return;
             }
