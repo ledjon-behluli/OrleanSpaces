@@ -21,14 +21,14 @@ public readonly record struct SpaceTuple :
     public readonly object this[int index] => fields[index];
    
     /// <summary>
-    /// Default constructor which instantiates an empty <see cref="SpaceTuple"/>. 
+    /// Default constructor which instantiates an empty tuple. 
     /// </summary>
     public SpaceTuple() => fields = Array.Empty<object>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty <see cref="SpaceTuple"/>, when all <paramref name="fields"/> are of valid type.
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
     /// </summary>
-    /// <param name="fields">The fields of this tuple.</param>
+    /// <param name="fields">The elements of this tuple.</param>
     /// <remarks><i>Tuple fields can be of type: <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
@@ -122,14 +122,14 @@ public readonly record struct SpaceTemplate :
     public readonly object? this[int index] => fields[index];
 
     /// <summary>
-    /// Default constructor which instantiates an empty <see cref="SpaceTemplate"/>.
+    /// Default constructor which instantiates an empty template.
     /// </summary>
     public SpaceTemplate() => fields = Array.Empty<object?>();
 
     /// <summary>
-    /// Main constructor which instantiates a non-empty <see cref="SpaceTemplate"/>, when all <paramref name="fields"/> are of valid type.
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
     /// </summary>
-    /// <param name="fields">The fields of this template.</param>
+    /// <param name="fields">The elements of this template.</param>
     /// <remarks><i>Template fields can be of type: <see cref="Type"/>, <see cref="Type.IsPrimitive"/>, <see cref="Enum"/>, <see langword="null"/>, <see cref="string"/>, 
     /// <see cref="decimal"/>, <see cref="Int128"/>, <see cref="UInt128"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>.</i></remarks>
     /// <exception cref="ArgumentException"/>
@@ -161,7 +161,7 @@ public readonly record struct SpaceTemplate :
     /// <summary>
     /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
     /// </summary>
-    /// <param name="tuple">A tuple to be matched by this instance.</param>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the type, index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/>, or of type <see cref="Type"/> and matches the respective field type of
     /// <paramref name="tuple"/> at the same index</i>); otherwise, <see langword="false"/>.</returns>

@@ -19,10 +19,21 @@ public readonly record struct BoolTuple :
 
     public ref readonly bool this[int index] => ref fields[index];
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public BoolTuple() => fields = Array.Empty<bool>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public BoolTuple([AllowNull] params bool[] fields)
         => this.fields = fields is null ? Array.Empty<bool>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="BoolTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public BoolTemplate ToTemplate()
     {
         int length = Length;
@@ -96,10 +107,24 @@ public readonly record struct BoolTemplate :
     public ref readonly bool? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public BoolTemplate() => fields = Array.Empty<bool?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this template.</param>
     public BoolTemplate([AllowNull] params bool?[] fields)
         => this.fields = fields is null ? Array.Empty<bool?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(BoolTuple tuple) => this.Matches<bool, BoolTuple>(tuple);
     public bool Equals(BoolTemplate other) => this.SequentialEquals(other);
 
