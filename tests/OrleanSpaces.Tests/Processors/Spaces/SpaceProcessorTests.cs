@@ -70,7 +70,7 @@ public class SpaceProcessorTests : IClassFixture<ClusterFixture>
             Bridge = new();
             ObserverChannel = new();
             CallbackChannel = new();
-            Processor = new(fixture.Client, Bridge, ObserverChannel, CallbackChannel);
+            Processor = new(new(), fixture.Client, Bridge, ObserverChannel, CallbackChannel);
         }
     }
 }

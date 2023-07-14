@@ -8,10 +8,11 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate>
 {
     public SByteProcessor(
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<SByteTuple, SByteTemplate> router,
         ObserverChannel<SByteTuple> observerChannel,
         CallbackChannel<SByteTuple> callbackChannel)
-        : base(ISByteGrain.Key, client, router, observerChannel, callbackChannel,
+        : base(ISByteGrain.Key, options, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<ISByteGrain>(ISByteGrain.Key)) { }
 }

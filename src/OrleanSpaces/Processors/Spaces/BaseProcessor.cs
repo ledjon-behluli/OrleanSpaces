@@ -12,6 +12,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
     where TTemplate : ISpaceTemplate
 {
     private readonly string key;
+    private readonly SpaceOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
     private readonly ObserverChannel<TTuple> observerChannel;
@@ -20,6 +21,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
 
     public BaseProcessor(
         string key,
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,
@@ -27,11 +29,12 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
         Func<ITupleStore<TTuple>> storeFactory)
     {
         this.key = key ?? throw new ArgumentNullException(nameof(key));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-        this.storeFactory = storeFactory;
+        this.storeFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -49,7 +52,11 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
     public async Task OnNextAsync(TupleAction<TTuple> action, StreamSequenceToken? token = null)
     {
         await router.RouteAction(action);
-        await observerChannel.Writer.WriteAsync(action);
+
+        if (options.SubscribeToSelfGeneratedTuples)
+        {
+            await observerChannel.Writer.WriteAsync(action);
+        }
 
         if (action.Type == TupleActionType.Insert)
         {

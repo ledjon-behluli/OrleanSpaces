@@ -8,10 +8,11 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanTemplate>
 {
     public TimeSpanProcessor(
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<TimeSpanTuple, TimeSpanTemplate> router,
         ObserverChannel<TimeSpanTuple> observerChannel,
         CallbackChannel<TimeSpanTuple> callbackChannel)
-        : base(ITimeSpanGrain.Key, client, router, observerChannel, callbackChannel,
+        : base(ITimeSpanGrain.Key, options, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<ITimeSpanGrain>(ITimeSpanGrain.Key)) { }
 }

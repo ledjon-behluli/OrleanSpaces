@@ -56,7 +56,7 @@ public interface ISpaceAgent
     /// <summary>
     /// Reads a stream of <see cref="SpaceTuple"/>'s as they are written in the tuple space.
     /// </summary>
-    IAsyncEnumerable<SpaceTuple> PeekAsync(); //TODO: Try accept a SpaceTemplate?
+    IAsyncEnumerable<SpaceTuple> PeekAsync();
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
     /// <list type="bullet">

@@ -8,10 +8,11 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class UHugeProcessor : BaseProcessor<UHugeTuple, UHugeTemplate>
 {
     public UHugeProcessor(
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<UHugeTuple, UHugeTemplate> router,
         ObserverChannel<UHugeTuple> observerChannel,
         CallbackChannel<UHugeTuple> callbackChannel)
-        : base(IUHugeGrain.Key, client, router, observerChannel, callbackChannel,
+        : base(IUHugeGrain.Key, options, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<IUHugeGrain>(IUHugeGrain.Key)) { }
 }

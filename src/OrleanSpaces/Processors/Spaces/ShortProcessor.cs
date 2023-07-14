@@ -8,10 +8,11 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class ShortProcessor : BaseProcessor<ShortTuple, ShortTemplate>
 {
     public ShortProcessor(
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<ShortTuple, ShortTemplate> router,
         ObserverChannel<ShortTuple> observerChannel,
         CallbackChannel<ShortTuple> callbackChannel)
-        : base(IShortGrain.Key, client, router, observerChannel, callbackChannel,
+        : base(IShortGrain.Key, options, client, router, observerChannel, callbackChannel,
             () => client.GetGrain<IShortGrain>(IShortGrain.Key)) { }
 }

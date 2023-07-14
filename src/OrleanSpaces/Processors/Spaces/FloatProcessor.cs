@@ -8,10 +8,11 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class FloatProcessor : BaseProcessor<FloatTuple, FloatTemplate>
 {
     public FloatProcessor(
+        SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<FloatTuple, FloatTemplate> router,
         ObserverChannel<FloatTuple> observerChannel,
         CallbackChannel<FloatTuple> callbackChannel)
-        : base(IFloatGrain.Key, client, router, observerChannel, callbackChannel, 
+        : base(IFloatGrain.Key, options, client, router, observerChannel, callbackChannel, 
             () => client.GetGrain<IFloatGrain>(IFloatGrain.Key)) { }
 }
