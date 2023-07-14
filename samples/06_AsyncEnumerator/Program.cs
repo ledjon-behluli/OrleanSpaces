@@ -31,7 +31,7 @@ _ = Task.Run(async () =>
 {
     await foreach (var tuple in agent.PeekAsync())
     {
-        Console.WriteLine($"READ: {tuple}");
+        Console.WriteLine(tuple);
     }
 });
 
@@ -39,17 +39,11 @@ CancellationTokenSource cts = new();
 cts.CancelAfter(10_000);
 
 int i = 0;
-while (true)
+while (!cts.IsCancellationRequested)
 {
     SpaceTuple tuple = new(i);
     await agent.WriteAsync(tuple);
-    Console.WriteLine($"WRITE: {tuple}");
     await Task.Delay(1000);
-
-    if (cts.IsCancellationRequested)
-    {
-        break;
-    }
 
     i++;
 }

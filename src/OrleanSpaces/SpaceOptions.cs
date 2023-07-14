@@ -6,6 +6,7 @@ public sealed class SpaceOptions
     public bool HandleEvaluationExceptions { get; set; } = true;
     public bool HandleCallbackExceptions { get; set; } = true;
     public bool AllowMultipleAgentStreamConsumers { get; set; } = true;
+    // TODO: Add SubscribeToOwnTuples option
 }
 
 [Flags]

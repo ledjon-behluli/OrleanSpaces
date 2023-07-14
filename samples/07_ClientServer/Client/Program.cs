@@ -27,7 +27,23 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
-// TODO: Continue
+CancellationTokenSource cts = new();
+cts.CancelAfter(10_000);
+
+while (!cts.IsCancellationRequested)
+{
+    SpaceTuple clientTuple = new("CLIENT");
+    await agent.WriteAsync(clientTuple);
+    Console.WriteLine($"WRITE: {clientTuple}");
+
+    SpaceTuple serverTuple = await agent.PeekAsync(new("SERVER"));
+    if (serverTuple.Length > 0)
+    {
+        Console.WriteLine($"READ: {serverTuple}");
+    }
+
+    await Task.Delay(1000);
+}
 
 Console.WriteLine("\nPress any key to terminate...");
 Console.ReadKey();
