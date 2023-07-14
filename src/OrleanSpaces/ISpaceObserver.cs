@@ -2,6 +2,10 @@
 
 namespace OrleanSpaces;
 
+/// <summary>
+/// Provides updates on the state changes of the tuple space.
+/// </summary>
+/// <typeparam name="T">Must be an <see cref="ISpaceTuple"/> or <see cref="ISpaceTuple{T}"/>.</typeparam>
 public interface ISpaceObserver<T>
     where T : ISpaceTuple
 {
@@ -27,8 +31,10 @@ public interface ISpaceObserver<T>
 }
 
 /// <summary>
-/// A base class which provides dynamic observation capabilities.
+/// <para>A base class which provides dynamic observation functionalities.</para>
+/// <para>See also <see cref="ISpaceObserver{T}"/>.</para>
 /// </summary>
+/// <typeparam name="T">Must be an <see cref="ISpaceTuple"/> or <see cref="ISpaceTuple{T}"/>.</typeparam>
 public abstract class SpaceObserver<T> : ISpaceObserver<T>
     where T : ISpaceTuple
 {
@@ -62,10 +68,16 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
         }
     }
 
+    /// <inheritdoc/>
     public virtual Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    /// <inheritdoc/>
     public virtual Task OnContractionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    /// <inheritdoc/>
     public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
+    /// <summary>
+    /// The type of space event happening.
+    /// </summary>
     [Flags]
     protected enum EventType
     {
