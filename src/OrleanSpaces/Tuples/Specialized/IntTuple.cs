@@ -36,6 +36,7 @@ public readonly record struct IntTuple :
     /// <summary>
     /// Returns a <see cref="IntTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="IntTemplate"/> is created.</i></remarks>
     public IntTemplate ToTemplate()
     {
         int length = Length;

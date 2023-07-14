@@ -34,6 +34,7 @@ public readonly record struct CharTuple :
     /// <summary>
     /// Returns a <see cref="CharTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="CharTemplate"/> is created.</i></remarks>
     public CharTemplate ToTemplate()
     {
         int length = Length;

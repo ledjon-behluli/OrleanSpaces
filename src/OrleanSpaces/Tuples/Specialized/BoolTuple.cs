@@ -34,6 +34,7 @@ public readonly record struct BoolTuple :
     /// <summary>
     /// Returns a <see cref="BoolTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="BoolTemplate"/> is created.</i></remarks>
     public BoolTemplate ToTemplate()
     {
         int length = Length;

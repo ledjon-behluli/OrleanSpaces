@@ -35,6 +35,7 @@ public readonly record struct DecimalTuple :
     /// <summary>
     /// Returns a <see cref="DecimalTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="DecimalTemplate"/> is created.</i></remarks>
     public DecimalTemplate ToTemplate()
     {
         int length = Length;

@@ -38,6 +38,7 @@ public readonly record struct HugeTuple :
     /// <summary>
     /// Returns a <see cref="HugeTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="HugeTemplate"/> is created.</i></remarks>
     public HugeTemplate ToTemplate()
     {
         int length = Length;

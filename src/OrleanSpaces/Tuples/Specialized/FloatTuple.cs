@@ -36,6 +36,7 @@ public readonly record struct FloatTuple :
     /// <summary>
     /// Returns a <see cref="FloatTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="FloatTemplate"/> is created.</i></remarks>
     public FloatTemplate ToTemplate()
     {
         int length = Length;

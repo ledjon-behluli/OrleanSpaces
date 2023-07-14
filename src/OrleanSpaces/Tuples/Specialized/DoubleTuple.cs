@@ -36,6 +36,7 @@ public readonly record struct DoubleTuple :
     /// <summary>
     /// Returns a <see cref="DoubleTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="DoubleTemplate"/> is created.</i></remarks>
     public DoubleTemplate ToTemplate()
     {
         int length = Length;

@@ -36,6 +36,7 @@ public readonly record struct ULongTuple :
     /// <summary>
     /// Returns a <see cref="ULongTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="ULongTemplate"/> is created.</i></remarks>
     public ULongTemplate ToTemplate()
     {
         int length = Length;

@@ -36,6 +36,7 @@ public readonly record struct ByteTuple :
     /// <summary>
     /// Returns a <see cref="ByteTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="ByteTemplate"/> is created.</i></remarks>
     public ByteTemplate ToTemplate()
     {
         int length = Length;

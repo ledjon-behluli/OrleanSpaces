@@ -38,6 +38,7 @@ public readonly record struct UHugeTuple :
     /// <summary>
     /// Returns a <see cref="UHugeTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="UHugeTemplate"/> is created.</i></remarks>
     public UHugeTemplate ToTemplate()
     {
         int length = Length;

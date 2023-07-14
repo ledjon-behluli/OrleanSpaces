@@ -34,6 +34,7 @@ public readonly record struct DateTimeOffsetTuple :
     /// <summary>
     /// Returns a <see cref="DateTimeOffsetTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="DateTimeOffsetTemplate"/> is created.</i></remarks>
     public DateTimeOffsetTemplate ToTemplate()
     {
         int length = Length;

@@ -36,6 +36,7 @@ public readonly record struct SByteTuple :
     /// <summary>
     /// Returns a <see cref="SByteTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="SByteTemplate"/> is created.</i></remarks>
     public SByteTemplate ToTemplate()
     {
         int length = Length;

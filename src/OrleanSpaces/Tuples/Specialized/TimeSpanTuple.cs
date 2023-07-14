@@ -34,6 +34,7 @@ public readonly record struct TimeSpanTuple :
     /// <summary>
     /// Returns a <see cref="TimeSpanTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="TimeSpanTemplate"/> is created.</i></remarks>
     public TimeSpanTemplate ToTemplate()
     {
         int length = Length;

@@ -35,6 +35,7 @@ public readonly record struct GuidTuple :
     /// <summary>
     /// Returns a <see cref="GuidTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="GuidTemplate"/> is created.</i></remarks>
     public GuidTemplate ToTemplate()
     {
         int length = Length;

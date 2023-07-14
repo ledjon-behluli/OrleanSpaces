@@ -36,6 +36,7 @@ public readonly record struct ShortTuple :
     /// <summary>
     /// Returns a <see cref="ShortTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="ShortTemplate"/> is created.</i></remarks>
     public ShortTemplate ToTemplate()
     {
         int length = Length;

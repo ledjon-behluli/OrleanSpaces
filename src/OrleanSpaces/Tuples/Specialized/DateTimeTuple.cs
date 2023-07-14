@@ -34,6 +34,7 @@ public readonly record struct DateTimeTuple :
     /// <summary>
     /// Returns a <see cref="DateTimeTemplate"/> with the same fields as <see langword="this"/>.
     /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="DateTimeTemplate"/> is created.</i></remarks>
     public DateTimeTemplate ToTemplate()
     {
         int length = Length;

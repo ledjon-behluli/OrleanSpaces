@@ -61,6 +61,10 @@ public readonly record struct SpaceTuple :
         }
     }
 
+    /// <summary>
+    /// Returns a <see cref="SpaceTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
+    /// <remarks><i>If <see cref="Length"/> is 0, than default <see cref="SpaceTemplate"/> is created.</i></remarks>
     public SpaceTemplate ToTemplate()
     {
         int length = Length;
