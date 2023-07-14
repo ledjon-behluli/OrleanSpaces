@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="ushort"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct UShortTuple :
     IEquatable<UShortTuple>,
@@ -18,10 +21,21 @@ public readonly record struct UShortTuple :
 
     Span<ushort> INumericTuple<ushort>.Fields => fields.AsSpan();
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public UShortTuple() => fields = Array.Empty<ushort>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public UShortTuple([AllowNull] params ushort[] fields)
         => this.fields = fields is null ? Array.Empty<ushort>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="UShortTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public UShortTemplate ToTemplate()
     {
         int length = Length;
@@ -47,6 +61,9 @@ public readonly record struct UShortTuple :
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
+/// <summary>
+/// Represents a template which has <see cref="ushort"/> field types only.
+/// </summary>
 public readonly record struct UShortTemplate :
     IEquatable<UShortTemplate>,
     ISpaceTemplate<ushort>, 
@@ -57,10 +74,24 @@ public readonly record struct UShortTemplate :
     public ref readonly ushort? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public UShortTemplate() => fields = Array.Empty<ushort?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this template.</param>
     public UShortTemplate([AllowNull] params ushort?[] fields)
         => this.fields = fields is null ? Array.Empty<ushort?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(UShortTuple tuple) => this.Matches<ushort, UShortTuple>(tuple);
     public bool Equals(UShortTemplate other) => this.SequentialEquals(other);
 

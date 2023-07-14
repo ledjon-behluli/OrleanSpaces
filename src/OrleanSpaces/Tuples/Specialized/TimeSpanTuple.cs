@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="TimeSpan"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct TimeSpanTuple :
     IEquatable<TimeSpanTuple>,
@@ -16,10 +19,21 @@ public readonly record struct TimeSpanTuple :
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public TimeSpanTuple() => fields = Array.Empty<TimeSpan>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public TimeSpanTuple([AllowNull] params TimeSpan[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="TimeSpanTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public TimeSpanTemplate ToTemplate()
     {
         int length = Length;
@@ -48,6 +62,9 @@ public readonly record struct TimeSpanTuple :
     public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
 }
 
+/// <summary>
+/// Represents a template which has <see cref="TimeSpan"/> field types only.
+/// </summary>
 public readonly record struct TimeSpanTemplate : 
     IEquatable<TimeSpanTemplate>,
     ISpaceTemplate<TimeSpan>, 
@@ -58,10 +75,24 @@ public readonly record struct TimeSpanTemplate :
     public ref readonly TimeSpan? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public TimeSpanTemplate() => fields = Array.Empty<TimeSpan?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this template.</param>
     public TimeSpanTemplate([AllowNull] params TimeSpan?[] fields)
         => this.fields = fields is null ? Array.Empty<TimeSpan?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(TimeSpanTuple tuple) => this.Matches<TimeSpan, TimeSpanTuple>(tuple);
     public bool Equals(TimeSpanTemplate other) => this.SequentialEquals(other);
 

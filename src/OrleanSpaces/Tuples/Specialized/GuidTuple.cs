@@ -5,6 +5,9 @@ using System.Runtime.Intrinsics;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="Guid"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct GuidTuple :
     IEquatable<GuidTuple>,
@@ -17,10 +20,21 @@ public readonly record struct GuidTuple :
 
     public ref readonly Guid this[int index] => ref fields[index];
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public GuidTuple() => fields = Array.Empty<Guid>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public GuidTuple([AllowNull] params Guid[] fields)
         => this.fields = fields is null ? Array.Empty<Guid>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="GuidTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public GuidTemplate ToTemplate()
     {
         int length = Length;
@@ -73,6 +87,9 @@ public readonly record struct GuidTuple :
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
+/// <summary>
+/// Represents a template which has <see cref="Guid"/> field types only.
+/// </summary>
 public readonly record struct GuidTemplate : 
     IEquatable<GuidTemplate>,
     ISpaceTemplate<Guid>, 
@@ -83,10 +100,23 @@ public readonly record struct GuidTemplate :
     public ref readonly Guid? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public GuidTemplate() => fields = Array.Empty<Guid?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
     public GuidTemplate([AllowNull] params Guid?[] fields)
         => this.fields = fields is null ? Array.Empty<Guid?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(GuidTuple tuple) => this.Matches<Guid, GuidTuple>(tuple);
     public bool Equals(GuidTemplate other) => this.SequentialEquals(other);
 

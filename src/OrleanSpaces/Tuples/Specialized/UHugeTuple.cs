@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="UInt128"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct UHugeTuple :
     IEquatable<UHugeTuple>,
@@ -20,10 +23,21 @@ public readonly record struct UHugeTuple :
 
     Span<UInt128> INumericTuple<UInt128>.Fields => fields.AsSpan();
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public UHugeTuple() => fields = Array.Empty<UInt128>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public UHugeTuple([AllowNull] params UInt128[] fields)
         => this.fields = fields is null ? Array.Empty<UInt128>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="UHugeTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public UHugeTemplate ToTemplate()
     {
         int length = Length;
@@ -97,6 +111,9 @@ public readonly record struct UHugeTuple :
     }
 }
 
+/// <summary>
+/// Represents a template which has <see cref="UInt128"/> field types only.
+/// </summary>
 public readonly record struct UHugeTemplate : 
     IEquatable<UHugeTemplate>,
     ISpaceTemplate<UInt128>, 
@@ -107,10 +124,24 @@ public readonly record struct UHugeTemplate :
     public ref readonly UInt128? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public UHugeTemplate() => fields = Array.Empty<UInt128?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this template.</param>
     public UHugeTemplate([AllowNull] params UInt128?[] fields)
         => this.fields = fields is null ? Array.Empty<UInt128?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(UHugeTuple tuple) => this.Matches<UInt128, UHugeTuple>(tuple);
     public bool Equals(UHugeTemplate other) => this.SequentialEquals(other);
 

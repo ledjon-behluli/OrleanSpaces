@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="DateTimeOffset"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct DateTimeOffsetTuple :
     IEquatable<DateTimeOffsetTuple>,
@@ -16,10 +19,21 @@ public readonly record struct DateTimeOffsetTuple :
 
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
 
+    /// <summary>
+    /// Default constructor which instantiates an empty tuple. 
+    /// </summary>
     public DateTimeOffsetTuple() => fields = Array.Empty<DateTimeOffset>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty tuple, when at least one field is supplied, otherwise an empty tuple is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this tuple.</param>
     public DateTimeOffsetTuple([AllowNull] params DateTimeOffset[] fields)
         => this.fields = fields is null ? Array.Empty<DateTimeOffset>() : fields;
 
+    /// <summary>
+    /// Returns a <see cref="DateTimeOffsetTemplate"/> with the same fields as <see langword="this"/>.
+    /// </summary>
     public DateTimeOffsetTemplate ToTemplate()
     {
         int length = Length;
@@ -48,6 +62,9 @@ public readonly record struct DateTimeOffsetTuple :
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
+/// <summary>
+/// Represents a template which has <see cref="DateTimeOffset"/> field types only.
+/// </summary>
 public readonly record struct DateTimeOffsetTemplate : 
     IEquatable<DateTimeOffsetTemplate>,
     ISpaceTemplate<DateTimeOffset>, 
@@ -58,10 +75,24 @@ public readonly record struct DateTimeOffsetTemplate :
     public ref readonly DateTimeOffset? this[int index] => ref fields[index];
     public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Default constructor which instantiates an empty template. 
+    /// </summary>
     public DateTimeOffsetTemplate() => fields = Array.Empty<DateTimeOffset?>();
+
+    /// <summary>
+    /// Main constructor which instantiates a non-empty template, when at least one field is supplied, otherwise an empty template is instantiated.
+    /// </summary>
+    /// <param name="fields">The elements of this template.</param>
     public DateTimeOffsetTemplate([AllowNull] params DateTimeOffset?[] fields) =>
         this.fields = fields is null ? Array.Empty<DateTimeOffset?>() : fields;
 
+    /// <summary>
+    /// Determines whether <see langword="this"/> matches the specified <paramref name="tuple"/>.
+    /// </summary>
+    /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
+    /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
+    /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
     public bool Matches(DateTimeOffsetTuple tuple) => this.Matches<DateTimeOffset, DateTimeOffsetTuple>(tuple);
     public bool Equals(DateTimeOffsetTemplate other) => this.SequentialEquals(other);
 
