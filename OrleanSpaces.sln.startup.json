@@ -43,6 +43,18 @@
         "PingPong": {}
       }
     },
+    "AsyncEnumerator": {
+      "Projects": {
+        "SpaceHost": {},
+        "AsyncEnumerator": {}
+      }
+    },
+    "ClientServer": {
+      "Projects": {
+        "Server": {},
+        "Client": {}
+      }
+    },
     "PasswordSearch": {
       "Projects": {
         "SpaceHost": {},

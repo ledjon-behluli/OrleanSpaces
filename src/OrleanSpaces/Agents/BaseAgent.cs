@@ -165,7 +165,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         return new(result);
     }
 
-    public async IAsyncEnumerable<TTuple> ConsumeAsync()
+    public async IAsyncEnumerable<TTuple> PeekAsync()
     {
         lock (lockObj)
         {

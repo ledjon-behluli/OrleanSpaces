@@ -164,7 +164,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         return new(result);
     }
 
-    public async IAsyncEnumerable<SpaceTuple> ConsumeAsync()
+    public async IAsyncEnumerable<SpaceTuple> PeekAsync()
     {
         lock (lockObj)
         {

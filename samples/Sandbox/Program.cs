@@ -31,7 +31,7 @@ SpaceTemplate s_template1 = new(1, null, 3);
 
 _ = Task.Run(async () =>
 {
-    await foreach (var tuple in agent1.ConsumeAsync())
+    await foreach (var tuple in agent1.PeekAsync())
     {
         Console.WriteLine($"PROD1: {tuple}");
     }
@@ -39,7 +39,7 @@ _ = Task.Run(async () =>
 
 _ = Task.Run(async () =>
 {
-    await foreach (var tuple in agent1.ConsumeAsync())
+    await foreach (var tuple in agent1.PeekAsync())
     {
         Console.WriteLine($"PROD2: {tuple}");
     }
