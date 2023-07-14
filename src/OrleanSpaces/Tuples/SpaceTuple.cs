@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace OrleanSpaces.Tuples;
 
 /// <summary>
-/// Represents a tuple in the tuple space paradigm.
+/// Represents a tuple which has different kinds of field types.
 /// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct SpaceTuple : 
@@ -15,6 +15,9 @@ public readonly record struct SpaceTuple :
     [Id(0), JsonProperty] private readonly object[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
 
+    /// <summary>
+    /// Returns the field specified by <paramref name="index"/>.
+    /// </summary>
     public readonly object this[int index] => fields[index];
    
     /// <summary>
@@ -57,6 +60,7 @@ public readonly record struct SpaceTuple :
             }
         }
     }
+
     public SpaceTemplate ToTemplate()
     {
         int length = Length;
@@ -96,20 +100,26 @@ public readonly record struct SpaceTuple :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields)})";
 
+    /// <summary>
+    /// Returns an enumerator to enumerate over the fields of this tuple.
+    /// </summary>
     public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
 }
 
 /// <summary>
-/// Represents a template (<i>or passive tuple</i>) in the tuple space paradigm.
+/// Represents a template which has different kinds of field types.
 /// </summary>
 public readonly record struct SpaceTemplate : 
     ISpaceTemplate,
     IEquatable<SpaceTemplate>
 {
     private readonly object?[] fields;
-
-    public readonly object? this[int index] => fields[index];
     public int Length => fields?.Length ?? 0;
+
+    /// <summary>
+    /// Returns the field specified by <paramref name="index"/>.
+    /// </summary>
+    public readonly object? this[int index] => fields[index];
 
     /// <summary>
     /// Default constructor which instantiates an empty <see cref="SpaceTemplate"/>.
@@ -212,5 +222,8 @@ public readonly record struct SpaceTemplate :
     public override int GetHashCode() => fields.GetHashCode();
     public override string ToString() => $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
 
+    /// <summary>
+    /// Returns an enumerator to enumerate over the fields of this tuple.
+    /// </summary>
     public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();
 }

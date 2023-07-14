@@ -2,16 +2,37 @@
 
 namespace OrleanSpaces.Tuples;
 
+/// <summary>
+/// The base interface for any kind of space tuple.
+/// </summary>
 public interface ISpaceTuple 
 {
+    /// <summary>
+    /// The length of this tuple.
+    /// </summary>
     int Length { get; }
 }
 
+/// <summary>
+/// The extended interface for any kind of specialized space tuple.
+/// </summary>
+/// <typeparam name="T">Any of the supported non-reference types.</typeparam>
 public interface ISpaceTuple<T> : ISpaceTuple
     where T : unmanaged
-{  
+{
+    /// <summary>
+    /// Returns a readonly reference of the field specified by <paramref name="index"/>.
+    /// </summary>
     ref readonly T this[int index] { get; }
+
+    /// <summary>
+    /// Returns a readonly span of characters which represent this tuple.
+    /// </summary>
     ReadOnlySpan<char> AsSpan();
+
+    /// <summary>
+    /// Returns an enumerator to enumerate over the fields of this tuple.
+    /// </summary>
     ReadOnlySpan<T>.Enumerator GetEnumerator();
 }
 

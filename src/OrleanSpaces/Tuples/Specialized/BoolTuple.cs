@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
+/// <summary>
+/// Represents a tuple which has <see cref="bool"/> field types only.
+/// </summary>
 [GenerateSerializer, Immutable]
 public readonly record struct BoolTuple :
     IEquatable<BoolTuple>,
@@ -80,6 +83,9 @@ public readonly record struct BoolTuple :
     }
 }
 
+/// <summary>
+/// Represents a template which has <see cref="bool"/> field types only.
+/// </summary>
 public readonly record struct BoolTemplate : 
     IEquatable<BoolTemplate>, 
     ISpaceTemplate<bool>,
@@ -101,5 +107,4 @@ public readonly record struct BoolTemplate :
     public override string ToString() => SpaceHelpers.ToString(fields);
 
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
-
 }
