@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Specialized;
 
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
@@ -17,8 +18,11 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-ISpaceTuple spaceTuple = null
 // test anything here...
+
+
+SpaceTemplate sp1 = new(null, 1);
+IntTemplate it1 = new(null);
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();

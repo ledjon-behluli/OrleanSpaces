@@ -81,7 +81,8 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
 
                 if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
                     type.IsOfClrType(typeof(Type), context.Compilation) ||
-                    type?.SpecialType == SpecialType.System_Nullable_T)
+                    type?.SpecialType == SpecialType.System_Nullable_T ||
+                    type is null)
                 {
                     continue;
                 }
