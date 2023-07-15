@@ -54,7 +54,7 @@ public class TemplateCacheOverInitFixerTests : FixerFixture
     public void Should_Fix_Template_With_Namespace_Within_File(int numOfNulls, Namespace @namespace, string code)
     {
         string templateTypeName = code.Split(' ')[0];
-        string fix = GenerateFixedCodeWithinFile(templateTypeName, numOfNulls, useNamespace: false);
+        string fix = GenerateFixedCodeWithinFile(templateTypeName, numOfNulls, useNamespace: true);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: false);
 
         TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
@@ -120,7 +120,7 @@ public readonly struct {templateTypeName}Cache
     public void Should_Fix_Template_With_Namespace_In_New_File(int numOfNulls, Namespace @namespace, string code)
     {
         string templateTypeName = code.Split(' ')[0];
-        string fix = GenerateFixedCodeNewFile(templateTypeName, numOfNulls, useNamespace: false);
+        string fix = GenerateFixedCodeNewFile(templateTypeName, numOfNulls, useNamespace: true);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: true);
 
         TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
