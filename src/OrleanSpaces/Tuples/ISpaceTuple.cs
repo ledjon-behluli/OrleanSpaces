@@ -3,7 +3,7 @@
 namespace OrleanSpaces.Tuples;
 
 /// <summary>
-/// The base interface for any kind of space tuple.
+/// Marker interface for any space tuple.
 /// </summary>
 [InternalUseOnly]
 public interface ISpaceTuple 
@@ -15,7 +15,7 @@ public interface ISpaceTuple
 }
 
 /// <summary>
-/// The extended interface for any kind of specialized space tuple.
+/// Marker interface for any specialized space tuple.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
 [InternalUseOnly]

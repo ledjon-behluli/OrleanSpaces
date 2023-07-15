@@ -1,7 +1,7 @@
 ﻿namespace OrleanSpaces.Tuples;
 
 /// <summary>
-/// The base interface for any kind of space template.
+/// Marker interface for any space template.
 /// </summary>
 [InternalUseOnly]
 public interface ISpaceTemplate 
@@ -13,7 +13,7 @@ public interface ISpaceTemplate
 }
 
 /// <summary>
-/// The extended interface for any kind of specialized space template.
+/// Marker interface for any specialized space template.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
 [InternalUseOnly]

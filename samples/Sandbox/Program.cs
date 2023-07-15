@@ -20,7 +20,7 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 // test anything here...
 
-ISpaceTuple spaceTuple = new SpaceTuple(1);
+ISpaceTuple spaceTuple = new SpaceTuple();
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();

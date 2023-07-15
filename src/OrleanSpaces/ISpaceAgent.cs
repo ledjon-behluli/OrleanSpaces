@@ -115,8 +115,8 @@ public interface ISpaceAgent
 /// <typeparam name="TTemplate">The template type which must contains <typeparamref name="T"/> values only.</typeparam>
 public interface ISpaceAgent<T, TTuple, TTemplate>
     where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>
+    where TTuple : struct, ISpaceTuple<T>
+    where TTemplate : struct, ISpaceTemplate<T>
 {
     /// <summary>
     /// Enables the <paramref name="observer"/> to subscribe to events that happen in the tuple space.

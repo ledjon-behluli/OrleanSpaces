@@ -43,14 +43,19 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (HasInternalUseOnlyAttribute(in context, interfaceSymbol) &&
-            IsInterfaceUsedInDifferentAssembly(in context, interfaceDeclaration))
-        {
-            context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
-               descriptor: Diagnostic,
-               location: interfaceDeclaration.Identifier.GetLocation(),
-               messageArgs: interfaceSymbol.Name));
-        }
+        context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
+              descriptor: Diagnostic,
+              location: interfaceDeclaration.Identifier.GetLocation(),
+              messageArgs: interfaceSymbol.Name));
+
+        //if (HasInternalUseOnlyAttribute(in context, interfaceSymbol) &&
+        //    IsInterfaceUsedInDifferentAssembly(in context, interfaceDeclaration))
+        //{
+        //    context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
+        //       descriptor: Diagnostic,
+        //       location: interfaceDeclaration.Identifier.GetLocation(),
+        //       messageArgs: interfaceSymbol.Name));
+        //}
     }
 
     private bool HasInternalUseOnlyAttribute(in SyntaxNodeAnalysisContext context, ISymbol symbol)
