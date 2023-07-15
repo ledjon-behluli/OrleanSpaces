@@ -24,14 +24,19 @@ public class InternalUseOnlyAttributeAnalyzerTests : AnalyzerFixture
         Assert.True(diagnostic.IsEnabledByDefault);
     }
 
-    [Theory]
-    [InlineData("[|ISpaceTuple|] tuple = new SpaceTuple(1);")]
-    [InlineData("[|ISpaceTuple tuple|] = new SpaceTuple(1);")]
-    [InlineData("[|ISpaceTuple tuple = new SpaceTuple(1);|]")]
-    //[InlineData("[|ISpaceTemplate|] tuple = new SpaceTemplate(1);")]
+    [Fact]
+    public void Test()
+    {
+        string code = "namespace MyNamespace; [|ISpaceTuple tuple = new SpaceTuple(1);|]";
+        HasDiagnostic(code, InternalUseOnlyAttributeAnalyzer.Diagnostic.Id);
+    }
 
-    //[InlineData("[|ISpaceTuple<int>|]  tuple = new Tuple(1);")]
-    //[InlineData("[|ISpaceTemplate<int>|]  tuple = new IntTuple(1);")]
+    [Theory]
+    [InlineData("[|ISpaceTuple tuple|]  = new SpaceTuple(1);")]
+    [InlineData("[|ISpaceTemplate tuple|]  = new SpaceTemplate(1);")]
+
+    [InlineData("[|ISpaceTuple<int>|]  tuple = new Tuple(1);")]
+    [InlineData("[|ISpaceTemplate<int>|]  tuple = new IntTuple(1);")]
     public void Should_Diagnose(string code) =>
         HasDiagnostic(code, Namespace.MyNamespace);
 
