@@ -39,7 +39,9 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if (IsInterfaceType(symbol) && HasInternalUseOnlyAttribute(symbol))
+        if (
+           // IsInterfaceType(symbol) &&
+            HasInternalUseOnlyAttribute(symbol))
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                     descriptor: Diagnostic,
