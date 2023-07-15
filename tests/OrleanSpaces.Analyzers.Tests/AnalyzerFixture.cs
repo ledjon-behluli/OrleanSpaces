@@ -11,21 +11,12 @@ public class AnalyzerFixture : AnalyzerTestFixture
     protected sealed override string LanguageName => LanguageNames.CSharp;
     protected sealed override DiagnosticAnalyzer CreateAnalyzer() => analyzer;
 
-    protected sealed override IReadOnlyCollection<MetadataReference> References
+    protected sealed override IReadOnlyCollection<MetadataReference> References => 
+    new[]
     {
-        get
-        {
-            var dotNetAssemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            return new[]
-            {
-                ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly),
-                MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "mscorlib.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Core.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(dotNetAssemblyPath, "System.Runtime.dll"))
-            };
-        }
-    }
+        ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly),
+        MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Runtime.dll"))
+    };
 
     public AnalyzerFixture(DiagnosticAnalyzer analyzer, string diagnosticId)
     {

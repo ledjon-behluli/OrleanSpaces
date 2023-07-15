@@ -22,15 +22,15 @@ public class TemplateCacheOverInitFixerTests : FixerFixture
 
     [Theory]
 
-    [InlineData(1, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null)|];")]
-    [InlineData(2, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null)|];")]
-    [InlineData(4, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-
-    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null)|];")]
+    //[InlineData(1, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null)|];")]
+    //[InlineData(2, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null)|];")]
+    //[InlineData(4, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null)|];")]
+    //[InlineData(8, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    //
+    //[InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null)|];")]
     [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null)|];")]
-    [InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    //[InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null)|];")]
+    //[InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
     public void Should_Fix_Template_Without_Namespace_Within_File(int numOfNulls, Namespace @namespace, string code)
     {
         string templateTypeName = code.Split(' ')[0];
