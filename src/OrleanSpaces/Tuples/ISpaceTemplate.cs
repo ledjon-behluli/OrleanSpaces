@@ -16,7 +16,6 @@ public interface ISpaceTemplate
 /// Marker interface for any specialized space template.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
-[InternalUseOnly]
 public interface ISpaceTemplate<T> : ISpaceTemplate
     where T : unmanaged
 {

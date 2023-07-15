@@ -18,7 +18,6 @@ public interface ISpaceTuple
 /// Marker interface for any specialized space tuple.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
-[InternalUseOnly]
 public interface ISpaceTuple<T> : ISpaceTuple
     where T : unmanaged
 {

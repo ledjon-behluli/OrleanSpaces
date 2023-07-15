@@ -13,7 +13,7 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
         category: Categories.Usage,
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         title: "Interface is intended for internal use only.",
         messageFormat: "Interface '{0}' is intended for internal use only.",
@@ -33,13 +33,13 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
     {
         var identifierName = (IdentifierNameSyntax)context.Node;
         var symbol = context.SemanticModel.GetSymbolInfo(identifierName).Symbol;
-       
+
         if (symbol is null)
         {
             return;
         }
 
-        if (IsInterfaceKind(symbol) && HasInternalUseOnlyAttribute(symbol))
+        if (IsInterfaceType(symbol) && HasInternalUseOnlyAttribute(symbol))
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                     descriptor: Diagnostic,
@@ -48,9 +48,9 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
         }
     }
 
-    private static bool IsInterfaceKind(ISymbol symbol)
+    private static bool IsInterfaceType(ISymbol symbol)
         => symbol is ITypeSymbol typeSymbol && typeSymbol.TypeKind == TypeKind.Interface;
-  
+
     private bool HasInternalUseOnlyAttribute(ISymbol symbol)
     {
         var attributeType = symbol.ContainingAssembly.GetTypeByMetadataName(FullyQualifiedNames.InternalUseOnlyAttribute);
