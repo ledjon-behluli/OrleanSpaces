@@ -5,6 +5,7 @@ namespace OrleanSpaces.Tuples;
 /// <summary>
 /// The base interface for any kind of space tuple.
 /// </summary>
+[InternalUseOnly]
 public interface ISpaceTuple 
 {
     /// <summary>
@@ -17,6 +18,7 @@ public interface ISpaceTuple
 /// The extended interface for any kind of specialized space tuple.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
+[InternalUseOnly]
 public interface ISpaceTuple<T> : ISpaceTuple
     where T : unmanaged
 {

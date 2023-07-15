@@ -20,9 +20,7 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 
 // test anything here...
 
-
-SpaceTemplate sp1 = SpaceTemplateCache.Template_1;
-IntTemplate it1 = IntTemplateCache.Template_1;
+ISpaceTuple spaceTuple = new SpaceTuple(1);
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();

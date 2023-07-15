@@ -3,6 +3,7 @@
 /// <summary>
 /// The base interface for any kind of space template.
 /// </summary>
+[InternalUseOnly]
 public interface ISpaceTemplate 
 {
     /// <summary>
@@ -15,6 +16,7 @@ public interface ISpaceTemplate
 /// The extended interface for any kind of specialized space template.
 /// </summary>
 /// <typeparam name="T">Any of the supported non-reference types.</typeparam>
+[InternalUseOnly]
 public interface ISpaceTemplate<T> : ISpaceTemplate
     where T : unmanaged
 {

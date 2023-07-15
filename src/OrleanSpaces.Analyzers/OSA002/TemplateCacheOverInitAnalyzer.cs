@@ -68,7 +68,7 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         var arguments = creationOperation.GetArguments().ToList();
         if (arguments.Count == 0)
         {
-            ReportDiagnostic(ref context, creationOperation, creationOperation.Type.Name, 1);
+            ReportDiagnostic(in context, creationOperation, creationOperation.Type.Name, 1);
             return;
         }
 
@@ -81,10 +81,10 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        ReportDiagnostic(ref context, creationOperation, creationOperation.Type.Name, arguments.Count);
+        ReportDiagnostic(in context, creationOperation, creationOperation.Type.Name, arguments.Count);
     }
 
-    private static void ReportDiagnostic(ref OperationAnalysisContext context, IOperation operation, string templateTypeName, int numOfNulls)
+    private static void ReportDiagnostic(in OperationAnalysisContext context, IOperation operation, string templateTypeName, int numOfNulls)
     {
         var builder = ImmutableDictionary.CreateBuilder<string, string?>();
         

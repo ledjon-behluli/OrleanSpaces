@@ -38,7 +38,7 @@ public interface ISpaceObserver<T>
 public abstract class SpaceObserver<T> : ISpaceObserver<T>
     where T : ISpaceTuple
 {
-    private EventType type = EventType.Nothing;
+    private EventType type = EventType.Everything;
 
     /// <summary>
     /// Configures the derived class to listen to specific events.
@@ -69,11 +69,11 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
     }
 
     /// <inheritdoc/>
-    public virtual Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    public abstract Task OnExpansionAsync(T tuple, CancellationToken cancellationToken);
     /// <inheritdoc/>
-    public virtual Task OnContractionAsync(T tuple, CancellationToken cancellationToken) => Task.CompletedTask;
+    public abstract Task OnContractionAsync(T tuple, CancellationToken cancellationToken);
     /// <inheritdoc/>
-    public virtual Task OnFlatteningAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public abstract Task OnFlatteningAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// The type of space event happening.
@@ -120,11 +120,7 @@ internal sealed class ObserverDecorator<T> : SpaceObserver<T>
 {
     private readonly ISpaceObserver<T> observer;
 
-    public ObserverDecorator(ISpaceObserver<T> observer)
-    {
-        this.observer = observer;
-        ListenTo(Everything);
-    }
+    public ObserverDecorator(ISpaceObserver<T> observer) => this.observer = observer;
 
     public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken) =>
         observer.OnExpansionAsync(tuple, cancellationToken);

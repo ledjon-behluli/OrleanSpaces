@@ -133,8 +133,6 @@ public class TestSpaceObserver<T> : SpaceObserver<T>
     public T LastContractionTuple { get; protected set; } = new();
     public bool HasFlattened { get; protected set; }
 
-    public TestSpaceObserver() => ListenTo(Everything);
-
     public override Task OnExpansionAsync(T tuple, CancellationToken cancellationToken)
     {
         LastExpansionTuple = tuple;

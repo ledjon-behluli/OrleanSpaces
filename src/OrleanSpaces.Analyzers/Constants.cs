@@ -8,6 +8,8 @@ internal static class Categories
 
 internal static class FullyQualifiedNames
 {
+    public const string InternalUseOnlyAttribute = "OrleanSpaces.InternalUseOnlyAttribute";
+
     public const string SpaceTuple = "OrleanSpaces.Tuples.SpaceTuple";
     public const string SpaceTemplate = "OrleanSpaces.Tuples.SpaceTemplate";
 

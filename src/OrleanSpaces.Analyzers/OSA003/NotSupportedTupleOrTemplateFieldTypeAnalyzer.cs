@@ -69,7 +69,7 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
                     continue;
                 }
 
-                ReportDiagnosticFor("SpaceTuple", context, argument);
+                ReportDiagnosticFor(in context, argument, "SpaceTuple");
             }
         }
 
@@ -87,11 +87,11 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
                     continue;
                 }
 
-                ReportDiagnosticFor("SpaceTemplate", context, argument);
+                ReportDiagnosticFor(in context, argument, "SpaceTemplate");
             }
         }
 
-        static void ReportDiagnosticFor(string targetTypeName, OperationAnalysisContext context, ArgumentSyntax argument)
+        static void ReportDiagnosticFor(in OperationAnalysisContext context, ArgumentSyntax argument, string targetTypeName)
         {
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
