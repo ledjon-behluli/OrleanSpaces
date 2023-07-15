@@ -26,7 +26,7 @@ public class TemplateCacheOverInitFixerTests : FixerFixture
     //[InlineData(2, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null)|];")]
     //[InlineData(4, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null)|];")]
     //[InlineData(8, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    //
+    
     //[InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null)|];")]
     [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null)|];")]
     //[InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null)|];")]

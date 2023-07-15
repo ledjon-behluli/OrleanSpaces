@@ -12,11 +12,14 @@ public class AnalyzerFixture : AnalyzerTestFixture
     protected sealed override DiagnosticAnalyzer CreateAnalyzer() => analyzer;
 
     protected sealed override IReadOnlyCollection<MetadataReference> References => 
-    new[]
-    {
-        ReferenceSource.FromAssembly(typeof(ISpaceAgent).Assembly),
-        MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "System.Runtime.dll"))
-    };
+        new[]
+        {
+            CreateReferenceFromType(typeof(object), "System.Runtime.dll"),
+            CreateReferenceFromType(typeof(ISpaceAgent), "OrleanSpaces.dll")
+        };
+
+    private static PortableExecutableReference CreateReferenceFromType(Type type, string dllName)
+        => MetadataReference.CreateFromFile(Path.Combine(Path.GetDirectoryName(type.Assembly.Location), dllName));
 
     public AnalyzerFixture(DiagnosticAnalyzer analyzer, string diagnosticId)
     {
