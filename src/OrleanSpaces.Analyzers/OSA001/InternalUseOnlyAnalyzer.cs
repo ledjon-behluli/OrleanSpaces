@@ -13,7 +13,7 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA001",
         category: Categories.Usage,
-        defaultSeverity: DiagnosticSeverity.Info,
+        defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         title: "Interface is intended for internal use only.",
         messageFormat: "Interface '{0}' is intended for internal use only.",
@@ -26,44 +26,34 @@ internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
         context.EnableConcurrentExecution();
 
-        context.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.InterfaceDeclaration);
+        context.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.IdentifierName);
     }
 
     private void AnalyzeInterfaceDeclaration(SyntaxNodeAnalysisContext context)
     {
-        var interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
-        if (interfaceDeclaration is null)
+        var identifierName = (IdentifierNameSyntax)context.Node;
+        var symbol = context.SemanticModel.GetSymbolInfo(identifierName).Symbol;
+       
+        if (symbol is null)
         {
             return;
         }
 
-        var interfaceSymbol = context.SemanticModel.GetDeclaredSymbol(interfaceDeclaration);
-        if (interfaceSymbol is null)
+        if (IsInterfaceKind(symbol) && HasInternalUseOnlyAttribute(symbol))
         {
-            return;
+            context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
+                    descriptor: Diagnostic,
+                    location: identifierName.GetLocation(),
+                    messageArgs: symbol.Name));
         }
-
-        context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
-              descriptor: Diagnostic,
-              location: interfaceDeclaration.Identifier.GetLocation(),
-              messageArgs: interfaceSymbol.Name));
-
-        //if (HasInternalUseOnlyAttribute(in context, interfaceSymbol) &&
-        //    IsInterfaceUsedInDifferentAssembly(in context, interfaceDeclaration))
-        //{
-        //    context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
-        //       descriptor: Diagnostic,
-        //       location: interfaceDeclaration.Identifier.GetLocation(),
-        //       messageArgs: interfaceSymbol.Name));
-        //}
     }
 
-    private bool HasInternalUseOnlyAttribute(in SyntaxNodeAnalysisContext context, ISymbol symbol)
+    private static bool IsInterfaceKind(ISymbol symbol)
+        => symbol is ITypeSymbol typeSymbol && typeSymbol.TypeKind == TypeKind.Interface;
+  
+    private bool HasInternalUseOnlyAttribute(ISymbol symbol)
     {
-        var attributeType = context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.InternalUseOnlyAttribute);
+        var attributeType = symbol.ContainingAssembly.GetTypeByMetadataName(FullyQualifiedNames.InternalUseOnlyAttribute);
         return symbol.GetAttributes().Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeType));
     }
-
-    private bool IsInterfaceUsedInDifferentAssembly(in SyntaxNodeAnalysisContext context, InterfaceDeclarationSyntax interfaceDeclaration)
-        => !context.SemanticModel.Compilation.ContainsSyntaxTree(interfaceDeclaration.SyntaxTree);
 }

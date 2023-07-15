@@ -18,17 +18,10 @@ public class InternalUseOnlyAttributeAnalyzerTests : AnalyzerFixture
 
         Assert.Equal("OSA001", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
+        Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
         Assert.Equal("Interface is intended for internal use only.", diagnostic.Title);
         Assert.Equal("Interface '{0}' is intended for internal use only.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
-    }
-
-    [Fact]
-    public void Test()
-    {
-        string code = "[|ISpaceTuple tuple = new SpaceTuple(1);|]";
-        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples);
     }
 
     [Theory]
