@@ -648,7 +648,8 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
                     structDeclaration));
 
     private static QualifiedNameSyntax CreateQualifiedNameSyntax(string templateTypeName)
-        => templateTypeName == FullyQualifiedNames.SpaceTemplate ?
+        => templateTypeName == "SpaceTemplate" ||
+           templateTypeName == FullyQualifiedNames.SpaceTemplate ?
                 QualifiedName(
                     IdentifierName("OrleanSpaces"),
                     IdentifierName("Tuples")) :

@@ -19,8 +19,8 @@ public class TemplateCacheOverInitAnalyzerTests : AnalyzerFixture
         Assert.Equal("OSA002", diagnostic.Id);
         Assert.Equal(Categories.Performance, diagnostic.Category);
         Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
-        Assert.Equal("Avoid constructor instantiation of template having only 'null' type arguments.", diagnostic.Title);
-        Assert.Equal("Avoid constructor instantiation of template having only 'null' type arguments.", diagnostic.MessageFormat);
+        Assert.Equal("Avoid constructor instantiation having only 'null' type, or no arguments.", diagnostic.Title);
+        Assert.Equal("Avoid constructor instantiation of '{0}' having only 'null' type, or no arguments.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
     }
 

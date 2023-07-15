@@ -15,8 +15,8 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         category: Categories.Performance,
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        title: "Avoid constructor instantiation of template having only 'null' type arguments.",
-        messageFormat: "Avoid constructor instantiation of template having only 'null' type arguments.",
+        title: "Avoid constructor instantiation having only 'null' type, or no arguments.",
+        messageFormat: "Avoid constructor instantiation of '{0}' having only 'null' type, or no arguments.",
         helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA002.md");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
@@ -94,6 +94,7 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
             descriptor: Diagnostic,
             location: operation.Syntax.GetLocation(),
+            messageArgs: templateTypeName,
             properties: builder.ToImmutable()));
     }
 }

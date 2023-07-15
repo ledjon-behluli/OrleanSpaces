@@ -13,9 +13,8 @@
 	</ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj" PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
 	<ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
-	  <ProjectReference Include="..\..\src\OrleanSpaces.Analyzers\OrleanSpaces.Analyzers.csproj"
-			PrivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
   </ItemGroup>
 
 </Project>
