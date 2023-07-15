@@ -16,74 +16,65 @@ public class TemplateCacheOverInitFixerTests : FixerFixture
     public void Should_Equal() =>
         Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
 
-    #region Non-Existing SpaceTemplateCache 
-    
-    private static (string, string) GetNestedActionTitle(int numOfNulls, bool isNewFile) =>
-        new("Cache value as a static readonly reference", isNewFile ?
-            $"Cache value as a '{numOfNulls}-tuple' static readonly reference in a new file" :
-            $"Cache value as a '{numOfNulls}-tuple' static readonly reference in this file");
+    #region Non-Existing {X}TemplateCache 
 
     #region Within File
 
     [Theory]
-    [InlineData(1, "SpaceTemplate template = [|new(null)|];")]
-    [InlineData(2, "SpaceTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "SpaceTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Space_Template_Without_Namespace_Within_File(int numOfNulls, string code)
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    public void Should_Fix_Template_Without_Namespace_Within_File(int numOfNulls, Namespace @namespace, string code)
     {
+        string templateTypeName = code.Split(' ')[0];
+        string fix = GenerateFixedCodeWithinFile(templateTypeName, numOfNulls, useNamespace: false);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: false);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeWithinFile("SpaceTemplate", numOfNulls, useNamespace: false), Namespace.OrleanSpaces_Tuples);
+       
+        TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
     }
 
     [Theory]
-    [InlineData(1, "IntTemplate template = [|new(null)|];")]
-    [InlineData(2, "IntTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "IntTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Specialized_Template_Without_Namespace_Within_File(int numOfNulls, string code)
-    {
-        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: false);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeWithinFile("IntTemplate", numOfNulls, useNamespace: false), Namespace.OrleanSpaces_Tuples_Specialized);
-    }
 
-    [Theory]
-    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(null)|];")]
-    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Space_Template_With_Namespace_Within_File(int numOfNulls, string code)
-    {
-        var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: false);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeWithinFile("SpaceTemplate", numOfNulls, useNamespace: true), Namespace.OrleanSpaces_Tuples);
-    }
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
 
-    [Theory]
-    [InlineData(1, "namespace MyNamespace; IntTemplate template = [|new(null)|];")]
-    [InlineData(2, "namespace MyNamespace; IntTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Specialized_Template_With_Namespace_Within_File(int numOfNulls, string code)
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    public void Should_Fix_Template_With_Namespace_Within_File(int numOfNulls, Namespace @namespace, string code)
     {
+        string templateTypeName = code.Split(' ')[0];
+        string fix = GenerateFixedCodeWithinFile(templateTypeName, numOfNulls, useNamespace: false);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: false);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeWithinFile("IntTemplate", numOfNulls, useNamespace: true), Namespace.OrleanSpaces_Tuples_Specialized);
+
+        TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
     }
 
     private static string GenerateFixedCodeWithinFile(string templateTypeName, int numOfNulls, bool useNamespace)
     {
-        string unitArrayArgument = string.Join(", ", Enumerable.Repeat("null", numOfNulls));
+        string nullArrayArgument = string.Join(", ", Enumerable.Repeat("null", numOfNulls));
         string potentialNamespace = useNamespace ? "namespace MyNamespace; " : string.Empty;
 
         return
-@$"{potentialNamespace}{templateTypeName} template = {templateTypeName}Cache.Tuple_{numOfNulls};
+@$"{potentialNamespace}{templateTypeName} template = {templateTypeName}Cache.Template_{numOfNulls};
 
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_{numOfNulls} = new({unitArrayArgument});
+    private static readonly {templateTypeName} template_{numOfNulls} = new({nullArrayArgument});
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_{numOfNulls} => ref tuple_{numOfNulls};
+    public static ref readonly {templateTypeName} Template_{numOfNulls} => ref template_{numOfNulls};
 }}";
     }
 
@@ -92,45 +83,70 @@ public readonly struct {templateTypeName}Cache
     #region New File
 
     [Theory]
-    [InlineData(1, "SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "SpaceTemplate template = [|new(null)|];")]
-    [InlineData(2, "SpaceTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "SpaceTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Template_Without_Namespace_In_New_File(int numOfNulls, string code)
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new()|];")]
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new()|];")]
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    public void Should_Fix_Template_Without_Namespace_In_New_File(int numOfNulls, Namespace @namespace, string code)
     {
+        string templateTypeName = code.Split(' ')[0];
+        string fix = GenerateFixedCodeNewFile(templateTypeName, numOfNulls, useNamespace: false);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: true);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeNewFile(numOfNulls, useNamespace: false), Namespace.OrleanSpaces_Tuples);
+
+        TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
     }
 
     [Theory]
-    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
-    [InlineData(1, "namespace MyNamespace; SpaceTemplate template = [|new(null)|];")]
-    [InlineData(2, "namespace MyNamespace; SpaceTemplate template = [|new(null, null)|];")]
-    [InlineData(4, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null)|];")]
-    [InlineData(8, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
-    public void Should_Fix_Template_With_Namespace_In_New_File(int numOfNulls, string code)
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new()|];")]
+    [InlineData(1, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples, "namespace MyNamespace; SpaceTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new()|];")]
+    [InlineData(1, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null)|];")]
+    [InlineData(2, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null)|];")]
+    [InlineData(4, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null)|];")]
+    [InlineData(8, Namespace.OrleanSpaces_Tuples_Specialized, "namespace MyNamespace; IntTemplate template = [|new(null, null, null, null, null, null, null, null)|];")]
+    public void Should_Fix_Template_With_Namespace_In_New_File(int numOfNulls, Namespace @namespace, string code)
     {
+        string templateTypeName = code.Split(' ')[0];
+        string fix = GenerateFixedCodeNewFile(templateTypeName, numOfNulls, useNamespace: false);
         var (groupTitle, actionTitle) = GetNestedActionTitle(numOfNulls, isNewFile: true);
-        TestCodeFix(groupTitle, actionTitle, code, GenerateFixedCodeNewFile(numOfNulls, useNamespace: true), Namespace.OrleanSpaces_Tuples);
+
+        TestCodeFix(groupTitle, actionTitle, code, fix, @namespace);
     }
 
-    private static string GenerateFixedCodeNewFile(int numOfNulls, bool useNamespace)
+    private static string GenerateFixedCodeNewFile(string templateTypeName, int numOfNulls, bool useNamespace)
     {
         string potentialNamespace = useNamespace ? "namespace MyNamespace; " : string.Empty;
-        return $"{potentialNamespace}SpaceTemplate template = SpaceTemplateCache.Tuple_{numOfNulls};";
+        return $"{potentialNamespace}{templateTypeName} template = {templateTypeName}Cache.Template_{numOfNulls};";
     }
 
     #endregion
 
+    private static (string, string) GetNestedActionTitle(int numOfNulls, bool isNewFile) =>
+        new("Cache value as a static readonly reference", isNewFile ?
+            $"Cache value as a '{numOfNulls}-template' static readonly reference in a new file" :
+            $"Cache value as a '{numOfNulls}-template' static readonly reference in this file");
+
     #endregion
 
-    #region Existing SpaceTemplateCache 
+    #region Existing {X}TemplateCache 
 
     [Theory]
     [InlineData("SpaceTemplate", Namespace.OrleanSpaces_Tuples)]
     [InlineData("IntTemplate", Namespace.OrleanSpaces_Tuples_Specialized)]
-    public void Should_Fix_1_Tuple_Template_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
+    public void Should_Fix_1_Template_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
     {
         string code =
 @$"{templateTypeName} template = [|new(null)|];
@@ -138,22 +154,22 @@ public readonly struct {templateTypeName}Cache
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_1 = new(null);
+    private static readonly {templateTypeName} template_1 = new(null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_1 => ref tuple_1;
+    public static ref readonly {templateTypeName} Template_1 => ref template_1;
 }}";
 
         string fix =
-@$"{templateTypeName} template = {templateTypeName}Cache.Tuple_1;
+@$"{templateTypeName} template = {templateTypeName}Cache.Template_1;
 
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_1 = new(null);
+    private static readonly {templateTypeName} template_1 = new(null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_1 => ref tuple_1;
+    public static ref readonly {templateTypeName} Template_1 => ref template_1;
 }}";
 
         TestCodeFix(code, fix, @namespace);
@@ -162,7 +178,7 @@ public readonly struct {templateTypeName}Cache
     [Theory]
     [InlineData("SpaceTemplate", Namespace.OrleanSpaces_Tuples)]
     [InlineData("IntTemplate", Namespace.OrleanSpaces_Tuples_Specialized)]
-    public void Should_Fix_2_Tuple_Template_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
+    public void Should_Fix_2_Template_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
     {
         string code =
 @$"{templateTypeName} template = [|new(null, null)|];
@@ -170,22 +186,22 @@ public readonly struct {templateTypeName}Cache
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_2 = new(null, null);
+    private static readonly {templateTypeName} template_2 = new(null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_2 => ref tuple_2;
+    public static ref readonly {templateTypeName} Template_2 => ref template_2;
 }}";
 
         string fix =
-@$"{templateTypeName} template = {templateTypeName}Cache.Tuple_2;
+@$"{templateTypeName} template = {templateTypeName}Cache.Template_2;
 
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_2 = new(null, null);
+    private static readonly {templateTypeName} template_2 = new(null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_2 => ref tuple_2;
+    public static ref readonly {templateTypeName} Template_2 => ref template_2;
 }}";
 
         TestCodeFix(code, fix, @namespace);
@@ -194,7 +210,7 @@ public readonly struct {templateTypeName}Cache
     [Theory]
     [InlineData("SpaceTemplate", Namespace.OrleanSpaces_Tuples)]
     [InlineData("IntTemplate", Namespace.OrleanSpaces_Tuples_Specialized)]
-    public void Should_Fix_2_Tuple_Template_With_FullyQualifiedName_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
+    public void Should_Fix_2_Template_With_FullyQualifiedName_By_Using_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
     {
         string code =
 @$"{templateTypeName} template = [|new(null, null)|];
@@ -202,22 +218,22 @@ public readonly struct {templateTypeName}Cache
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly OrleanSpaces.Tuples.{templateTypeName} tuple_2 = new (null, null);
+    private static readonly OrleanSpaces.Tuples.{templateTypeName} template_2 = new (null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_2 => ref tuple_2;
+    public static ref readonly {templateTypeName} Template_2 => ref template_2;
 }}";
 
         string fix =
-@$"{templateTypeName} template = {templateTypeName}Cache.Tuple_2;
+@$"{templateTypeName} template = {templateTypeName}Cache.Template_2;
 
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly OrleanSpaces.Tuples.{templateTypeName} tuple_2 = new (null, null);
+    private static readonly OrleanSpaces.Tuples.{templateTypeName} template_2 = new (null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_2 => ref tuple_2;
+    public static ref readonly {templateTypeName} Template_2 => ref template_2;
 }}";
 
         TestCodeFix(code, fix, @namespace);
@@ -226,7 +242,7 @@ public readonly struct {templateTypeName}Cache
     [Theory]
     [InlineData("SpaceTemplate", Namespace.OrleanSpaces_Tuples)]
     [InlineData("IntTemplate", Namespace.OrleanSpaces_Tuples_Specialized)]
-    public void Should_Fix_2_Tuple_Template_By_Adding_Field_Between_1_And_3_In_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
+    public void Should_Fix_2_Template_By_Adding_Field_Between_1_And_3_In_Existing_TemplateCache(string templateTypeName, Namespace @namespace)
     {
         string code =
 @$"{templateTypeName} template = [|new(null, null)|];
@@ -234,28 +250,28 @@ public readonly struct {templateTypeName}Cache
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_1 = new(null);
-    private static readonly {templateTypeName} tuple_3 = new(null, null, null);
+    private static readonly {templateTypeName} template_1 = new(null);
+    private static readonly {templateTypeName} template_3 = new(null, null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_1 => ref tuple_1;
-    public static ref readonly {templateTypeName} Tuple_3 => ref tuple_3;
+    public static ref readonly {templateTypeName} Template_1 => ref template_1;
+    public static ref readonly {templateTypeName} Template_3 => ref template_3;
 }}";
 
         string fix =
-@$"{templateTypeName} template = {templateTypeName}Cache.Tuple_2;
+@$"{templateTypeName} template = {templateTypeName}Cache.Template_2;
 
 public readonly struct {templateTypeName}Cache
 {{
 #pragma warning disable OSA002
-    private static readonly {templateTypeName} tuple_1 = new(null);
-    private static readonly {templateTypeName} tuple_2 = new(null, null);
-    private static readonly {templateTypeName} tuple_3 = new(null, null, null);
+    private static readonly {templateTypeName} template_1 = new(null);
+    private static readonly {templateTypeName} template_2 = new(null, null);
+    private static readonly {templateTypeName} template_3 = new(null, null, null);
 #pragma warning restore OSA002
 
-    public static ref readonly {templateTypeName} Tuple_1 => ref tuple_1;
-    public static ref readonly {templateTypeName} Tuple_2 => ref tuple_2;
-    public static ref readonly {templateTypeName} Tuple_3 => ref tuple_3;
+    public static ref readonly {templateTypeName} Template_1 => ref template_1;
+    public static ref readonly {templateTypeName} Template_2 => ref template_2;
+    public static ref readonly {templateTypeName} Template_3 => ref template_3;
 }}";
 
         TestCodeFix(code, fix, @namespace);

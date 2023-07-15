@@ -68,6 +68,7 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
         var arguments = creationOperation.GetArguments().ToList();
         if (arguments.Count == 0)
         {
+            ReportDiagnostic(ref context, creationOperation, creationOperation.Type.Name, 1);
             return;
         }
 
@@ -85,14 +86,14 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
 
     private static void ReportDiagnostic(ref OperationAnalysisContext context, IOperation operation, string templateTypeName, int numOfNulls)
     {
-        var dict = ImmutableDictionary<string, string?>.Empty;
-
-        dict.Add("TemplateTypeName", templateTypeName);
-        dict.Add("NumOfNulls", numOfNulls.ToString());
+        var builder = ImmutableDictionary.CreateBuilder<string, string?>();
+        
+        builder.Add("TemplateTypeName", templateTypeName);
+        builder.Add("NumOfNulls", numOfNulls.ToString());
 
         context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
             descriptor: Diagnostic,
             location: operation.Syntax.GetLocation(),
-            properties: dict));
+            properties: builder.ToImmutable()));
     }
 }

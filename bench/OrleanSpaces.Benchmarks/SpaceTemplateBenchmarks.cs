@@ -32,14 +32,14 @@ public class SpaceTemplateBenchmarks
     {
         for (int i = 0; i < iterations; i++)
         {
-            _ = SpaceTemplateCache.Tuple_1;
-            _ = SpaceTemplateCache.Tuple_2;
-            _ = SpaceTemplateCache.Tuple_3;
-            _ = SpaceTemplateCache.Tuple_4;
-            _ = SpaceTemplateCache.Tuple_5;
-            _ = SpaceTemplateCache.Tuple_6;
-            _ = SpaceTemplateCache.Tuple_7;
-            _ = SpaceTemplateCache.Tuple_8;
+            _ = SpaceTemplateCache.Template_1;
+            _ = SpaceTemplateCache.Template_2;
+            _ = SpaceTemplateCache.Template_3;
+            _ = SpaceTemplateCache.Template_4;
+            _ = SpaceTemplateCache.Template_5;
+            _ = SpaceTemplateCache.Template_6;
+            _ = SpaceTemplateCache.Template_7;
+            _ = SpaceTemplateCache.Template_8;
         }
     }
 
@@ -137,21 +137,21 @@ public class SpaceTemplateBenchmarks
 
 public readonly struct SpaceTemplateCache
 {
-    private static readonly SpaceTemplate tuple_1 = new(null);
-    private static readonly SpaceTemplate tuple_2 = new(null, null);
-    private static readonly SpaceTemplate tuple_3 = new(null, null, null);
-    private static readonly SpaceTemplate tuple_4 = new(null, null, null, null);
-    private static readonly SpaceTemplate tuple_5 = new(null, null, null, null, null);
-    private static readonly SpaceTemplate tuple_6 = new(null, null, null, null, null, null);
-    private static readonly SpaceTemplate tuple_7 = new(null, null, null, null, null, null, null);
-    private static readonly SpaceTemplate tuple_8 = new(null, null, null, null, null, null, null, null);
+    private static readonly SpaceTemplate template_1 = new(null);
+    private static readonly SpaceTemplate template_2 = new(null, null);
+    private static readonly SpaceTemplate template_3 = new(null, null, null);
+    private static readonly SpaceTemplate template_4 = new(null, null, null, null);
+    private static readonly SpaceTemplate template_5 = new(null, null, null, null, null);
+    private static readonly SpaceTemplate template_6 = new(null, null, null, null, null, null);
+    private static readonly SpaceTemplate template_7 = new(null, null, null, null, null, null, null);
+    private static readonly SpaceTemplate template_8 = new(null, null, null, null, null, null, null, null);
 
-    public static ref readonly SpaceTemplate Tuple_1 => ref tuple_1;
-    public static ref readonly SpaceTemplate Tuple_2 => ref tuple_2;
-    public static ref readonly SpaceTemplate Tuple_3 => ref tuple_3;
-    public static ref readonly SpaceTemplate Tuple_4 => ref tuple_4;
-    public static ref readonly SpaceTemplate Tuple_5 => ref tuple_5;
-    public static ref readonly SpaceTemplate Tuple_6 => ref tuple_6;
-    public static ref readonly SpaceTemplate Tuple_7 => ref tuple_7;
-    public static ref readonly SpaceTemplate Tuple_8 => ref tuple_8;
+    public static ref readonly SpaceTemplate Template_1 => ref template_1;
+    public static ref readonly SpaceTemplate Template_2 => ref template_2;
+    public static ref readonly SpaceTemplate Template_3 => ref template_3;
+    public static ref readonly SpaceTemplate Template_4 => ref template_4;
+    public static ref readonly SpaceTemplate Template_5 => ref template_5;
+    public static ref readonly SpaceTemplate Template_6 => ref template_6;
+    public static ref readonly SpaceTemplate Template_7 => ref template_7;
+    public static ref readonly SpaceTemplate Template_8 => ref template_8;
 }

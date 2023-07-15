@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Text;
-using System.Data.Common;
 
 namespace OrleanSpaces.Analyzers.OSA002;
 
@@ -52,7 +51,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         var newNode = MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
             IdentifierName($"{templateTypeName}Cache"),
-            IdentifierName($"Tuple_{numOfNulls}"));
+            IdentifierName($"Template_{numOfNulls}"));
 
         var cacheNodeResult = await GetTemplateCacheNodeAsync(context.Document.Project.Solution, context.Document, templateTypeName, context.CancellationToken);
         var cacheNode = cacheNodeResult.Node;
@@ -61,7 +60,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         if (cacheNode == null)
         {
             var fixInFileAction = CodeAction.Create(
-                title: $"Cache value as a '{numOfNulls}-tuple' static readonly reference in this file",
+                title: $"Cache value as a '{numOfNulls}-template' static readonly reference in this file",
                 equivalenceKey: TemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedDocument: _ =>
                 {
@@ -82,7 +81,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
                 });
 
             var fixInNewFileAction = CodeAction.Create(
-                title: $"Cache value as a '{numOfNulls}-tuple' static readonly reference in a new file",
+                title: $"Cache value as a '{numOfNulls}-template' static readonly reference in a new file",
                 equivalenceKey: TemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: _ =>
                 {
@@ -149,7 +148,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         {
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: $"Use '{templateTypeName}Cache.Tuple_{numOfNulls}'",
+                    title: $"Use '{templateTypeName}Cache.Template_{numOfNulls}'",
                     equivalenceKey: TemplateCacheOverInitAnalyzer.Diagnostic.Id,
                     createChangedDocument: _ =>
                     {
@@ -172,7 +171,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         {
             context.RegisterCodeFix(
                CodeAction.Create(
-                   title: $"Add and use '{templateTypeName}Cache.Tuple_{numOfNulls}'",
+                   title: $"Add and use '{templateTypeName}Cache.Template_{numOfNulls}'",
                    equivalenceKey: TemplateCacheOverInitAnalyzer.Diagnostic.Id,
                    createChangedDocument: async ct =>
                    {
@@ -197,7 +196,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         // Add appropriate member to {X}TemplateCache (part of another document)
         context.RegisterCodeFix(
             CodeAction.Create(
-                title: $"Add and use '{templateTypeName}Cache.Tuple_{numOfNulls}'",
+                title: $"Add and use '{templateTypeName}Cache.Template_{numOfNulls}'",
                 equivalenceKey: TemplateCacheOverInitAnalyzer.Diagnostic.Id,
                 createChangedSolution: async ct =>
                 {
@@ -286,8 +285,8 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
                 syntaxList = SeparatedList<ArgumentSyntax>(syntaxNodeOrTokens);
             }
 
-            string fieldName = $"tuple_{args[i]}";
-            string propertyName = $"Tuple_{args[i]}";
+            string fieldName = $"template_{args[i]}";
+            string propertyName = $"Template_{args[i]}";
 
             var fieldDeclaration = FieldDeclaration(
                 VariableDeclaration(
