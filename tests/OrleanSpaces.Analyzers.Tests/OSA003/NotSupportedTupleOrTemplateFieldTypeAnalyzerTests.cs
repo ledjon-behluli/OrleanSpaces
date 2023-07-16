@@ -53,8 +53,10 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = new([|(ulong)1|]);")]
     [InlineData("SpaceTuple tuple = new([|(float)1|]);")]
     [InlineData("SpaceTuple tuple = new([|(double)1|]);")]
-
     [InlineData("SpaceTuple tuple = new([|(decimal)1|]);")]
+    [InlineData("SpaceTuple tuple = new([|(Int128)1|]);")]
+    [InlineData("SpaceTuple tuple = new([|(UInt128)1|]);")]
+
     [InlineData("SpaceTuple tuple = new([|DateTime.MinValue|]);")]
     [InlineData("SpaceTuple tuple = new([|DateTimeOffset.MinValue|]);")]
     [InlineData("SpaceTuple tuple = new([|TimeSpan.MinValue|]);")]
@@ -63,7 +65,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = new([|TestEnum.A|]); enum TestEnum { A }")]
     [InlineData("TestEnum e = TestEnum.A; SpaceTuple tuple = new([|e|]); enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTuple(string code) =>
-       NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
+        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 
     [Theory]
     [InlineData("SpaceTemplate template = new([|new TestClass()|]);class TestClass {}")]
@@ -89,8 +91,10 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new([|(ulong)1|]);")]
     [InlineData("SpaceTemplate template = new([|(float)1|]);")]
     [InlineData("SpaceTemplate template = new([|(double)1|]);")]
-
     [InlineData("SpaceTemplate template = new([|(decimal)1|]);")]
+    [InlineData("SpaceTemplate template = new([|(Int128)1|]);")]
+    [InlineData("SpaceTemplate template = new([|(UInt128)1|]);")]
+
     [InlineData("SpaceTemplate template = new([|DateTime.MinValue|]);")]
     [InlineData("SpaceTemplate template = new([|DateTimeOffset.MinValue|]);")]
     [InlineData("SpaceTemplate template = new([|TimeSpan.MinValue|]);")]
@@ -106,5 +110,5 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new([|TestEnum.A|]); enum TestEnum { A }")]
     [InlineData("TestEnum e = TestEnum.A; SpaceTemplate template = new([|e|]); enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTemplate(string code) =>
-      NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
+        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples);
 }

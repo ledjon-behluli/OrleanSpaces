@@ -64,7 +64,12 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
             {
                 var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
-                if (type.IsOfAnyClrType(simpleTypes, context.Compilation))
+                if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
+                    type.IsOfAnyType(new List<ITypeSymbol?>()
+                    {
+                        context.Compilation.GetTypeByMetadataName("System.Int128"),
+                        context.Compilation.GetTypeByMetadataName("System.UInt128")
+                    }))
                 {
                     continue;
                 }
@@ -79,10 +84,14 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
             {
                 var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
 
-                if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
+                if (type is null || type.SpecialType == SpecialType.System_Nullable_T ||
+                    type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
                     type.IsOfClrType(typeof(Type), context.Compilation) ||
-                    type?.SpecialType == SpecialType.System_Nullable_T ||
-                    type is null)
+                    type.IsOfAnyType(new List<ITypeSymbol?>()
+                    {
+                        context.Compilation.GetTypeByMetadataName("System.Int128"),
+                        context.Compilation.GetTypeByMetadataName("System.UInt128")
+                    }))
                 {
                     continue;
                 }
