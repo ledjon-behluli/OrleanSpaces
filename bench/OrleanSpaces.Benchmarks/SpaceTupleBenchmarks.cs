@@ -2,9 +2,10 @@
 using BenchmarkDotNet.Order;
 using OrleanSpaces.Tuples;
 
+[ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class SpaceTupleBenchmarks
 {
     private const int iterations = 100_000;

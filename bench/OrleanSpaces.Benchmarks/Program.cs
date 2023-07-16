@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
 BenchmarkRunner.Run<SpaceTupleBenchmarks>();
-BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 BenchmarkRunner.Run<BoolTupleBenchmarks>();
 BenchmarkRunner.Run<ByteTupleBenchmarks>();
 BenchmarkRunner.Run<CharTupleBenchmarks>();
@@ -17,5 +16,6 @@ BenchmarkRunner.Run<IntTupleBenchmarks>();
 BenchmarkRunner.Run<LongTupleBenchmarks>();
 BenchmarkRunner.Run<ShortTupleBenchmarks>();
 BenchmarkRunner.Run<TimeSpanTupleBenchmarks>();
+BenchmarkRunner.Run<SpaceTemplateBenchmarks>();
 
 Console.ReadKey();

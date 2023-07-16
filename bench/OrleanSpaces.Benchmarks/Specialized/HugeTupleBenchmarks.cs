@@ -4,6 +4,7 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
 
+[ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.Declared)]
