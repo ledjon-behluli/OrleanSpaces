@@ -2,13 +2,11 @@
 
 namespace OrleanSpaces.Tuples;
 
-public interface ITest { }
-
 /// <summary>
 /// Marker interface for any space tuple.
 /// </summary>
 [InternalUseOnly]
-public interface ISpaceTuple : ITest
+public interface ISpaceTuple
 {
     /// <summary>
     /// The length of this tuple.
