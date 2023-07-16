@@ -143,13 +143,11 @@ public readonly struct {templateTypeName}Cache
 
     #region Existing {X}TemplateCache 
 
-    //[Theory]
-    //[InlineData("SpaceTemplate")]
-    //[InlineData("IntTemplate")]
-    [Fact]
-    public void Should_Fix_1_Template_By_Using_Existing_TemplateCache()//string templateTypeName)
+    [Theory]
+    [InlineData("SpaceTemplate")]
+    [InlineData("IntTemplate")]
+    public void Should_Fix_1_Template_By_Using_Existing_TemplateCache(string templateTypeName)
     {
-        string templateTypeName = "IntTemplate";
         string code =
 @$"{templateTypeName} template = [|new(null)|];
 
