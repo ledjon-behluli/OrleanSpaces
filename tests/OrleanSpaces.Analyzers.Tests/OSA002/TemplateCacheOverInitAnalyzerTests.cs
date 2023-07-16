@@ -26,33 +26,33 @@ public class TemplateCacheOverInitAnalyzerTests : AnalyzerFixture
 
     [Theory]
 
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, null, null|]);")]
+    [InlineData("SpaceTemplate template = new([|null|]);")]
+    [InlineData("SpaceTemplate template = new([|null, null|]);")]
+    [InlineData("SpaceTemplate template = new([|null, null, null|]);")]
 
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, null, null|]);")]
-    public void Should_Diagnose(Namespace @namespace, string code) =>
-        HasDiagnostic(code, @namespace);
+    [InlineData("IntTemplate template = new([|null|]);")]
+    [InlineData("IntTemplate template = new([|null, null|]);")]
+    [InlineData("IntTemplate template = new([|null, null, null|]);")]
+    public void Should_Diagnose(string code) =>
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
 
     [Theory]
 
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|1|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|1, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|1, null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, 1|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, 1, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, 1, null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples, "SpaceTemplate template = new([|null, 1, null, 1, null|]);")]
+    [InlineData("SpaceTemplate template = new([|1|]);")]
+    [InlineData("SpaceTemplate template = new([|1, null|]);")]
+    [InlineData("SpaceTemplate template = new([|1, null, null|]);")]
+    [InlineData("SpaceTemplate template = new([|null, 1|]);")]
+    [InlineData("SpaceTemplate template = new([|null, 1, null|]);")]
+    [InlineData("SpaceTemplate template = new([|null, 1, null, null|]);")]
+    [InlineData("SpaceTemplate template = new([|null, 1, null, 1, null|]);")]
 
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|1|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|1, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|1, null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, 1|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, 1, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, 1, null, null|]);")]
-    [InlineData(Namespace.OrleanSpaces_Tuples_Specialized, "IntTemplate template = new([|null, 1, null, 1, null|]);")]
-    public void Should_Not_Diagnose(Namespace @namespace, string code) =>
-        NoDiagnostic(code, @namespace);
+    [InlineData("IntTemplate template = new([|1|]);")]
+    [InlineData("IntTemplate template = new([|1, null|]);")]
+    [InlineData("IntTemplate template = new([|1, null, null|]);")]
+    [InlineData("IntTemplate template = new([|null, 1|]);")]
+    [InlineData("IntTemplate template = new([|null, 1, null|]);")]
+    [InlineData("IntTemplate template = new([|null, 1, null, null|]);")]
+    [InlineData("IntTemplate template = new([|null, 1, null, 1, null|]);")]
+    public void Should_Not_Diagnose(string code) =>
+        NoDiagnostic(code, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
 }
