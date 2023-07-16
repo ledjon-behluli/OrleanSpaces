@@ -102,7 +102,7 @@ internal static class SyntaxExtensions
 
             if (potentialNamespace != null)
             {
-                TrySetNot(potentialNamespace, ref namespaceNode);
+                TrySetNode(potentialNamespace, ref namespaceNode);
             }
         }
         else
@@ -116,13 +116,13 @@ internal static class SyntaxExtensions
                 potentialNamespace = potentialNamespace.Parent;
             }
 
-            TrySetNot(potentialNamespace, ref namespaceNode);
+            TrySetNode(potentialNamespace, ref namespaceNode);
         }
 
         return namespaceNode;
     }
 
-    private static void TrySetNot(SyntaxNode? potentialNamespaceNode, ref SyntaxNode? namespaceNode)
+    private static void TrySetNode(SyntaxNode? potentialNamespaceNode, ref SyntaxNode? namespaceNode)
     {
         if (potentialNamespaceNode is GlobalStatementSyntax globalStatement)
         {

@@ -18,27 +18,51 @@ public class InternalUseOnlyAttributeAnalyzerTests : AnalyzerFixture
 
         Assert.Equal("OSA001", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
+        Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
         Assert.Equal("Interface is intended for internal use only.", diagnostic.Title);
         Assert.Equal("Interface '{0}' is intended for internal use only.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
     }
 
     [Theory]
-    [InlineData("[|ISpaceTuple tuple|]  = new SpaceTuple(1);")]
-    [InlineData("[|ISpaceTemplate tuple|]  = new SpaceTemplate(1);")]
+    [InlineData("[|ISpaceTuple|] tuple  = new SpaceTuple(1);")]
+    [InlineData("[|ISpaceTemplate|] tuple = new SpaceTemplate(1);")]
 
-    [InlineData("[|ISpaceTuple<int>|]  tuple = new Tuple(1);")]
-    [InlineData("[|ISpaceTemplate<int>|]  tuple = new IntTuple(1);")]
-    public void Should_Diagnose(string code) =>
-        HasDiagnostic(code, Namespace.MyNamespace);
+    [InlineData("[|ISpaceTuple<int>|] tuple = new IntTuple(1);")]
+    [InlineData("[|ISpaceTemplate<int>|] tuple = new IntTemplate(1);")]
+    public void Should_Diagnose_On_Assignment(string code) =>
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
 
     [Theory]
-    [InlineData("[|ISpaceTuple tuple|]  = new SpaceTuple(1);")]
-    [InlineData("[|ISpaceTemplate tuple|]  = new SpaceTemplate(1);")]
-                 
-    [InlineData("[|ISpaceTuple<int>|]  tuple = new Tuple(1);")]
-    [InlineData("[|ISpaceTemplate<int>|]  tuple = new IntTuple(1);")]
-    public void Should_Not_Diagnose(string code) =>
-        NoDiagnostic(code, Namespace.OrleanSpaces);
+    [InlineData("class A { public B([|ISpaceTuple|] c) }")]
+    [InlineData("class A { public B([|ISpaceTemplate|] c) }")]
+
+    [InlineData("class A { public B([|ISpaceTuple<int>|] c) }")]
+    [InlineData("class A { public B([|ISpaceTemplate<int>|] c) }")]
+    public void Should_Diagnose_On_Argument_Passing(string code) =>
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+
+    [Theory]
+    [InlineData("class A : [|ISpaceTuple|] { public int Length => 0; }")]
+    [InlineData("class A : [|ISpaceTemplate|] { public int Length => 0; }")]
+
+    [InlineData(@"
+class A : [|ISpaceTuple<int>|]
+{
+    private int value;
+    public ref readonly int this[int index] => ref value;
+    public int Length => 0;
+    public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
+    public ReadOnlySpan<int>.Enumerator GetEnumerator() => new();
+}")]
+    [InlineData(@"
+class A : [|ISpaceTemplate<int>|]
+{
+    private int? value;
+    public ref readonly int? this[int index] => ref value;
+    public int Length => 0;
+    public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new();
+}")]
+    public void Should_Diagnose_On_Implementing(string code) =>
+        HasDiagnostic(code, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
 }

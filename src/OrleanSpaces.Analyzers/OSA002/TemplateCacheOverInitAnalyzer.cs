@@ -32,7 +32,6 @@ internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer
     private void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
         var creationOperation = (IObjectCreationOperation)context.Operation;
-       
         if (creationOperation.Type is null)
         {
             return;

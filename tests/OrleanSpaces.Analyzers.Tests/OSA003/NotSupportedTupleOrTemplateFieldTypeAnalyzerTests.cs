@@ -18,7 +18,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
 
         Assert.Equal("OSA003", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
+        Assert.Equal(DiagnosticSeverity.Error, diagnostic.DefaultSeverity);
         Assert.Equal("The supplied argument type is not supported.", diagnostic.Title);
         Assert.Equal("The supplied argument '{0}' is not a supported '{1}' type.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);

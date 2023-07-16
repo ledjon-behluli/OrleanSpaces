@@ -14,7 +14,7 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA003",
         category: Categories.Usage,
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         title: "The supplied argument type is not supported.",
         messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
