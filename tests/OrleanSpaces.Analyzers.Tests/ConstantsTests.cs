@@ -5,6 +5,8 @@ public class ConstantsTests
     [Fact]
     public void Should_Equal()
     {
+        Assert.Equal("OrleanSpaces.InternalUseOnlyAttribute", FullyQualifiedNames.InternalUseOnlyAttribute);
+
         Assert.Equal("OrleanSpaces.Tuples.SpaceTuple", FullyQualifiedNames.SpaceTuple);
         Assert.Equal("OrleanSpaces.Tuples.SpaceTemplate", FullyQualifiedNames.SpaceTemplate);
 
