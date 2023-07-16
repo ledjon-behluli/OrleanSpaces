@@ -16,6 +16,7 @@ public readonly record struct TimeSpanTuple :
 {
     [Id(0), JsonProperty] private readonly TimeSpan[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly TimeSpan this[int index] => ref fields[index];
 

@@ -8,7 +8,7 @@ internal static class ThrowHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void EmptyTuple<T>(T tuple) where T : ISpaceTuple
     {
-        if (tuple.Length == 0)
+        if (tuple.IsEmpty)
         {
             throw new ArgumentException("Empty tuple is not allowed to be writen in the tuple space");
         }

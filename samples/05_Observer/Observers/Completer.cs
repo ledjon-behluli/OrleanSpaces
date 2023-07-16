@@ -8,6 +8,16 @@ public class Completer : SpaceObserver<SpaceTuple>
         ListenTo(Flattenings);
     }
 
+    public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+   
     public override async Task OnFlatteningAsync(CancellationToken cancellationToken)
     {
         Console.WriteLine("COMPLETER-er: Space has been flattened. Performing gracefully shutdown...");

@@ -21,6 +21,7 @@ public class UHugeTupleTests
     {
         UHugeTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
@@ -28,6 +29,7 @@ public class UHugeTupleTests
     {
         UHugeTuple tuple = new(null);
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]

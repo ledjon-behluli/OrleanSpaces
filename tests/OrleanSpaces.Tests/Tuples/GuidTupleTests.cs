@@ -26,6 +26,7 @@ public class GuidTupleTests
     {
         GuidTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
@@ -33,6 +34,7 @@ public class GuidTupleTests
     {
         GuidTuple tuple = new(null);
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]

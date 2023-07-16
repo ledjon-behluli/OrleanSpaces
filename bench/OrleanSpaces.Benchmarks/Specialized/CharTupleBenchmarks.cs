@@ -244,6 +244,7 @@ public class CharTupleBenchmarks
 
         public ref readonly char this[int index] => ref fields[index];
         public int Length => fields?.Length ?? 0;
+        public bool IsEmpty => Length == 0;
 
         public SequentialCharTuple(params char[] fields) => this.fields = fields;
 

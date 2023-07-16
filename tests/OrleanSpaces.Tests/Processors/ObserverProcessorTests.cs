@@ -32,7 +32,7 @@ public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorT
         TupleAction<SpaceTuple> insertAction = new(Guid.NewGuid(), tuple, TupleActionType.Insert);
         await channel.Writer.WriteAsync(insertAction);
 
-        while (scope.TotalInvoked(observer => observer.LastExpansionTuple.Length > 0) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastExpansionTuple.IsEmpty) < 3)
         {
 
         }
@@ -41,7 +41,7 @@ public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorT
         TupleAction<SpaceTuple> contractAction = new(Guid.NewGuid(), tuple, TupleActionType.Remove);
         await channel.Writer.WriteAsync(contractAction);
 
-        while (scope.TotalInvoked(observer => observer.LastContractionTuple.Length > 0) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastContractionTuple.IsEmpty) < 3)
         {
 
         }
@@ -130,7 +130,7 @@ public class ObserverIntProcessorTests : IClassFixture<ObserverIntProcessorTests
         TupleAction<IntTuple> contractAction = new(Guid.NewGuid(), tuple, TupleActionType.Remove);
         await channel.Writer.WriteAsync(contractAction);
 
-        while (scope.TotalInvoked(observer => observer.LastContractionTuple.Length > 0) < 3)
+        while (scope.TotalInvoked(observer => !observer.LastContractionTuple.IsEmpty) < 3)
         {
 
         }

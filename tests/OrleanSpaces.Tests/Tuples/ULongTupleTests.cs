@@ -21,6 +21,7 @@ public class ULongTupleTests
     {
         ULongTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
@@ -28,6 +29,7 @@ public class ULongTupleTests
     {
         ULongTuple tuple = new(null);
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]

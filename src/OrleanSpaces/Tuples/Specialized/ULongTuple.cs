@@ -16,6 +16,7 @@ public readonly record struct ULongTuple :
 {
     [Id(0), JsonProperty] private readonly ulong[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly ulong this[int index] => ref fields[index];
 

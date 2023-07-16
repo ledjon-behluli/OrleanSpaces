@@ -191,6 +191,7 @@ public class ByteTupleBenchmarks
 
         public ref readonly byte this[int index] => ref fields[index];
         public int Length => fields?.Length ?? 0;
+        public bool IsEmpty => Length == 0;
 
         public SequentialByteTuple(params byte[] fields) => this.fields = fields;
 

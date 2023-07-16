@@ -25,7 +25,7 @@ public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProces
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
         SpaceTuple result = default;
-        while (result.Length == 0)
+        while (result.IsEmpty)
         {
             result = await continuationChannel.TupleReader.ReadAsync(default);
         }
@@ -97,7 +97,7 @@ public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorT
         await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
 
         IntTuple result = default;
-        while (result.Length == 0)
+        while (result.IsEmpty)
         {
             result = await continuationChannel.TupleReader.ReadAsync(default);
         }

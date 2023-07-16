@@ -16,6 +16,7 @@ public readonly record struct DoubleTuple :
 {
     [Id(0), JsonProperty] private readonly double[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly double this[int index] => ref fields[index];
 

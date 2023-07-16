@@ -16,6 +16,7 @@ public readonly record struct DateTimeTuple :
 {
     [Id(0), JsonProperty] private readonly DateTime[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly DateTime this[int index] => ref fields[index];
 

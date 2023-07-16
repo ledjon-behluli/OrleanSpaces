@@ -19,4 +19,9 @@ public class Auditor : SpaceObserver<SpaceTuple>
         Console.WriteLine($"AUDITOR: Space contracted via tuple '{tuple}'.");
         return Task.CompletedTask;
     }
+
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

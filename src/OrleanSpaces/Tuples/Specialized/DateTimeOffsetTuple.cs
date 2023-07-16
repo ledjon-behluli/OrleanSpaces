@@ -16,6 +16,7 @@ public readonly record struct DateTimeOffsetTuple :
 {
     [Id(0), JsonProperty] private readonly DateTimeOffset[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly DateTimeOffset this[int index] => ref fields[index];
 

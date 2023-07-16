@@ -16,6 +16,7 @@ public readonly record struct CharTuple :
 {
     [Id(0), JsonProperty] private readonly char[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly char this[int index] => ref fields[index];
 

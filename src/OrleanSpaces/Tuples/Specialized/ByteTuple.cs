@@ -16,6 +16,7 @@ public readonly record struct ByteTuple :
 {
     [Id(0), JsonProperty] private readonly byte[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly byte this[int index] => ref fields[index];
 

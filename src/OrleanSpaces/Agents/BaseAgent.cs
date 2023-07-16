@@ -108,21 +108,20 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
         TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
-        {
-            await callback(tuple);
-        }
-        else
+        if (tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
+            return;
         }
+
+        await callback(tuple);
     }
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
         TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
+        if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
             ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
@@ -137,17 +136,16 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
         TTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
-        {
-            await callback(tuple);
-            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-
-            ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
-        }
-        else
+        if (tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
+            return;
         }
+
+        await callback(tuple);
+        await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
+
+        ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)

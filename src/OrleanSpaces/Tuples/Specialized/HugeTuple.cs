@@ -18,6 +18,7 @@ public readonly record struct HugeTuple :
 {
     [Id(0), JsonProperty] private readonly Int128[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly Int128 this[int index] => ref fields[index];
 

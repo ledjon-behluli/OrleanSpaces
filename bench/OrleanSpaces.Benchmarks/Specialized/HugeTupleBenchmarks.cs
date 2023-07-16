@@ -245,6 +245,7 @@ public class HugeTupleBenchmarks
 
         public ref readonly Int128 this[int index] => ref fields[index];
         public int Length => fields?.Length ?? 0;
+        public bool IsEmpty => Length == 0;
 
         public SequentialHugeTuple(params Int128[] fields) => this.fields = fields;
 

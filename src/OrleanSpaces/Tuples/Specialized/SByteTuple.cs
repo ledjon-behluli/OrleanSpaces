@@ -16,6 +16,7 @@ public readonly record struct SByteTuple :
 {
     [Id(0), JsonProperty] private readonly sbyte[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly sbyte this[int index] => ref fields[index];
 

@@ -16,6 +16,7 @@ public readonly record struct IntTuple :
 {
     [Id(0), JsonProperty] private readonly int[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly int this[int index] => ref fields[index];
 

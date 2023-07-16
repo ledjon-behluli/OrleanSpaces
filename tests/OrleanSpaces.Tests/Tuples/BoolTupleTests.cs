@@ -21,6 +21,7 @@ public class BoolTupleTests
     {
         BoolTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
@@ -28,6 +29,7 @@ public class BoolTupleTests
     {
         BoolTuple tuple = new(null);
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]

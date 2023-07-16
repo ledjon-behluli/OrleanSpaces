@@ -107,21 +107,20 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
         SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
-        {
-            await callback(tuple);
-        }
-        else
+        if (tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
+            return;
         }
+
+        await callback(tuple);
     }
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
         SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
+        if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
             ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
@@ -136,17 +135,16 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
         SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
 
-        if (tuple.Length > 0)
-        {
-            await callback(tuple);
-            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-
-            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
-        }
-        else
+        if (tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
+            return;
         }
+
+        await callback(tuple);
+        await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
+
+        ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)

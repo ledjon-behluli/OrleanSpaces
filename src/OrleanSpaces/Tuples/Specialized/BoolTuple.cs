@@ -16,6 +16,7 @@ public readonly record struct BoolTuple :
 {
     [Id(0), JsonProperty] private readonly bool[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly bool this[int index] => ref fields[index];
 
@@ -81,6 +82,7 @@ public readonly record struct BoolTuple :
     {
         public ref readonly SFBool this[int index] => ref Fields[index];
         public int Length => Fields.Length;
+        public bool IsEmpty => Length == 0;
 
         public ReadOnlySpan<char> AsSpan() => ReadOnlySpan<char>.Empty;
         public ReadOnlySpan<SFBool>.Enumerator GetEnumerator() => new ReadOnlySpan<SFBool>(Fields).GetEnumerator();

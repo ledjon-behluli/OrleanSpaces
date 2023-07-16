@@ -22,7 +22,7 @@ public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpacePr
         SpaceTuple tuple = new(1);
         await channel.TupleWriter.WriteAsync(tuple);
 
-        while (router.Tuple.Length == 0)
+        while (router.Tuple.IsEmpty)
         {
 
         }
@@ -35,9 +35,11 @@ public class ContinuationSpaceProcessorTests : IClassFixture<ContinuationSpacePr
     public async Task Should_Forward_Template_To_Router()
     {
         SpaceTemplate template = new(1);
+        SpaceTemplate defaultTemplate = new();
+
         await channel.TemplateWriter.WriteAsync(template);
 
-        while (router.Template.Length == 0)
+        while (router.Template == defaultTemplate)
         {
 
         }
@@ -83,7 +85,7 @@ public class ContinuationIntProcessorTests : IClassFixture<ContinuationIntProces
         IntTuple tuple = new(1);
         await channel.TupleWriter.WriteAsync(tuple);
 
-        while (router.Tuple.Length == 0)
+        while (router.Tuple.IsEmpty)
         {
 
         }
@@ -96,9 +98,11 @@ public class ContinuationIntProcessorTests : IClassFixture<ContinuationIntProces
     public async Task Should_Forward_Template_To_Router()
     {
         IntTemplate template = new(1);
+        IntTemplate defaultTemplate = new();
+
         await channel.TemplateWriter.WriteAsync(template);
 
-        while (router.Template.Length == 0)
+        while (router.Template == defaultTemplate)
         {
 
         }

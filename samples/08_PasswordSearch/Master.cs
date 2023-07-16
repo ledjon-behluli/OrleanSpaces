@@ -57,4 +57,14 @@ public class Master : SpaceObserver<SpaceTuple>
             }
         }
     }
+
+    public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

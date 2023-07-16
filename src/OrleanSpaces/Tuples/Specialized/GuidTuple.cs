@@ -17,6 +17,7 @@ public readonly record struct GuidTuple :
 {
     [Id(0), JsonProperty] private readonly Guid[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly Guid this[int index] => ref fields[index];
 

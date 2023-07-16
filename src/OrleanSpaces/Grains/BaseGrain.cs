@@ -39,7 +39,7 @@ internal abstract class BaseGrain<T> : Grain
     public async Task Remove(TupleAction<T> action)
     {
         var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Tuple));
-        if (storedTuple.Length > 0)
+        if (!storedTuple.IsEmpty)
         {
             space.State.Remove(storedTuple);
 

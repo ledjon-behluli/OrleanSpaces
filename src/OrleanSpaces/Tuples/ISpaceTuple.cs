@@ -14,6 +14,11 @@ public interface ISpaceTuple : ITest
     /// The length of this tuple.
     /// </summary>
     int Length { get; }
+
+    /// <summary>
+    /// Returns <see langword="true"/> when <see cref="Length"/> is zero, otherwise, <see langword="false"/>.
+    /// </summary>
+    public bool IsEmpty { get; }
 }
 
 /// <summary>

@@ -16,6 +16,7 @@ public readonly record struct LongTuple :
 {
     [Id(0), JsonProperty] private readonly long[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly long this[int index] => ref fields[index];
 

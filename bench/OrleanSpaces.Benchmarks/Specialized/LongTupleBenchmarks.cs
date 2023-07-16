@@ -191,6 +191,7 @@ public class LongTupleBenchmarks
 
         public ref readonly long this[int index] => ref fields[index];
         public int Length => fields?.Length ?? 0;
+        public bool IsEmpty => Length == 0;
 
         public SequentialLongTuple(params long[] fields) => this.fields = fields;
 

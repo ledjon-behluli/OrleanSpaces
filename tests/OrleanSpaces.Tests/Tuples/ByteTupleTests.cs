@@ -21,8 +21,16 @@ public class ByteTupleTests
     {
         ByteTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
+    [Fact]
+    public void Should_Be_Created_On_Null()
+    {
+        ByteTuple tuple = new(null);
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
 
     [Fact]
     public void Should_Not_Throw_On_Default_Constructor()
@@ -51,13 +59,6 @@ public class ByteTupleTests
         Assert.Equal(tuple1, tuple2);
         Assert.True(tuple1 == tuple2);
         Assert.False(tuple1 != tuple2);
-    }
-
-    [Fact]
-    public void Should_Be_Created_On_Null()
-    {
-        ByteTuple tuple = new(null);
-        Assert.Equal(0, tuple.Length);
     }
 
     [Fact]

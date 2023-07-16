@@ -1,4 +1,5 @@
-﻿using OrleanSpaces.Tuples.Specialized;
+﻿
+using OrleanSpaces.Tuples.Specialized;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Tuples;
@@ -21,6 +22,7 @@ public class CharTupleTests
     {
         CharTuple tuple = new();
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]
@@ -28,6 +30,7 @@ public class CharTupleTests
     {
         CharTuple tuple = new(null);
         Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
     }
 
     [Fact]

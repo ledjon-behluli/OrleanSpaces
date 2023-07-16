@@ -14,6 +14,7 @@ public readonly record struct SpaceTuple :
 {
     [Id(0), JsonProperty] private readonly object[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     /// <summary>
     /// Returns the field specified by <paramref name="index"/>.

@@ -17,6 +17,7 @@ public readonly record struct DecimalTuple :
 {
     [Id(0), JsonProperty] private readonly decimal[] fields;
     [JsonIgnore] public int Length => fields?.Length ?? 0;
+    [JsonIgnore] public bool IsEmpty => Length == 0;
 
     public ref readonly decimal this[int index] => ref fields[index];
 
