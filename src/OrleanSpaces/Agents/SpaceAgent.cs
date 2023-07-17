@@ -46,7 +46,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        ImmutableHelpers<SpaceTuple>.Add(ref tuples, action.Tuple);
+                        tuples = tuples.Add(action.Tuple);
                         if (streamChannel is not null)
                         {
                             await streamChannel.Writer.WriteAsync(action.Tuple);
@@ -54,10 +54,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                     }
                     break;
                 case TupleActionType.Remove:
-                    ImmutableHelpers<SpaceTuple>.Remove(ref tuples, action.Tuple);
+                    tuples = tuples.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
+                    tuples = ImmutableArray<SpaceTuple>.Empty;
                     break;
                 default:
                     throw new NotSupportedException();
@@ -82,7 +82,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        ImmutableHelpers<SpaceTuple>.Add(ref tuples, tuple);
+        tuples = tuples.Add(tuple);
         if (streamChannel is not null)
         {
             await streamChannel.Writer.WriteAsync(tuple);
@@ -123,7 +123,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
+            tuples = tuples.Remove(tuple);
         }
 
         return tuple;
@@ -144,7 +144,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         await callback(tuple);
         await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        ImmutableHelpers<SpaceTuple>.Remove(ref tuples, tuple);
+        tuples = tuples.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
@@ -193,7 +193,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        ImmutableHelpers<SpaceTuple>.Clear(ref tuples);
+        tuples = ImmutableArray<SpaceTuple>.Empty;
     }
 
     #endregion

@@ -49,7 +49,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 case TupleActionType.Insert:
                     {
-                        ImmutableHelpers<TTuple>.Add(ref tuples, action.Tuple);
+                        tuples = tuples.Add(action.Tuple);
                         if (streamChannel is not null)
                         {
                             await streamChannel.Writer.WriteAsync(action.Tuple);
@@ -57,10 +57,10 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
                     }
                     break;
                 case TupleActionType.Remove:
-                    ImmutableHelpers<TTuple>.Remove(ref tuples, action.Tuple);
+                    tuples = tuples.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    ImmutableHelpers<TTuple>.Clear(ref tuples);
+                    tuples = ImmutableArray<TTuple>.Empty;
                     break;
                 default:
                     throw new NotSupportedException();
@@ -86,8 +86,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         ThrowHelpers.EmptyTuple(tuple);
 
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-
-        ImmutableHelpers<TTuple>.Add(ref tuples, tuple);
+        tuples = tuples.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -124,7 +123,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
+            tuples = tuples.Remove(tuple);
         }
 
         return tuple;
@@ -145,7 +144,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         await callback(tuple);
         await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        ImmutableHelpers<TTuple>.Remove(ref tuples, tuple);
+        tuples = tuples.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
@@ -194,7 +193,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        ImmutableHelpers<TTuple>.Clear(ref tuples);
+        tuples = ImmutableArray<TTuple>.Empty;
     }
 
     #endregion
