@@ -38,9 +38,9 @@ Configuration of the **Tuple Space Server** is done by configuring the **Orleans
 await Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
-	    siloBuilder.UseLocalhostClustering();
-	    siloBuilder.AddOrleanSpaces(); // optional
-        siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
+		siloBuilder.UseLocalhostClustering();
+		siloBuilder.AddOrleanSpaces(); // optional
+		siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
         siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
     })
@@ -55,9 +55,9 @@ Calling `AddOrleanSpaces()` on the `ISiloBuilder` is **optional**.
 
 ## Space Options
 
-The `AddOrleanSpaces` extension method accepts an optional `Action<SpaceOptions> configureOptions` parameter that is can be used to configure the `SpaceOptions`.
+The `AddOrleanSpaces` extension method accepts an optional `Action<SpaceOptions>` parameter that is can be used to configure the `SpaceOptions`.
 
-Detailed explanations on what each of the options mean is provided via XML documentation of the `SpaceOptions` class itself. But here I want to point out, that by default only the generic agent is configured to run. If you need multiple agents you can do via bitwise OR operation like this:
+Detailed explanations on what each of the options mean is provided via XML documentation of the `SpaceOptions` class itself. But here I want to point out, that by default only the generic agent is configured to run. If you need multiple agents, you can configure them via bitwise OR operation, like this:
 
 ```cs
 AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.Generic | SpaceKind.Int | SpaceKind.Bool);
@@ -73,7 +73,7 @@ AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All);
 
 An important note on the users of this library!!!
 
-By default Orleans use `Newtonsoft.Json` as the serializer, but it also gives the users the option to choose what serializer they want Orleans to use. The tuple and template constructs in this library make use of the `JsonPropertyAttribute` found in `Newtonsoft.Json` in order to be compliant with the default of Orleans. When users want to pick a different serializer they should exclude the **OrleanSpaces** namespace from that serializer.
+By default Orleans use `Newtonsoft.Json` as the serializer, but it also gives the users the option to choose what serializer they want Orleans to use. The tuple and template constructs in this library make use of some attributes found in `Newtonsoft.Json` in order to be compliant with the default serializer option of Orleans. When users want to pick a different serializer they should exclude the *OrleanSpaces* namespace from that serializer.
 
 This is unavoidable until Orleans adds full support for `DataMemberAttribute`.
 
@@ -81,7 +81,7 @@ Read more on: [Orleans Serialization Configuration](https://learn.microsoft.com/
 
 # Usage
 
-Below you can see some simple examples on how to use the **OrleanSpace** API. If you want to dive deeper, than a good amount of examples are available in the [samples](https://github.com/ledjon-behluli/OrleanSpaces/tree/master/samples) directory of the project, so go ahead and have fun with it 🙂.
+Below you can see some simple examples on how to use this library. If you want to dive deeper, than a good amount of examples are available in the [samples](https://github.com/ledjon-behluli/OrleanSpaces/tree/master/samples) directory of the project, so go ahead and have fun with it 🙂.
 
 ## Tuples & Templates
 
@@ -103,7 +103,7 @@ var intAgent = host.Services.GetRequiredService<ISpaceAgent<int, IntTuple, IntTe
 
 ## Communication Models
 
-At the core of this library programing is done in tuples, but it empowers the user to work transparently via different communication models. OrleanSpaces does implement the following models:
+At the core of this library, programing is done in tuples, but the library empowers the user to work with via different communication models. OrleanSpaces does implement the following models:
 
 * Synchronous Request-Reply model.
 * Asynchronous Request-Reply model.
@@ -138,20 +138,19 @@ The answer is made available at the moment of invoking the respective methods OR
 SpaceTuple tuple = new(1, "a", 1.5f);
 SpaceTemplate template = new (1, null, 1.5f);
 
-await agent.WriteAsync(tuple);
 await agent.EvaluateAsync(async () =>
 {
     await Task.Delay(100);  // evaluating...
-    return new SpaceTuple(2, "b", 2.5f);
+    return tuple;
 });
 
-await agent.PeekAsync(template1, tuple =>
+await agent.PeekAsync(template, tuple =>
 {
     // do something
     return Task.CompletedTask;
 });
 
-await agent.PopAsync(template1, tuple =>
+await agent.PopAsync(template, tuple =>
 {
     // Doing something with the tuple.
     return Task.CompletedTask;
@@ -224,8 +223,6 @@ public class Observer1 : ISpaceObserver<SpaceTuple>
 
 public class Observer2 : SpaceObserver<SpaceTuple>
 {
-    public Observer2() => ListenTo(Everything);
-    
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) 
     {
 		// do something
