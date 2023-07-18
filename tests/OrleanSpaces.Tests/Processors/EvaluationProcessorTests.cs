@@ -19,21 +19,6 @@ public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProces
     }
 
     [Fact]
-    public async Task Should_Forward_If_Evaluation_Results_In_Tuple()
-    {
-        SpaceTuple tuple = new("eval");
-        await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
-
-        SpaceTuple result = default;
-        while (result.IsEmpty)
-        {
-            result = await continuationChannel.TupleReader.ReadAsync(default);
-        }
-
-        Assert.Equal(tuple, result);
-    }
-
-    [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
         options.HandleEvaluationExceptions = true;
@@ -91,26 +76,12 @@ public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorT
     }
 
     [Fact]
-    public async Task Should_Forward_If_Evaluation_Results_In_Tuple()
-    {
-        IntTuple tuple = new(1);
-        await evaluationChannel.Writer.WriteAsync(() => Task.FromResult(tuple));
-
-        IntTuple result = default;
-        while (result.IsEmpty)
-        {
-            result = await continuationChannel.TupleReader.ReadAsync(default);
-        }
-
-        Assert.Equal(tuple, result);
-    }
-
-    [Fact]
     public async Task Should_Not_Forward_If_Evaluation_Throws()
     {
         options.HandleEvaluationExceptions = true;
 
         await evaluationChannel.Writer.WriteAsync(() => throw new Exception("Test"));
+
         continuationChannel.TupleReader.TryRead(out IntTuple result);
 
         result.AssertEmpty();

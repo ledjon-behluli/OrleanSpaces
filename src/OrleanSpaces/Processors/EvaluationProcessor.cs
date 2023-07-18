@@ -5,8 +5,8 @@ using OrleanSpaces.Tuples;
 namespace OrleanSpaces.Processors;
 
 internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
-    where TTuple : struct, ISpaceTuple
-    where TTemplate : struct, ISpaceTemplate
+    where TTuple : ISpaceTuple
+    where TTemplate : ISpaceTemplate
 {
     private readonly SpaceOptions options;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
@@ -26,11 +26,10 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
     {
         await foreach (Func<Task<TTuple>> evaluation in evaluationChannel.Reader.ReadAllAsync(cancellationToken))
         {
-            TTuple tuple = default;
-
             try
             {
-                tuple = await evaluation();
+                TTuple tuple = await evaluation();
+                await continuationChannel.TupleWriter.WriteAsync(tuple, cancellationToken);
             }
             catch
             {
@@ -39,8 +38,6 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
                     throw;
                 }
             }
-
-            await continuationChannel.TupleWriter.WriteAsync(tuple, cancellationToken);
         }
     }
 }
