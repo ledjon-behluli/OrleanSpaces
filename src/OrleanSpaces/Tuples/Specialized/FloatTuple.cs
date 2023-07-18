@@ -52,14 +52,15 @@ public readonly record struct FloatTuple :
     }
 
     public bool Equals(FloatTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<float, FloatTuple>(other, out bool result) ?
+                result : this.SequentialEquals<float, FloatTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static FloatTuple ISpaceFactory<float, FloatTuple>.Create(float[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Float);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<float, FloatTuple>(Constants.MaxFieldCharLength_Float);
     public ReadOnlySpan<float>.Enumerator GetEnumerator() => new ReadOnlySpan<float>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct FloatTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(FloatTuple tuple) => this.Matches<float, FloatTuple>(tuple);
-    public bool Equals(FloatTemplate other) => this.SequentialEquals(other);
+    public bool Matches(FloatTuple tuple) => this.Matches<float, FloatTuple, FloatTemplate>(tuple);
+    public bool Equals(FloatTemplate other) => this.SequentialEquals<float, FloatTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<float?>.Enumerator GetEnumerator() => new ReadOnlySpan<float?>(fields).GetEnumerator();
 }

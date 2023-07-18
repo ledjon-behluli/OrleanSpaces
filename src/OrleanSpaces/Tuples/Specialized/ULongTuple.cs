@@ -52,14 +52,15 @@ public readonly record struct ULongTuple :
     }
 
     public bool Equals(ULongTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<ulong, ULongTuple>(other, out bool result) ? 
+               result : this.SequentialEquals<ulong, ULongTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static ULongTuple ISpaceFactory<ulong, ULongTuple>.Create(ulong[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_ULong);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<ulong, ULongTuple>(Constants.MaxFieldCharLength_ULong);
     public ReadOnlySpan<ulong>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct ULongTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(ULongTuple tuple) => this.Matches<ulong, ULongTuple>(tuple);
-    public bool Equals(ULongTemplate other) => this.SequentialEquals(other);
+    public bool Matches(ULongTuple tuple) => this.Matches<ulong, ULongTuple, ULongTemplate>(tuple);
+    public bool Equals(ULongTemplate other) => this.SequentialEquals<ulong, ULongTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<ulong?>.Enumerator GetEnumerator() => new ReadOnlySpan<ulong?>(fields).GetEnumerator();
 }

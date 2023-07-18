@@ -52,11 +52,11 @@ public readonly record struct BoolTuple :
     public bool Equals(BoolTuple other)
     {
         NumericMarshaller<bool, byte> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals<bool, BoolTuple>(other);
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static BoolTuple ISpaceFactory<bool, BoolTuple>.Create(bool[] fields) => new(fields);
 
@@ -75,7 +75,7 @@ public readonly record struct BoolTuple :
             sfBools[i] = new(this[i]);
         }
 
-        return new SFBoolTuple(sfBools).AsSpan(Constants.MaxFieldCharLength_Bool);
+        return new SFBoolTuple(sfBools).AsSpan<SFBool, SFBoolTuple>(Constants.MaxFieldCharLength_Bool);
     }
 
     readonly record struct SFBoolTuple(params SFBool[] Fields) : ISpaceTuple<SFBool>
@@ -128,11 +128,11 @@ public readonly record struct BoolTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(BoolTuple tuple) => this.Matches<bool, BoolTuple>(tuple);
-    public bool Equals(BoolTemplate other) => this.SequentialEquals(other);
+    public bool Matches(BoolTuple tuple) => this.Matches<bool, BoolTuple, BoolTemplate>(tuple);
+    public bool Equals(BoolTemplate other) => this.SequentialEquals<bool, BoolTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
 }

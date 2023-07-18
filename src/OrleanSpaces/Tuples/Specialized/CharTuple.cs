@@ -62,15 +62,16 @@ public readonly record struct CharTuple :
         //      256 / (2 * 8) = 256 / 16 = 16 --> means: we can compare 16 chars at the same time!
 
         NumericMarshaller<char, ushort> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+        return marshaller.TryParallelEquals(out bool result) ?
+                   result : this.SequentialEquals<char, CharTuple>(other);
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static CharTuple ISpaceFactory<char, CharTuple>.Create(char[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Char);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<char, CharTuple>(Constants.MaxFieldCharLength_Char);
     public ReadOnlySpan<char>.Enumerator GetEnumerator() => new ReadOnlySpan<char>(fields).GetEnumerator();
 }
 
@@ -105,11 +106,11 @@ public readonly record struct CharTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(CharTuple tuple) => this.Matches<char, CharTuple>(tuple);
-    public bool Equals(CharTemplate other) => this.SequentialEquals(other);
+    public bool Matches(CharTuple tuple) => this.Matches<char, CharTuple, CharTemplate>(tuple);
+    public bool Equals(CharTemplate other) => this.SequentialEquals<char, CharTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<char?>.Enumerator GetEnumerator() => new ReadOnlySpan<char?>(fields).GetEnumerator();
 }

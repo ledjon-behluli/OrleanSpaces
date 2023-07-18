@@ -52,14 +52,15 @@ public readonly record struct IntTuple :
     }
 
     public bool Equals(IntTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<int, IntTuple>(other, out bool result) ?
+               result : this.SequentialEquals<int, IntTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static IntTuple ISpaceFactory<int, IntTuple>.Create(int[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Int);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<int, IntTuple>(Constants.MaxFieldCharLength_Int);
     public ReadOnlySpan<int>.Enumerator GetEnumerator() => new ReadOnlySpan<int>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct IntTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(IntTuple tuple) => this.Matches<int, IntTuple>(tuple);
-    public bool Equals(IntTemplate other) => this.SequentialEquals(other);
+    public bool Matches(IntTuple tuple) => this.Matches<int, IntTuple, IntTemplate>(tuple);
+    public bool Equals(IntTemplate other) => this.SequentialEquals<int, IntTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<int?>.Enumerator GetEnumerator() => new ReadOnlySpan<int?>(fields).GetEnumerator();
 }

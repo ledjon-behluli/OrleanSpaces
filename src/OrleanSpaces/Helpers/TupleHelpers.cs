@@ -6,24 +6,12 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Helpers;
 
-internal static class SpaceHelpers
+internal static class TupleHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsSupportedType(this Type type) =>
-       type.IsPrimitive ||
-       type.IsEnum ||
-       type == typeof(string) ||
-       type == typeof(decimal) ||
-       type == typeof(Int128) ||
-       type == typeof(UInt128) ||
-       type == typeof(DateTime) ||
-       type == typeof(DateTimeOffset) ||
-       type == typeof(TimeSpan) ||
-       type == typeof(Guid);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool TryParallelEquals<T>(this INumericTuple<T> left, INumericTuple<T> right, out bool result)
+    public static bool TryParallelEquals<T, TTuple>(this TTuple left, TTuple right, out bool result)
         where T : unmanaged, INumber<T>
+        where TTuple : INumericTuple<T>
     {
         result = false;
 
@@ -134,7 +122,7 @@ internal static class SpaceHelpers
             if (sLength == vLength)
             {
                 // safe to create the vector directly from the span, as the lengths are equal (parent method will never supply a span that is [sLength > vLength])
-                return CastAs<T, Vector<T>>(in span[0]);
+                return Helpers.CastAs<T, Vector<T>>(in span[0]);
             }
 
             // In cases where [sLength < vLength], if we try to create a vector from the span directly, it will result in a vector which has the first N items the same as the span,
@@ -147,13 +135,14 @@ internal static class SpaceHelpers
             tempSpan.Fill(T.Zero);
             span.CopyTo(tempSpan);
 
-            return CastAs<T, Vector<T>>(in tempSpan[0]);
+            return Helpers.CastAs<T, Vector<T>>(in tempSpan[0]);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T>(this ISpaceTuple<T> left, ISpaceTuple<T> right)
+    public static bool SequentialEquals<T, TTuple>(this TTuple left, TTuple right)
         where T : unmanaged
+        where TTuple : ISpaceTuple<T>
     {
         int length = left.Length;
         if (length != right.Length)
@@ -176,57 +165,9 @@ internal static class SpaceHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool SequentialEquals<T>(this ISpaceTemplate<T> left, ISpaceTemplate<T> right)
-        where T : unmanaged
-    {
-        int length = left.Length;
-        if (length != right.Length)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < length; i++)
-        {
-            ref readonly T? iLeft = ref left[i];
-            ref readonly T? iRight = ref right[i];
-
-            if ((iLeft is null && iRight is not null) ||
-                (iLeft is not null && iRight is null) ||
-                (iLeft is { } l && !l.Equals(iRight)))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Matches<T, TTuple>(this ISpaceTemplate<T> template, ISpaceTuple<T> tuple)
-        where T : unmanaged
-        where TTuple : ISpaceTuple<T>, IEquatable<TTuple>, ISpaceFactory<T, TTuple>
-    {
-        int length = template.Length;
-        if (length != tuple.Length)
-        {
-            return false;
-        }
-
-        T[] fields = new T[length];
-        for (int i = 0; i < length; i++)
-        {
-            fields[i] = template[i] is { } value ? value : tuple[i];
-        }
-
-        TTuple templateTuple = TTuple.Create(fields);
-        bool result = templateTuple.Equals(tuple);
-
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> AsSpan<T>(this ISpaceTuple<T> tuple, int maxFieldCharLength)
-        where T : unmanaged, ISpanFormattable
+    public static ReadOnlySpan<char> AsSpan<T, TTuple>(this TTuple tuple, int maxFieldCharLength)
+       where T : unmanaged, ISpanFormattable
+       where TTuple : ISpaceTuple<T>
     {
         int capacity = GetCharCount(tuple.Length, maxFieldCharLength);
         char[] array = ArrayPool<char>.Shared.Rent(capacity);
@@ -302,36 +243,6 @@ internal static class SpaceHelpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AllocateAndExecute<T>(this IBufferConsumer<T> consumer, int capacity)
-       where T : unmanaged
-    {
-        if (capacity * Unsafe.SizeOf<T>() <= 1024) // It is good practice not to allocate more than 1 kilobyte of memory on the stack
-        {
-            Span<T> buffer = stackalloc T[capacity];
-            return consumer.Consume(ref buffer);
-        }
-        else
-        {
-            T[] array = ArrayPool<T>.Shared.Rent(capacity);
-            Span<T> buffer = array.AsSpan();
-
-            bool result = consumer.Consume(ref buffer);
-
-            ArrayPool<T>.Shared.Return(array);
-
-            return result;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ref TOut CastAs<TIn, TOut>(in TIn value)
-        where TIn : struct => ref Unsafe.As<TIn, TOut>(ref Unsafe.AsRef(in value));
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString<T>(T[] fields) where T : unmanaged
         => $"({string.Join(", ", fields)})";
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToString<T>(T?[] fields) where T : unmanaged
-        => $"({string.Join(", ", fields.Select(field => field is null ? "{NULL}" : field.ToString()))})";
 }

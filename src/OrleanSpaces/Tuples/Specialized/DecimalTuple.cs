@@ -73,18 +73,18 @@ public readonly record struct DecimalTuple :
 
         if (!Vector256.IsHardwareAccelerated)
         {
-            return this.SequentialEquals(other);
+            return this.SequentialEquals<decimal, DecimalTuple>(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(8 * Length); // 8 x Length, because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
+        return new Comparer(this, other).AllocateAndExecute<int, Comparer>(8 * Length); // 8 x Length, because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static DecimalTuple ISpaceFactory<decimal, DecimalTuple>.Create(decimal[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Decimal);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<decimal, DecimalTuple>(Constants.MaxFieldCharLength_Decimal);
     public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<int>
@@ -148,11 +148,11 @@ public readonly record struct DecimalTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(DecimalTuple tuple) => this.Matches<decimal, DecimalTuple>(tuple);
-    public bool Equals(DecimalTemplate other) => this.SequentialEquals(other);
+    public bool Matches(DecimalTuple tuple) => this.Matches<decimal, DecimalTuple, DecimalTemplate>(tuple);
+    public bool Equals(DecimalTemplate other) => this.SequentialEquals<decimal, DecimalTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
 }

@@ -62,18 +62,18 @@ public readonly record struct HugeTuple :
 
         if (!Vector.IsHardwareAccelerated)
         {
-            return this.SequentialEquals(other);
+            return this.SequentialEquals<Int128, HugeTuple>(other);
         }
 
-        return new Comparer(this, other).AllocateAndExecute(2 * Constants.ByteCount_Int128 * Length);
+        return new Comparer(this, other).AllocateAndExecute<byte, Comparer>(2 * Constants.ByteCount_Int128 * Length);
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static HugeTuple ISpaceFactory<Int128, HugeTuple>.Create(Int128[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Huge);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<Int128, HugeTuple>(Constants.MaxFieldCharLength_Huge);
     public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128>(fields).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<byte>
@@ -144,11 +144,11 @@ public readonly record struct HugeTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(HugeTuple tuple) => this.Matches<Int128, HugeTuple>(tuple);
-    public bool Equals(HugeTemplate other) => this.SequentialEquals(other);
+    public bool Matches(HugeTuple tuple) => this.Matches<Int128, HugeTuple, HugeTemplate>(tuple);
+    public bool Equals(HugeTemplate other) => this.SequentialEquals<Int128, HugeTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<Int128?>.Enumerator GetEnumerator() => new ReadOnlySpan<Int128?>(fields).GetEnumerator();
 }

@@ -52,15 +52,16 @@ public readonly record struct DateTimeTuple :
     public bool Equals(DateTimeTuple other)
     {
         NumericMarshaller<DateTime, long> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+        return marshaller.TryParallelEquals(out bool result) ? 
+                   result : this.SequentialEquals<DateTime, DateTimeTuple>(other);
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static DateTimeTuple ISpaceFactory<DateTime, DateTimeTuple>.Create(DateTime[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTime);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<DateTime, DateTimeTuple>(Constants.MaxFieldCharLength_DateTime);
     public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime>(fields).GetEnumerator();
 }
 
@@ -95,11 +96,11 @@ public readonly record struct DateTimeTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(DateTimeTuple tuple) => this.Matches<DateTime, DateTimeTuple>(tuple);
-    public bool Equals(DateTimeTemplate other) => this.SequentialEquals(other);
+    public bool Matches(DateTimeTuple tuple) => this.Matches<DateTime, DateTimeTuple, DateTimeTemplate>(tuple);
+    public bool Equals(DateTimeTemplate other) => this.SequentialEquals<DateTime, DateTimeTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<DateTime?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTime?>(fields).GetEnumerator();
 }

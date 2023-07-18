@@ -60,7 +60,7 @@ public readonly record struct GuidTuple :
 
         if (!Vector128.IsHardwareAccelerated)
         {
-            return this.SequentialEquals(other);
+            return this.SequentialEquals<Guid, GuidTuple>(other);
         }
 
         for (int i = 0; i < Length; i++)
@@ -68,8 +68,8 @@ public readonly record struct GuidTuple :
             // We are transforming the managed pointer(s) of type 'Guid' (obtained after re-interpreting the readonly reference(s) 'fields[i]' and 'other.fields[i]' to new mutable reference(s))
             // to new managed pointer(s) of type 'Vector128<byte>' and comparing them.
 
-            ref Vector128<byte> vLeft = ref SpaceHelpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
-            ref Vector128<byte> vRight = ref SpaceHelpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
+            ref Vector128<byte> vLeft = ref Helpers.Helpers.CastAs<Guid, Vector128<byte>>(in fields[i]);
+            ref Vector128<byte> vRight = ref Helpers.Helpers.CastAs<Guid, Vector128<byte>>(in other.fields[i]);
 
             if (vLeft != vRight)
             {
@@ -81,11 +81,11 @@ public readonly record struct GuidTuple :
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static GuidTuple ISpaceFactory<Guid, GuidTuple>.Create(Guid[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Guid);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<Guid, GuidTuple>(Constants.MaxFieldCharLength_Guid);
     public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
 }
 
@@ -120,11 +120,11 @@ public readonly record struct GuidTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(GuidTuple tuple) => this.Matches<Guid, GuidTuple>(tuple);
-    public bool Equals(GuidTemplate other) => this.SequentialEquals(other);
+    public bool Matches(GuidTuple tuple) => this.Matches<Guid, GuidTuple, GuidTemplate>(tuple);
+    public bool Equals(GuidTemplate other) => this.SequentialEquals<Guid, GuidTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
 }

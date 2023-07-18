@@ -52,14 +52,15 @@ public readonly record struct LongTuple :
     }
 
     public bool Equals(LongTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<long, LongTuple>(other, out bool result) ?
+               result : this.SequentialEquals<long, LongTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static LongTuple ISpaceFactory<long, LongTuple>.Create(long[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Long);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<long, LongTuple>(Constants.MaxFieldCharLength_Long);
     public ReadOnlySpan<long>.Enumerator GetEnumerator() => new ReadOnlySpan<long>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct LongTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(LongTuple tuple) => this.Matches<long, LongTuple>(tuple);
-    public bool Equals(LongTemplate other) => this.SequentialEquals(other);
+    public bool Matches(LongTuple tuple) => this.Matches<long, LongTuple, LongTemplate>(tuple);
+    public bool Equals(LongTemplate other) => this.SequentialEquals<long, LongTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<long?>.Enumerator GetEnumerator() => new ReadOnlySpan<long?>(fields).GetEnumerator();
 }

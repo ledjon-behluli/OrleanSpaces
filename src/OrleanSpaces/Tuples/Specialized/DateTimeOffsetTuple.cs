@@ -52,15 +52,16 @@ public readonly record struct DateTimeOffsetTuple :
     public bool Equals(DateTimeOffsetTuple other)
     {
         NumericMarshaller<DateTimeOffset, long> marshaller = new(fields.AsSpan(), other.fields.AsSpan());
-        return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals(other);
+        return marshaller.TryParallelEquals(out bool result) ? 
+                   result : this.SequentialEquals<DateTimeOffset, DateTimeOffsetTuple>(other);
     }
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static DateTimeOffsetTuple ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>.Create(DateTimeOffset[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_DateTimeOffset);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<DateTimeOffset, DateTimeOffsetTuple>(Constants.MaxFieldCharLength_DateTimeOffset);
     public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
 }
 
@@ -95,11 +96,11 @@ public readonly record struct DateTimeOffsetTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(DateTimeOffsetTuple tuple) => this.Matches<DateTimeOffset, DateTimeOffsetTuple>(tuple);
-    public bool Equals(DateTimeOffsetTemplate other) => this.SequentialEquals(other);
+    public bool Matches(DateTimeOffsetTuple tuple) => this.Matches<DateTimeOffset, DateTimeOffsetTuple, DateTimeOffsetTemplate>(tuple);
+    public bool Equals(DateTimeOffsetTemplate other) => this.SequentialEquals<DateTimeOffset, DateTimeOffsetTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
 }

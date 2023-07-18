@@ -52,14 +52,15 @@ public readonly record struct ByteTuple :
     }
 
     public bool Equals(ByteTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<byte, ByteTuple>(other, out bool result) ? 
+               result : this.SequentialEquals<byte, ByteTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static ByteTuple ISpaceFactory<byte, ByteTuple>.Create(byte[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Byte);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<byte, ByteTuple>(Constants.MaxFieldCharLength_Byte);
     public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct ByteTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(ByteTuple tuple) => this.Matches<byte, ByteTuple>(tuple);
-    public bool Equals(ByteTemplate other) => this.SequentialEquals(other);
+    public bool Matches(ByteTuple tuple) => this.Matches<byte, ByteTuple, ByteTemplate>(tuple);
+    public bool Equals(ByteTemplate other) => this.SequentialEquals<byte, ByteTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
     
     public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();
 }

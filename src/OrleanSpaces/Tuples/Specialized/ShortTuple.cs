@@ -52,14 +52,15 @@ public readonly record struct ShortTuple :
     }
 
     public bool Equals(ShortTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<short, ShortTuple>(other, out bool result) ?
+               result : this.SequentialEquals<short, ShortTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static ShortTuple ISpaceFactory<short, ShortTuple>.Create(short[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_Short);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<short, ShortTuple>(Constants.MaxFieldCharLength_Short);
     public ReadOnlySpan<short>.Enumerator GetEnumerator() => new ReadOnlySpan<short>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct ShortTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(ShortTuple tuple) => this.Matches<short, ShortTuple>(tuple);
-    public bool Equals(ShortTemplate other) => this.SequentialEquals(other);
+    public bool Matches(ShortTuple tuple) => this.Matches<short, ShortTuple, ShortTemplate>(tuple);
+    public bool Equals(ShortTemplate other) => this.SequentialEquals<short, ShortTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<short?>.Enumerator GetEnumerator() => new ReadOnlySpan<short?>(fields).GetEnumerator();
 }

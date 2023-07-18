@@ -52,14 +52,15 @@ public readonly record struct UShortTuple :
     }
 
     public bool Equals(UShortTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<ushort, UShortTuple>(other, out bool result) ?
+               result : this.SequentialEquals<ushort, UShortTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static UShortTuple ISpaceFactory<ushort, UShortTuple>.Create(ushort[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_UShort);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<ushort, UShortTuple>(Constants.MaxFieldCharLength_UShort);
     public ReadOnlySpan<ushort>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct UShortTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(UShortTuple tuple) => this.Matches<ushort, UShortTuple>(tuple);
-    public bool Equals(UShortTemplate other) => this.SequentialEquals(other);
+    public bool Matches(UShortTuple tuple) => this.Matches<ushort, UShortTuple, UShortTemplate>(tuple);
+    public bool Equals(UShortTemplate other) => this.SequentialEquals<ushort, UShortTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<ushort?>.Enumerator GetEnumerator() => new ReadOnlySpan<ushort?>(fields).GetEnumerator();
 }

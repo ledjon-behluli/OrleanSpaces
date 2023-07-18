@@ -52,14 +52,15 @@ public readonly record struct SByteTuple :
     }
 
     public bool Equals(SByteTuple other)
-        => this.TryParallelEquals(other, out bool result) ? result : this.SequentialEquals(other);
+        => this.TryParallelEquals<sbyte, SByteTuple>(other, out bool result) ?
+               result : this.SequentialEquals<sbyte, SByteTuple>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TupleHelpers.ToString(fields);
 
     static SByteTuple ISpaceFactory<sbyte, SByteTuple>.Create(sbyte[] fields) => new(fields);
 
-    public ReadOnlySpan<char> AsSpan() => this.AsSpan(Constants.MaxFieldCharLength_SByte);
+    public ReadOnlySpan<char> AsSpan() => this.AsSpan<sbyte, SByteTuple>(Constants.MaxFieldCharLength_SByte);
     public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
 }
 
@@ -94,11 +95,11 @@ public readonly record struct SByteTemplate :
     /// <param name="tuple">A tuple to be matched by <see langword="this"/>.</param>
     /// <returns><see langword="true"/>, if <see langword="this"/> and <paramref name="tuple"/> share the same number of fields, and all of them match on the index and value 
     /// (<i>except when any field of <see langword="this"/> is of type <see langword="null"/></i>); otherwise, <see langword="false"/>.</returns>
-    public bool Matches(SByteTuple tuple) => this.Matches<sbyte, SByteTuple>(tuple);
-    public bool Equals(SByteTemplate other) => this.SequentialEquals(other);
+    public bool Matches(SByteTuple tuple) => this.Matches<sbyte, SByteTuple, SByteTemplate>(tuple);
+    public bool Equals(SByteTemplate other) => this.SequentialEquals<sbyte, SByteTemplate>(other);
 
     public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => SpaceHelpers.ToString(fields);
+    public override string ToString() => TemplateHelpers.ToString(fields);
 
     public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();
 }
