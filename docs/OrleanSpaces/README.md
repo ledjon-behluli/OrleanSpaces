@@ -38,9 +38,9 @@ Configuration of the **Tuple Space Server** is done by configuring the **Orleans
 await Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
-		siloBuilder.UseLocalhostClustering();
-		siloBuilder.AddOrleanSpaces(); // optional
-		siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
+	siloBuilder.UseLocalhostClustering();
+	siloBuilder.AddOrleanSpaces(); // optional
+	siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
         siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
     })
@@ -204,42 +204,42 @@ public class Observer1 : ISpaceObserver<SpaceTuple>
 {
     public Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) 
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public Task OnFlatteningAsync(CancellationToken cancellationToken) =>    
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 }
 
 public class Observer2 : SpaceObserver<SpaceTuple>
 {
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) 
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public override Task OnFlatteningAsync(CancellationToken cancellationToken) =>    
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 }
 
 public class Observer3 : SpaceObserver<SpaceTuple>
@@ -248,12 +248,11 @@ public class Observer3 : SpaceObserver<SpaceTuple>
     
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) 
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken) => throw new NotImplementedException();
-
     public override Task OnFlatteningAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 }
 
@@ -263,17 +262,17 @@ public class Observer4 : SpaceObserver<SpaceTuple>
     
     public override Task OnExpansionAsync(SpaceTuple tuple, CancellationToken cancellationToken) 
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
 
     public override Task OnContractionAsync(SpaceTuple tuple, CancellationToken cancellationToken)
     {
-		// do something
-	    return Task.CompletedTask;
-	}
+	// do something
+        return Task.CompletedTask;
+    }
         
-	public override Task OnFlatteningAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+    public override Task OnFlatteningAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 }
 ```
 
