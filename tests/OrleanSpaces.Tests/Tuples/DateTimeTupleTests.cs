@@ -110,10 +110,10 @@ public class DateTimeTupleTests
     public void Should_ToString()
     {
         Assert.Equal("()", new DateTimeTuple().ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM)", new DateTimeTuple(dateTime1).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM)", new DateTimeTuple(dateTime1, dateTime2).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM)", new DateTimeTuple(dateTime1, dateTime2, dateTime3).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM, 1/4/2023 12:00:00 AM)", new DateTimeTuple(dateTime1, dateTime2, dateTime3, dateTime4).ToString());
+        Assert.Equal($"({dateTime1})", new DateTimeTuple(dateTime1).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2})", new DateTimeTuple(dateTime1, dateTime2).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2}, {dateTime3})", new DateTimeTuple(dateTime1, dateTime2, dateTime3).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2}, {dateTime3}, {dateTime4})", new DateTimeTuple(dateTime1, dateTime2, dateTime3, dateTime4).ToString());
     }
 }
 
@@ -239,11 +239,11 @@ public class DateTimeTemplateTests
     public void Should_ToString()
     {
         Assert.Equal("({NULL})", new DateTimeTemplate().ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1, dateTime2).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1, dateTime2, dateTime3).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM, 1/4/2023 12:00:00 AM)", new DateTimeTemplate(dateTime1, dateTime2, dateTime3, dateTime4).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM, 1/4/2023 12:00:00 AM, {NULL})", new DateTimeTemplate(dateTime1, dateTime2, dateTime3, dateTime4, null).ToString());
+        Assert.Equal($"({dateTime1})", new DateTimeTemplate(dateTime1).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2})", new DateTimeTemplate(dateTime1, dateTime2).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2}, {dateTime3})", new DateTimeTemplate(dateTime1, dateTime2, dateTime3).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2}, {dateTime3}, {dateTime4})", new DateTimeTemplate(dateTime1, dateTime2, dateTime3, dateTime4).ToString());
+        Assert.Equal($"({dateTime1}, {dateTime2}, {dateTime3}, {dateTime4}, {{NULL}})", new DateTimeTemplate(dateTime1, dateTime2, dateTime3, dateTime4, null).ToString());
     }
 
     [Fact]
@@ -299,9 +299,9 @@ public class DateTimeTemplateTests
     private static object[][] SpanData() =>
        new[]
        {
-            new object[] { new DateTimeTuple(dateTime1), "(1/1/2023 12:00:00 AM)", 22 },
-            new object[] { new DateTimeTuple(dateTime1, dateTime2), "(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM)", 44 },
-            new object[] { new DateTimeTuple(dateTime1, dateTime2, dateTime3), "(1/1/2023 12:00:00 AM, 1/2/2023 12:00:00 AM, 1/3/2023 12:00:00 AM)", 66 }
+            new object[] { new DateTimeTuple(dateTime1), $"({dateTime1})", $"({dateTime1})".Length },
+            new object[] { new DateTimeTuple(dateTime1, dateTime2), $"({dateTime1}, {dateTime2})", $"({dateTime1}, {dateTime2})".Length },
+            new object[] { new DateTimeTuple(dateTime1, dateTime2, dateTime3), $"({dateTime1}, {dateTime2}, {dateTime3})", $"({dateTime1}, {dateTime2}, {dateTime3})".Length }
        };
 }
 

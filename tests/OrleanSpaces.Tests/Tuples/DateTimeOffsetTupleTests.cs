@@ -110,10 +110,10 @@ public class DateTimeOffsetTupleTests
     public void Should_ToString()
     {
         Assert.Equal("()", new DateTimeOffsetTuple().ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00)", new DateTimeOffsetTuple(offset1).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00)", new DateTimeOffsetTuple(offset1, offset2).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00)", new DateTimeOffsetTuple(offset1, offset2, offset3).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00, 1/4/2023 12:00:00 AM +00:00)", new DateTimeOffsetTuple(offset1, offset2, offset3, offset4).ToString());
+        Assert.Equal($"({offset1})", new DateTimeOffsetTuple(offset1).ToString());
+        Assert.Equal($"({offset1}, {offset2})", new DateTimeOffsetTuple(offset1, offset2).ToString());
+        Assert.Equal($"({offset1}, {offset2}, {offset3})", new DateTimeOffsetTuple(offset1, offset2, offset3).ToString());
+        Assert.Equal($"({offset1}, {offset2}, {offset3}, {offset4})", new DateTimeOffsetTuple(offset1, offset2, offset3, offset4).ToString());
     }
 }
 
@@ -239,11 +239,11 @@ public class DateTimeOffsetTemplateTests
     public void Should_ToString()
     {
         Assert.Equal("({NULL})", new DateTimeOffsetTemplate().ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1, offset2).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1, offset2, offset3).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00, 1/4/2023 12:00:00 AM +00:00)", new DateTimeOffsetTemplate(offset1, offset2, offset3, offset4).ToString());
-        Assert.Equal("(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00, 1/4/2023 12:00:00 AM +00:00, {NULL})", new DateTimeOffsetTemplate(offset1, offset2, offset3, offset4, null).ToString());
+        Assert.Equal($"({offset1})", new DateTimeOffsetTemplate(offset1).ToString());
+        Assert.Equal($"({offset1}, {offset2})", new DateTimeOffsetTemplate(offset1, offset2).ToString());
+        Assert.Equal($"({offset1}, {offset2}, {offset3})", new DateTimeOffsetTemplate(offset1, offset2, offset3).ToString());
+        Assert.Equal($"({offset1}, {offset2}, {offset3}, {offset4})", new DateTimeOffsetTemplate(offset1, offset2, offset3, offset4).ToString());
+        Assert.Equal($"({offset1}, {offset2}, {offset3}, {offset4}, {{NULL}})", new DateTimeOffsetTemplate(offset1, offset2, offset3, offset4, null).ToString());
     }
 
     [Fact]
@@ -299,9 +299,9 @@ public class DateTimeOffsetTemplateTests
     private static object[][] SpanData() =>
        new[]
        {
-            new object[] { new DateTimeOffsetTuple(offset1), "(1/1/2023 12:00:00 AM +00:00)", 29 },
-            new object[] { new DateTimeOffsetTuple(offset1, offset2), "(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00)", 58 },
-            new object[] { new DateTimeOffsetTuple(offset1, offset2, offset3), "(1/1/2023 12:00:00 AM +00:00, 1/2/2023 12:00:00 AM +00:00, 1/3/2023 12:00:00 AM +00:00)", 87 }
+            new object[] { new DateTimeOffsetTuple(offset1), $"({offset1})", $"({offset1})".ToString().Length },
+            new object[] { new DateTimeOffsetTuple(offset1, offset2), $"({offset1}, {offset2})", $"({offset1}, {offset2})".Length },
+            new object[] { new DateTimeOffsetTuple(offset1, offset2, offset3), $"({offset1}, {offset2}, {offset3})", $"({offset1}, {offset2}, {offset3})".Length }
        };
 }
 
