@@ -30,7 +30,7 @@ jobs:
     - name: Core tests
       run: > 
         dotnet test "tests/OrleanSpaces.Tests/OrleanSpaces.Tests.csproj" --configuration Release --no-build -v:normal 
-        -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --blame-hang-timeout 5m --blame-hang-dump-type full
+        -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
 
     - name: Core tests coverage
       uses: simon-k/dotnet-code-coverage-badge@v1.0.0
@@ -48,7 +48,7 @@ jobs:
     - name: Analyzers tests
       run: > 
         dotnet test "tests/OrleanSpaces.Analyzers.Tests/OrleanSpaces.Analyzers.Tests.csproj" --configuration Release --no-build -v:normal 
-        -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --blame-hang-timeout 5m --blame-hang-dump-type full
+        -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover
         -p:Exclude=[OrleanSpaces]* # removing all types (*) from the assembly (OrleanSpaces) from code coverage, as it is used only as a reference source for the analyzer project.
 
     - name: Analyzers tests coverage
