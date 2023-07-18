@@ -196,7 +196,7 @@ public class ByteTupleBenchmarks
 
         public SequentialByteTuple(params byte[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialByteTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialByteTuple other) => this.SequentialEquals<byte, SequentialByteTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<byte>.Enumerator GetEnumerator() => throw new NotImplementedException();

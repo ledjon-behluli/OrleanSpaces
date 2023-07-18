@@ -250,7 +250,7 @@ public class DateTimeOffsetTupleBenchmarks
 
         public SequentialDateTimeOffsetTuple(params DateTimeOffset[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialDateTimeOffsetTuple other) => this.SequentialEquals<DateTimeOffset, SequentialDateTimeOffsetTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => throw new NotImplementedException();

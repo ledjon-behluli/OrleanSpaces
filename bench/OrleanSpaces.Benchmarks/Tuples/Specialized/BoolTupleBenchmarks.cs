@@ -249,7 +249,7 @@ public class BoolTupleBenchmarks
 
         public SequentialBoolTuple(params bool[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialBoolTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialBoolTuple other) => this.SequentialEquals<bool, SequentialBoolTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<bool>.Enumerator GetEnumerator() => throw new NotImplementedException();

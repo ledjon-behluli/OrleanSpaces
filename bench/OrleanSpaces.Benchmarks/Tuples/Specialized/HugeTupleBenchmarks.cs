@@ -250,7 +250,7 @@ public class HugeTupleBenchmarks
 
         public SequentialHugeTuple(params Int128[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialHugeTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialHugeTuple other) => this.SequentialEquals<Int128, SequentialHugeTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<Int128>.Enumerator GetEnumerator() => throw new NotImplementedException();

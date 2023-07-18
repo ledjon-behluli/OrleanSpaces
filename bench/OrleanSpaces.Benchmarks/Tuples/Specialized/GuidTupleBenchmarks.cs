@@ -250,7 +250,7 @@ public class GuidTupleBenchmarks
 
         public SequentialGuidTuple(params Guid[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialGuidTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialGuidTuple other) => this.SequentialEquals<Guid, SequentialGuidTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => throw new NotImplementedException();

@@ -250,7 +250,7 @@ public class DoubleTupleBenchmarks
 
         public SequentialDoubleTuple(params double[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialDoubleTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialDoubleTuple other) => this.SequentialEquals<double, SequentialDoubleTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<double>.Enumerator GetEnumerator() => throw new NotImplementedException();

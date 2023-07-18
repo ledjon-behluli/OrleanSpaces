@@ -250,7 +250,7 @@ public class FloatTupleBenchmarks
 
         public SequentialFloatTuple(params float[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialFloatTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialFloatTuple other) => this.SequentialEquals<float, SequentialFloatTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<float>.Enumerator GetEnumerator() => throw new NotImplementedException();

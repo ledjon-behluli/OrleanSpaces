@@ -250,7 +250,7 @@ public class DateTimeTupleBenchmarks
 
         public SequentialDateTimeTuple(params DateTime[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialDateTimeTuple other) => this.SequentialEquals<DateTime, SequentialDateTimeTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<DateTime>.Enumerator GetEnumerator() => throw new NotImplementedException();

@@ -196,7 +196,7 @@ public class IntTupleBenchmarks
 
         public SequentialIntTuple(params int[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialIntTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialIntTuple other) => this.SequentialEquals<int, SequentialIntTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<int>.Enumerator GetEnumerator() => throw new NotImplementedException();

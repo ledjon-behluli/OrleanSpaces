@@ -196,7 +196,7 @@ public class LongTupleBenchmarks
 
         public SequentialLongTuple(params long[] fields) => this.fields = fields;
 
-        public bool Equals(SequentialLongTuple other) => this.SequentialEquals(other);
+        public bool Equals(SequentialLongTuple other) => this.SequentialEquals<long, SequentialLongTuple>(other);
 
         public ReadOnlySpan<char> AsSpan() => throw new NotImplementedException();
         public ReadOnlySpan<long>.Enumerator GetEnumerator() => throw new NotImplementedException();
