@@ -20,7 +20,7 @@ ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 const string EXCHANGE_KEY = "exchange-key";
 
-await Task.WhenAll(CreateTasks(10, async index =>
+await Task.WhenAll(CreateTasks(100, async index =>
 {
     SpaceTuple tuple = new(EXCHANGE_KEY, index);
     await agent.WriteAsync(tuple);
@@ -31,7 +31,7 @@ await Task.WhenAll(CreateTasks(10, async index =>
 Console.WriteLine("----------------------");
 
 
-await Task.WhenAll(CreateTasks(10, async index =>
+await Task.WhenAll(CreateTasks(100, async index =>
 {
     SpaceTuple tuple = await agent.PeekAsync(new(EXCHANGE_KEY, index));
     Console.WriteLine($"READER {index}: {tuple}");

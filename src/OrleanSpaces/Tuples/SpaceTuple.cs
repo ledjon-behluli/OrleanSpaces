@@ -103,7 +103,7 @@ public readonly record struct SpaceTuple :
     }
 
     public override int GetHashCode() => fields?.GetHashCode() ?? 0;
-    public override string ToString() => $"({string.Join(", ", fields ?? Array.Empty<object>())})";
+    public override string ToString() => fields is null ? "()" : $"({string.Join(", ", fields)})";
 
     /// <summary>
     /// Returns an enumerator to enumerate over the fields of this tuple.
