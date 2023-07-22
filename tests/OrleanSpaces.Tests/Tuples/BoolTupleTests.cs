@@ -17,6 +17,14 @@ public class BoolTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        BoolTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         BoolTuple tuple = new();
@@ -129,6 +137,14 @@ public class BoolTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         BoolTemplate template = new(Array.Empty<bool?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        BoolTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

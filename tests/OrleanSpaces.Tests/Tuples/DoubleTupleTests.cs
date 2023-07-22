@@ -17,6 +17,14 @@ public class DoubleTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        DoubleTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         DoubleTuple tuple = new();
@@ -129,6 +137,14 @@ public class DoubleTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         DoubleTemplate template = new(Array.Empty<double?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        DoubleTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

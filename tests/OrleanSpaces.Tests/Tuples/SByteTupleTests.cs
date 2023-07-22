@@ -17,6 +17,14 @@ public class SByteTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        SByteTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         SByteTuple tuple = new();
@@ -129,6 +137,14 @@ public class SByteTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         SByteTemplate template = new(Array.Empty<sbyte?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        SByteTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

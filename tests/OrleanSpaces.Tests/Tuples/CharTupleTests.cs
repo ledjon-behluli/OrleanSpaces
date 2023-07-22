@@ -18,6 +18,14 @@ public class CharTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        CharTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         CharTuple tuple = new();
@@ -130,6 +138,14 @@ public class CharTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         CharTemplate template = new(Array.Empty<char?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        CharTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

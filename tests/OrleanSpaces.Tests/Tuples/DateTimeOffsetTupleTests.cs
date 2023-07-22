@@ -22,6 +22,14 @@ public class DateTimeOffsetTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        DateTimeOffsetTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         DateTimeOffsetTuple tuple = new();
@@ -139,6 +147,14 @@ public class DateTimeOffsetTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         DateTimeOffsetTemplate template = new(Array.Empty<DateTimeOffset?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        DateTimeOffsetTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

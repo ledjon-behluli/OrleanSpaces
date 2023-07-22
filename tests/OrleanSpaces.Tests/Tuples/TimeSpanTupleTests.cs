@@ -22,6 +22,14 @@ public class TimeSpanTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        TimeSpanTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         TimeSpanTuple tuple = new();
@@ -139,6 +147,14 @@ public class TimeSpanTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         TimeSpanTemplate template = new(Array.Empty<TimeSpan?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        TimeSpanTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

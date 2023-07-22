@@ -22,6 +22,14 @@ public class GuidTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        GuidTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         GuidTuple tuple = new();
@@ -139,6 +147,14 @@ public class GuidTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         GuidTemplate template = new(Array.Empty<Guid?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        GuidTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }

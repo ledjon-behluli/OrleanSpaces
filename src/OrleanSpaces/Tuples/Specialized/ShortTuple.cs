@@ -55,13 +55,14 @@ public readonly record struct ShortTuple :
         => this.TryParallelEquals<short, ShortTuple>(other, out bool result) ?
                result : this.SequentialEquals<short, ShortTuple>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static ShortTuple ISpaceFactory<short, ShortTuple>.Create(short[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<short, ShortTuple>(Constants.MaxFieldCharLength_Short);
-    public ReadOnlySpan<short>.Enumerator GetEnumerator() => new ReadOnlySpan<short>(fields).GetEnumerator();
+    public ReadOnlySpan<short>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<short>.Empty : new ReadOnlySpan<short>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -98,8 +99,9 @@ public readonly record struct ShortTemplate :
     public bool Matches(ShortTuple tuple) => this.Matches<short, ShortTuple, ShortTemplate>(tuple);
     public bool Equals(ShortTemplate other) => this.SequentialEquals<short, ShortTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<short?>.Enumerator GetEnumerator() => new ReadOnlySpan<short?>(fields).GetEnumerator();
+    public ReadOnlySpan<short?>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<short?>.Empty : new ReadOnlySpan<short?>(fields)).GetEnumerator();
 }

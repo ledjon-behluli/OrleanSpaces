@@ -79,13 +79,14 @@ public readonly record struct DecimalTuple :
         return new Comparer(this, other).AllocateAndExecute<int, Comparer>(8 * Length); // 8 x Length, because each decimal will be decomposed into 4 ints, and we have 2 tuples to compare.
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static DecimalTuple ISpaceFactory<decimal, DecimalTuple>.Create(decimal[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<decimal, DecimalTuple>(Constants.MaxFieldCharLength_Decimal);
-    public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal>(fields).GetEnumerator();
+    public ReadOnlySpan<decimal>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<decimal>.Empty : new ReadOnlySpan<decimal>(fields)).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<int>
     {
@@ -151,8 +152,9 @@ public readonly record struct DecimalTemplate :
     public bool Matches(DecimalTuple tuple) => this.Matches<decimal, DecimalTuple, DecimalTemplate>(tuple);
     public bool Equals(DecimalTemplate other) => this.SequentialEquals<decimal, DecimalTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => new ReadOnlySpan<decimal?>(fields).GetEnumerator();
+    public ReadOnlySpan<decimal?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<decimal?>.Empty : new ReadOnlySpan<decimal?>(fields)).GetEnumerator();
 }

@@ -17,6 +17,14 @@ public class UIntTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        UIntTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         UIntTuple tuple = new();
@@ -129,6 +137,14 @@ public class UIntTemplateTests
     public void Should_Be_Created_On_Empty_Array()
     {
         UIntTemplate template = new(Array.Empty<uint?>());
+        Assert.Equal(1, template.Length);
+        Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        UIntTemplate template = default;
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
     }
