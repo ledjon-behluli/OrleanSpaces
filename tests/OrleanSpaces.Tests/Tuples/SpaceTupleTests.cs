@@ -70,6 +70,14 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        SpaceTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         SpaceTuple tuple = new();
@@ -184,6 +192,13 @@ public class SpaceTemplateTests
         SpaceTemplate template = new(Array.Empty<object?>());
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Keyword()
+    {
+        SpaceTemplate template = default;
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

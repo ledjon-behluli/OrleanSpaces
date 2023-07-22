@@ -17,6 +17,14 @@ public class LongTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        LongTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         LongTuple tuple = new();
@@ -131,6 +139,13 @@ public class LongTemplateTests
         LongTemplate template = new(Array.Empty<long?>());
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Keyword()
+    {
+        LongTemplate template = default;
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

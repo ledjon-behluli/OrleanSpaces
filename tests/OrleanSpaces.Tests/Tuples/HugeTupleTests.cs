@@ -17,6 +17,14 @@ public class HugeTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        HugeTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         HugeTuple tuple = new();
@@ -131,6 +139,13 @@ public class HugeTemplateTests
         HugeTemplate template = new(Array.Empty<Int128?>());
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Keyword()
+    {
+        HugeTemplate template = default;
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

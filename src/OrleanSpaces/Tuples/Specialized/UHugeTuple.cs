@@ -68,13 +68,14 @@ public readonly record struct UHugeTuple :
         return new Comparer(this, other).AllocateAndExecute<byte, Comparer>(2 * Constants.ByteCount_UInt128 * Length);
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static UHugeTuple ISpaceFactory<UInt128, UHugeTuple>.Create(UInt128[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<UInt128, UHugeTuple>(Constants.MaxFieldCharLength_UHuge);
-    public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128>(fields).GetEnumerator();
+    public ReadOnlySpan<UInt128>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<UInt128>.Empty : new ReadOnlySpan<UInt128>(fields)).GetEnumerator();
 
     readonly struct Comparer : IBufferConsumer<byte>
     {
@@ -147,8 +148,9 @@ public readonly record struct UHugeTemplate :
     public bool Matches(UHugeTuple tuple) => this.Matches<UInt128, UHugeTuple, UHugeTemplate>(tuple);
     public bool Equals(UHugeTemplate other) => this.SequentialEquals<UInt128, UHugeTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() => new ReadOnlySpan<UInt128?>(fields).GetEnumerator();
+    public ReadOnlySpan<UInt128?>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<UInt128?>.Empty : new ReadOnlySpan<UInt128?>(fields)).GetEnumerator();
 }

@@ -55,12 +55,13 @@ public readonly record struct BoolTuple :
         return marshaller.TryParallelEquals(out bool result) ? result : this.SequentialEquals<bool, BoolTuple>(other);
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static BoolTuple ISpaceFactory<bool, BoolTuple>.Create(bool[] fields) => new(fields);
 
-    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => new ReadOnlySpan<bool>(fields).GetEnumerator();
+    public ReadOnlySpan<bool>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<bool>.Empty : new ReadOnlySpan<bool>(fields)).GetEnumerator();
 
     public ReadOnlySpan<char> AsSpan()
     {
@@ -131,8 +132,9 @@ public readonly record struct BoolTemplate :
     public bool Matches(BoolTuple tuple) => this.Matches<bool, BoolTuple, BoolTemplate>(tuple);
     public bool Equals(BoolTemplate other) => this.SequentialEquals<bool, BoolTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => new ReadOnlySpan<bool?>(fields).GetEnumerator();
+    public ReadOnlySpan<bool?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<bool?>.Empty : new ReadOnlySpan<bool?>(fields)).GetEnumerator();
 }

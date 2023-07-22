@@ -56,13 +56,14 @@ public readonly record struct TimeSpanTuple :
                    result : this.SequentialEquals<TimeSpan, TimeSpanTuple>(other);
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static TimeSpanTuple ISpaceFactory<TimeSpan, TimeSpanTuple>.Create(TimeSpan[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<TimeSpan, TimeSpanTuple>(Constants.MaxFieldCharLength_TimeSpan);
-    public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan>(fields).GetEnumerator();
+    public ReadOnlySpan<TimeSpan>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<TimeSpan>.Empty : new ReadOnlySpan<TimeSpan>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -99,8 +100,9 @@ public readonly record struct TimeSpanTemplate :
     public bool Matches(TimeSpanTuple tuple) => this.Matches<TimeSpan, TimeSpanTuple, TimeSpanTemplate>(tuple);
     public bool Equals(TimeSpanTemplate other) => this.SequentialEquals<TimeSpan, TimeSpanTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => new ReadOnlySpan<TimeSpan?>(fields).GetEnumerator();
+    public ReadOnlySpan<TimeSpan?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<TimeSpan?>.Empty : new ReadOnlySpan<TimeSpan?>(fields)).GetEnumerator();
 }

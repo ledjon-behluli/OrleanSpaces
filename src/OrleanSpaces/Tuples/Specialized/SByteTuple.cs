@@ -55,13 +55,14 @@ public readonly record struct SByteTuple :
         => this.TryParallelEquals<sbyte, SByteTuple>(other, out bool result) ?
                result : this.SequentialEquals<sbyte, SByteTuple>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static SByteTuple ISpaceFactory<sbyte, SByteTuple>.Create(sbyte[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<sbyte, SByteTuple>(Constants.MaxFieldCharLength_SByte);
-    public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte>(fields).GetEnumerator();
+    public ReadOnlySpan<sbyte>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<sbyte>.Empty : new ReadOnlySpan<sbyte>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -98,9 +99,10 @@ public readonly record struct SByteTemplate :
     public bool Matches(SByteTuple tuple) => this.Matches<sbyte, SByteTuple, SByteTemplate>(tuple);
     public bool Equals(SByteTemplate other) => this.SequentialEquals<sbyte, SByteTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => new ReadOnlySpan<sbyte?>(fields).GetEnumerator();
+    public ReadOnlySpan<sbyte?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<sbyte?>.Empty : new ReadOnlySpan<sbyte?>(fields)).GetEnumerator();
 }
 

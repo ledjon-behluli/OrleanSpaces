@@ -56,13 +56,14 @@ public readonly record struct DateTimeOffsetTuple :
                    result : this.SequentialEquals<DateTimeOffset, DateTimeOffsetTuple>(other);
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static DateTimeOffsetTuple ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>.Create(DateTimeOffset[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<DateTimeOffset, DateTimeOffsetTuple>(Constants.MaxFieldCharLength_DateTimeOffset);
-    public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset>(fields).GetEnumerator();
+    public ReadOnlySpan<DateTimeOffset>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<DateTimeOffset>.Empty : new ReadOnlySpan<DateTimeOffset>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -99,8 +100,9 @@ public readonly record struct DateTimeOffsetTemplate :
     public bool Matches(DateTimeOffsetTuple tuple) => this.Matches<DateTimeOffset, DateTimeOffsetTuple, DateTimeOffsetTemplate>(tuple);
     public bool Equals(DateTimeOffsetTemplate other) => this.SequentialEquals<DateTimeOffset, DateTimeOffsetTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => new ReadOnlySpan<DateTimeOffset?>(fields).GetEnumerator();
+    public ReadOnlySpan<DateTimeOffset?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<DateTimeOffset?>.Empty : new ReadOnlySpan<DateTimeOffset?>(fields)).GetEnumerator();
 }

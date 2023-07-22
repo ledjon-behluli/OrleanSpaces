@@ -17,6 +17,14 @@ public class ShortTupleTests
     }
 
     [Fact]
+    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    {
+        ShortTuple tuple = default;
+        Assert.Equal(0, tuple.Length);
+        Assert.True(tuple.IsEmpty);
+    }
+
+    [Fact]
     public void Should_Create_Empty_Tuple_On_Default_Constructor()
     {
         ShortTuple tuple = new();
@@ -131,6 +139,13 @@ public class ShortTemplateTests
         ShortTemplate template = new(Array.Empty<short?>());
         Assert.Equal(1, template.Length);
         Assert.Null(template[0]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Default_Keyword()
+    {
+        ShortTemplate template = default;
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]

@@ -55,13 +55,14 @@ public readonly record struct ByteTuple :
         => this.TryParallelEquals<byte, ByteTuple>(other, out bool result) ? 
                result : this.SequentialEquals<byte, ByteTuple>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static ByteTuple ISpaceFactory<byte, ByteTuple>.Create(byte[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<byte, ByteTuple>(Constants.MaxFieldCharLength_Byte);
-    public ReadOnlySpan<byte>.Enumerator GetEnumerator() => new ReadOnlySpan<byte>(fields).GetEnumerator();
+    public ReadOnlySpan<byte>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<byte>.Empty : new ReadOnlySpan<byte>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -98,8 +99,9 @@ public readonly record struct ByteTemplate :
     public bool Matches(ByteTuple tuple) => this.Matches<byte, ByteTuple, ByteTemplate>(tuple);
     public bool Equals(ByteTemplate other) => this.SequentialEquals<byte, ByteTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
     
-    public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => new ReadOnlySpan<byte?>(fields).GetEnumerator();
+    public ReadOnlySpan<byte?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<byte?>.Empty : new ReadOnlySpan<byte?>(fields)).GetEnumerator();
 }

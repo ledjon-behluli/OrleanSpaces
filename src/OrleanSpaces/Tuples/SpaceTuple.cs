@@ -102,13 +102,14 @@ public readonly record struct SpaceTuple :
         return true;
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields)})";
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
+    public override string ToString() => $"({string.Join(", ", fields ?? Array.Empty<object>())})";
 
     /// <summary>
     /// Returns an enumerator to enumerate over the fields of this tuple.
     /// </summary>
-    public ReadOnlySpan<object>.Enumerator GetEnumerator() => new ReadOnlySpan<object>(fields).GetEnumerator();
+    public ReadOnlySpan<object>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<object>.Empty : new ReadOnlySpan<object>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -224,11 +225,12 @@ public readonly record struct SpaceTemplate :
         return true;
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
-    public override string ToString() => $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
+    public override string ToString() => fields is null ? "()" : $"({string.Join(", ", fields.Select(field => field ?? "{NULL}"))})";
 
     /// <summary>
     /// Returns an enumerator to enumerate over the fields of this tuple.
     /// </summary>
-    public ReadOnlySpan<object?>.Enumerator GetEnumerator() => new ReadOnlySpan<object?>(fields).GetEnumerator();
+    public ReadOnlySpan<object?>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<object?>.Empty : new ReadOnlySpan<object?>(fields)).GetEnumerator();
 }

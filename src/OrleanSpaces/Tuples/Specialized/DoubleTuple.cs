@@ -55,13 +55,14 @@ public readonly record struct DoubleTuple :
         => this.TryParallelEquals<double, DoubleTuple>(other, out bool result) ? 
                result : this.SequentialEquals<double, DoubleTuple>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static DoubleTuple ISpaceFactory<double, DoubleTuple>.Create(double[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<double, DoubleTuple>(Constants.MaxFieldCharLength_Double);
-    public ReadOnlySpan<double>.Enumerator GetEnumerator() => new ReadOnlySpan<double>(fields).GetEnumerator();
+    public ReadOnlySpan<double>.Enumerator GetEnumerator() =>
+        (fields is null ? ReadOnlySpan<double>.Empty : new ReadOnlySpan<double>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -98,8 +99,9 @@ public readonly record struct DoubleTemplate :
     public bool Matches(DoubleTuple tuple) => this.Matches<double, DoubleTuple, DoubleTemplate>(tuple);
     public bool Equals(DoubleTemplate other) => this.SequentialEquals<double, DoubleTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<double?>.Enumerator GetEnumerator() => new ReadOnlySpan<double?>(fields).GetEnumerator();
+    public ReadOnlySpan<double?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<double?>.Empty : new ReadOnlySpan<double?>(fields)).GetEnumerator();
 }

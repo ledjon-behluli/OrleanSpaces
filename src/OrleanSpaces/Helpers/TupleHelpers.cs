@@ -244,5 +244,5 @@ internal static class TupleHelpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString<T>(T[] fields) where T : unmanaged
-        => $"({string.Join(", ", fields)})";
+        => fields is null ? "()" : $"({string.Join(", ", fields)})";
 }

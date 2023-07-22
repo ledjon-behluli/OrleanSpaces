@@ -58,5 +58,5 @@ internal static class TemplateHelpers
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString<T>(T?[] fields) where T : unmanaged
-        => $"({string.Join(", ", fields.Select(field => field is null ? "{NULL}" : field.ToString()))})";
+        => fields is null ? "()" : $"({string.Join(", ", fields.Select(field => field is null ? "{NULL}" : field.ToString()))})";
 }

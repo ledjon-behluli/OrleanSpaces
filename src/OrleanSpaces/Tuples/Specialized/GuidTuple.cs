@@ -80,13 +80,14 @@ public readonly record struct GuidTuple :
         return true;
     }
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TupleHelpers.ToString(fields);
 
     static GuidTuple ISpaceFactory<Guid, GuidTuple>.Create(Guid[] fields) => new(fields);
 
     public ReadOnlySpan<char> AsSpan() => this.AsSpan<Guid, GuidTuple>(Constants.MaxFieldCharLength_Guid);
-    public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid>(fields).GetEnumerator();
+    public ReadOnlySpan<Guid>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<Guid>.Empty : new ReadOnlySpan<Guid>(fields)).GetEnumerator();
 }
 
 /// <summary>
@@ -123,8 +124,9 @@ public readonly record struct GuidTemplate :
     public bool Matches(GuidTuple tuple) => this.Matches<Guid, GuidTuple, GuidTemplate>(tuple);
     public bool Equals(GuidTemplate other) => this.SequentialEquals<Guid, GuidTemplate>(other);
 
-    public override int GetHashCode() => fields.GetHashCode();
+    public override int GetHashCode() => fields?.GetHashCode() ?? 0;
     public override string ToString() => TemplateHelpers.ToString(fields);
 
-    public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => new ReadOnlySpan<Guid?>(fields).GetEnumerator();
+    public ReadOnlySpan<Guid?>.Enumerator GetEnumerator() => 
+        (fields is null ? ReadOnlySpan<Guid?>.Empty : new ReadOnlySpan<Guid?>(fields)).GetEnumerator();
 }
