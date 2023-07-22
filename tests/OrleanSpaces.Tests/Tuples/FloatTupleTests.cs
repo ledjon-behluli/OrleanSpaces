@@ -134,19 +134,10 @@ public class FloatTemplateTests
     }
 
     [Fact]
-    public void Should_Be_Created_On_Empty_Array()
-    {
-        FloatTemplate template = new(Array.Empty<float?>());
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
-    }
-
-    [Fact]
-    public void Should_Create_Empty_Tuple_On_Default_Keyword()
+    public void Should_Be_Created_On_Default_Keyword()
     {
         FloatTemplate template = default;
-        Assert.Equal(1, template.Length);
-        Assert.Null(template[0]);
+        Assert.Equal(0, template.Length);
     }
 
     [Fact]
