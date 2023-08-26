@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
@@ -46,11 +47,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        tuples.Add(action.Tuple);
-                        if (streamChannel is not null)
-                        {
-                            await streamChannel.Writer.WriteAsync(action.Tuple);
-                        }
+                        tuples = tuples.Add(action.Tuple);
+                        await TryWriteToStream(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
@@ -81,14 +79,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     public async Task WriteAsync(SpaceTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
-        
+
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        tuples.Add(tuple);
-        
-        if (streamChannel is not null)
-        {
-            await streamChannel.Writer.WriteAsync(tuple);
-        }
+        await TryWriteToStream(tuple);
+
+        tuples = tuples.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -196,6 +191,15 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         await tupleStore.RemoveAll(agentId);
         tuples = ImmutableArray<SpaceTuple>.Empty;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async Task TryWriteToStream(SpaceTuple tuple)
+    {
+        if (streamChannel is not null)
+        {
+            await streamChannel.Writer.WriteAsync(tuple);
+        }
     }
 
     #endregion
