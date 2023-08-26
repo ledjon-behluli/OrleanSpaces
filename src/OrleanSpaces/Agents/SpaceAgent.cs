@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Agents;
 
@@ -191,15 +190,6 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         await tupleStore.RemoveAll(agentId);
         tuples = ImmutableArray<SpaceTuple>.Empty;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private async Task TryWriteToStream(SpaceTuple tuple)
-    {
-        if (streamChannel is not null)
-        {
-            await streamChannel.Writer.WriteAsync(tuple);
-        }
     }
 
     #endregion
