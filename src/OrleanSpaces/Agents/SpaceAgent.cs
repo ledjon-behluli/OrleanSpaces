@@ -47,10 +47,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                 case TupleActionType.Insert:
                     {
                         tuples = tuples.Add(action.Tuple);
-                        if (streamChannel is not null)
-                        {
-                            await streamChannel.Writer.WriteAsync(action.Tuple);
-                        }
+                        await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
@@ -81,12 +78,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     public async Task WriteAsync(SpaceTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
+
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
+        await streamChannel.WriteIfNotNull(tuple);
+
         tuples = tuples.Add(tuple);
-        if (streamChannel is not null)
-        {
-            await streamChannel.Writer.WriteAsync(tuple);
-        }
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
