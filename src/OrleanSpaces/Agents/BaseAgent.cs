@@ -3,7 +3,6 @@ using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
@@ -49,8 +48,8 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 case TupleActionType.Insert:
                     {
-                        tuples = tuples.Add(action.Tuple);
-                        await TryWriteToStream(action.Tuple);
+                        tuples.Add(action.Tuple);
+                        await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
@@ -83,9 +82,9 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         ThrowHelpers.EmptyTuple(tuple);
 
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        await TryWriteToStream(tuple);
+        await streamChannel.WriteIfNotNull(tuple);
 
-        tuples = tuples.Add(tuple);
+        tuples.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -184,15 +183,6 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         await tupleStore.RemoveAll(agentId);
         tuples.Clear();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private async Task TryWriteToStream(TTuple tuple)
-    {
-        if (streamChannel is not null)
-        {
-            await streamChannel.Writer.WriteAsync(tuple);
-        }
     }
 
     #endregion

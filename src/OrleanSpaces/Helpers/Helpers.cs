@@ -1,5 +1,7 @@
 ﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 
@@ -44,6 +46,16 @@ internal static class Helpers
             ArrayPool<T>.Shared.Return(array);
 
             return result;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task WriteIfNotNull<T>(this Channel<T>? channel, T tuple) 
+        where T : ISpaceTuple
+    {
+        if (channel is not null)
+        {
+            await channel.Writer.WriteAsync(tuple);
         }
     }
 }
