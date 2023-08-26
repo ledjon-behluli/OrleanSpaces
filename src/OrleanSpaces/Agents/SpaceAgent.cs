@@ -19,7 +19,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
     private Channel<SpaceTuple>? streamChannel;
-    private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty; // chosen for thread safety reasons
+    private readonly TupleCollection tuples = new();
 
     public SpaceAgent(
         SpaceOptions options,
@@ -46,7 +46,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        tuples = tuples.Add(action.Tuple);
+                        tuples.Add(action.Tuple);
                         if (streamChannel is not null)
                         {
                             await streamChannel.Writer.WriteAsync(action.Tuple);
@@ -54,10 +54,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                     }
                     break;
                 case TupleActionType.Remove:
-                    tuples = tuples.Remove(action.Tuple);
+                    tuples.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    tuples = ImmutableArray<SpaceTuple>.Empty;
+                    tuples.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -81,8 +81,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     public async Task WriteAsync(SpaceTuple tuple)
     {
         ThrowHelpers.EmptyTuple(tuple);
+        
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        tuples = tuples.Add(tuple);
+        tuples.Add(tuple);
+        
         if (streamChannel is not null)
         {
             await streamChannel.Writer.WriteAsync(tuple);
