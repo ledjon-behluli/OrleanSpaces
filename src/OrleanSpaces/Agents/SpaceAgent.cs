@@ -48,7 +48,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                 case TupleActionType.Insert:
                     {
                         tuples = tuples.Add(action.Tuple);
-                        await TryWriteToStream(action.Tuple);
+                        await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
@@ -81,7 +81,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         ThrowHelpers.EmptyTuple(tuple);
 
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        await TryWriteToStream(tuple);
+        await streamChannel.WriteIfNotNull(tuple);
 
         tuples = tuples.Add(tuple);
     }

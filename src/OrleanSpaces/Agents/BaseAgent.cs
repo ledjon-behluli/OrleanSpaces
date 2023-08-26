@@ -51,7 +51,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
                 case TupleActionType.Insert:
                     {
                         tuples = tuples.Add(action.Tuple);
-                        await TryWriteToStream(action.Tuple);
+                        await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
@@ -84,7 +84,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         ThrowHelpers.EmptyTuple(tuple);
 
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
-        await TryWriteToStream(tuple);
+        await streamChannel.WriteIfNotNull(tuple);
 
         tuples = tuples.Add(tuple);
     }
