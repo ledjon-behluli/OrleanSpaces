@@ -45,8 +45,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             case AgentExecutionMode.Adaptable:
                 {
                     collection = new WriteOptimizedCollection();
-                    _ = new Timer(state => Recalibrate(), null, 0, 
-                        options.AgentOptions.RecalibrationTriggerPeriod.Milliseconds);
+                    _ = new Timer(state => OptimizeCollectionType(), null, 0, 
+                        options.AgentOptions.OptimizationTriggerPeriod.Milliseconds);
                 }
                 break;
             default: 
@@ -54,21 +54,21 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
     }
 
-    private void Recalibrate()
+    private void OptimizeCollectionType()
     {
-        collectionStats = collection.Calculate(collectionStats);
-
         /*
          1) If the total number of tuples is small -
             Use WriteOptimizedCollection regardless of tuple lengths.
-
+         
          2) If the total number of tuples is large -
             2.1) If the standard deviation of tuple lengths is high -
                  Use WriteOptimizedCollection since there's a wide variation in lengths, which makes it closer to having distinct dictionary keys.
          
             2.2) If the standard deviation of tuple lengths is low -
-                 Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
+               Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
         */
+
+        collectionStats = collection.Calculate(collectionStats);
 
         if (collection.Count < 1000 && collection is ReadOptimizedCollection)
         {
@@ -76,14 +76,18 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
         else
         {
-            if (collectionStats.TupleLengthStdDev > 50 && collection is ReadOptimizedCollection)
+            if (collection is ReadOptimizedCollection &&
+                collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold)
             {
                 ToWriteOptimizedCollection();
+                return;
             }
 
-            if (collectionStats.TupleLengthStdDev <= 50 && collection is WriteOptimizedCollection)
+            if (collection is WriteOptimizedCollection &&
+                collectionStats.TupleLengthRelativeStdDev <= Constants.RelStdDevAgentThreshold)
             {
                 ToReadOptimizedCollection();
+                return;
             }
         }
 
@@ -236,7 +240,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
                 {
-                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
+                    SingleReader = !options.AgentOptions.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 

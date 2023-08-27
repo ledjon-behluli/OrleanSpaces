@@ -3,13 +3,16 @@ using System.Runtime.CompilerServices;
 
 namespace OrleanSpaces.Collections;
 
-internal record struct CollectionStatistics(double AverageTupleLength, double TupleLengthStdDev);
+internal record struct CollectionStatistics(
+    double TupleLengthMean, 
+    ushort TupleLengthRelativeStdDev);
 
 internal static class CollectionStatisticsCalculator
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static CollectionStatistics Calculate<TTuple, TTemplate>(
-        this ITupleCollection<TTuple, TTemplate> collection, CollectionStatistics currentStatistics)
+        this ITupleCollection<TTuple, TTemplate> collection, 
+        CollectionStatistics currentStatistics)
         where TTuple : ISpaceTuple
         where TTemplate : ISpaceTemplate
     {
@@ -23,13 +26,14 @@ internal static class CollectionStatisticsCalculator
 
             totalTupleLength += (ulong)length;
             accumulatedSquaredDifference += 
-                (length - currentStatistics.AverageTupleLength) * 
-                (length - currentStatistics.AverageTupleLength);
+                (length - currentStatistics.TupleLengthMean) * 
+                (length - currentStatistics.TupleLengthMean);
         }
 
-        double averageTupleLength = tupleCount > 0 ? (double)totalTupleLength / tupleCount : 0;
-        double tupleLengthStdDev = tupleCount > 0 ? Math.Sqrt(accumulatedSquaredDifference / tupleCount) : 0;
+        double mean = tupleCount > 0 ? (double)totalTupleLength / tupleCount : 0;
+        double stdDev = tupleCount > 0 ? Math.Sqrt(accumulatedSquaredDifference / tupleCount) : 0;
+        ushort relativeStdDev = Convert.ToUInt16(mean > 0 ? 100 * (stdDev / mean) : 0); 
 
-        return new(averageTupleLength, tupleLengthStdDev);
+        return new(mean, relativeStdDev);
     }
 }

@@ -19,6 +19,11 @@ public static class Constants
     /// </summary>
     public const string PubSubStore = "PubSubStore";
 
+    /// <summary>
+    /// The relative standard deviation threshold for agents.
+    /// </summary>
+    internal const ushort RelStdDevAgentThreshold = 50;
+
     internal const int MaxStackSize = 1024;
 
     internal const int ByteCount_Int128 = 16;                   // maximum value can be represented by this number of bytes.

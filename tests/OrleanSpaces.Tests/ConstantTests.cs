@@ -10,6 +10,8 @@ public class ConstantTests
         Assert.Equal("PubSubProvider", Constants.PubSubProvider);
         Assert.Equal("PubSubStore", Constants.PubSubStore);
 
+        Assert.Equal(50, Constants.RelStdDevAgentThreshold);
+
         Assert.Equal(1024, Constants.MaxStackSize);
 
         Assert.Equal(16, Constants.ByteCount_Int128);

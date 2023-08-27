@@ -12,8 +12,8 @@ public class CollectionStatisticsTests
 
         var result = collection.Calculate(default);
 
-        Assert.Equal(0, result.AverageTupleLength);
-        Assert.Equal(0, result.TupleLengthStdDev);
+        Assert.Equal(0, result.TupleLengthMean);
+        Assert.Equal(0, result.TupleLengthRelativeStdDev);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class CollectionStatisticsTests
 
         statistics = collection.Calculate(statistics);
 
-        Assert.Equal(2.0d, Math.Round(statistics.AverageTupleLength, 1));
-        Assert.Equal(1.0d, Math.Round(statistics.TupleLengthStdDev, 1));
+        Assert.Equal(2.0, Math.Round(statistics.TupleLengthMean, 1));
+        Assert.Equal(2, statistics.TupleLengthRelativeStdDev);
     }
 }

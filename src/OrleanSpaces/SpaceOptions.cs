@@ -31,6 +31,17 @@ public sealed class SpaceOptions
     public bool HandleCallbackExceptions { get; set; } = true;
 
     /// <summary>
+    /// The agent options.
+    /// </summary>
+    public SpaceAgentOptions AgentOptions { get; set; } = new();
+}
+
+/// <summary>
+/// Options to configure agent functionalities.
+/// </summary>
+public sealed class SpaceAgentOptions
+{
+    /// <summary>
     /// If set to <see langword="true"/>, allows multiple consumers (client code) to read from the stream of tuples provided by:
     /// <list type="bullet">
     /// <item><description><see cref="ISpaceAgent.PeekAsync()"/></description></item>
@@ -47,25 +58,15 @@ public sealed class SpaceOptions
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
 
     /// <summary>
-    /// The agent options.
-    /// </summary>
-    public SpaceAgentOptions AgentOptions { get; set; } = new();
-}
-
-/// <summary>
-/// Options to configure agent functionalities.
-/// </summary>
-public sealed class SpaceAgentOptions
-{
-    /// <summary>
     /// The execution mode.
     /// </summary>
     public AgentExecutionMode ExecutionMode { get; set; } = AgentExecutionMode.Adaptable;
+
     /// <summary>
-    /// The period to trigger a recalibration of the <see cref="AgentExecutionMode"/>.
+    /// The period to trigger an optimization of the <see cref="AgentExecutionMode"/>.
     /// </summary>
     /// <remarks><i>Value is ignored if <see cref="ExecutionMode"/> is not <see cref="AgentExecutionMode.Adaptable"/>.</i></remarks>
-    public TimeSpan RecalibrationTriggerPeriod { get; set; } = TimeSpan.FromMinutes(1);
+    public TimeSpan OptimizationTriggerPeriod { get; set; } = TimeSpan.FromMinutes(1);
 }
 
 /// <summary>

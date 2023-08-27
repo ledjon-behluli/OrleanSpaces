@@ -53,7 +53,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
     {
         await router.RouteAction(action);
 
-        if (options.SubscribeToSelfGeneratedTuples)
+        if (options.AgentOptions.SubscribeToSelfGeneratedTuples)
         {
             await observerChannel.Writer.WriteAsync(action);
         }

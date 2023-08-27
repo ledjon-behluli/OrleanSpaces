@@ -3,7 +3,9 @@ using OrleanSpaces.Collections;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Intrinsics.X86;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
@@ -48,8 +50,8 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             case AgentExecutionMode.Adaptable:
                 {
                     collection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
-                    _ = new Timer(state => Recalibrate(), null, 0,
-                        options.AgentOptions.RecalibrationTriggerPeriod.Milliseconds);
+                    _ = new Timer(state => OptimizeCollectionType(), null, 0,
+                        options.AgentOptions.OptimizationTriggerPeriod.Milliseconds);
                 }
                 break;
             default:
@@ -57,22 +59,36 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
     }
 
-    private void Recalibrate()
+    private void OptimizeCollectionType()
     {
+        /*
+         1) If the total number of tuples is small -
+            Use WriteOptimizedCollection regardless of tuple lengths.
+
+         2) If the total number of tuples is large -
+            2.1) If the standard deviation of tuple lengths is high -
+                 Use WriteOptimizedCollection since there's a wide variation in lengths, which makes it closer to having distinct dictionary keys.
+
+            2.2) If the standard deviation of tuple lengths is low -
+               Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
+        */
+
         collectionStats = collection.Calculate(collectionStats);
 
-        if (collection.Count < 1000 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+        if (collection.Count < 1_000 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
         {
             ToWriteOptimizedCollection();
         }
         else
         {
-            if (collectionStats.TupleLengthStdDev > 50 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+            if (collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold && 
+                collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
             {
                 ToWriteOptimizedCollection();
             }
 
-            if (collectionStats.TupleLengthStdDev <= 50 && collection is WriteOptimizedCollection<T, TTuple, TTemplate>)
+            if (collectionStats.TupleLengthRelativeStdDev <= Constants.RelStdDevAgentThreshold && 
+                collection is WriteOptimizedCollection<T, TTuple, TTemplate>)
             {
                 ToReadOptimizedCollection();
             }
@@ -227,7 +243,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 streamChannel = Channel.CreateUnbounded<TTuple>(new()
                 {
-                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
+                    SingleReader = !options.AgentOptions.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 
