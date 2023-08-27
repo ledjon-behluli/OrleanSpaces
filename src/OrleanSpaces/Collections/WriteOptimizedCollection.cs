@@ -6,17 +6,17 @@ namespace OrleanSpaces.Collections;
 
 internal sealed class WriteOptimizedCollection : ITupleCollection
 {
-    private readonly ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty;
+    private ImmutableArray<SpaceTuple> array = ImmutableArray<SpaceTuple>.Empty;
 
-    public int Count => throw new NotImplementedException();
+    public int Count => array.Length;
 
-    public void Add(SpaceTuple tuple) => tuples.Add(tuple);
-    public void Remove(SpaceTuple tuple) => tuples.Remove(tuple);
-    public void Clear() => tuples.Clear();
+    public void Add(SpaceTuple tuple) => array = array.Add(tuple);
+    public void Remove(SpaceTuple tuple) => array = array.Remove(tuple);
+    public void Clear() => array = ImmutableArray<SpaceTuple>.Empty;
 
     public SpaceTuple Find(SpaceTemplate template)
     {
-        foreach (var tuple in tuples)
+        foreach (SpaceTuple tuple in array)
         {
             if (template.Matches(tuple))
             {
@@ -29,22 +29,22 @@ internal sealed class WriteOptimizedCollection : ITupleCollection
 
     public IEnumerable<SpaceTuple> FindAll(SpaceTemplate template)
     {
-        List<SpaceTuple> tuples = new();
+        List<SpaceTuple> result = new();
 
-        foreach (var tuple in tuples)
+        foreach (SpaceTuple tuple in array)
         {
             if (template.Matches(tuple))
             {
-                tuples.Add(tuple);
+                result.Add(tuple);
             }
         }
 
-        return tuples;
+        return result;
     }
 
     public IEnumerator<SpaceTuple> GetEnumerator()
     {
-        foreach (var tuple in tuples)
+        foreach (SpaceTuple tuple in array)
         {
             yield return tuple;
         }
@@ -58,17 +58,17 @@ internal sealed class WriteOptimizedCollection<T, TTuple, TTemplate> : ITupleCol
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
-    private readonly ImmutableArray<TTuple> tuples = ImmutableArray<TTuple>.Empty;
+    private ImmutableArray<TTuple> array = ImmutableArray<TTuple>.Empty;
 
-    public int Count => throw new NotImplementedException();
+    public int Count => array.Length;
 
-    public void Add(TTuple tuple) => tuples.Add(tuple);
-    public void Remove(TTuple tuple) => tuples.Remove(tuple);
-    public void Clear() => tuples.Clear();
+    public void Add(TTuple tuple) => array = array.Add(tuple);
+    public void Remove(TTuple tuple) => array = array.Remove(tuple);
+    public void Clear() => array = ImmutableArray<TTuple>.Empty;
 
     public TTuple Find(TTemplate template)
     {
-        foreach (var tuple in tuples)
+        foreach (TTuple tuple in array)
         {
             if (template.Matches(tuple))
             {
@@ -81,22 +81,22 @@ internal sealed class WriteOptimizedCollection<T, TTuple, TTemplate> : ITupleCol
 
     public IEnumerable<TTuple> FindAll(TTemplate template)
     {
-        List<TTuple> tuples = new();
+        List<TTuple> result = new();
 
-        foreach (var tuple in tuples)
+        foreach (TTuple tuple in array)
         {
             if (template.Matches(tuple))
             {
-                tuples.Add(tuple);
+                result.Add(tuple);
             }
         }
 
-        return tuples;
+        return result;
     }
 
     public IEnumerator<TTuple> GetEnumerator()
     {
-        foreach (var tuple in tuples)
+        foreach (TTuple tuple in array)
         {
             yield return tuple;
         }

@@ -34,7 +34,7 @@ internal sealed class ReadOptimizedCollection : ITupleCollection
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
         {
-            foreach (var tuple in dict[index])
+            foreach (SpaceTuple tuple in dict[index])
             {
                 if (template.Matches(tuple))
                 {
@@ -53,7 +53,7 @@ internal sealed class ReadOptimizedCollection : ITupleCollection
 
         if (dict.ContainsKey(index))
         {
-            foreach (var tuple in dict[index])
+            foreach (SpaceTuple tuple in dict[index])
             {
                 if (template.Matches(tuple))
                 {
@@ -69,7 +69,7 @@ internal sealed class ReadOptimizedCollection : ITupleCollection
     {
         foreach (var kvp in dict)
         {
-            foreach (var tuple in kvp.Value)
+            foreach (SpaceTuple tuple in kvp.Value)
             {
                 yield return tuple;
             }
@@ -111,7 +111,7 @@ internal sealed class ReadOptimizedCollection<T, TTuple, TTemplate> : ITupleColl
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
         {
-            foreach (var tuple in dict[index])
+            foreach (TTuple tuple in dict[index])
             {
                 if (template.Matches(tuple))
                 {
@@ -130,7 +130,7 @@ internal sealed class ReadOptimizedCollection<T, TTuple, TTemplate> : ITupleColl
 
         if (dict.ContainsKey(index))
         {
-            foreach (var tuple in dict[index])
+            foreach (TTuple tuple in dict[index])
             {
                 if (template.Matches(tuple))
                 {
@@ -146,7 +146,7 @@ internal sealed class ReadOptimizedCollection<T, TTuple, TTemplate> : ITupleColl
     {
         foreach (var kvp in dict)
         {
-            foreach (var tuple in kvp.Value)
+            foreach (TTuple tuple in kvp.Value)
             {
                 yield return tuple;
             }
