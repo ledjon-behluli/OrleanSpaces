@@ -1,13 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using OrleanSpaces.Collections;
 using OrleanSpaces.Tuples;
-using OrleanSpaces.Tuples.Collections;
-using System.Collections.Immutable;
 
 [ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class TupleCollectionBenchmarks
 {
     private static readonly Random random = new();
@@ -15,8 +14,8 @@ public class TupleCollectionBenchmarks
     private SpaceTuple[] tuples;
     private SpaceTemplate template;
 
-    private DictionaryTupleCollection collection;
-    private ImmutableArray<SpaceTuple> immutableArray;
+    private readonly ReadOptimizedCollection readCollection;
+    private readonly WriteOptimizedCollection writeCollection;
 
     [Params(10, 100, 1_000)]
     public int NumTuples { get; set; }
@@ -50,57 +49,56 @@ public class TupleCollectionBenchmarks
 
         foreach (var tuple in tuples)
         {
-            collection.Add(tuple);
+            readCollection.Add(tuple);
+            writeCollection.Add(tuple);
         }
-
-        immutableArray = ImmutableArray.Create(tuples);
     }
 
     [Benchmark]
-    public void Add_TupleCollection()
+    public void Add_ReadOptimized()
     {
         for (int i = 0; i < NumTuples; i++)
         {
-            collection.Add(new SpaceTuple(new int[TupleSize]));
+            readCollection.Add(new SpaceTuple(new int[TupleSize]));
         }
     }
 
     [Benchmark]
-    public void Add_ImmutableArray()
+    public void Add_WriteOptimized()
     {
         for (int i = 0; i < NumTuples; i++)
         {
-            immutableArray = immutableArray.Add(new SpaceTuple(new int[TupleSize]));
+            writeCollection.Add(new SpaceTuple(new int[TupleSize]));
         }
     }
 
     [Benchmark]
-    public void Remove_TupleCollection()
+    public void Remove_ReadOptimized()
     {
         foreach (var tuple in tuples)
         {
-            collection.Remove(tuple);
+            readCollection.Remove(tuple);
         }
     }
 
     [Benchmark]
-    public void Remove_ImmutableArray()
+    public void Remove_WriteOptimized()
     {
         foreach (var tuple in tuples)
         {
-            immutableArray = immutableArray.Remove(tuple);
+            writeCollection.Remove(tuple);
         }
     }
 
     [Benchmark]
-    public void Find_TupleCollection()
+    public void Find_ReadOptimized()
     {
-        _ = collection.Find(template);
+        _ = readCollection.Find(template);
     }
 
     [Benchmark]
-    public void Find_ImmutableArray()
+    public void Find_WriteOptimized()
     {
-        _ = immutableArray.FirstOrDefault(template.Matches);
+        _ = writeCollection.FirstOrDefault(template.Matches);
     }
 }
