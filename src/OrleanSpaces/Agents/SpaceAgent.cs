@@ -19,11 +19,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
    
-    private ITupleCollection tupleCollection;
+    private ITupleCollection<SpaceTuple, SpaceTemplate> collection;
+    private CollectionStatistics collectionStats;
     private Channel<SpaceTuple>? streamChannel;
-    private double averageTupleLength;
-    private double tupleLengthStdDev;
-
+   
     public SpaceAgent(
         SpaceOptions options,
         EvaluationChannel<SpaceTuple> evaluationChannel,
@@ -38,14 +37,14 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         switch (options.AgentOptions.ExecutionMode)
         {
             case AgentExecutionMode.ReadOptimized:
-                tupleCollection = new ReadOptimizedCollection();
+                collection = new ReadOptimizedCollection();
                 break;
             case AgentExecutionMode.WriteOptimized:
-                tupleCollection = new WriteOptimizedCollection();
+                collection = new WriteOptimizedCollection();
                 break;
             case AgentExecutionMode.Adaptable:
                 {
-                    tupleCollection = new WriteOptimizedCollection();
+                    collection = new WriteOptimizedCollection();
                     _ = new Timer(state => Recalibrate(), null, 0, 
                         options.AgentOptions.RecalibrationTriggerPeriod.Milliseconds);
                 }
@@ -57,49 +56,34 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     private void Recalibrate()
     {
-        RecalculateStatistics();
+        collectionStats = collection.Calculate(collectionStats);
 
-        if (tupleCollection.Count < 1000 && tupleCollection is ReadOptimizedCollection)
+        /*
+         1) If the total number of tuples is small -
+            Use WriteOptimizedCollection regardless of tuple lengths.
+
+         2) If the total number of tuples is large -
+            2.1) If the standard deviation of tuple lengths is high -
+                 Use WriteOptimizedCollection since there's a wide variation in lengths, which makes it closer to having distinct dictionary keys.
+         
+            2.2) If the standard deviation of tuple lengths is low -
+                 Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
+        */
+
+        if (collection.Count < 1000 && collection is ReadOptimizedCollection)
         {
             ToWriteOptimizedCollection();
         }
         else
         {
-            if (tupleLengthStdDev > 50 && tupleCollection is ReadOptimizedCollection)
+            if (collectionStats.TupleLengthStdDev > 50 && collection is ReadOptimizedCollection)
             {
                 ToWriteOptimizedCollection();
             }
 
-            if (tupleLengthStdDev <= 50 && tupleCollection is WriteOptimizedCollection)
+            if (collectionStats.TupleLengthStdDev <= 50 && collection is WriteOptimizedCollection)
             {
                 ToReadOptimizedCollection();
-            }
-        }
-
-        void RecalculateStatistics()
-        {
-            int count = 0;
-            int totalLength = 0;
-            double sumSquaredDifferences = 0;
-
-            foreach (var tuple in tupleCollection)
-            {
-                int length = tuple.Length;
-
-                count++;
-                totalLength += length;
-                sumSquaredDifferences += (length - averageTupleLength) * (length - averageTupleLength);
-            }
-
-            if (count > 0)
-            {
-                averageTupleLength = (double)totalLength / count;
-                tupleLengthStdDev = Math.Sqrt(sumSquaredDifferences / count);
-            }
-            else
-            {
-                averageTupleLength = 0;
-                tupleLengthStdDev = 0;
             }
         }
 
@@ -107,24 +91,24 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         {
             WriteOptimizedCollection collection = new();
 
-            foreach (var tuple in tupleCollection)
+            foreach (var tuple in this.collection)
             {
                 collection.Add(tuple);
             }
             
-            tupleCollection = collection;
+            this.collection = collection;
         }
 
         void ToReadOptimizedCollection()
         {
             ReadOptimizedCollection collection = new();
 
-            foreach (var tuple in tupleCollection)
+            foreach (var tuple in this.collection)
             {
                 collection.Add(tuple);
             }
 
-            tupleCollection = collection;
+            this.collection = collection;
         }
     }
 
@@ -141,15 +125,15 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        tupleCollection.Add(action.Tuple);
+                        collection.Add(action.Tuple);
                         await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    tupleCollection.Remove(action.Tuple);
+                    collection.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    tupleCollection.Clear();
+                    collection.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -177,7 +161,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        tupleCollection.Add(tuple);
+        collection.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -188,7 +172,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = tupleCollection.FirstOrDefault(template.Matches);
+        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
         return new(tuple);
     }
 
@@ -196,7 +180,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = tupleCollection.FirstOrDefault(template.Matches);
+        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
 
         if (tuple.IsEmpty)
         {
@@ -209,12 +193,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = tupleCollection.FirstOrDefault(template.Matches);
+        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
 
         if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            tupleCollection.Remove(tuple);
+            collection.Remove(tuple);
         }
 
         return tuple;
@@ -224,7 +208,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = tupleCollection.FirstOrDefault(template.Matches);
+        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
 
         if (tuple.IsEmpty)
         {
@@ -235,12 +219,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         await callback(tuple);
         await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        tupleCollection.Remove(tuple);
+        collection.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
-        var result = tupleCollection.FindAll(template);
+        var result = collection.FindAll(template);
         return new(result);
     }
 
@@ -257,7 +241,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                 });
 
 
-                foreach (var tuple in tupleCollection)
+                foreach (var tuple in collection)
                 {
                     _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
                 }
@@ -270,12 +254,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tupleCollection.Count);
+    public ValueTask<int> CountAsync() => new(collection.Count);
 
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        tupleCollection.Clear();
+        collection.Clear();
     }
 
     #endregion

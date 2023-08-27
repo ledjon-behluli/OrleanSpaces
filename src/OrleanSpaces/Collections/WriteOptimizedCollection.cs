@@ -4,7 +4,7 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Collections;
 
-internal sealed class WriteOptimizedCollection : ITupleCollection
+internal sealed class WriteOptimizedCollection : ITupleCollection<SpaceTuple, SpaceTemplate>
 {
     private ImmutableArray<SpaceTuple> array = ImmutableArray<SpaceTuple>.Empty;
 
@@ -53,7 +53,7 @@ internal sealed class WriteOptimizedCollection : ITupleCollection
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal sealed class WriteOptimizedCollection<T, TTuple, TTemplate> : ITupleCollection<T, TTuple, TTemplate>
+internal sealed class WriteOptimizedCollection<T, TTuple, TTemplate> : ITupleCollection<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>

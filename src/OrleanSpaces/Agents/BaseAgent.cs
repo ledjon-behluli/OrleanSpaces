@@ -22,10 +22,9 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     [AllowNull] private ITupleStore<TTuple> tupleStore;
     
-    private ITupleCollection<T, TTuple, TTemplate> tupleCollection;
+    private ITupleCollection<TTuple, TTemplate> collection;
+    private CollectionStatistics collectionStats;
     private Channel<TTuple>? streamChannel;
-    private double averageTupleLength;
-    private double tupleLengthStdDev;
 
     public BaseAgent(
         SpaceOptions options,
@@ -41,14 +40,14 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         switch (options.AgentOptions.ExecutionMode)
         {
             case AgentExecutionMode.ReadOptimized:
-                tupleCollection = new ReadOptimizedCollection<T, TTuple, TTemplate>();
+                collection = new ReadOptimizedCollection<T, TTuple, TTemplate>();
                 break;
             case AgentExecutionMode.WriteOptimized:
-                tupleCollection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
+                collection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
                 break;
             case AgentExecutionMode.Adaptable:
                 {
-                    tupleCollection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
+                    collection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
                     _ = new Timer(state => Recalibrate(), null, 0,
                         options.AgentOptions.RecalibrationTriggerPeriod.Milliseconds);
                 }
@@ -60,49 +59,22 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     private void Recalibrate()
     {
-        RecalculateStatistics();
+        collectionStats = collection.Calculate(collectionStats);
 
-        if (tupleCollection.Count < 1000 && tupleCollection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+        if (collection.Count < 1000 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
         {
             ToWriteOptimizedCollection();
         }
         else
         {
-            if (tupleLengthStdDev > 50 && tupleCollection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+            if (collectionStats.TupleLengthStdDev > 50 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
             {
                 ToWriteOptimizedCollection();
             }
 
-            if (tupleLengthStdDev <= 50 && tupleCollection is WriteOptimizedCollection<T, TTuple, TTemplate>)
+            if (collectionStats.TupleLengthStdDev <= 50 && collection is WriteOptimizedCollection<T, TTuple, TTemplate>)
             {
                 ToReadOptimizedCollection();
-            }
-        }
-
-        void RecalculateStatistics()
-        {
-            int count = 0;
-            int totalLength = 0;
-            double sumSquaredDifferences = 0;
-
-            foreach (var tuple in tupleCollection)
-            {
-                int length = tuple.Length;
-
-                count++;
-                totalLength += length;
-                sumSquaredDifferences += (length - averageTupleLength) * (length - averageTupleLength);
-            }
-
-            if (count > 0)
-            {
-                averageTupleLength = (double)totalLength / count;
-                tupleLengthStdDev = Math.Sqrt(sumSquaredDifferences / count);
-            }
-            else
-            {
-                averageTupleLength = 0;
-                tupleLengthStdDev = 0;
             }
         }
 
@@ -110,24 +82,24 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         {
             WriteOptimizedCollection<T, TTuple, TTemplate> collection = new();
 
-            foreach (var tuple in tupleCollection)
+            foreach (var tuple in this.collection)
             {
                 collection.Add(tuple);
             }
 
-            tupleCollection = collection;
+            this.collection = collection;
         }
 
         void ToReadOptimizedCollection()
         {
             ReadOptimizedCollection<T, TTuple, TTemplate> collection = new();
 
-            foreach (var tuple in tupleCollection)
+            foreach (var tuple in this.collection)
             {
                 collection.Add(tuple);
             }
 
-            tupleCollection = collection;
+            this.collection = collection;
         }
     }
 
@@ -144,15 +116,15 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 case TupleActionType.Insert:
                     {
-                        tupleCollection.Add(action.Tuple);
+                        collection.Add(action.Tuple);
                         await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    tupleCollection.Remove(action.Tuple);
+                    collection.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    tupleCollection.Clear();
+                    collection.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -180,7 +152,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        tupleCollection.Add(tuple);
+        collection.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -191,7 +163,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public ValueTask<TTuple> PeekAsync(TTemplate template)
     {
-        TTuple tuple = tupleCollection.Find(template);
+        TTuple tuple = collection.Find(template);
         return new(tuple);
     }
 
@@ -199,7 +171,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tupleCollection.Find(template);
+        TTuple tuple = collection.Find(template);
 
         if (tuple.IsEmpty)
         {
@@ -212,12 +184,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
-        TTuple tuple = tupleCollection.Find(template);
+        TTuple tuple = collection.Find(template);
 
         if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            tupleCollection.Remove(tuple);
+            collection.Remove(tuple);
         }
 
         return tuple;
@@ -227,7 +199,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tupleCollection.Find(template);
+        TTuple tuple = collection.Find(template);
 
         if (tuple.IsEmpty)
         {
@@ -238,12 +210,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         await callback(tuple);
         await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        tupleCollection.Remove(tuple);
+        collection.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
     {
-        var result = tupleCollection.FindAll(template);
+        var result = collection.FindAll(template);
         return new(result);
     }
 
@@ -260,7 +232,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
                 });
 
 
-                foreach (var tuple in tupleCollection)
+                foreach (var tuple in collection)
                 {
                     _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
                 }
@@ -273,12 +245,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tupleCollection.Count);
+    public ValueTask<int> CountAsync() => new(collection.Count);
 
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        tupleCollection.Clear();
+        collection.Clear();
     }
 
     #endregion
