@@ -81,6 +81,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
         else
         {
+            //TODO: Implement hysteresis
             if (collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold && 
                 collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
             {

@@ -76,6 +76,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
         else
         {
+            //TODO: Implement hysteresis
             if (collection is ReadOptimizedCollection &&
                 collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold)
             {
