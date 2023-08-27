@@ -20,9 +20,19 @@ public static class Constants
     public const string PubSubStore = "PubSubStore";
 
     /// <summary>
-    /// The relative standard deviation threshold for agents.
+    /// The minimum number of tuple in a collection to trigger potential optimization change.
     /// </summary>
-    internal const ushort RelStdDevAgentThreshold = 50;
+    internal const int MinAgentCollectionCountThreshold = 1_000;
+
+    /// <summary>
+    /// The minimum relative standard deviation threshold for agents.
+    /// </summary>
+    internal const ushort RelStdDevAgentMinThreshold = 45;
+
+    /// <summary>
+    /// The maximum relative standard deviation threshold for agents.
+    /// </summary>
+    internal const ushort RelStdDevAgentMaxThreshold = 55;
 
     internal const int MaxStackSize = 1024;
 

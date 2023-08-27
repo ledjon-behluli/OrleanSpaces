@@ -1,9 +1,10 @@
 ﻿using OrleanSpaces.Collections;
+using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Tests.Collections;
 
-public class CollectionStatisticsTests
+public class CollectionTransitionTests
 {
     [Fact]
     public void EmptyCollection_ShouldReturnZeroValues()
@@ -37,6 +38,6 @@ public class CollectionStatisticsTests
         statistics = collection.Calculate(statistics);
 
         Assert.Equal(2.0, Math.Round(statistics.TupleLengthMean, 1));
-        Assert.Equal(2, statistics.TupleLengthRelativeStdDev);
+        Assert.Equal(2, statistics.TupleLengthRelativeStdDev); //todo: fix
     }
 }

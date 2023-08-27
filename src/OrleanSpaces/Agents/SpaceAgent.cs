@@ -56,65 +56,24 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     private void OptimizeCollectionType()
     {
-        /*
-         1) If the total number of tuples is small -
-            Use WriteOptimizedCollection regardless of tuple lengths.
-         
-         2) If the total number of tuples is large -
-            2.1) If the standard deviation of tuple lengths is high -
-                 Use WriteOptimizedCollection since there's a wide variation in lengths, which makes it closer to having distinct dictionary keys.
-         
-            2.2) If the standard deviation of tuple lengths is low -
-               Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
-        */
-
         collectionStats = collection.Calculate(collectionStats);
-
-        if (collection.Count < 1000 && collection is ReadOptimizedCollection)
-        {
-            ToWriteOptimizedCollection();
-        }
-        else
-        {
-            //TODO: Implement hysteresis
-            if (collection is ReadOptimizedCollection &&
-                collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold)
-            {
-                ToWriteOptimizedCollection();
-                return;
-            }
-
-            if (collection is WriteOptimizedCollection &&
-                collectionStats.TupleLengthRelativeStdDev <= Constants.RelStdDevAgentThreshold)
-            {
-                ToReadOptimizedCollection();
-                return;
-            }
-        }
-
-        void ToWriteOptimizedCollection()
-        {
-            WriteOptimizedCollection collection = new();
-
-            foreach (var tuple in this.collection)
-            {
-                collection.Add(tuple);
-            }
-            
-            this.collection = collection;
-        }
-
-        void ToReadOptimizedCollection()
-        {
-            ReadOptimizedCollection collection = new();
-
-            foreach (var tuple in this.collection)
-            {
-                collection.Add(tuple);
-            }
-
-            this.collection = collection;
-        }
+        collection = collection.Switch(collectionStats, 
+            readOptimizedCollectionFactory: () => {
+                ReadOptimizedCollection newCollection = new();
+                foreach (var tuple in collection)
+                {
+                    newCollection.Add(tuple);
+                }
+                return newCollection;
+            },
+            writeOptimizedCollectionFactory: () => {
+                WriteOptimizedCollection newCollection = new();
+                foreach (var tuple in collection)
+                {
+                    newCollection.Add(tuple);
+                }
+                return newCollection;
+            });
     }
 
     #region ISpaceRouter

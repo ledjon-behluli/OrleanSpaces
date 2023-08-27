@@ -61,63 +61,24 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     private void OptimizeCollectionType()
     {
-        /*
-         1) If the total number of tuples is small -
-            Use WriteOptimizedCollection regardless of tuple lengths.
-
-         2) If the total number of tuples is large -
-            2.1) If the standard deviation of tuple lengths is high -
-                 Use WriteOptimizedCollection since there's a wide variation in lengths, which makes it closer to having distinct dictionary keys.
-
-            2.2) If the standard deviation of tuple lengths is low -
-               Use ReadOptimizedCollection since lengths are relatively uniform, and we can benefit from the dictionary's key-based filtering for better find performance.
-        */
-
         collectionStats = collection.Calculate(collectionStats);
-
-        if (collection.Count < 1_000 && collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
-        {
-            ToWriteOptimizedCollection();
-        }
-        else
-        {
-            //TODO: Implement hysteresis
-            if (collectionStats.TupleLengthRelativeStdDev > Constants.RelStdDevAgentThreshold && 
-                collection is ReadOptimizedCollection<T, TTuple, TTemplate>)
-            {
-                ToWriteOptimizedCollection();
-            }
-
-            if (collectionStats.TupleLengthRelativeStdDev <= Constants.RelStdDevAgentThreshold && 
-                collection is WriteOptimizedCollection<T, TTuple, TTemplate>)
-            {
-                ToReadOptimizedCollection();
-            }
-        }
-
-        void ToWriteOptimizedCollection()
-        {
-            WriteOptimizedCollection<T, TTuple, TTemplate> collection = new();
-
-            foreach (var tuple in this.collection)
-            {
-                collection.Add(tuple);
-            }
-
-            this.collection = collection;
-        }
-
-        void ToReadOptimizedCollection()
-        {
-            ReadOptimizedCollection<T, TTuple, TTemplate> collection = new();
-
-            foreach (var tuple in this.collection)
-            {
-                collection.Add(tuple);
-            }
-
-            this.collection = collection;
-        }
+        collection = collection.Switch(collectionStats,
+            readOptimizedCollectionFactory: () => {
+                ReadOptimizedCollection<T, TTuple, TTemplate> newCollection = new();
+                foreach (var tuple in collection)
+                {
+                    newCollection.Add(tuple);
+                }
+                return newCollection;
+            },
+            writeOptimizedCollectionFactory: () => {
+                WriteOptimizedCollection<T, TTuple, TTemplate> newCollection = new();
+                foreach (var tuple in collection)
+                {
+                    newCollection.Add(tuple);
+                }
+                return newCollection;
+            });
     }
 
     #region ISpaceRouter
