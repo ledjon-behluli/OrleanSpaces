@@ -8,57 +8,28 @@ namespace OrleanSpaces;
 internal sealed class TupleCollection : IEnumerable<SpaceTuple>
 {
     private readonly ConcurrentDictionary<int, ImmutableArray<SpaceTuple>> dict = new();
-    private readonly ConcurrentQueue<Action> queue = new();
 
     public int Count => dict.Values.Sum(x => x.Length);
 
-    public TupleCollection() => Task.Run(RunUpdateLoop);
-
-    private async Task RunUpdateLoop()
-    {
-        while (true)
-        {
-            if (queue.TryDequeue(out Action? action))
-            {
-                action?.Invoke();
-            }
-            else
-            {
-                await Task.Delay(10);
-            }
-        }
-    }
-
     public void Add(SpaceTuple tuple)
     {
-        int length = tuple.Length;
-        queue.Enqueue(() =>
-        {
-            dict[length] = dict.TryGetValue(length, out ImmutableArray<SpaceTuple> tuples)
-                ? tuples.Add(tuple)
-                : ImmutableArray.Create(tuple);
-        });
+        int index = tuple.Length - 1;
+        dict[index] = dict.TryGetValue(index, out ImmutableArray<SpaceTuple> tuples) ?
+            tuples.Add(tuple) : ImmutableArray.Create(tuple);
     }
 
     public void Remove(SpaceTuple tuple)
     {
-        int length = tuple.Length;
-        queue.Enqueue(() =>
+        int index = tuple.Length - 1;
+        if (dict.TryRemove(index, out ImmutableArray<SpaceTuple> tuples))
         {
-            if (dict.TryRemove(length, out ImmutableArray<SpaceTuple> tuples))
-            {
-                dict[length] = tuples.Remove(tuple);
-            }
-        });
+            dict[index] = tuples.Remove(tuple);
+        }
     }
 
-    public void Clear()
-    {
-        dict.Clear();
-        queue.Clear();
-    }
-
-    public SpaceTuple? Find(SpaceTemplate template)
+    public void Clear() => dict.Clear();
+    
+    public SpaceTuple Find(SpaceTemplate template)
     {
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
@@ -111,61 +82,32 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
 
 internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple>
     where T : unmanaged
-    where TTuple : ISpaceTuple<T>
-    where TTemplate : ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
+    where TTuple : struct, ISpaceTuple<T>
+    where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
     private readonly ConcurrentDictionary<int, ImmutableArray<TTuple>> dict = new();
-    private readonly ConcurrentQueue<Action> queue = new();
 
     public int Count => dict.Values.Sum(x => x.Length);
 
-    public TupleCollection() => Task.Run(RunUpdateLoop);
-
-    private async Task RunUpdateLoop()
-    {
-        while (true)
-        {
-            if (queue.TryDequeue(out Action? action))
-            {
-                action?.Invoke();
-            }
-            else
-            {
-                await Task.Delay(10);
-            }
-        }
-    }
-
     public void Add(TTuple tuple)
     {
-        int length = tuple.Length;
-        queue.Enqueue(() =>
-        {
-            dict[length] = dict.TryGetValue(length, out ImmutableArray<TTuple> tuples)
-                ? tuples.Add(tuple)
-                : ImmutableArray.Create(tuple);
-        });
+        int index = tuple.Length - 1;
+        dict[index] = dict.TryGetValue(index, out ImmutableArray<TTuple> tuples) ?
+            tuples.Add(tuple) : ImmutableArray.Create(tuple);
     }
 
     public void Remove(TTuple tuple)
     {
-        int length = tuple.Length;
-        queue.Enqueue(() =>
+        int index = tuple.Length - 1;
+        if (dict.TryRemove(index, out ImmutableArray<TTuple> tuples))
         {
-            if (dict.TryRemove(length, out ImmutableArray<TTuple> tuples))
-            {
-                dict[length] = tuples.Remove(tuple);
-            }
-        });
+            dict[index] = tuples.Remove(tuple);
+        }
     }
 
-    public void Clear()
-    {
-        dict.Clear();
-        queue.Clear();
-    }
-
-    public TTuple? Find(TTemplate template)
+    public void Clear() => dict.Clear();
+   
+    public TTuple Find(TTemplate template)
     {
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
