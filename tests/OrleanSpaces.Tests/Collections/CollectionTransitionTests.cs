@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tests.Collections;
 public class CollectionTransitionTests
 {
     [Fact]
-    public void EmptyCollection_ShouldReturnZeroValues()
+    public void EmptyCollection_ShouldReturnZeroStats()
     {
         WriteOptimizedCollection collection = new();
 
@@ -18,7 +18,7 @@ public class CollectionTransitionTests
     }
 
     [Fact]
-    public void NonEmptyCollection_ShouldCalculateCorrectly()
+    public void NonEmptyCollection_ShouldCalculateStatsCorrectly()
     {
         WriteOptimizedCollection collection = new();
         CollectionStatistics statistics = default;
