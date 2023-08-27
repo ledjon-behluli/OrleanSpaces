@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using OrleanSpaces;
 using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Collections;
 using System.Collections.Immutable;
 
 [ShortRunJob]
@@ -15,7 +15,7 @@ public class TupleCollectionBenchmarks
     private SpaceTuple[] tuples;
     private SpaceTemplate template;
 
-    private TupleCollection collection;
+    private DictionaryTupleCollection collection;
     private ImmutableArray<SpaceTuple> immutableArray;
 
     [Params(10, 100, 1_000)]

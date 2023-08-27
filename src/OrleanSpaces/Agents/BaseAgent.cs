@@ -1,4 +1,5 @@
 ﻿using OrleanSpaces.Channels;
+using OrleanSpaces.Collections;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
@@ -20,8 +21,11 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
 
     [AllowNull] private ITupleStore<TTuple> tupleStore;
+    
+    private ITupleCollection<T, TTuple, TTemplate> tupleCollection;
     private Channel<TTuple>? streamChannel;
-    private readonly TupleCollection<T, TTuple, TTemplate> tuples = new();
+    private double averageTupleLength;
+    private double tupleLengthStdDev;
 
     public BaseAgent(
         SpaceOptions options,
@@ -33,6 +37,98 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
+
+        switch (options.AgentOptions.ExecutionMode)
+        {
+            case AgentExecutionMode.ReadOptimized:
+                tupleCollection = new ReadOptimizedCollection<T, TTuple, TTemplate>();
+                break;
+            case AgentExecutionMode.WriteOptimized:
+                tupleCollection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
+                break;
+            case AgentExecutionMode.Adaptable:
+                {
+                    tupleCollection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
+                    _ = new Timer(state => Recalibrate(), null, 0,
+                        options.AgentOptions.RecalibrationTriggerPeriod.Milliseconds);
+                }
+                break;
+            default:
+                throw new NotSupportedException();
+        }
+    }
+
+    private void Recalibrate()
+    {
+        RecalculateStatistics();
+
+        if (tupleCollection.Count < 1000 && tupleCollection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+        {
+            ToWriteOptimizedCollection();
+        }
+        else
+        {
+            if (tupleLengthStdDev > 50 && tupleCollection is ReadOptimizedCollection<T, TTuple, TTemplate>)
+            {
+                ToWriteOptimizedCollection();
+            }
+
+            if (tupleLengthStdDev <= 50 && tupleCollection is WriteOptimizedCollection<T, TTuple, TTemplate>)
+            {
+                ToReadOptimizedCollection();
+            }
+        }
+
+        void RecalculateStatistics()
+        {
+            int count = 0;
+            int totalLength = 0;
+            double sumSquaredDifferences = 0;
+
+            foreach (var tuple in tupleCollection)
+            {
+                int length = tuple.Length;
+
+                count++;
+                totalLength += length;
+                sumSquaredDifferences += (length - averageTupleLength) * (length - averageTupleLength);
+            }
+
+            if (count > 0)
+            {
+                averageTupleLength = (double)totalLength / count;
+                tupleLengthStdDev = Math.Sqrt(sumSquaredDifferences / count);
+            }
+            else
+            {
+                averageTupleLength = 0;
+                tupleLengthStdDev = 0;
+            }
+        }
+
+        void ToWriteOptimizedCollection()
+        {
+            WriteOptimizedCollection<T, TTuple, TTemplate> collection = new();
+
+            foreach (var tuple in tupleCollection)
+            {
+                collection.Add(tuple);
+            }
+
+            tupleCollection = collection;
+        }
+
+        void ToReadOptimizedCollection()
+        {
+            ReadOptimizedCollection<T, TTuple, TTemplate> collection = new();
+
+            foreach (var tuple in tupleCollection)
+            {
+                collection.Add(tuple);
+            }
+
+            tupleCollection = collection;
+        }
     }
 
     #region ISpaceRouter
@@ -48,15 +144,15 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 case TupleActionType.Insert:
                     {
-                        tuples.Add(action.Tuple);
+                        tupleCollection.Add(action.Tuple);
                         await streamChannel.WriteIfNotNull(action.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    tuples.Remove(action.Tuple);
+                    tupleCollection.Remove(action.Tuple);
                     break;
                 case TupleActionType.Clear:
-                    tuples.Clear();
+                    tupleCollection.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -84,7 +180,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        tuples.Add(tuple);
+        tupleCollection.Add(tuple);
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -95,7 +191,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public ValueTask<TTuple> PeekAsync(TTemplate template)
     {
-        TTuple tuple = tuples.Find(template);
+        TTuple tuple = tupleCollection.Find(template);
         return new(tuple);
     }
 
@@ -103,7 +199,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.Find(template);
+        TTuple tuple = tupleCollection.Find(template);
 
         if (tuple.IsEmpty)
         {
@@ -116,12 +212,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
-        TTuple tuple = tuples.Find(template);
+        TTuple tuple = tupleCollection.Find(template);
 
         if (!tuple.IsEmpty)
         {
             await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            tuples.Remove(tuple);
+            tupleCollection.Remove(tuple);
         }
 
         return tuple;
@@ -131,7 +227,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        TTuple tuple = tuples.Find(template);
+        TTuple tuple = tupleCollection.Find(template);
 
         if (tuple.IsEmpty)
         {
@@ -142,12 +238,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         await callback(tuple);
         await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        tuples.Remove(tuple);
+        tupleCollection.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
     {
-        List<TTuple> result = tuples.FindAll(template);
+        var result = tupleCollection.FindAll(template);
         return new(result);
     }
 
@@ -164,7 +260,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
                 });
 
 
-                foreach (var tuple in tuples)
+                foreach (var tuple in tupleCollection)
                 {
                     _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
                 }
@@ -177,12 +273,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Count);
+    public ValueTask<int> CountAsync() => new(tupleCollection.Count);
 
     public async Task ClearAsync()
     {
         await tupleStore.RemoveAll(agentId);
-        tuples.Clear();
+        tupleCollection.Clear();
     }
 
     #endregion

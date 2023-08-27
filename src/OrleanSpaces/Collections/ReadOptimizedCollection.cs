@@ -1,11 +1,11 @@
-﻿using OrleanSpaces.Tuples;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces;
+namespace OrleanSpaces.Collections;
 
-internal sealed class TupleCollection : IEnumerable<SpaceTuple>
+internal sealed class ReadOptimizedCollection : ITupleCollection
 {
     private readonly ConcurrentDictionary<int, ImmutableArray<SpaceTuple>> dict = new();
 
@@ -28,7 +28,7 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
     }
 
     public void Clear() => dict.Clear();
-    
+
     public SpaceTuple Find(SpaceTemplate template)
     {
         int index = template.Length - 1;
@@ -46,7 +46,7 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
         return default;
     }
 
-    public List<SpaceTuple> FindAll(SpaceTemplate template)
+    public IEnumerable<SpaceTuple> FindAll(SpaceTemplate template)
     {
         List<SpaceTuple> tuples = new();
         int index = template.Length - 1;
@@ -79,8 +79,7 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-
-internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple>
+internal sealed class ReadOptimizedCollection<T, TTuple, TTemplate> : ITupleCollection<T, TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
@@ -106,7 +105,7 @@ internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple
     }
 
     public void Clear() => dict.Clear();
-   
+
     public TTuple Find(TTemplate template)
     {
         int index = template.Length - 1;
@@ -124,7 +123,7 @@ internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple
         return default;
     }
 
-    public List<TTuple> FindAll(TTemplate template)
+    public IEnumerable<TTuple> FindAll(TTemplate template)
     {
         List<TTuple> tuples = new();
         int index = template.Length - 1;

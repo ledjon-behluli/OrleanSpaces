@@ -1,4 +1,5 @@
 ﻿using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Collections;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Tests;
@@ -11,7 +12,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Count()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             new(1),
             new('a'),
@@ -27,7 +28,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Add()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             tuple
         };
@@ -38,7 +39,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Remove()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             tuple
         };
@@ -51,7 +52,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Clear()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             tuple,
             tuple
@@ -65,7 +66,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Find_ReturnsMatchingTuple()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             tuple
         };
@@ -78,7 +79,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void Find_ReturnsDefaultWhenNoMatchingTuple()
     {
-        TupleCollection collection = new();
+        DictionaryTupleCollection collection = new();
 
         var result = collection.Find(template);
 
@@ -88,7 +89,7 @@ public class SpaceTupleCollectionTests
     [Fact]
     public void FindAll_ReturnsMatchingTuples()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             tuple,
             tuple
@@ -110,7 +111,7 @@ public class IntTupleCollectionTests
     [Fact]
     public void Count()
     {
-        TupleCollection collection = new()
+        DictionaryTupleCollection collection = new()
         {
             new(1),
             new(2),

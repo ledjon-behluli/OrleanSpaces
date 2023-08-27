@@ -1,7 +1,7 @@
 ﻿namespace OrleanSpaces;
 
 /// <summary>
-/// Options to configure various functionalities
+/// Options to configure general space functionalities
 /// </summary>
 public sealed class SpaceOptions
 {
@@ -45,6 +45,27 @@ public sealed class SpaceOptions
     /// than the <see cref="ISpaceObserver{T}"/> will receive only notifications that have been written by an agent in a different process.
     /// </summary>
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
+
+    /// <summary>
+    /// The agent options.
+    /// </summary>
+    public SpaceAgentOptions AgentOptions { get; set; } = new();
+}
+
+/// <summary>
+/// Options to configure agent functionalities.
+/// </summary>
+public sealed class SpaceAgentOptions
+{
+    /// <summary>
+    /// The execution mode.
+    /// </summary>
+    public AgentExecutionMode ExecutionMode { get; set; } = AgentExecutionMode.Adaptable;
+    /// <summary>
+    /// The period to trigger a recalibration of the <see cref="AgentExecutionMode"/>.
+    /// </summary>
+    /// <remarks><i>Value is ignored if <see cref="ExecutionMode"/> is not <see cref="AgentExecutionMode.Adaptable"/>.</i></remarks>
+    public TimeSpan RecalibrationTriggerPeriod { get; set; } = TimeSpan.FromMinutes(1);
 }
 
 /// <summary>
@@ -74,4 +95,23 @@ public enum SpaceKind
     UInt = 131072,
     ULong = 262144,
     UShort = 524288
+}
+
+/// <summary>
+/// The mode in which an <see cref="ISpaceAgent"/> or <see cref="ISpaceAgent{T, TTuple, TTemplate}"/> runs.
+/// </summary>
+public enum AgentExecutionMode
+{
+    /// <summary>
+    /// Agent is calibrated once to perform better on read operations.
+    /// </summary>
+    ReadOptimized = 0,
+    /// <summary>
+    /// Agent is calibrated once to perform better on write operations.
+    /// </summary>
+    WriteOptimized = 1,
+    /// <summary>
+    /// Agent is calibrated periodically to balance performance between read and write operations.
+    /// </summary>
+    Adaptable = 2
 }
