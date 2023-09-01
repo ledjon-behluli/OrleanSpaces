@@ -1,10 +1,9 @@
 ﻿using OrleanSpaces.Tuples;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Collections;
 
-namespace OrleanSpaces.Tests.Collections;
+namespace OrleanSpaces.Tests;
 
-public class ReadOptimizedSpaceCollectionTests
+public class SpaceTupleCollectionTests
 {
     private readonly SpaceTuple tuple = new(1, 'a', 1.5f);
     private readonly SpaceTemplate template = new(1, null, 1.5f);
@@ -12,7 +11,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Count()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             new(1),
             new('a'),
@@ -28,7 +27,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Add()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             tuple
         };
@@ -39,7 +38,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Remove()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             tuple
         };
@@ -52,7 +51,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Clear()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             tuple,
             tuple
@@ -66,7 +65,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Find_ReturnsMatchingTuple()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             tuple
         };
@@ -79,7 +78,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void Find_ReturnsDefaultWhenNoMatchingTuple()
     {
-        ReadOptimizedCollection collection = new();
+        TupleCollection collection = new();
 
         var result = collection.Find(template);
 
@@ -89,7 +88,7 @@ public class ReadOptimizedSpaceCollectionTests
     [Fact]
     public void FindAll_ReturnsMatchingTuples()
     {
-        ReadOptimizedCollection collection = new()
+        TupleCollection collection = new()
         {
             tuple,
             tuple
@@ -102,7 +101,7 @@ public class ReadOptimizedSpaceCollectionTests
     }
 }
 
-public class ReadOptimizedIntCollectionTests
+public class IntTupleCollectionTests
 {
     private readonly IntTuple tuple = new(1, 2, 3);
     private readonly IntTemplate template = new(1, null, 3);
@@ -110,7 +109,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Count()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             new(1),
             new(2),
@@ -126,7 +125,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Add()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             tuple
         };
@@ -137,7 +136,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Remove()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             tuple
         };
@@ -150,7 +149,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Clear()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             tuple,
             tuple
@@ -164,7 +163,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Find_ReturnsMatchingTuple()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             tuple
         };
@@ -177,7 +176,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void Find_ReturnsDefaultWhenNoMatchingTuple()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new();
+        TupleCollection<int, IntTuple, IntTemplate> collection = new();
 
         var result = collection.Find(template);
 
@@ -187,7 +186,7 @@ public class ReadOptimizedIntCollectionTests
     [Fact]
     public void FindAll_ReturnsMatchingTuples()
     {
-        ReadOptimizedCollection<int, IntTuple, IntTemplate> collection = new()
+        TupleCollection<int, IntTuple, IntTemplate> collection = new()
         {
             tuple,
             tuple

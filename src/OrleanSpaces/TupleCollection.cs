@@ -3,9 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using OrleanSpaces.Tuples;
 
-namespace OrleanSpaces.Collections;
+namespace OrleanSpaces;
 
-internal sealed class ReadOptimizedCollection : ITupleCollection<SpaceTuple, SpaceTemplate>
+internal sealed class TupleCollection : IEnumerable<SpaceTuple>
 {
     private readonly ConcurrentDictionary<int, ImmutableArray<SpaceTuple>> dict = new();
 
@@ -79,7 +79,7 @@ internal sealed class ReadOptimizedCollection : ITupleCollection<SpaceTuple, Spa
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-internal sealed class ReadOptimizedCollection<T, TTuple, TTemplate> : ITupleCollection<TTuple, TTemplate>
+internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>

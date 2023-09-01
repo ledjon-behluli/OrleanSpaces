@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using OrleanSpaces;
 using OrleanSpaces.Collections;
 using OrleanSpaces.Tuples;
 
@@ -14,7 +15,7 @@ public class TupleCollectionBenchmarks
     private SpaceTuple[] tuples;
     private SpaceTemplate template;
 
-    private readonly ReadOptimizedCollection readCollection;
+    private readonly TupleCollection readCollection;
     private readonly WriteOptimizedCollection writeCollection;
 
     [Params(10, 100, 1_000)]

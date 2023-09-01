@@ -1,11 +1,8 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Collections;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Intrinsics.X86;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
@@ -21,11 +18,9 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
+    private readonly TupleCollection<T, TTuple, TTemplate> collection = new();
 
     [AllowNull] private ITupleStore<TTuple> tupleStore;
-    
-    private ITupleCollection<TTuple, TTemplate> collection;
-    private CollectionStatistics collectionStats;
     private Channel<TTuple>? streamChannel;
 
     public BaseAgent(
@@ -38,47 +33,6 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
-
-        switch (options.AgentOptions.ExecutionMode)
-        {
-            case AgentExecutionMode.ReadOptimized:
-                collection = new ReadOptimizedCollection<T, TTuple, TTemplate>();
-                break;
-            case AgentExecutionMode.WriteOptimized:
-                collection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
-                break;
-            case AgentExecutionMode.Adaptable:
-                {
-                    collection = new WriteOptimizedCollection<T, TTuple, TTemplate>();
-                    _ = new Timer(state => OptimizeCollectionType(), null, 0,
-                        options.AgentOptions.OptimizationTriggerPeriod.Milliseconds);
-                }
-                break;
-            default:
-                throw new NotSupportedException();
-        }
-    }
-
-    private void OptimizeCollectionType()
-    {
-        collectionStats = collection.Calculate(collectionStats);
-        collection = collection.Switch(collectionStats,
-            readOptimizedCollectionFactory: () => {
-                ReadOptimizedCollection<T, TTuple, TTemplate> newCollection = new();
-                foreach (var tuple in collection)
-                {
-                    newCollection.Add(tuple);
-                }
-                return newCollection;
-            },
-            writeOptimizedCollectionFactory: () => {
-                WriteOptimizedCollection<T, TTuple, TTemplate> newCollection = new();
-                foreach (var tuple in collection)
-                {
-                    newCollection.Add(tuple);
-                }
-                return newCollection;
-            });
     }
 
     #region ISpaceRouter
@@ -205,7 +159,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 streamChannel = Channel.CreateUnbounded<TTuple>(new()
                 {
-                    SingleReader = !options.AgentOptions.AllowMultipleAgentStreamConsumers,
+                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 

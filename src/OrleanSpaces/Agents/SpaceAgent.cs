@@ -4,7 +4,6 @@ using System.Threading.Channels;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
-using OrleanSpaces.Collections;
 
 namespace OrleanSpaces.Agents;
 
@@ -16,11 +15,9 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
+    private readonly TupleCollection collection = new();
 
     [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
-   
-    private ITupleCollection<SpaceTuple, SpaceTemplate> collection;
-    private CollectionStatistics collectionStats;
     private Channel<SpaceTuple>? streamChannel;
    
     public SpaceAgent(
@@ -33,47 +30,6 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         this.evaluationChannel = evaluationChannel ?? throw new ArgumentNullException(nameof(evaluationChannel));
         this.observerRegistry = observerRegistry ?? throw new ArgumentNullException(nameof(observerRegistry));
         this.callbackRegistry = callbackRegistry ?? throw new ArgumentNullException(nameof(callbackRegistry));
-
-        switch (options.AgentOptions.ExecutionMode)
-        {
-            case AgentExecutionMode.ReadOptimized:
-                collection = new ReadOptimizedCollection();
-                break;
-            case AgentExecutionMode.WriteOptimized:
-                collection = new WriteOptimizedCollection();
-                break;
-            case AgentExecutionMode.Adaptable:
-                {
-                    collection = new WriteOptimizedCollection();
-                    _ = new Timer(state => OptimizeCollectionType(), null, 0, 
-                        options.AgentOptions.OptimizationTriggerPeriod.Milliseconds);
-                }
-                break;
-            default: 
-                throw new NotSupportedException();
-        }
-    }
-
-    private void OptimizeCollectionType()
-    {
-        collectionStats = collection.Calculate(collectionStats);
-        collection = collection.Switch(collectionStats, 
-            readOptimizedCollectionFactory: () => {
-                ReadOptimizedCollection newCollection = new();
-                foreach (var tuple in collection)
-                {
-                    newCollection.Add(tuple);
-                }
-                return newCollection;
-            },
-            writeOptimizedCollectionFactory: () => {
-                WriteOptimizedCollection newCollection = new();
-                foreach (var tuple in collection)
-                {
-                    newCollection.Add(tuple);
-                }
-                return newCollection;
-            });
     }
 
     #region ISpaceRouter
@@ -200,7 +156,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 streamChannel = Channel.CreateUnbounded<SpaceTuple>(new()
                 {
-                    SingleReader = !options.AgentOptions.AllowMultipleAgentStreamConsumers,
+                    SingleReader = !options.AllowMultipleAgentStreamConsumers,
                     SingleWriter = true
                 });
 
