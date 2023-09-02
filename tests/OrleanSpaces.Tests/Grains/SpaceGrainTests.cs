@@ -27,7 +27,7 @@ public class SpaceGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         stream = client
             .GetStreamProvider(Constants.PubSubProvider)
             .GetStream<TupleAction<SpaceTuple>>(
-                StreamId.Create(Constants.StreamName, ISpaceGrain.Key));
+                StreamId.Create(Constants.Store_StreamNamespace, ISpaceGrain.Key));
 
         await stream.SubscribeAsync(observer);
     }

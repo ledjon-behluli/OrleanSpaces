@@ -9,11 +9,11 @@ internal interface ISpaceInterceptor : IStoreInterceptor<SpaceTuple>, IGrainWith
     const string Key = "SpaceInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class SpaceInterceptor : BaseInterceptor<SpaceTuple, ISpaceGrain>, ISpaceInterceptor
 {
     public SpaceInterceptor(
-        [PersistentState(ISpaceInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(ISpaceInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(ISpaceGrain.Key, storeIds) { }
 }

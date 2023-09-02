@@ -4,7 +4,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Agents;
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class DateTimeOffsetAgent : BaseAgent<DateTimeOffset, DateTimeOffsetTuple, DateTimeOffsetTemplate>
 {
     public DateTimeOffsetAgent(

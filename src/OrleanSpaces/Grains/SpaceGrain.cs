@@ -11,6 +11,6 @@ internal interface ISpaceGrain : ITupleStore<SpaceTuple>, IGrainWithStringKey
 internal sealed class SpaceGrain : BaseGrain<SpaceTuple>, ISpaceGrain
 {
     public SpaceGrain(
-        [PersistentState(ISpaceGrain.Key, Constants.StorageName)]
+        [PersistentState(ISpaceGrain.Key, Constants.Store_StorageName)]
         IPersistentState<List<SpaceTuple>> space) : base(ISpaceGrain.Key, space) { }
 }

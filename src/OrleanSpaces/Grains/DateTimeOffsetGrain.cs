@@ -11,6 +11,6 @@ internal interface IDateTimeOffsetGrain : ITupleStore<DateTimeOffsetTuple>, IGra
 internal sealed class DateTimeOffsetGrain : BaseGrain<DateTimeOffsetTuple>, IDateTimeOffsetGrain
 {
     public DateTimeOffsetGrain(
-        [PersistentState(IDateTimeOffsetGrain.Key, Constants.StorageName)]
+        [PersistentState(IDateTimeOffsetGrain.Key, Constants.Store_StorageName)]
         IPersistentState<List<DateTimeOffsetTuple>> space) : base(IDateTimeOffsetGrain.Key, space) { }
 }

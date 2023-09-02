@@ -9,11 +9,11 @@ internal interface IUShortInterceptor : IStoreInterceptor<UShortTuple>, IGrainWi
     const string Key = "UShortInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class UShortInterceptor : BaseInterceptor<UShortTuple, IUShortGrain>, IUShortInterceptor
 {
     public UShortInterceptor(
-        [PersistentState(IUShortInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(IUShortInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(IUShortGrain.Key, storeIds) { }
 }

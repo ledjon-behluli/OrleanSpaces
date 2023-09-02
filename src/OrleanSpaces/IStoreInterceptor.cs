@@ -11,6 +11,4 @@ internal interface IStoreInterceptor<T>
     Task<Guid> Insert(TupleAction<T> action);
     Task Remove(TupleAction<T> action);
     Task RemoveAll(Guid agentId);
-
-    Task OnNewStoreCreated(Guid storeId);
 }

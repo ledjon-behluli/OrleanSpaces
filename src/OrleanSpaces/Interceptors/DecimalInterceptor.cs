@@ -9,11 +9,11 @@ internal interface IDecimalInterceptor : IStoreInterceptor<DecimalTuple>, IGrain
     const string Key = "DecimalInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class DecimalInterceptor : BaseInterceptor<DecimalTuple, IDecimalGrain>, IDecimalInterceptor
 {
     public DecimalInterceptor(
-        [PersistentState(IDecimalInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(IDecimalInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(IDecimalGrain.Key, storeIds) { }
 }

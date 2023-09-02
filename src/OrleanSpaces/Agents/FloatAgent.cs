@@ -4,7 +4,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Agents;
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class FloatAgent : BaseAgent<float, FloatTuple, FloatTemplate>
 {
     public FloatAgent(

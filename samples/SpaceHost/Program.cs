@@ -15,7 +15,7 @@ var host = Host.CreateDefaultBuilder(args)
         #region Persistence
 
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-        siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
+        siloBuilder.AddMemoryGrainStorage(Constants.Store_StorageName);
 
         //siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
         //siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);

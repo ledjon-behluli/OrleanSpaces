@@ -9,20 +9,28 @@ namespace OrleanSpaces.Grains;
 internal abstract class BaseGrain<T> : Grain
     where T : struct, ISpaceTuple, IEquatable<T>
 {
+    private readonly string storeKey;
     private readonly IPersistentState<List<T>> space;
-    private readonly StreamId streamId;
+    
+    [AllowNull] private IAsyncStream<TupleAction<T>> storeStream;
+    [AllowNull] private IAsyncStream<string> interceptorStream;
 
-    [AllowNull] private IAsyncStream<TupleAction<T>> stream;
-
-    public BaseGrain(string key, IPersistentState<List<T>> space)
+    public BaseGrain(string storeKey, IPersistentState<List<T>> space)
     {
-        streamId = StreamId.Create(Constants.StreamName, key ?? throw new ArgumentNullException(nameof(key)));
+        this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        stream = this.GetStreamProvider(Constants.PubSubProvider).GetStream<TupleAction<T>>(streamId);
+        StreamId storeStreamId = StreamId.Create(Constants.Store_StreamNamespace, storeKey);
+        StreamId interceptorStreamId = StreamId.Create(Constants.StoreMetadata_StreamNamespace, storeKey);
+
+        var streamProvider = this.GetStreamProvider(Constants.PubSubProvider);
+
+        storeStream = streamProvider.GetStream<TupleAction<T>>(storeStreamId);
+        interceptorStream = streamProvider.GetStream<string>(interceptorStreamId);
+
         return Task.CompletedTask;
     }
 
@@ -35,23 +43,28 @@ internal abstract class BaseGrain<T> : Grain
             return false;
         }
 
-        space.State.Add(action.Pair.Tuple);
+        space.State.Add(action.Address.Tuple);
 
         await space.WriteStateAsync();
-        await stream.OnNextAsync(action);
+        await storeStream.OnNextAsync(action);
 
         return true;
     }
 
     public async Task Remove(TupleAction<T> action)
     {
-        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Pair.Tuple));
+        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Address.Tuple));
         if (!storedTuple.IsEmpty)
         {
             space.State.Remove(storedTuple);
 
             await space.WriteStateAsync();
-            await stream.OnNextAsync(action);
+            await storeStream.OnNextAsync(action);
+
+            if (space.State.Count == 0)
+            {
+                await TerminateAsync();
+            }
         }
     }
 
@@ -60,6 +73,14 @@ internal abstract class BaseGrain<T> : Grain
         space.State.Clear();
 
         await space.WriteStateAsync();
-        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
+        await storeStream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
+
+        await TerminateAsync();
+    }
+
+    private async Task TerminateAsync()
+    {
+        await interceptorStream.OnNextAsync(this.GetPrimaryKeyString());
+        DeactivateOnIdle();
     }
 }

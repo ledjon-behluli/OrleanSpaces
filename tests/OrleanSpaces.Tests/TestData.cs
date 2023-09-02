@@ -161,7 +161,7 @@ public class ThrowingObserver<T> : TestSpaceObserver<T>
     }
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
     where T : struct, ISpaceTuple
 {

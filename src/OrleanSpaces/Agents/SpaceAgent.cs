@@ -17,7 +17,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     private readonly CallbackRegistry callbackRegistry;
     private readonly TupleCollection collection = new();
 
-    [AllowNull] private IStoreInterceptor<SpaceTuple> store;
+    [AllowNull] private IStoreInterceptor<SpaceTuple> interceptor;
     private Channel<SpaceTuple>? streamChannel;
    
     public SpaceAgent(
@@ -34,8 +34,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceRouter
 
-    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteStore(IStoreInterceptor<SpaceTuple> store) 
-        => this.store = store;
+    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteInterceptor(IStoreInterceptor<SpaceTuple> interceptor) 
+        => this.interceptor = interceptor;
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
     {
@@ -45,12 +45,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        collection.Add(action.Pair);
-                        await streamChannel.WriteIfNotNull(action.Pair.Tuple);
+                        collection.Add(action.Address);
+                        await streamChannel.WriteIfNotNull(action.Address.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    collection.Remove(action.Pair);
+                    collection.Remove(action.Address);
                     break;
                 case TupleActionType.Clear:
                     collection.Clear();
@@ -78,7 +78,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        Guid storeId = await store.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
+        Guid storeId = await interceptor.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
         collection.Add(new(tuple, storeId));
@@ -116,7 +116,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
         if (!address.Tuple.IsEmpty)
         {
-            await store.Remove(new(agentId, address, TupleActionType.Remove));
+            await interceptor.Remove(new(agentId, address, TupleActionType.Remove));
             collection.Remove(address);
         }
 
@@ -135,7 +135,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
 
         await callback(address.Tuple);
-        await store.Remove(new(agentId, address, TupleActionType.Remove));
+        await interceptor.Remove(new(agentId, address, TupleActionType.Remove));
 
         collection.Remove(address);
     }
@@ -176,7 +176,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public async Task ClearAsync()
     {
-        await store.RemoveAll(agentId);
+        await interceptor.RemoveAll(agentId);
         collection.Clear();
     }
 

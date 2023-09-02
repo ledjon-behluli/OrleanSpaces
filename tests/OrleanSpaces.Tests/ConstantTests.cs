@@ -5,8 +5,8 @@ public class ConstantTests
     [Fact]
     public void Should_Equal()
     {
-        Assert.Equal("OrleanSpaces", Constants.StorageName);
-        Assert.Equal("OrleanSpaces", Constants.StreamName);
+        Assert.Equal("OrleanSpaces", Constants.Store_StorageName);
+        Assert.Equal("OrleanSpaces", Constants.Store_StreamNamespace);
         Assert.Equal("PubSubProvider", Constants.PubSubProvider);
         Assert.Equal("PubSubStore", Constants.PubSubStore);
 

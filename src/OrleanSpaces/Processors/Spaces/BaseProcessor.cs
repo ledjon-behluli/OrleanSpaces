@@ -7,43 +7,44 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
+internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
     where TTuple : ISpaceTuple
     where TTemplate : ISpaceTemplate
+    where TInterceptor : IStoreInterceptor<TTuple>, IGrainWithStringKey
 {
-    private readonly string key;
+    private readonly string storeKey;
+    private readonly string interceptorKey;
     private readonly SpaceOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
     private readonly ObserverChannel<TTuple> observerChannel;
     private readonly CallbackChannel<TTuple> callbackChannel;
-    private readonly Func<IStoreInterceptor<TTuple>> storeFactory;
 
     public BaseProcessor(
-        string key,
+        string storeKey,
+        string interceptorKey,
         SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,
-        CallbackChannel<TTuple> callbackChannel,
-        Func<IStoreInterceptor<TTuple>> storeFactory)
+        CallbackChannel<TTuple> callbackChannel)
     {
-        this.key = key ?? throw new ArgumentNullException(nameof(key));
+        this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
+        this.interceptorKey = interceptorKey ?? throw new ArgumentNullException(nameof(interceptorKey));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-        this.storeFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        router.RouteStore(storeFactory());
+        router.RouteInterceptor(client.GetGrain<TInterceptor>(interceptorKey));
 
         var stream = client
             .GetStreamProvider(Constants.PubSubProvider)
-            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, key));
+            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.Store_StreamNamespace, storeKey));
 
         await stream.SubscribeOrResumeAsync(this);
     }

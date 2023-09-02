@@ -1,11 +1,12 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
+using OrleanSpaces.Interceptors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanTemplate>
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanTemplate, ITimeSpanInterceptor>
 {
     public TimeSpanProcessor(
         SpaceOptions options,
@@ -13,6 +14,5 @@ internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanT
         ISpaceRouter<TimeSpanTuple, TimeSpanTemplate> router,
         ObserverChannel<TimeSpanTuple> observerChannel,
         CallbackChannel<TimeSpanTuple> callbackChannel)
-        : base(ITimeSpanGrain.Key, options, client, router, observerChannel, callbackChannel,
-            () => client.GetGrain<ITimeSpanGrain>(ITimeSpanGrain.Key)) { }
+        : base(ITimeSpanGrain.Key, ITimeSpanInterceptor.Key, options, client, router, observerChannel, callbackChannel) { }
 }

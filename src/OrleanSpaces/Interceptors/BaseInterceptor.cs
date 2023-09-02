@@ -6,17 +6,19 @@ using System.Collections.Immutable;
 
 namespace OrleanSpaces.Interceptors;
 
-internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
+internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<string>
     where TTuple : ISpaceTuple
     where TStore : ITupleStore<TTuple>, IGrainWithStringKey
 {
     private readonly string storeKey;
-    private readonly IPersistentState<HashSet<Guid>> storeIds;
+    private readonly IPersistentState<HashSet<string>> storeIds;
 
     private Guid currentStoreId;
-    private TStore CurrentStore => GrainFactory.GetGrain<TStore>($"{storeKey}-{currentStoreId:N}");
 
-    public BaseInterceptor(string storeKey, IPersistentState<HashSet<Guid>> storeIds)
+    private string CurrentStoreKey => $"{storeKey}-{currentStoreId:N}";
+    private TStore CurrentStore => GrainFactory.GetGrain<TStore>(CurrentStoreKey);
+
+    public BaseInterceptor(string storeKey, IPersistentState<HashSet<string>> storeIds)
     {
         this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
         this.storeIds = storeIds ?? throw new ArgumentNullException(nameof(storeIds));
@@ -26,16 +28,15 @@ internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
     {
         if (storeIds.State is null || storeIds.State.Count == 0)
         {
-            Guid id = Guid.NewGuid();
-            storeIds.State = new HashSet<Guid> { id };
-            currentStoreId = id;
+            currentStoreId = Guid.NewGuid();
+            storeIds.State = new HashSet<string> { CurrentStoreKey };
             
             await storeIds.WriteStateAsync();
         }
 
         var stream = this
            .GetStreamProvider(Constants.PubSubProvider)
-           .GetStream<Guid>(StreamId.Create(Constants.StreamName, storeKey));
+           .GetStream<string>(StreamId.Create(Constants.StoreMetadata_StreamNamespace, storeKey));
 
         await stream.SubscribeOrResumeAsync(this);
     }
@@ -46,7 +47,7 @@ internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
 
         foreach (var storeId in storeIds.State)
         {
-            tasks.Add(GrainFactory.GetGrain<TStore>($"{storeKey}-{storeId:N}").GetAll());
+            tasks.Add(GrainFactory.GetGrain<TStore>(storeId).GetAll());
         }
 
         var results = await Task.WhenAll(tasks);
@@ -68,7 +69,7 @@ internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
             currentStoreId = Guid.NewGuid();
             await CurrentStore.Insert(action);
 
-            storeIds.State.Add(currentStoreId);
+            storeIds.State.Add(CurrentStoreKey);
             await storeIds.WriteStateAsync();
         }
 
@@ -78,15 +79,7 @@ internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
     public Task Remove(TupleAction<TTuple> action) => CurrentStore.Remove(action);
     public Task RemoveAll(Guid agentId) => CurrentStore.RemoveAll(agentId);
 
-    public async Task OnNewStoreCreated(Guid storeId)
-    {
-        currentStoreId = storeId;
-        storeIds.State.Add(storeId);
-
-        await storeIds.WriteStateAsync();
-    }
-
-    public async Task OnNextAsync(Guid item, StreamSequenceToken? token = null)
+    public async Task OnNextAsync(string item, StreamSequenceToken? token = null)
     {
         storeIds.State.Remove(item);
         await storeIds.WriteStateAsync();

@@ -1,11 +1,12 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
+using OrleanSpaces.Interceptors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class UIntProcessor : BaseProcessor<UIntTuple, UIntTemplate>
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+internal sealed class UIntProcessor : BaseProcessor<UIntTuple, UIntTemplate, IUIntInterceptor>
 {
     public UIntProcessor(
         SpaceOptions options,
@@ -13,6 +14,5 @@ internal sealed class UIntProcessor : BaseProcessor<UIntTuple, UIntTemplate>
         ISpaceRouter<UIntTuple, UIntTemplate> router,
         ObserverChannel<UIntTuple> observerChannel,
         CallbackChannel<UIntTuple> callbackChannel)
-        : base(IUIntGrain.Key, options, client, router, observerChannel, callbackChannel, 
-            () => client.GetGrain<IUIntGrain>(IUIntGrain.Key)) { }
+        : base(IUIntGrain.Key, IUIntInterceptor.Key, options, client, router, observerChannel, callbackChannel) { }
 }

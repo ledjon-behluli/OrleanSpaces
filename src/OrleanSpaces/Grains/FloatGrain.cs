@@ -11,6 +11,6 @@ internal interface IFloatGrain : ITupleStore<FloatTuple>, IGrainWithStringKey
 internal sealed class FloatGrain : BaseGrain<FloatTuple>, IFloatGrain
 {
     public FloatGrain(
-        [PersistentState(IFloatGrain.Key, Constants.StorageName)]
+        [PersistentState(IFloatGrain.Key, Constants.Store_StorageName)]
         IPersistentState<List<FloatTuple>> space) : base(IFloatGrain.Key, space) { }
 }

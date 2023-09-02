@@ -34,7 +34,7 @@ public class ClusterFixture : IDisposable
 
             siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
             siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-            siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
+            siloBuilder.AddMemoryGrainStorage(Constants.Store_StorageName);
         }
     }
 

@@ -11,6 +11,6 @@ internal interface IIntGrain : ITupleStore<IntTuple>, IGrainWithStringKey
 internal sealed class IntGrain : BaseGrain<IntTuple>, IIntGrain
 {
     public IntGrain(
-        [PersistentState(IIntGrain.Key, Constants.StorageName)]
+        [PersistentState(IIntGrain.Key, Constants.Store_StorageName)]
         IPersistentState<List<IntTuple>> space) : base(IIntGrain.Key, space) { }
 }

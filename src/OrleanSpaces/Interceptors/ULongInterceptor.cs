@@ -9,11 +9,11 @@ internal interface IULongInterceptor : IStoreInterceptor<ULongTuple>, IGrainWith
     const string Key = "ULongInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class ULongInterceptor : BaseInterceptor<ULongTuple, IULongGrain>, IULongInterceptor
 {
     public ULongInterceptor(
-        [PersistentState(IULongInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(IULongInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(IULongGrain.Key, storeIds) { }
 }

@@ -9,11 +9,11 @@ internal interface ICharInterceptor : IStoreInterceptor<CharTuple>, IGrainWithSt
     const string Key = "CharInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class CharInterceptor : BaseInterceptor<CharTuple, ICharGrain>, ICharInterceptor
 {
     public CharInterceptor(
-        [PersistentState(ICharInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(ICharInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(ICharGrain.Key, storeIds) { }
 }

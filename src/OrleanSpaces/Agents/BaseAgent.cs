@@ -20,7 +20,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
     private readonly TupleCollection<T, TTuple, TTemplate> collection = new();
 
-    [AllowNull] private IStoreInterceptor<TTuple> store;
+    [AllowNull] private IStoreInterceptor<TTuple> interceptor;
     private Channel<TTuple>? streamChannel;
 
     public BaseAgent(
@@ -37,8 +37,8 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     #region ISpaceRouter
 
-    void ISpaceRouter<TTuple, TTemplate>.RouteStore(IStoreInterceptor<TTuple> store)
-        => this.store = store;
+    void ISpaceRouter<TTuple, TTemplate>.RouteInterceptor(IStoreInterceptor<TTuple> interceptor)
+        => this.interceptor = interceptor;
 
     async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteAction(TupleAction<TTuple> action)
     {
@@ -81,7 +81,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        Guid storeId = await store.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
+        Guid storeId = await interceptor.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
         collection.Add(new(tuple, storeId));
@@ -118,7 +118,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         var address = collection.Find(template);
         if (!address.Tuple.IsEmpty)
         {
-            await store.Remove(new(agentId, address, TupleActionType.Remove));
+            await interceptor.Remove(new(agentId, address, TupleActionType.Remove));
             collection.Remove(address);
         }
 
@@ -137,7 +137,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
 
         await callback(address.Tuple);
-        await store.Remove(new(agentId, address, TupleActionType.Remove));
+        await interceptor.Remove(new(agentId, address, TupleActionType.Remove));
 
         collection.Remove(address);
     }
@@ -178,7 +178,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public async Task ClearAsync()
     {
-        await store.RemoveAll(agentId);
+        await interceptor.RemoveAll(agentId);
         collection.Clear();
     }
 

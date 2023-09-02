@@ -9,11 +9,11 @@ internal interface IDateTimeOffsetInterceptor : IStoreInterceptor<DateTimeOffset
     const string Key = "DateTimeOffsetInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class DateTimeOffsetInterceptor : BaseInterceptor<DateTimeOffsetTuple, IDateTimeOffsetGrain>, IDateTimeOffsetInterceptor
 {
     public DateTimeOffsetInterceptor(
-        [PersistentState(IDateTimeOffsetInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(IDateTimeOffsetInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(IDateTimeOffsetGrain.Key, storeIds) { }
 }

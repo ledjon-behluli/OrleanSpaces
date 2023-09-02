@@ -9,11 +9,11 @@ internal interface ITimeSpanInterceptor : IStoreInterceptor<TimeSpanTuple>, IGra
     const string Key = "TimeSpanInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class TimeSpanInterceptor : BaseInterceptor<TimeSpanTuple, ITimeSpanGrain>, ITimeSpanInterceptor
 {
     public TimeSpanInterceptor(
-        [PersistentState(ITimeSpanInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(ITimeSpanInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(ITimeSpanGrain.Key, storeIds) { }
 }

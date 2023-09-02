@@ -9,11 +9,11 @@ internal interface IHugeInterceptor : IStoreInterceptor<HugeTuple>, IGrainWithSt
     const string Key = "HugeInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
+[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
 internal sealed class HugeInterceptor : BaseInterceptor<HugeTuple, IHugeGrain>, IHugeInterceptor
 {
     public HugeInterceptor(
-        [PersistentState(IHugeInterceptor.Key, Constants.StorageName)]
-        IPersistentState<HashSet<Guid>> storeIds)
+        [PersistentState(IHugeInterceptor.Key, Constants.Store_StorageName)]
+        IPersistentState<HashSet<string>> storeIds)
         : base(IHugeGrain.Key, storeIds) { }
 }
