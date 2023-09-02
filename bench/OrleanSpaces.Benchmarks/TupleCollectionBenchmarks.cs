@@ -16,7 +16,7 @@ public class TupleCollectionBenchmarks
     private SpaceTemplate template;
 
     private readonly TupleCollection tupleCollection;
-    private readonly ImmutableArray<SpaceTuple> immutableArray;
+    private readonly ImmutableArray<TupleAddress<SpaceTuple>> immutableArray;
 
     [Params(10, 100, 1_000)]
     public int NumTuples { get; set; }
@@ -50,8 +50,8 @@ public class TupleCollectionBenchmarks
 
         foreach (var tuple in tuples)
         {
-            tupleCollection.Add(tuple);
-            immutableArray.Add(tuple);
+            tupleCollection.Add(new(tuple, Guid.Empty));
+            immutableArray.Add(new(tuple, Guid.Empty));
         }
     }
 
@@ -64,6 +64,6 @@ public class TupleCollectionBenchmarks
     [Benchmark]
     public void Find_ImmutableArray()
     {
-        _ = immutableArray.FirstOrDefault(template.Matches);
+        _ = immutableArray.FirstOrDefault(x => template.Matches(x.Tuple));
     }
 }

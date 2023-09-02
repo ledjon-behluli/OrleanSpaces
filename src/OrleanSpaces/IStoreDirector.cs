@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace OrleanSpaces;
 
-internal interface IStoreInterceptor<T>
+internal interface IStoreDirector<T>
      where T : ISpaceTuple
 {
     Task<ImmutableArray<T>> GetAll();

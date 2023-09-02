@@ -1,12 +1,12 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Interceptors;
+using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class UShortProcessor : BaseProcessor<UShortTuple, UShortTemplate, IUShortInterceptor>
+internal sealed class UShortProcessor : BaseProcessor<UShortTuple, UShortTemplate, IUShortDirector>
 {
     public UShortProcessor(
         SpaceOptions options,
@@ -14,5 +14,5 @@ internal sealed class UShortProcessor : BaseProcessor<UShortTuple, UShortTemplat
         ISpaceRouter<UShortTuple, UShortTemplate> router,
         ObserverChannel<UShortTuple> observerChannel,
         CallbackChannel<UShortTuple> callbackChannel)
-        : base(IUShortGrain.Key, IUShortInterceptor.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IUShortGrain.Key, IUShortDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

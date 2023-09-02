@@ -2,9 +2,9 @@
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 
-namespace OrleanSpaces.Interceptors;
+namespace OrleanSpaces.Directors;
 
-internal class BaseInterceptor<TTuple, TStore> : Grain
+internal class BaseDirector<TTuple, TStore> : Grain
     where TTuple : ISpaceTuple
     where TStore : ITupleStore<TTuple>, IGrainWithStringKey
 {
@@ -14,7 +14,7 @@ internal class BaseInterceptor<TTuple, TStore> : Grain
     private Guid currentStoreId;
    
 
-    public BaseInterceptor(string storeKey, IPersistentState<HashSet<string>> storeFullKeys)
+    public BaseDirector(string storeKey, IPersistentState<HashSet<string>> storeFullKeys)
     {
         this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
         this.storeFullKeys = storeFullKeys ?? throw new ArgumentNullException(nameof(storeFullKeys));

@@ -1,12 +1,12 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Interceptors;
+using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class ULongProcessor : BaseProcessor<ULongTuple, ULongTemplate, IULongInterceptor>
+internal sealed class ULongProcessor : BaseProcessor<ULongTuple, ULongTemplate, IULongDirector>
 {
     public ULongProcessor(
         SpaceOptions options,
@@ -14,5 +14,5 @@ internal sealed class ULongProcessor : BaseProcessor<ULongTuple, ULongTemplate, 
         ISpaceRouter<ULongTuple, ULongTemplate> router,
         ObserverChannel<ULongTuple> observerChannel,
         CallbackChannel<ULongTuple> callbackChannel)
-        : base(IULongGrain.Key, IULongInterceptor.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IULongGrain.Key, IULongDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

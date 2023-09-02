@@ -7,13 +7,13 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
+internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
     where TTuple : ISpaceTuple
     where TTemplate : ISpaceTemplate
-    where TInterceptor : IStoreInterceptor<TTuple>, IGrainWithStringKey
+    where TDirector : IStoreDirector<TTuple>, IGrainWithStringKey
 {
     private readonly string storeKey;
-    private readonly string interceptorKey;
+    private readonly string directorKey;
     private readonly SpaceOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
@@ -22,7 +22,7 @@ internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundServic
 
     public BaseProcessor(
         string storeKey,
-        string interceptorKey,
+        string directorKey,
         SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
@@ -30,7 +30,7 @@ internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundServic
         CallbackChannel<TTuple> callbackChannel)
     {
         this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
-        this.interceptorKey = interceptorKey ?? throw new ArgumentNullException(nameof(interceptorKey));
+        this.directorKey = directorKey ?? throw new ArgumentNullException(nameof(directorKey));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
@@ -40,7 +40,7 @@ internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundServic
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        router.RouteInterceptor(client.GetGrain<TInterceptor>(interceptorKey));
+        router.RouteDirector(client.GetGrain<TDirector>(directorKey));
 
         var stream = client
             .GetStreamProvider(Constants.PubSubProvider)

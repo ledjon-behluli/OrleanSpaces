@@ -1,12 +1,12 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Interceptors;
+using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, ISByteInterceptor>
+internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, ISByteDirector>
 {
     public SByteProcessor(
         SpaceOptions options,
@@ -14,5 +14,5 @@ internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, 
         ISpaceRouter<SByteTuple, SByteTemplate> router,
         ObserverChannel<SByteTuple> observerChannel,
         CallbackChannel<SByteTuple> callbackChannel)
-        : base(ISByteGrain.Key, ISByteInterceptor.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(ISByteGrain.Key, ISByteDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

@@ -51,13 +51,13 @@ public abstract class SpaceObserver<T> : ISpaceObserver<T>
     {
         if (action.Type == TupleActionType.Insert && type.HasFlag(Expansions))
         {
-            await OnExpansionAsync(action.Tuple, cancellationToken);
+            await OnExpansionAsync(action.Address.Tuple, cancellationToken);
             return;
         }
 
         if (action.Type == TupleActionType.Remove && type.HasFlag(Contractions))
         {
-            await OnContractionAsync(action.Tuple, cancellationToken);
+            await OnContractionAsync(action.Address.Tuple, cancellationToken);
             return;
         }
 
