@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class GuidProcessor : BaseProcessor<GuidTuple, GuidTemplate, IGu
         ISpaceRouter<GuidTuple, GuidTemplate> router,
         ObserverChannel<GuidTuple> observerChannel,
         CallbackChannel<GuidTuple> callbackChannel)
-        : base(IGuidGrain.Key, IGuidDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IGuidStore.Key, IGuidDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

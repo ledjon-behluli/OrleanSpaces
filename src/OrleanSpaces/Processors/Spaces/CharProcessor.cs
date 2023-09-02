@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 

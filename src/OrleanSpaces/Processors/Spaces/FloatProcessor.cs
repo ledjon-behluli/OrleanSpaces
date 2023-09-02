@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class FloatProcessor : BaseProcessor<FloatTuple, FloatTemplate, 
         ISpaceRouter<FloatTuple, FloatTemplate> router,
         ObserverChannel<FloatTuple> observerChannel,
         CallbackChannel<FloatTuple> callbackChannel)
-        : base(IFloatGrain.Key, IFloatDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IFloatStore.Key, IFloatDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

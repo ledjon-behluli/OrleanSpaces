@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,6 +14,6 @@ internal sealed class DateTimeOffsetProcessor : BaseProcessor<DateTimeOffsetTupl
         ISpaceRouter<DateTimeOffsetTuple, DateTimeOffsetTemplate> router,
         ObserverChannel<DateTimeOffsetTuple> observerChannel,
         CallbackChannel<DateTimeOffsetTuple> callbackChannel)
-        : base(IDateTimeOffsetGrain.Key, IDateTimeOffsetDirector.Key, options, client, router, observerChannel, callbackChannel)
+        : base(IDateTimeOffsetStore.Key, IDateTimeOffsetDirector.Key, options, client, router, observerChannel, callbackChannel)
     { }
 }

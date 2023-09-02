@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate, ILo
         ISpaceRouter<LongTuple, LongTemplate> router,
         ObserverChannel<LongTuple> observerChannel,
         CallbackChannel<LongTuple> callbackChannel)
-        : base(ILongGrain.Key, ILongDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(ILongStore.Key, ILongDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

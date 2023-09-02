@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class UHugeProcessor : BaseProcessor<UHugeTuple, UHugeTemplate, 
         ISpaceRouter<UHugeTuple, UHugeTemplate> router,
         ObserverChannel<UHugeTuple> observerChannel,
         CallbackChannel<UHugeTuple> callbackChannel)
-        : base(IUHugeGrain.Key, IUHugeDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IUHugeStore.Key, IUHugeDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

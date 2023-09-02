@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Tuples;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Channels;
-using OrleanSpaces.Directors;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class SpaceProcessor : BaseProcessor<SpaceTuple, SpaceTemplate, 
         ISpaceRouter<SpaceTuple, SpaceTemplate> router,
         ObserverChannel<SpaceTuple> observerChannel,
         CallbackChannel<SpaceTuple> callbackChannel)
-        : base(ISpaceGrain.Key, ISpaceDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(ISpaceStore.Key, ISpaceDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }

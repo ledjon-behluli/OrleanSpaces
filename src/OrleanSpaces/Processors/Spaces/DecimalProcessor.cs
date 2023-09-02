@@ -1,7 +1,7 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Directors;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Stores;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,5 +14,5 @@ internal sealed class DecimalProcessor : BaseProcessor<DecimalTuple, DecimalTemp
         ISpaceRouter<DecimalTuple, DecimalTemplate> router,
         ObserverChannel<DecimalTuple> observerChannel,
         CallbackChannel<DecimalTuple> callbackChannel)
-        : base(IDecimalGrain.Key, IDecimalDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(IDecimalStore.Key, IDecimalDirector.Key, options, client, router, observerChannel, callbackChannel) { }
 }
