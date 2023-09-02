@@ -40,7 +40,12 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         router.RouteStore(storeFactory());
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, key));
+
+        var stream = client
+            .GetStreamProvider(Constants.PubSubProvider)
+            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, key));
+
+        await stream.SubscribeOrResumeAsync(this);
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -60,7 +65,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
 
         if (action.Type == TupleActionType.Insert)
         {
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.Pair.Tuple);
         }
     }
 

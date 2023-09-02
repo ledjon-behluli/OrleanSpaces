@@ -45,12 +45,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        collection.Add(action.Tuple);
-                        await streamChannel.WriteIfNotNull(action.Tuple);
+                        collection.Add(action.Pair);
+                        await streamChannel.WriteIfNotNull(action.Pair.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    collection.Remove(action.Tuple);
+                    collection.Remove(action.Pair);
                     break;
                 case TupleActionType.Clear:
                     collection.Clear();
@@ -78,10 +78,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
+        Guid storeId = await tupleStore.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        collection.Add(tuple);
+        collection.Add(new(tuple, storeId));
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -92,59 +92,57 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
-        return new(tuple);
+        var pair = collection.FindPair(template);
+        return new(pair.Tuple);
     }
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
-
-        if (tuple.IsEmpty)
+        var pair = collection.FindPair(template);
+        if (pair.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
             return;
         }
 
-        await callback(tuple);
+        await callback(pair.Tuple);
     }
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
+        var pair = collection.FindPair(template);
 
-        if (!tuple.IsEmpty)
+        if (!pair.Tuple.IsEmpty)
         {
-            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
-            collection.Remove(tuple);
+            await tupleStore.Remove(new(agentId, pair, TupleActionType.Remove));
+            collection.Remove(pair);
         }
 
-        return tuple;
+        return pair.Tuple;
     }
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = collection.FirstOrDefault(template.Matches);
-
-        if (tuple.IsEmpty)
+        var pair = collection.FindPair(template);
+        if (pair.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
             return;
         }
 
-        await callback(tuple);
-        await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
+        await callback(pair.Tuple);
+        await tupleStore.Remove(new(agentId, pair, TupleActionType.Remove));
 
-        collection.Remove(tuple);
+        collection.Remove(pair);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
-        var result = collection.FindAll(template);
+        var result = collection.FindAllTuples(template);
         return new(result);
     }
 

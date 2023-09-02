@@ -5,40 +5,42 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
+internal record struct TupleAddressPair<T>(T Tuple, Guid StoreId) where T : ISpaceTuple;
+
 internal sealed class TupleCollection : IEnumerable<SpaceTuple>
 {
-    private readonly ConcurrentDictionary<int, ImmutableArray<SpaceTuple>> dict = new();
+    private readonly ConcurrentDictionary<int, ImmutableArray<TupleAddressPair<SpaceTuple>>> dict = new();
 
     public int Count => dict.Values.Sum(x => x.Length);
 
-    public void Add(SpaceTuple tuple)
+    public void Add(TupleAddressPair<SpaceTuple> pair)
     {
-        int index = tuple.Length - 1;
-        dict[index] = dict.TryGetValue(index, out ImmutableArray<SpaceTuple> tuples) ?
-            tuples.Add(tuple) : ImmutableArray.Create(tuple);
+        int index = pair.Tuple.Length - 1;
+        dict[index] = dict.TryGetValue(index, out ImmutableArray<TupleAddressPair<SpaceTuple>> pairs) ?
+            pairs.Add(pair) : ImmutableArray.Create(pair);
     }
 
-    public void Remove(SpaceTuple tuple)
+    public void Remove(TupleAddressPair<SpaceTuple> pair)
     {
-        int index = tuple.Length - 1;
-        if (dict.TryRemove(index, out ImmutableArray<SpaceTuple> tuples))
+        int index = pair.Tuple.Length - 1;
+        if (dict.TryRemove(index, out ImmutableArray<TupleAddressPair<SpaceTuple>> pairs))
         {
-            dict[index] = tuples.Remove(tuple);
+            dict[index] = pairs.Remove(pair);
         }
     }
 
     public void Clear() => dict.Clear();
 
-    public SpaceTuple Find(SpaceTemplate template)
+    public TupleAddressPair<SpaceTuple> FindPair(SpaceTemplate template)
     {
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
         {
-            foreach (SpaceTuple tuple in dict[index])
+            foreach (var pair in dict[index])
             {
-                if (template.Matches(tuple))
+                if (template.Matches(pair.Tuple))
                 {
-                    return tuple;
+                    return pair;
                 }
             }
         }
@@ -46,18 +48,18 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
         return default;
     }
 
-    public IEnumerable<SpaceTuple> FindAll(SpaceTemplate template)
+    public IEnumerable<SpaceTuple> FindAllTuples(SpaceTemplate template)
     {
         List<SpaceTuple> tuples = new();
         int index = template.Length - 1;
 
         if (dict.ContainsKey(index))
         {
-            foreach (SpaceTuple tuple in dict[index])
+            foreach (var pair in dict[index])
             {
-                if (template.Matches(tuple))
+                if (template.Matches(pair.Tuple))
                 {
-                    tuples.Add(tuple);
+                    tuples.Add(pair.Tuple);
                 }
             }
         }
@@ -69,9 +71,9 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
     {
         foreach (var kvp in dict)
         {
-            foreach (SpaceTuple tuple in kvp.Value)
+            foreach (var pair in kvp.Value)
             {
-                yield return tuple;
+                yield return pair.Tuple;
             }
         }
     }

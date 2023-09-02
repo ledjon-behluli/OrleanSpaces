@@ -26,11 +26,11 @@ internal abstract class BaseGrain<T> : Grain
         return Task.CompletedTask;
     }
 
-    public ValueTask<ImmutableArray<T>> GetAll() => new(space.State.ToImmutableArray());
+    public Task<ImmutableArray<T>> GetAll() => Task.FromResult(space.State.ToImmutableArray());
 
     public async Task Insert(TupleAction<T> action)
     {
-        space.State.Add(action.Tuple);
+        space.State.Add(action.Pair.Tuple);
 
         await space.WriteStateAsync();
         await stream.OnNextAsync(action);
@@ -38,7 +38,7 @@ internal abstract class BaseGrain<T> : Grain
 
     public async Task Remove(TupleAction<T> action)
     {
-        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Tuple));
+        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Pair.Tuple));
         if (!storedTuple.IsEmpty)
         {
             space.State.Remove(storedTuple);

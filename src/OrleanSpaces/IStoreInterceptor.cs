@@ -3,11 +3,14 @@ using System.Collections.Immutable;
 
 namespace OrleanSpaces;
 
-internal interface ITupleStore<T> where T : ISpaceTuple
+internal interface IStoreInterceptor<T>
+     where T : ISpaceTuple
 {
     Task<ImmutableArray<T>> GetAll();
 
-    Task Insert(TupleAction<T> action);
+    Task<Guid> Insert(TupleAction<T> action);
     Task Remove(TupleAction<T> action);
     Task RemoveAll(Guid agentId);
+
+    Task OnNewStoreCreated(Guid storeId);
 }
