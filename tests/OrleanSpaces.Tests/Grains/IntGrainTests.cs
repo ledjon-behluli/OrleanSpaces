@@ -27,7 +27,7 @@ public class IntGrainTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         stream = client
            .GetStreamProvider(Constants.PubSubProvider)
            .GetStream<TupleAction<IntTuple>>(
-               StreamId.Create(Constants.Store_StreamNamespace, IIntGrain.Key));
+               StreamId.Create(Constants.StreamName, IIntGrain.Key));
 
         await stream.SubscribeAsync(observer);
     }

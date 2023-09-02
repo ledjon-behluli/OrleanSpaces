@@ -11,6 +11,6 @@ internal interface IGuidGrain : ITupleStore<GuidTuple>, IGrainWithStringKey
 internal sealed class GuidGrain : BaseGrain<GuidTuple>, IGuidGrain
 {
     public GuidGrain(
-        [PersistentState(IGuidGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IGuidGrain.Key, Constants.StorageName)]
         IPersistentState<List<GuidTuple>> space) : base(IGuidGrain.Key, space) { }
 }

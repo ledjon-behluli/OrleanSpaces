@@ -3,22 +3,13 @@
 public static class Constants
 {
     /// <summary>
-    /// The name of the 'store' storage provider.
+    /// The name of the storage provider.
     /// </summary>
-    public const string Store_StorageName = "OrleanSpacesStore";
+    public const string StorageName = "OrleanSpaces";
     /// <summary>
-    /// The name of the 'store metadata' storage provider.
+    /// The name of the stream provider.
     /// </summary>
-    public const string StoreMetadata_StorageName = "OrleanSpacesStoreMetadata";
-    /// <summary>
-    /// The name of the 'store' stream namespace.
-    /// </summary>
-    public const string Store_StreamNamespace = "OrleanSpaces.Store";
-    /// <summary>
-    /// The name of the 'store metadata' stream namespace.
-    /// </summary>
-    public const string StoreMetadata_StreamNamespace = "OrleanSpaces.StoreMetadata";
-
+    public const string StreamName = "OrleanSpace";
     /// <summary>
     /// The name of the pub-sub stream provider.
     /// </summary>

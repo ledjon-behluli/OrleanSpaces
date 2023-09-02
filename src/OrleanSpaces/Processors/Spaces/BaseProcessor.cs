@@ -44,7 +44,7 @@ internal class BaseProcessor<TTuple, TTemplate, TInterceptor> : BackgroundServic
 
         var stream = client
             .GetStreamProvider(Constants.PubSubProvider)
-            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.Store_StreamNamespace, storeKey));
+            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, storeKey));
 
         await stream.SubscribeOrResumeAsync(this);
     }

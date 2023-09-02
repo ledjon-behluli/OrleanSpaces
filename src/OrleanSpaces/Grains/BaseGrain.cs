@@ -11,9 +11,8 @@ internal abstract class BaseGrain<T> : Grain
 {
     private readonly string storeKey;
     private readonly IPersistentState<List<T>> space;
-    
-    [AllowNull] private IAsyncStream<TupleAction<T>> storeStream;
-    [AllowNull] private IAsyncStream<string> interceptorStream;
+
+    [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
     public BaseGrain(string storeKey, IPersistentState<List<T>> space)
     {
@@ -23,13 +22,9 @@ internal abstract class BaseGrain<T> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        StreamId storeStreamId = StreamId.Create(Constants.Store_StreamNamespace, storeKey);
-        StreamId interceptorStreamId = StreamId.Create(Constants.StoreMetadata_StreamNamespace, storeKey);
-
-        var streamProvider = this.GetStreamProvider(Constants.PubSubProvider);
-
-        storeStream = streamProvider.GetStream<TupleAction<T>>(storeStreamId);
-        interceptorStream = streamProvider.GetStream<string>(interceptorStreamId);
+        stream = this
+            .GetStreamProvider(Constants.PubSubProvider)
+            .GetStream<TupleAction<T>>(StreamId.Create(Constants.StreamName, storeKey));
 
         return Task.CompletedTask;
     }
@@ -46,41 +41,37 @@ internal abstract class BaseGrain<T> : Grain
         space.State.Add(action.Address.Tuple);
 
         await space.WriteStateAsync();
-        await storeStream.OnNextAsync(action);
+        await stream.OnNextAsync(action);
 
         return true;
     }
 
-    public async Task Remove(TupleAction<T> action)
+    public async Task<int> Remove(TupleAction<T> action)
     {
         var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Address.Tuple));
         if (!storedTuple.IsEmpty)
         {
             space.State.Remove(storedTuple);
-
-            await space.WriteStateAsync();
-            await storeStream.OnNextAsync(action);
-
             if (space.State.Count == 0)
             {
-                await TerminateAsync();
+                await space.ClearStateAsync();
+                DeactivateOnIdle();
+
+                return 0;
             }
+
+            await space.WriteStateAsync();
+            await stream.OnNextAsync(action);
         }
+
+        return space.State.Count;
     }
 
     public async Task RemoveAll(Guid agentId)
     {
-        space.State.Clear();
+        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
+        await space.ClearStateAsync();
 
-        await space.WriteStateAsync();
-        await storeStream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
-
-        await TerminateAsync();
-    }
-
-    private async Task TerminateAsync()
-    {
-        await interceptorStream.OnNextAsync(this.GetPrimaryKeyString());
         DeactivateOnIdle();
     }
 }

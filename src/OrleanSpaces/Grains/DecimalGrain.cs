@@ -11,6 +11,6 @@ internal interface IDecimalGrain : ITupleStore<DecimalTuple>, IGrainWithStringKe
 internal sealed class DecimalGrain : BaseGrain<DecimalTuple>, IDecimalGrain
 {
     public DecimalGrain(
-        [PersistentState(IDecimalGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IDecimalGrain.Key, Constants.StorageName)]
         IPersistentState<List<DecimalTuple>> space) : base(IDecimalGrain.Key, space) { }
 }

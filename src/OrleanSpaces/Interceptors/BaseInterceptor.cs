@@ -1,90 +1,103 @@
 ﻿using Orleans.Runtime;
-using Orleans.Streams;
-using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 
 namespace OrleanSpaces.Interceptors;
 
-internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<string>
+internal class BaseInterceptor<TTuple, TStore> : Grain
     where TTuple : ISpaceTuple
     where TStore : ITupleStore<TTuple>, IGrainWithStringKey
 {
     private readonly string storeKey;
-    private readonly IPersistentState<HashSet<string>> storeIds;
+    private readonly IPersistentState<HashSet<string>> storeFullKeys;
 
     private Guid currentStoreId;
+   
 
-    private string CurrentStoreKey => $"{storeKey}-{currentStoreId:N}";
-    private TStore CurrentStore => GrainFactory.GetGrain<TStore>(CurrentStoreKey);
-
-    public BaseInterceptor(string storeKey, IPersistentState<HashSet<string>> storeIds)
+    public BaseInterceptor(string storeKey, IPersistentState<HashSet<string>> storeFullKeys)
     {
         this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
-        this.storeIds = storeIds ?? throw new ArgumentNullException(nameof(storeIds));
+        this.storeFullKeys = storeFullKeys ?? throw new ArgumentNullException(nameof(storeFullKeys));
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        if (storeIds.State is null || storeIds.State.Count == 0)
+        if (storeFullKeys.State is null || storeFullKeys.State.Count == 0)
         {
-            currentStoreId = Guid.NewGuid();
-            storeIds.State = new HashSet<string> { CurrentStoreKey };
-            
-            await storeIds.WriteStateAsync();
+            await AddNewStore();
         }
-
-        var stream = this
-           .GetStreamProvider(Constants.PubSubProvider)
-           .GetStream<string>(StreamId.Create(Constants.StoreMetadata_StreamNamespace, storeKey));
-
-        await stream.SubscribeOrResumeAsync(this);
+        else
+        {
+            currentStoreId = Guid.Parse(storeFullKeys.State.Last().Split('-')[1]);
+        }
     }
 
     public async Task<ImmutableArray<TTuple>> GetAll()
     {
         List<Task<ImmutableArray<TTuple>>> tasks = new();
-
-        foreach (var storeId in storeIds.State)
+        foreach (string fullKey in storeFullKeys.State)
         {
-            tasks.Add(GrainFactory.GetGrain<TStore>(storeId).GetAll());
+            tasks.Add(GrainFactory.GetGrain<TStore>(fullKey).GetAll());
         }
 
         var results = await Task.WhenAll(tasks);
-        var mergedResult = ImmutableArray<TTuple>.Empty;
+        var merged = ImmutableArray<TTuple>.Empty;
 
         foreach (var result in results)
         {
-            mergedResult = mergedResult.AddRange(result);
+            merged = merged.AddRange(result);
         }
 
-        return mergedResult;
+        return merged;
     }
 
     public async Task<Guid> Insert(TupleAction<TTuple> action)
     {
-        bool success = await CurrentStore.Insert(action);
+        bool success = await GrainFactory.GetGrain<TStore>(CreateFullKey(currentStoreId)).Insert(action);
         if (!success)
         {
-            currentStoreId = Guid.NewGuid();
-            await CurrentStore.Insert(action);
-
-            storeIds.State.Add(CurrentStoreKey);
-            await storeIds.WriteStateAsync();
+            await AddNewStore();
+            await GrainFactory.GetGrain<TStore>(CreateFullKey(currentStoreId)).Insert(action);
         }
 
         return currentStoreId;
     }
 
-    public Task Remove(TupleAction<TTuple> action) => CurrentStore.Remove(action);
-    public Task RemoveAll(Guid agentId) => CurrentStore.RemoveAll(agentId);
-
-    public async Task OnNextAsync(string item, StreamSequenceToken? token = null)
+    public async Task Remove(TupleAction<TTuple> action)
     {
-        storeIds.State.Remove(item);
-        await storeIds.WriteStateAsync();
+        string fullKey = CreateFullKey(action.Address.StoreId);
+        if (!storeFullKeys.State.Any(x => x.Equals(fullKey)))
+        {
+            return;
+        }
+
+        int remaning = await GrainFactory.GetGrain<TStore>(fullKey).Remove(action);
+        if (remaning == 0)
+        {
+            storeFullKeys.State.Remove(fullKey);
+            await (storeFullKeys.State.Count > 0 ? storeFullKeys.WriteStateAsync() : AddNewStore());
+        }
     }
 
-    public Task OnCompletedAsync() => Task.CompletedTask;
-    public Task OnErrorAsync(Exception ex) => Task.CompletedTask;
+    public async Task RemoveAll(Guid agentId)
+    {
+        List<Task> tasks = new();
+        foreach (string fullKey in storeFullKeys.State)
+        {
+            tasks.Add(GrainFactory.GetGrain<TStore>(fullKey).RemoveAll(agentId));
+        }
+        
+        await Task.WhenAll();
+        await AddNewStore();
+    }
+
+    private async Task AddNewStore()
+    {
+        currentStoreId = Guid.NewGuid();
+        storeFullKeys.State = new HashSet<string> { CreateFullKey(currentStoreId) };
+
+        await storeFullKeys.WriteStateAsync();
+    }
+
+    private string CreateFullKey(Guid id) => $"{storeKey}-{id:N}";
 }

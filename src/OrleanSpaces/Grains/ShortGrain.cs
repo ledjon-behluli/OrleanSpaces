@@ -11,6 +11,6 @@ internal interface IShortGrain : ITupleStore<ShortTuple>, IGrainWithStringKey
 internal sealed class ShortGrain : BaseGrain<ShortTuple>, IShortGrain
 {
     public ShortGrain(
-        [PersistentState(IShortGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IShortGrain.Key, Constants.StorageName)]
         IPersistentState<List<ShortTuple>> space) : base(IShortGrain.Key, space) { }
 }

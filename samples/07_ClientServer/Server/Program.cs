@@ -11,7 +11,7 @@ var host = Host.CreateDefaultBuilder(args)
         siloBuilder.AddOrleanSpaces();  // adding space services in the silo(s), means we can use the agents in the silo(s) too!
         siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-        siloBuilder.AddMemoryGrainStorage(Constants.Store_StorageName);
+        siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
     })
     .ConfigureLogging(builder => builder.AddConsole())
     .Build();

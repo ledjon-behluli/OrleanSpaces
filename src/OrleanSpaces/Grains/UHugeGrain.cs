@@ -11,6 +11,6 @@ internal interface IUHugeGrain : ITupleStore<UHugeTuple>, IGrainWithStringKey
 internal sealed class UHugeGrain : BaseGrain<UHugeTuple>, IUHugeGrain
 {
     public UHugeGrain(
-        [PersistentState(IUHugeGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IUHugeGrain.Key, Constants.StorageName)]
         IPersistentState<List<UHugeTuple>> space) : base(IUHugeGrain.Key, space) { }
 }

@@ -5,7 +5,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UHugeProcessor : BaseProcessor<UHugeTuple, UHugeTemplate, IUHugeInterceptor>
 {
     public UHugeProcessor(

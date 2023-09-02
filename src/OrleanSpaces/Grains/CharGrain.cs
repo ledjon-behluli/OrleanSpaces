@@ -11,6 +11,6 @@ internal interface ICharGrain : ITupleStore<CharTuple>, IGrainWithStringKey
 internal sealed class CharGrain : BaseGrain<CharTuple>, ICharGrain
 {
     public CharGrain(
-        [PersistentState(ICharGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(ICharGrain.Key, Constants.StorageName)]
         IPersistentState<List<CharTuple>> space) : base(ICharGrain.Key, space) { }
 }

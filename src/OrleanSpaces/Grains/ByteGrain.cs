@@ -11,6 +11,6 @@ internal interface IByteGrain : ITupleStore<ByteTuple>, IGrainWithStringKey
 internal sealed class ByteGrain : BaseGrain<ByteTuple>, IByteGrain
 {
     public ByteGrain(
-        [PersistentState(IByteGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IByteGrain.Key, Constants.StorageName)]
         IPersistentState<List<ByteTuple>> space) : base(IByteGrain.Key, space) { }
 }

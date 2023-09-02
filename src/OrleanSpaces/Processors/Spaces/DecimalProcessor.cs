@@ -5,7 +5,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DecimalProcessor : BaseProcessor<DecimalTuple, DecimalTemplate, IDecimalInterceptor>
 {
     public DecimalProcessor(

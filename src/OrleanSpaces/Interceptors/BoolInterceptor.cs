@@ -9,11 +9,11 @@ internal interface IBoolInterceptor : IStoreInterceptor<BoolTuple>, IGrainWithSt
     const string Key = "BoolInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class BoolInterceptor : BaseInterceptor<BoolTuple, IBoolGrain>, IBoolInterceptor
 {
     public BoolInterceptor(
-        [PersistentState(IBoolInterceptor.Key, Constants.Store_StorageName)]
+        [PersistentState(IBoolInterceptor.Key, Constants.StorageName)]
         IPersistentState<HashSet<string>> storeIds)
         : base(IBoolGrain.Key, storeIds) { }
 }

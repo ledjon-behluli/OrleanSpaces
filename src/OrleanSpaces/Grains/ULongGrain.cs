@@ -11,6 +11,6 @@ internal interface IULongGrain : ITupleStore<ULongTuple>, IGrainWithStringKey
 internal sealed class ULongGrain : BaseGrain<ULongTuple>, IULongGrain
 {
     public ULongGrain(
-        [PersistentState(IULongGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IULongGrain.Key, Constants.StorageName)]
         IPersistentState<List<ULongTuple>> space) : base(IULongGrain.Key, space) { }
 }

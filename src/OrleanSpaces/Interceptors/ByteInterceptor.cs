@@ -9,11 +9,11 @@ internal interface IByteInterceptor : IStoreInterceptor<ByteTuple>, IGrainWithSt
     const string Key = "ByteInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class ByteInterceptor : BaseInterceptor<ByteTuple, IByteGrain>, IByteInterceptor
 {
     public ByteInterceptor(
-        [PersistentState(IByteInterceptor.Key, Constants.Store_StorageName)]
+        [PersistentState(IByteInterceptor.Key, Constants.StorageName)]
         IPersistentState<HashSet<string>> storeIds)
         : base(IByteGrain.Key, storeIds) { }
 }

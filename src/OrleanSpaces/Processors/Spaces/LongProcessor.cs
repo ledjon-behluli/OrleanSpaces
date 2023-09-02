@@ -5,7 +5,7 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate, ILongInterceptor>
 {
     public LongProcessor(

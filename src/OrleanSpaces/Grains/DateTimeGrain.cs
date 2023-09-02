@@ -11,6 +11,6 @@ internal interface IDateTimeGrain : ITupleStore<DateTimeTuple>, IGrainWithString
 internal sealed class DateTimeGrain : BaseGrain<DateTimeTuple>, IDateTimeGrain
 {
     public DateTimeGrain(
-        [PersistentState(IDateTimeGrain.Key, Constants.Store_StorageName)]
+        [PersistentState(IDateTimeGrain.Key, Constants.StorageName)]
         IPersistentState<List<DateTimeTuple>> space) : base(IDateTimeGrain.Key, space) { }
 }

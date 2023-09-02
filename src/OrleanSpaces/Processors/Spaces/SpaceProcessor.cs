@@ -5,7 +5,7 @@ using OrleanSpaces.Interceptors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SpaceProcessor : BaseProcessor<SpaceTuple, SpaceTemplate, ISpaceInterceptor>
 {
     public SpaceProcessor(

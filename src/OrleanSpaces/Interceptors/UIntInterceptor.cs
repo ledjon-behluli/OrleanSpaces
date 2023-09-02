@@ -9,11 +9,11 @@ internal interface IUIntInterceptor : IStoreInterceptor<UIntTuple>, IGrainWithSt
     const string Key = "UIntInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UIntInterceptor : BaseInterceptor<UIntTuple, IUIntGrain>, IUIntInterceptor
 {
     public UIntInterceptor(
-        [PersistentState(IUIntInterceptor.Key, Constants.Store_StorageName)]
+        [PersistentState(IUIntInterceptor.Key, Constants.StorageName)]
         IPersistentState<HashSet<string>> storeIds)
         : base(IUIntGrain.Key, storeIds) { }
 }

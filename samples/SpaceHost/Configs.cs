@@ -6,20 +6,20 @@ public static class Configs
     {
         configurator.ConfigureAzureQueue(queueOptions => queueOptions.Configure(options =>
         {
-            options.QueueNames = new List<string> { OrleanSpaces.Constants.Store_StreamNamespace };
+            options.QueueNames = new List<string> { OrleanSpaces.Constants.StreamName };
             options.ConfigureQueueServiceClient("UseDevelopmentStorage=true");
         }));
     };
 
     public static Action<AzureTableStorageOptions> TableConfig = options =>
     {
-        options.TableName = OrleanSpaces.Constants.Store_StorageName;
+        options.TableName = OrleanSpaces.Constants.StorageName;
         options.ConfigureTableServiceClient("UseDevelopmentStorage=true");
     };
 
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
-        options.ContainerName = OrleanSpaces.Constants.Store_StorageName.ToLower(); // ToLower because of blob container naming rules
+        options.ContainerName = OrleanSpaces.Constants.StorageName.ToLower(); // ToLower because of blob container naming rules
         options.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
     };
 

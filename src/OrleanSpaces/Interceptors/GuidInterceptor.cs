@@ -9,11 +9,11 @@ internal interface IGuidInterceptor : IStoreInterceptor<GuidTuple>, IGrainWithSt
     const string Key = "GuidInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class GuidInterceptor : BaseInterceptor<GuidTuple, IGuidGrain>, IGuidInterceptor
 {
     public GuidInterceptor(
-        [PersistentState(IGuidInterceptor.Key, Constants.Store_StorageName)]
+        [PersistentState(IGuidInterceptor.Key, Constants.StorageName)]
         IPersistentState<HashSet<string>> storeIds)
         : base(IGuidGrain.Key, storeIds) { }
 }

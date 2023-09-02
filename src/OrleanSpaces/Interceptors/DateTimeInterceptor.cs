@@ -9,11 +9,11 @@ internal interface IDateTimeInterceptor : IStoreInterceptor<DateTimeTuple>, IGra
     const string Key = "DateTimeInterceptor";
 }
 
-[ImplicitStreamSubscription(Constants.Store_StreamNamespace)]
+[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DateTimeInterceptor : BaseInterceptor<DateTimeTuple, IDateTimeGrain>, IDateTimeInterceptor
 {
     public DateTimeInterceptor(
-        [PersistentState(IDateTimeInterceptor.Key, Constants.Store_StorageName)]
+        [PersistentState(IDateTimeInterceptor.Key, Constants.StorageName)]
         IPersistentState<HashSet<string>> storeIds)
         : base(IDateTimeGrain.Key, storeIds) { }
 }
