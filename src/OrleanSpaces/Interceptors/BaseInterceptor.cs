@@ -62,7 +62,16 @@ internal class BaseInterceptor<TTuple, TStore> : Grain, IAsyncObserver<Guid>
 
     public async Task<Guid> Insert(TupleAction<TTuple> action)
     {
-        await CurrentStore.Insert(action);
+        bool success = await CurrentStore.Insert(action);
+        if (!success)
+        {
+            currentStoreId = Guid.NewGuid();
+            await CurrentStore.Insert(action);
+
+            storeIds.State.Add(currentStoreId);
+            await storeIds.WriteStateAsync();
+        }
+
         return currentStoreId;
     }
 

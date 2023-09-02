@@ -70,7 +70,7 @@ public class SpaceTupleCollectionTests
             tuple
         };
 
-        var result = collection.FindPair(template);
+        var result = collection.Find(template);
 
         Assert.Equal(tuple, result);
     }
@@ -80,7 +80,7 @@ public class SpaceTupleCollectionTests
     {
         TupleCollection collection = new();
 
-        var result = collection.FindPair(template);
+        var result = collection.Find(template);
 
         Assert.Equal(result, new());
     }
@@ -94,7 +94,7 @@ public class SpaceTupleCollectionTests
             tuple
         };
 
-        var results = collection.FindAllTuples(template);
+        var results = collection.FindAll(template);
 
         Assert.Equal(2, results.Count());
         Assert.Contains(tuple, results);

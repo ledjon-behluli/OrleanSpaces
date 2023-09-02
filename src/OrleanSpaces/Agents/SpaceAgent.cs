@@ -17,7 +17,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     private readonly CallbackRegistry callbackRegistry;
     private readonly TupleCollection collection = new();
 
-    [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
+    [AllowNull] private IStoreInterceptor<SpaceTuple> store;
     private Channel<SpaceTuple>? streamChannel;
    
     public SpaceAgent(
@@ -34,8 +34,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceRouter
 
-    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteStore(ITupleStore<SpaceTuple> tupleStore) 
-        => this.tupleStore = tupleStore;
+    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteStore(IStoreInterceptor<SpaceTuple> store) 
+        => this.store = store;
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
     {
@@ -78,7 +78,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        Guid storeId = await tupleStore.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
+        Guid storeId = await store.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
         collection.Add(new(tuple, storeId));
@@ -92,57 +92,57 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        var pair = collection.FindPair(template);
-        return new(pair.Tuple);
+        var address = collection.Find(template);
+        return new(address.Tuple);
     }
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var pair = collection.FindPair(template);
-        if (pair.Tuple.IsEmpty)
+        var address = collection.Find(template);
+        if (address.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
             return;
         }
 
-        await callback(pair.Tuple);
+        await callback(address.Tuple);
     }
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        var pair = collection.FindPair(template);
+        var address = collection.Find(template);
 
-        if (!pair.Tuple.IsEmpty)
+        if (!address.Tuple.IsEmpty)
         {
-            await tupleStore.Remove(new(agentId, pair, TupleActionType.Remove));
-            collection.Remove(pair);
+            await store.Remove(new(agentId, address, TupleActionType.Remove));
+            collection.Remove(address);
         }
 
-        return pair.Tuple;
+        return address.Tuple;
     }
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var pair = collection.FindPair(template);
-        if (pair.Tuple.IsEmpty)
+        var address = collection.Find(template);
+        if (address.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
             return;
         }
 
-        await callback(pair.Tuple);
-        await tupleStore.Remove(new(agentId, pair, TupleActionType.Remove));
+        await callback(address.Tuple);
+        await store.Remove(new(agentId, address, TupleActionType.Remove));
 
-        collection.Remove(pair);
+        collection.Remove(address);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
-        var result = collection.FindAllTuples(template);
+        var result = collection.FindAll(template);
         return new(result);
     }
 
@@ -176,7 +176,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public async Task ClearAsync()
     {
-        await tupleStore.RemoveAll(agentId);
+        await store.RemoveAll(agentId);
         collection.Clear();
     }
 

@@ -28,12 +28,19 @@ internal abstract class BaseGrain<T> : Grain
 
     public Task<ImmutableArray<T>> GetAll() => Task.FromResult(space.State.ToImmutableArray());
 
-    public async Task Insert(TupleAction<T> action)
+    public async Task<bool> Insert(TupleAction<T> action)
     {
+        if (space.State.Count == Constants.MaxTuplesPerShard)
+        {
+            return false;
+        }
+
         space.State.Add(action.Pair.Tuple);
 
         await space.WriteStateAsync();
         await stream.OnNextAsync(action);
+
+        return true;
     }
 
     public async Task Remove(TupleAction<T> action)

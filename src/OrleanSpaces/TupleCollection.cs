@@ -5,42 +5,40 @@ using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
-internal record struct TupleAddressPair<T>(T Tuple, Guid StoreId) where T : ISpaceTuple;
-
 internal sealed class TupleCollection : IEnumerable<SpaceTuple>
 {
-    private readonly ConcurrentDictionary<int, ImmutableArray<TupleAddressPair<SpaceTuple>>> dict = new();
+    private readonly ConcurrentDictionary<int, ImmutableArray<TupleAddress<SpaceTuple>>> dict = new();
 
     public int Count => dict.Values.Sum(x => x.Length);
 
-    public void Add(TupleAddressPair<SpaceTuple> pair)
+    public void Add(TupleAddress<SpaceTuple> item)
     {
-        int index = pair.Tuple.Length - 1;
-        dict[index] = dict.TryGetValue(index, out ImmutableArray<TupleAddressPair<SpaceTuple>> pairs) ?
-            pairs.Add(pair) : ImmutableArray.Create(pair);
+        int index = item.Tuple.Length - 1;
+        dict[index] = dict.TryGetValue(index, out ImmutableArray<TupleAddress<SpaceTuple>> items) ?
+            items.Add(item) : ImmutableArray.Create(item);
     }
 
-    public void Remove(TupleAddressPair<SpaceTuple> pair)
+    public void Remove(TupleAddress<SpaceTuple> item)
     {
-        int index = pair.Tuple.Length - 1;
-        if (dict.TryRemove(index, out ImmutableArray<TupleAddressPair<SpaceTuple>> pairs))
+        int index = item.Tuple.Length - 1;
+        if (dict.TryRemove(index, out ImmutableArray<TupleAddress<SpaceTuple>> items))
         {
-            dict[index] = pairs.Remove(pair);
+            dict[index] = items.Remove(item);
         }
     }
 
     public void Clear() => dict.Clear();
 
-    public TupleAddressPair<SpaceTuple> FindPair(SpaceTemplate template)
+    public TupleAddress<SpaceTuple> Find(SpaceTemplate template)
     {
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
         {
-            foreach (var pair in dict[index])
+            foreach (var item in dict[index])
             {
-                if (template.Matches(pair.Tuple))
+                if (template.Matches(item.Tuple))
                 {
-                    return pair;
+                    return item;
                 }
             }
         }
@@ -48,18 +46,18 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
         return default;
     }
 
-    public IEnumerable<SpaceTuple> FindAllTuples(SpaceTemplate template)
+    public IEnumerable<SpaceTuple> FindAll(SpaceTemplate template)
     {
         List<SpaceTuple> tuples = new();
         int index = template.Length - 1;
 
         if (dict.ContainsKey(index))
         {
-            foreach (var pair in dict[index])
+            foreach (var item in dict[index])
             {
-                if (template.Matches(pair.Tuple))
+                if (template.Matches(item.Tuple))
                 {
-                    tuples.Add(pair.Tuple);
+                    tuples.Add(item.Tuple);
                 }
             }
         }
@@ -71,9 +69,9 @@ internal sealed class TupleCollection : IEnumerable<SpaceTuple>
     {
         foreach (var kvp in dict)
         {
-            foreach (var pair in kvp.Value)
+            foreach (var item in kvp.Value)
             {
-                yield return pair.Tuple;
+                yield return item.Tuple;
             }
         }
     }
@@ -86,38 +84,38 @@ internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
-    private readonly ConcurrentDictionary<int, ImmutableArray<TTuple>> dict = new();
+    private readonly ConcurrentDictionary<int, ImmutableArray<TupleAddress<TTuple>>> dict = new();
 
     public int Count => dict.Values.Sum(x => x.Length);
 
-    public void Add(TTuple tuple)
+    public void Add(TupleAddress<TTuple> item)
     {
-        int index = tuple.Length - 1;
-        dict[index] = dict.TryGetValue(index, out ImmutableArray<TTuple> tuples) ?
-            tuples.Add(tuple) : ImmutableArray.Create(tuple);
+        int index = item.Tuple.Length - 1;
+        dict[index] = dict.TryGetValue(index, out ImmutableArray<TupleAddress<TTuple>> tuples) ?
+            tuples.Add(item) : ImmutableArray.Create(item);
     }
 
-    public void Remove(TTuple tuple)
+    public void Remove(TupleAddress<TTuple> item)
     {
-        int index = tuple.Length - 1;
-        if (dict.TryRemove(index, out ImmutableArray<TTuple> tuples))
+        int index = item.Tuple.Length - 1;
+        if (dict.TryRemove(index, out ImmutableArray<TupleAddress<TTuple>> tuples))
         {
-            dict[index] = tuples.Remove(tuple);
+            dict[index] = tuples.Remove(item);
         }
     }
 
     public void Clear() => dict.Clear();
 
-    public TTuple Find(TTemplate template)
+    public TupleAddress<TTuple> Find(TTemplate template)
     {
         int index = template.Length - 1;
         if (dict.ContainsKey(index))
         {
-            foreach (TTuple tuple in dict[index])
+            foreach (var item in dict[index])
             {
-                if (template.Matches(tuple))
+                if (template.Matches(item.Tuple))
                 {
-                    return tuple;
+                    return item;
                 }
             }
         }
@@ -132,11 +130,11 @@ internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple
 
         if (dict.ContainsKey(index))
         {
-            foreach (TTuple tuple in dict[index])
+            foreach (var item in dict[index])
             {
-                if (template.Matches(tuple))
+                if (template.Matches(item.Tuple))
                 {
-                    tuples.Add(tuple);
+                    tuples.Add(item.Tuple);
                 }
             }
         }
@@ -148,9 +146,9 @@ internal sealed class TupleCollection<T, TTuple, TTemplate> : IEnumerable<TTuple
     {
         foreach (var kvp in dict)
         {
-            foreach (TTuple tuple in kvp.Value)
+            foreach (var item in kvp.Value)
             {
-                yield return tuple;
+                yield return item.Tuple;
             }
         }
     }

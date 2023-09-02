@@ -17,7 +17,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
     private readonly ISpaceRouter<TTuple, TTemplate> router;
     private readonly ObserverChannel<TTuple> observerChannel;
     private readonly CallbackChannel<TTuple> callbackChannel;
-    private readonly Func<ITupleStore<TTuple>> storeFactory;
+    private readonly Func<IStoreInterceptor<TTuple>> storeFactory;
 
     public BaseProcessor(
         string key,
@@ -26,7 +26,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,
         CallbackChannel<TTuple> callbackChannel,
-        Func<ITupleStore<TTuple>> storeFactory)
+        Func<IStoreInterceptor<TTuple>> storeFactory)
     {
         this.key = key ?? throw new ArgumentNullException(nameof(key));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
@@ -65,7 +65,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
 
         if (action.Type == TupleActionType.Insert)
         {
-            await callbackChannel.Writer.WriteAsync(action.Pair.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.Address.Tuple);
         }
     }
 

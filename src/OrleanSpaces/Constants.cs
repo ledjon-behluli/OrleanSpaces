@@ -19,6 +19,8 @@ public static class Constants
     /// </summary>
     public const string PubSubStore = "PubSubStore";
 
+    internal const int MaxTuplesPerShard = 5000;
+
     internal const int MaxStackSize = 1024;
 
     internal const int ByteCount_Int128 = 16;                   // maximum value can be represented by this number of bytes.

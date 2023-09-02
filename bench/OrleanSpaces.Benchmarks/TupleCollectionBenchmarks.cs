@@ -58,7 +58,7 @@ public class TupleCollectionBenchmarks
     [Benchmark(Baseline = true)]
     public void Find_TupleCollection()
     {
-        _ = tupleCollection.FindPair(template);
+        _ = tupleCollection.Find(template);
     }
 
     [Benchmark]

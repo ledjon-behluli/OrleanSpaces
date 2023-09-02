@@ -6,7 +6,7 @@ internal interface ISpaceRouter<TTuple, TTemplate>
     where TTuple : ISpaceTuple
     where TTemplate : ISpaceTemplate
 {
-    void RouteStore(ITupleStore<TTuple> store);
+    void RouteStore(IStoreInterceptor<TTuple> store);
     Task RouteTuple(TTuple tuple);
     ValueTask RouteTemplate(TTemplate template);
     ValueTask RouteAction(TupleAction<TTuple> action);

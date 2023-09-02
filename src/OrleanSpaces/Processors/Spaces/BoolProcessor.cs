@@ -1,5 +1,5 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
+using OrleanSpaces.Interceptors;
 using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -13,6 +13,6 @@ internal sealed class BoolProcessor : BaseProcessor<BoolTuple, BoolTemplate>
         ISpaceRouter<BoolTuple, BoolTemplate> router,
         ObserverChannel<BoolTuple> observerChannel,
         CallbackChannel<BoolTuple> callbackChannel)
-        : base(IBoolGrain.Key, options, client, router, observerChannel, callbackChannel, 
-            () => client.GetGrain<IBoolGrain>(IBoolGrain.Key)) { }
+        : base(IBoolInterceptor.Key, options, client, router, observerChannel, callbackChannel, 
+            () => client.GetGrain<IBoolInterceptor>(IBoolInterceptor.Key)) { }
 }
