@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class ULongAgent : BaseAgent<ulong, ULongTuple, ULongTemplate>
 {
     public ULongAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<ULongTuple> evaluationChannel,
         ObserverRegistry<ULongTuple> observerRegistry,
         CallbackRegistry<ulong, ULongTuple, ULongTemplate> callbackRegistry)

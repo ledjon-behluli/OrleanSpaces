@@ -24,7 +24,7 @@ internal abstract class BaseStore<T> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        partitionThreshold = ServiceProvider.GetRequiredService<SpaceOptions>().PartitionThreshold;
+        partitionThreshold = ServiceProvider.GetRequiredService<SpaceServerOptions>().PartitionThreshold;
         stream = this.GetStreamProvider(Constants.PubSubProvider)
             .GetStream<TupleAction<T>>(StreamId.Create(Constants.StreamName, realmKey));
 

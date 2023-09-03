@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class IntProcessor : BaseProcessor<IntTuple, IntTemplate, IIntDirector>
 {
     public IntProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<IntTuple, IntTemplate> router,
         ObserverChannel<IntTuple> observerChannel,

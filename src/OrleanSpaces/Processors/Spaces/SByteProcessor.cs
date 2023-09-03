@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, ISByteDirector>
 {
     public SByteProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<SByteTuple, SByteTemplate> router,
         ObserverChannel<SByteTuple> observerChannel,

@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class GuidProcessor : BaseProcessor<GuidTuple, GuidTemplate, IGuidDirector>
 {
     public GuidProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<GuidTuple, GuidTemplate> router,
         ObserverChannel<GuidTuple> observerChannel,

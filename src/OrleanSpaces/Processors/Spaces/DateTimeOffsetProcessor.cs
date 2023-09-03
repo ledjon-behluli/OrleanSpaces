@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class DateTimeOffsetProcessor : BaseProcessor<DateTimeOffsetTuple, DateTimeOffsetTemplate, IDateTimeOffsetDirector>
 {
     public DateTimeOffsetProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<DateTimeOffsetTuple, DateTimeOffsetTemplate> router,
         ObserverChannel<DateTimeOffsetTuple> observerChannel,

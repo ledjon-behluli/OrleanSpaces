@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class UIntProcessor : BaseProcessor<UIntTuple, UIntTemplate, IUIntDirector>
 {
     public UIntProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<UIntTuple, UIntTemplate> router,
         ObserverChannel<UIntTuple> observerChannel,

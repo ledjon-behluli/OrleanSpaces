@@ -7,13 +7,13 @@ namespace OrleanSpaces.Processors;
 
 internal sealed class CallbackProcessor : BackgroundService
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
     public CallbackProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         CallbackRegistry registry,
         CallbackChannel<SpaceTuple> callbackChannel,
         ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel)
@@ -65,13 +65,13 @@ internal sealed class CallbackProcessor<T, TTuple, TTemplate> : BackgroundServic
     where TTuple : ISpaceTuple<T>, ISpaceConvertible<T, TTemplate>
     where TTemplate : ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly CallbackChannel<TTuple> callbackChannel;
     private readonly CallbackRegistry<T, TTuple, TTemplate> registry;
     private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public CallbackProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         CallbackRegistry<T, TTuple, TTemplate> registry,
         CallbackChannel<TTuple> callbackChannel,
         ContinuationChannel<TTuple, TTemplate> continuationChannel)

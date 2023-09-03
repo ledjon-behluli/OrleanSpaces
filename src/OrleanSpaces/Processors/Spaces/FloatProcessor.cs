@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class FloatProcessor : BaseProcessor<FloatTuple, FloatTemplate, IFloatDirector>
 {
     public FloatProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<FloatTuple, FloatTemplate> router,
         ObserverChannel<FloatTuple> observerChannel,

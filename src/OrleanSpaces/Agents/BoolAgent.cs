@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class BoolAgent : BaseAgent<bool, BoolTuple, BoolTemplate>
 {
     public BoolAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<BoolTuple> evaluationChannel,
         ObserverRegistry<BoolTuple> observerRegistry,
         CallbackRegistry<bool, BoolTuple, BoolTemplate> callbackRegistry)

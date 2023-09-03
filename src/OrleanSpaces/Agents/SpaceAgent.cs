@@ -11,7 +11,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
@@ -21,7 +21,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     private Channel<SpaceTuple>? streamChannel;
    
     public SpaceAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
         CallbackRegistry callbackRegistry)

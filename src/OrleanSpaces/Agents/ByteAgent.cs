@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class ByteAgent : BaseAgent<byte, ByteTuple, ByteTemplate>
 {
     public ByteAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<ByteTuple> evaluationChannel,
         ObserverRegistry<ByteTuple> observerRegistry,
         CallbackRegistry<byte, ByteTuple, ByteTemplate> callbackRegistry)

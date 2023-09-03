@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class CharAgent : BaseAgent<char, CharTuple, CharTemplate>
 {
     public CharAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<CharTuple> evaluationChannel,
         ObserverRegistry<CharTuple> observerRegistry,
         CallbackRegistry<char, CharTuple, CharTemplate> callbackRegistry)

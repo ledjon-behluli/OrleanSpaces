@@ -1,14 +1,37 @@
 ﻿namespace OrleanSpaces;
 
 /// <summary>
-/// Options to configure general space functionalities
+/// Options to configure server functionalities.
 /// </summary>
-public sealed class SpaceOptions
+public sealed class SpaceServerOptions : SpaceOptions
+{
+    /// <inheritdoc/>
+    public override SpaceKind EnabledSpaces { get; set; } = SpaceKind.None;
+
+    /// <summary>
+    /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
+    /// </summary>
+    public int PartitionThreshold { get; set; } = 1_000;
+}
+
+/// <summary>
+/// Options to configure client functionalities.
+/// </summary>
+public sealed class SpaceClientOptions : SpaceOptions
+{
+    /// <inheritdoc/>
+    public override SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
+}
+
+/// <summary>
+/// Options to configure generic functionalities.
+/// </summary>
+public abstract class SpaceOptions
 {
     /// <summary>
     /// Determines which of the <see cref="SpaceKind"/>(s) are enabled.
     /// </summary>
-    public SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
+    public abstract SpaceKind EnabledSpaces { get; set; }
 
     /// <summary>
     /// If set to <see langword="true"/>, catches all exceptions that happen inside:
@@ -45,11 +68,6 @@ public sealed class SpaceOptions
     /// than the <see cref="ISpaceObserver{T}"/> will receive only notifications that have been written by an agent in a different process.
     /// </summary>
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
-
-    /// <summary>
-    /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
-    /// </summary>
-    public int PartitionThreshold { get; set; } = 1_000;
 }
 
 /// <summary>
@@ -58,7 +76,7 @@ public sealed class SpaceOptions
 [Flags]
 public enum SpaceKind
 {
-    All = Generic | Bool | Byte | Char | DateTimeOffset | DateTime | Decimal | Double | Float | Guid | Huge | Int | Long | SByte | Short | TimeSpan | UHuge | UInt | ULong | UShort,
+    None = 0,
     Generic = 1,
     Bool = 2,
     Byte = 4,
@@ -78,5 +96,6 @@ public enum SpaceKind
     UHuge = 65536,
     UInt = 131072,
     ULong = 262144,
-    UShort = 524288
+    UShort = 524288,
+    All = Generic | Bool | Byte | Char | DateTimeOffset | DateTime | Decimal | Double | Float | Guid | Huge | Int | Long | SByte | Short | TimeSpan | UHuge | UInt | ULong | UShort
 }

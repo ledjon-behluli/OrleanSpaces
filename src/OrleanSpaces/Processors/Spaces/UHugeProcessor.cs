@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class UHugeProcessor : BaseProcessor<UHugeTuple, UHugeTemplate, IUHugeDirector>
 {
     public UHugeProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<UHugeTuple, UHugeTemplate> router,
         ObserverChannel<UHugeTuple> observerChannel,

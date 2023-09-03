@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class UShortProcessor : BaseProcessor<UShortTuple, UShortTemplate, IUShortDirector>
 {
     public UShortProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<UShortTuple, UShortTemplate> router,
         ObserverChannel<UShortTuple> observerChannel,

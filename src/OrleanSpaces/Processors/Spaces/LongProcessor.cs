@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate, ILongDirector>
 {
     public LongProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<LongTuple, LongTemplate> router,
         ObserverChannel<LongTuple> observerChannel,

@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class ShortAgent : BaseAgent<short, ShortTuple, ShortTemplate>
 {
     public ShortAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<ShortTuple> evaluationChannel,
         ObserverRegistry<ShortTuple> observerRegistry,
         CallbackRegistry<short, ShortTuple, ShortTemplate> callbackRegistry)

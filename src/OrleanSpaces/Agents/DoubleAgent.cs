@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class DoubleAgent : BaseAgent<double, DoubleTuple, DoubleTemplate>
 {
     public DoubleAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<DoubleTuple> evaluationChannel,
         ObserverRegistry<DoubleTuple> observerRegistry,
         CallbackRegistry<double, DoubleTuple, DoubleTemplate> callbackRegistry)

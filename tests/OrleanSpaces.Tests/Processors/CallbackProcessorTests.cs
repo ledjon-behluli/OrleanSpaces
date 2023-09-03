@@ -8,7 +8,7 @@ namespace OrleanSpaces.Tests.Processors;
 
 public class CallbackSpaceProcessorTests : IClassFixture<CallbackSpaceProcessorTests.Fixture>
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly CallbackRegistry registry;
     private readonly CallbackChannel<SpaceTuple> callbackChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
@@ -97,7 +97,7 @@ public class CallbackSpaceProcessorTests : IClassFixture<CallbackSpaceProcessorT
     {
         private readonly CallbackProcessor processor;
 
-        internal SpaceOptions Options { get; }
+        internal SpaceClientOptions Options { get; }
         internal CallbackChannel<SpaceTuple> CallbackChannel { get; }
         internal ContinuationChannel<SpaceTuple, SpaceTemplate> ContinuationChannel { get; }
         internal CallbackRegistry Registry { get; private set; }
@@ -118,7 +118,7 @@ public class CallbackSpaceProcessorTests : IClassFixture<CallbackSpaceProcessorT
 
 public class CallbackIntProcessorTests : IClassFixture<CallbackIntProcessorTests.Fixture>
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly CallbackRegistry<int, IntTuple, IntTemplate> registry;
     private readonly CallbackChannel<IntTuple> callbackChannel;
     private readonly ContinuationChannel<IntTuple, IntTemplate> continuationChannel;
@@ -208,7 +208,7 @@ public class CallbackIntProcessorTests : IClassFixture<CallbackIntProcessorTests
     {
         private readonly CallbackProcessor<int, IntTuple, IntTemplate> processor;
 
-        internal SpaceOptions Options { get; }
+        internal SpaceClientOptions Options { get; }
         internal CallbackChannel<IntTuple> CallbackChannel { get; }
         internal ContinuationChannel<IntTuple, IntTemplate> ContinuationChannel { get; }
         internal CallbackRegistry<int, IntTuple, IntTemplate> Registry { get; private set; }

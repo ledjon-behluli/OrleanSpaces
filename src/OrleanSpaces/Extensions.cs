@@ -15,10 +15,19 @@ public static class Extensions
     /// Configures the tuple space on the host.
     /// </summary>
     /// <param name="builder">The orleans silo builder.</param>
-    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceOptions"/></param>
-    public static ISiloBuilder AddOrleanSpaces(this ISiloBuilder builder, Action<SpaceOptions>? configureOptions = null)
+    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceServerOptions"/></param>
+    public static ISiloBuilder AddOrleanSpaces(this ISiloBuilder builder, Action<SpaceServerOptions>? configureOptions = null)
     {
-        builder.Services.AddOrleanSpaces(configureOptions);
+        SpaceServerOptions options = new();
+        configureOptions?.Invoke(options);
+        if (options.PartitionThreshold < 1)
+        {
+            throw new InvalidOperationException("Partition threshold must be greater than zero.");
+        }
+        
+        builder.Services.AddSingleton(options);
+        builder.Services.AddClientServices(options.EnabledSpaces);
+
         return builder;
     }
 
@@ -26,25 +35,26 @@ public static class Extensions
     /// Configures the tuple space on the client.
     /// </summary>
     /// <param name="builder">The orleans client builder.</param>
-    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceOptions"/></param>
-    public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceOptions>? configureOptions = null)
+    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceClientOptions"/></param>
+    public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceClientOptions>? configureOptions = null)
     {
-        builder.Services.AddOrleanSpaces(configureOptions);
+        SpaceClientOptions options = new();
+        configureOptions?.Invoke(options);
+
+        builder.Services.AddSingleton(options);
+        builder.Services.AddClientServices(options.EnabledSpaces);
+
         return builder;
     }
 
-    private static void AddOrleanSpaces(this IServiceCollection services, Action<SpaceOptions>? configureOptions = null)
+    private static void AddClientServices(this IServiceCollection services, SpaceKind spaceKind)
     {
-        SpaceOptions options = new();
-        configureOptions?.Invoke(options);
-        if (options.PartitionThreshold < 1)
+        if (spaceKind.HasFlag(SpaceKind.None))
         {
-            throw new InvalidOperationException("Partition threshold must be greater than zero.");
+            return;
         }
 
-        services.AddSingleton(options);
-
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Generic))
+        if (spaceKind.HasFlag(SpaceKind.Generic))
         {
             services.AddSingleton<ObserverRegistry<SpaceTuple>>();
             services.AddSingleton<CallbackRegistry>();
@@ -65,7 +75,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<SpaceTuple, SpaceTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Bool))
+        if (spaceKind.HasFlag(SpaceKind.Bool))
         {
             services.AddSingleton<ObserverRegistry<BoolTuple>>();
             services.AddSingleton<CallbackRegistry<bool, BoolTuple, BoolTemplate>>();
@@ -86,7 +96,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<BoolTuple, BoolTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Byte))
+        if (spaceKind.HasFlag(SpaceKind.Byte))
         {
             services.AddSingleton<ObserverRegistry<ByteTuple>>();
             services.AddSingleton<CallbackRegistry<byte, ByteTuple, ByteTemplate>>();
@@ -107,7 +117,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<ByteTuple, ByteTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Char))
+        if (spaceKind.HasFlag(SpaceKind.Char))
         {
             services.AddSingleton<ObserverRegistry<CharTuple>>();
             services.AddSingleton<CallbackRegistry<char, CharTuple, CharTemplate>>();
@@ -128,7 +138,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<CharTuple, CharTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.DateTimeOffset))
+        if (spaceKind.HasFlag(SpaceKind.DateTimeOffset))
         {
             services.AddSingleton<ObserverRegistry<DateTimeOffsetTuple>>();
             services.AddSingleton<CallbackRegistry<DateTimeOffset, DateTimeOffsetTuple, DateTimeOffsetTemplate>>();
@@ -149,7 +159,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<DateTimeOffsetTuple, DateTimeOffsetTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.DateTime))
+        if (spaceKind.HasFlag(SpaceKind.DateTime))
         {
             services.AddSingleton<ObserverRegistry<DateTimeTuple>>();
             services.AddSingleton<CallbackRegistry<DateTime, DateTimeTuple, DateTimeTemplate>>();
@@ -170,7 +180,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<DateTimeTuple, DateTimeTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Decimal))
+        if (spaceKind.HasFlag(SpaceKind.Decimal))
         {
             services.AddSingleton<ObserverRegistry<DecimalTuple>>();
             services.AddSingleton<CallbackRegistry<decimal, DecimalTuple, DecimalTemplate>>();
@@ -191,7 +201,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<DecimalTuple, DecimalTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Double))
+        if (spaceKind.HasFlag(SpaceKind.Double))
         {
             services.AddSingleton<ObserverRegistry<DoubleTuple>>();
             services.AddSingleton<CallbackRegistry<double, DoubleTuple, DoubleTemplate>>();
@@ -212,7 +222,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<DoubleTuple, DoubleTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Float))
+        if (spaceKind.HasFlag(SpaceKind.Float))
         {
             services.AddSingleton<ObserverRegistry<FloatTuple>>();
             services.AddSingleton<CallbackRegistry<float, FloatTuple, FloatTemplate>>();
@@ -233,7 +243,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<FloatTuple, FloatTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Guid))
+        if (spaceKind.HasFlag(SpaceKind.Guid))
         {
             services.AddSingleton<ObserverRegistry<GuidTuple>>();
             services.AddSingleton<CallbackRegistry<Guid, GuidTuple, GuidTemplate>>();
@@ -254,7 +264,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<GuidTuple, GuidTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Huge))
+        if (spaceKind.HasFlag(SpaceKind.Huge))
         {
             services.AddSingleton<ObserverRegistry<HugeTuple>>();
             services.AddSingleton<CallbackRegistry<Int128, HugeTuple, HugeTemplate>>();
@@ -275,7 +285,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<HugeTuple, HugeTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Int))
+        if (spaceKind.HasFlag(SpaceKind.Int))
         {
             services.AddSingleton<ObserverRegistry<IntTuple>>();
             services.AddSingleton<CallbackRegistry<int, IntTuple, IntTemplate>>();
@@ -296,7 +306,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<IntTuple, IntTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Long))
+        if (spaceKind.HasFlag(SpaceKind.Long))
         {
             services.AddSingleton<ObserverRegistry<LongTuple>>();
             services.AddSingleton<CallbackRegistry<long, LongTuple, LongTemplate>>();
@@ -317,7 +327,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<LongTuple, LongTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.SByte))
+        if (spaceKind.HasFlag(SpaceKind.SByte))
         {
             services.AddSingleton<ObserverRegistry<SByteTuple>>();
             services.AddSingleton<CallbackRegistry<sbyte, SByteTuple, SByteTemplate>>();
@@ -338,7 +348,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<SByteTuple, SByteTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.Short))
+        if (spaceKind.HasFlag(SpaceKind.Short))
         {
             services.AddSingleton<ObserverRegistry<ShortTuple>>();
             services.AddSingleton<CallbackRegistry<short, ShortTuple, ShortTemplate>>();
@@ -359,7 +369,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<ShortTuple, ShortTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.TimeSpan))
+        if (spaceKind.HasFlag(SpaceKind.TimeSpan))
         {
             services.AddSingleton<ObserverRegistry<TimeSpanTuple>>();
             services.AddSingleton<CallbackRegistry<TimeSpan, TimeSpanTuple, TimeSpanTemplate>>();
@@ -380,7 +390,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<TimeSpanTuple, TimeSpanTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.UHuge))
+        if (spaceKind.HasFlag(SpaceKind.UHuge))
         {
             services.AddSingleton<ObserverRegistry<UHugeTuple>>();
             services.AddSingleton<CallbackRegistry<UInt128, UHugeTuple, UHugeTemplate>>();
@@ -401,7 +411,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<UHugeTuple, UHugeTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.UInt))
+        if (spaceKind.HasFlag(SpaceKind.UInt))
         {
             services.AddSingleton<ObserverRegistry<UIntTuple>>();
             services.AddSingleton<CallbackRegistry<uint, UIntTuple, UIntTemplate>>();
@@ -422,7 +432,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<UIntTuple, UIntTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.ULong))
+        if (spaceKind.HasFlag(SpaceKind.ULong))
         {
             services.AddSingleton<ObserverRegistry<ULongTuple>>();
             services.AddSingleton<CallbackRegistry<ulong, ULongTuple, ULongTemplate>>();
@@ -443,7 +453,7 @@ public static class Extensions
             services.AddHostedService<ContinuationProcessor<ULongTuple, ULongTemplate>>();
         }
 
-        if (options.EnabledSpaces.HasFlag(SpaceKind.UShort))
+        if (spaceKind.HasFlag(SpaceKind.UShort))
         {
             services.AddSingleton<ObserverRegistry<UShortTuple>>();
             services.AddSingleton<CallbackRegistry<ushort, UShortTuple, UShortTemplate>>();

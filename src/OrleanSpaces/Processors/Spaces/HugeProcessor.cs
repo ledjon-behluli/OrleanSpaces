@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class HugeProcessor : BaseProcessor<HugeTuple, HugeTemplate, IHugeDirector>
 {
     public HugeProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<HugeTuple, HugeTemplate> router,
         ObserverChannel<HugeTuple> observerChannel,

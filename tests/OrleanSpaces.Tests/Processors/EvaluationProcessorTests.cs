@@ -7,7 +7,7 @@ namespace OrleanSpaces.Tests.Processors;
 
 public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProcessorTests.Fixture>
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ContinuationChannel<SpaceTuple, SpaceTemplate> continuationChannel;
 
@@ -45,7 +45,7 @@ public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProces
     {
         private readonly EvaluationProcessor<SpaceTuple, SpaceTemplate> processor;
 
-        internal SpaceOptions Options { get; }
+        internal SpaceClientOptions Options { get; }
         internal EvaluationChannel<SpaceTuple> EvaluationChannel { get; }
         internal ContinuationChannel<SpaceTuple, SpaceTemplate> ContinuationChannel { get; }
 
@@ -64,7 +64,7 @@ public class EvaluationSpaceProcessorTests : IClassFixture<EvaluationSpaceProces
 
 public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorTests.Fixture>
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<IntTuple> evaluationChannel;
     private readonly ContinuationChannel<IntTuple, IntTemplate> continuationChannel;
 
@@ -103,7 +103,7 @@ public class EvaluationIntProcessorTests : IClassFixture<EvaluationIntProcessorT
     {
         private readonly EvaluationProcessor<IntTuple, IntTemplate> processor;
 
-        internal SpaceOptions Options { get; }
+        internal SpaceClientOptions Options { get; }
         internal EvaluationChannel<IntTuple> EvaluationChannel { get; }
         internal ContinuationChannel<IntTuple, IntTemplate> ContinuationChannel { get; }
 

@@ -14,7 +14,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
@@ -24,7 +24,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     private Channel<TTuple>? streamChannel;
 
     public BaseAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<TTuple> evaluationChannel,
         ObserverRegistry<TTuple> observerRegistry,
         CallbackRegistry<T, TTuple, TTemplate> callbackRegistry)

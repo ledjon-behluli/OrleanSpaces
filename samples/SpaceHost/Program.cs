@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(builder =>
     {
+        builder.AddOrleanSpaces(o => o.PartitionThreshold = 1);
         builder.UseLocalhostClustering();
         //builder.UseTransactions();
         #region Streaming

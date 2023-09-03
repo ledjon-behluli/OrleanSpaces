@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class BoolProcessor : BaseProcessor<BoolTuple, BoolTemplate, IBoolDirector>
 {
     public BoolProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<BoolTuple, BoolTemplate> router,
         ObserverChannel<BoolTuple> observerChannel,

@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class DoubleProcessor : BaseProcessor<DoubleTuple, DoubleTemplate, IDoubleDirector>
 {
     public DoubleProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<DoubleTuple, DoubleTemplate> router,
         ObserverChannel<DoubleTuple> observerChannel,

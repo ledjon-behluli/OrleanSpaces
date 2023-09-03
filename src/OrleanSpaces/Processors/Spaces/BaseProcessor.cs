@@ -14,7 +14,7 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
     where TDirector : IStoreDirector<TTuple>, IGrainWithStringKey
 {
     private readonly string realmKey;
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
     private readonly ObserverChannel<TTuple> observerChannel;
@@ -22,7 +22,7 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
 
     public BaseProcessor(
         string realmKey,
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,

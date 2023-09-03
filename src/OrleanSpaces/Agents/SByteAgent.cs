@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class SByteAgent : BaseAgent<sbyte, SByteTuple, SByteTemplate>
 {
     public SByteAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<SByteTuple> evaluationChannel,
         ObserverRegistry<SByteTuple> observerRegistry,
         CallbackRegistry<sbyte, SByteTuple, SByteTemplate> callbackRegistry)

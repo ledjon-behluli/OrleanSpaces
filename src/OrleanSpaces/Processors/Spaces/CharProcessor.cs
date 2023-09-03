@@ -8,7 +8,7 @@ namespace OrleanSpaces.Processors.Spaces;
 internal sealed class CharProcessor : BaseProcessor<CharTuple, CharTemplate, ICharDirector>
 {
     public CharProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<CharTuple, CharTemplate> router,
         ObserverChannel<CharTuple> observerChannel,
