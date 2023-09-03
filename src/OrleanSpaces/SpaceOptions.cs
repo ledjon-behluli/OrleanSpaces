@@ -45,6 +45,11 @@ public sealed class SpaceOptions
     /// than the <see cref="ISpaceObserver{T}"/> will receive only notifications that have been written by an agent in a different process.
     /// </summary>
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
+
+    /// <summary>
+    /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
+    /// </summary>
+    public int PartitionThreshold { get; set; } = 1_000;
 }
 
 /// <summary>

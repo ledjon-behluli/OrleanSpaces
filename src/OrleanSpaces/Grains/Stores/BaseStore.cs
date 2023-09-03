@@ -1,4 +1,5 @@
-﻿using Orleans.Runtime;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
@@ -12,6 +13,7 @@ internal abstract class BaseStore<T> : Grain
     private readonly string realmKey;
     private readonly IPersistentState<List<T>> space;
 
+    private int partitionThreshold;
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
     public BaseStore(string realmKey, IPersistentState<List<T>> space)
@@ -22,6 +24,8 @@ internal abstract class BaseStore<T> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
+        partitionThreshold = ServiceProvider.GetRequiredService<SpaceOptions>().PartitionThreshold;
+
         stream = this
             .GetStreamProvider(Constants.PubSubProvider)
             .GetStream<TupleAction<T>>(StreamId.Create(Constants.StreamName, realmKey));
@@ -34,7 +38,7 @@ internal abstract class BaseStore<T> : Grain
 
     public async Task<bool> Insert(TupleAction<T> action)
     {
-        if (space.State.Count == Constants.MaxTuplesPerShard)
+        if (space.State.Count == partitionThreshold)
         {
             return false;
         }

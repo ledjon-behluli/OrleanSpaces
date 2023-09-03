@@ -37,6 +37,10 @@ public static class Extensions
     {
         SpaceOptions options = new();
         configureOptions?.Invoke(options);
+        if (options.PartitionThreshold < 1)
+        {
+            throw new InvalidOperationException("Partition threshold must be greater than zero.");
+        }
 
         services.AddSingleton(options);
 
