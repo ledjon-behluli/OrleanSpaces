@@ -12,8 +12,7 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
     where TTemplate : ISpaceTemplate
     where TDirector : IStoreDirector<TTuple>, IGrainWithStringKey
 {
-    private readonly string storeKey;
-    private readonly string directorKey;
+    private readonly string realmKey;
     private readonly SpaceOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
@@ -21,16 +20,14 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
     private readonly CallbackChannel<TTuple> callbackChannel;
 
     public BaseProcessor(
-        string storeKey,
-        string directorKey,
+        string realmKey,
         SpaceOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,
         CallbackChannel<TTuple> callbackChannel)
     {
-        this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
-        this.directorKey = directorKey ?? throw new ArgumentNullException(nameof(directorKey));
+        this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
@@ -40,11 +37,11 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        router.RouteDirector(client.GetGrain<TDirector>(directorKey));
+        router.RouteDirector(client.GetGrain<TDirector>(realmKey));
 
         var stream = client
             .GetStreamProvider(Constants.PubSubProvider)
-            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, storeKey));
+            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, realmKey));
 
         await stream.SubscribeOrResumeAsync(this);
     }

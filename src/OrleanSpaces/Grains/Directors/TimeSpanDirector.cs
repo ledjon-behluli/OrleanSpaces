@@ -11,6 +11,6 @@ internal sealed class TimeSpanDirector : BaseDirector<TimeSpanTuple, ITimeSpanSt
 {
     public TimeSpanDirector(
         [PersistentState(Constants.RealmKey_TimeSpan, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_TimeSpan, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_TimeSpan, storeKeys) { }
 }

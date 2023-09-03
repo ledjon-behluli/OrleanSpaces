@@ -11,6 +11,6 @@ internal sealed class ULongDirector : BaseDirector<ULongTuple, IULongStore>, IUL
 {
     public ULongDirector(
         [PersistentState(Constants.RealmKey_ULong, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_ULong, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_ULong, storeKeys) { }
 }

@@ -3,31 +3,36 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 
 var host = Host.CreateDefaultBuilder(args)
-    .UseOrleans(siloBuilder =>
+    .UseOrleans(builder =>
     {
-        siloBuilder.UseLocalhostClustering();
+        builder.UseLocalhostClustering();
+        //builder.UseTransactions();
         #region Streaming
 
-        siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
-        //siloBuilder.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig);
+        builder.AddMemoryStreams(Constants.PubSubProvider);
+        //builder.AddAzureQueueStreams(Constants.PubSubProvider, Configs.QueueConfig);
 
         #endregion
         #region Persistence
 
-        siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-        siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
+        builder.AddMemoryGrainStorage(Constants.PubSubStore);
+        builder.AddMemoryGrainStorage(Constants.StorageName);
 
-        //siloBuilder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
-        //siloBuilder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
+        //builder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
+        //builder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
-        //siloBuilder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
-        //siloBuilder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);
+        //builder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
+        //builder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);
 
-        //siloBuilder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
-        //siloBuilder.AddAdoNetGrainStorage(Constants.StorageName, Configs.AdoNetConfig);
+        //builder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
+        //builder.AddAdoNetGrainStorage(Constants.StorageName, Configs.AdoNetConfig);
 
         #endregion
+        #region Transactions
 
+        //builder.AddAzureTableTransactionalStateStorage(Constants.TransactionsStorageName, Configs.TransactionsTableConfig);
+
+        #endregion
     })
     .ConfigureLogging(builder => builder.AddConsole())
     .Build();

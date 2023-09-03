@@ -1,7 +1,6 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
-using OrleanSpaces.Tuples.Specialized;
 using OrleanSpaces.Grains.Directors;
+using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -14,6 +13,6 @@ internal sealed class CharProcessor : BaseProcessor<CharTuple, CharTemplate, ICh
         ISpaceRouter<CharTuple, CharTemplate> router,
         ObserverChannel<CharTuple> observerChannel,
         CallbackChannel<CharTuple> callbackChannel)
-        : base(ICharGrain.Key, ICharDirector.Key, options, client, router, observerChannel, callbackChannel)
+        : base(Constants.RealmKey_Char, options, client, router, observerChannel, callbackChannel)
     { }
 }

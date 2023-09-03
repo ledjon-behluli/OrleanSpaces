@@ -11,6 +11,6 @@ internal sealed class DoubleDirector : BaseDirector<DoubleTuple, IDoubleStore>, 
 {
     public DoubleDirector(
         [PersistentState(Constants.RealmKey_Double, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Double, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Double, storeKeys) { }
 }

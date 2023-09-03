@@ -11,6 +11,6 @@ internal sealed class GuidDirector : BaseDirector<GuidTuple, IGuidStore>, IGuidD
 {
     public GuidDirector(
         [PersistentState(Constants.RealmKey_Guid, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Guid, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Guid, storeKeys) { }
 }

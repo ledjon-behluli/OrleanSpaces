@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, 
         ISpaceRouter<SByteTuple, SByteTemplate> router,
         ObserverChannel<SByteTuple> observerChannel,
         CallbackChannel<SByteTuple> callbackChannel)
-        : base(ISByteStore.Key, ISByteDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_SByte, options, client, router, observerChannel, callbackChannel) { }
 }

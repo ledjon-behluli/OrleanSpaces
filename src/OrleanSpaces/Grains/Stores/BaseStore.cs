@@ -9,14 +9,14 @@ namespace OrleanSpaces.Grains.Stores;
 internal abstract class BaseStore<T> : Grain
     where T : struct, ISpaceTuple, IEquatable<T>
 {
-    private readonly string storeKey;
+    private readonly string realmKey;
     private readonly IPersistentState<List<T>> space;
 
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
-    public BaseStore(string storeKey, IPersistentState<List<T>> space)
+    public BaseStore(string realmKey, IPersistentState<List<T>> space)
     {
-        this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
+        this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
         this.space = space ?? throw new ArgumentNullException(nameof(space));
     }
 
@@ -24,7 +24,7 @@ internal abstract class BaseStore<T> : Grain
     {
         stream = this
             .GetStreamProvider(Constants.PubSubProvider)
-            .GetStream<TupleAction<T>>(StreamId.Create(Constants.StreamName, storeKey));
+            .GetStream<TupleAction<T>>(StreamId.Create(Constants.StreamName, realmKey));
 
         return Task.CompletedTask;
     }

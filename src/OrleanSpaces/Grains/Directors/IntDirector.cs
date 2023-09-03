@@ -11,6 +11,6 @@ internal sealed class IntDirector : BaseDirector<IntTuple, IIntStore>, IIntDirec
 {
     public IntDirector(
         [PersistentState(Constants.RealmKey_Int, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Int, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Int, storeKeys) { }
 }

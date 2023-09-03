@@ -30,7 +30,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Orleans.Sdk" Version="7.2.1" />
 		<PackageReference Include="Microsoft.Orleans.Streaming" Version="7.2.1" />
-		
+    <PackageReference Include="Microsoft.Orleans.Transactions" Version="7.2.1" />
+    
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>OrleanSpaces.Tests</_Parameter1>
 		</AssemblyAttribute>

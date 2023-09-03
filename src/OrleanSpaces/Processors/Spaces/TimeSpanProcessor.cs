@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class TimeSpanProcessor : BaseProcessor<TimeSpanTuple, TimeSpanT
         ISpaceRouter<TimeSpanTuple, TimeSpanTemplate> router,
         ObserverChannel<TimeSpanTuple> observerChannel,
         CallbackChannel<TimeSpanTuple> callbackChannel)
-        : base(ITimeSpanStore.Key, ITimeSpanDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_TimeSpan, options, client, router, observerChannel, callbackChannel) { }
 }

@@ -11,6 +11,6 @@ internal sealed class SpaceDirector : BaseDirector<SpaceTuple, ISpaceStore>, ISp
 {
     public SpaceDirector(
         [PersistentState(Constants.RealmKey_Space, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Space, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Space, storeKeys) { }
 }

@@ -11,6 +11,6 @@ internal sealed class CharDirector : BaseDirector<CharTuple, ICharStore>, ICharD
 {
     public CharDirector(
         [PersistentState(Constants.RealmKey_Char, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Char, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Char, storeKeys) { }
 }

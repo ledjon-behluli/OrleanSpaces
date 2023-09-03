@@ -8,34 +8,34 @@ internal class BaseDirector<TTuple, TStore> : Grain
     where TTuple : ISpaceTuple
     where TStore : ITupleStore<TTuple>, IGrainWithStringKey
 {
-    private readonly string storeKey;
-    private readonly IPersistentState<HashSet<string>> storeFullKeys;
+    private readonly string realmKey;
+    private readonly IPersistentState<HashSet<string>> storeKeys;
 
     private Guid currentStoreId;
 
 
-    public BaseDirector(string storeKey, IPersistentState<HashSet<string>> storeFullKeys)
+    public BaseDirector(string realmKey, IPersistentState<HashSet<string>> storeKeys)
     {
-        this.storeKey = storeKey ?? throw new ArgumentNullException(nameof(storeKey));
-        this.storeFullKeys = storeFullKeys ?? throw new ArgumentNullException(nameof(storeFullKeys));
+        this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
+        this.storeKeys = storeKeys ?? throw new ArgumentNullException(nameof(storeKeys));
     }
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        if (storeFullKeys.State is null || storeFullKeys.State.Count == 0)
+        if (storeKeys.State is null || storeKeys.State.Count == 0)
         {
             await AddNewStore();
         }
         else
         {
-            currentStoreId = Guid.Parse(storeFullKeys.State.Last().Split('-')[1]);
+            currentStoreId = Guid.Parse(storeKeys.State.Last().Split('-')[1]);
         }
     }
 
     public async Task<ImmutableArray<TTuple>> GetAll()
     {
         List<Task<ImmutableArray<TTuple>>> tasks = new();
-        foreach (string fullKey in storeFullKeys.State)
+        foreach (string fullKey in storeKeys.State)
         {
             tasks.Add(GrainFactory.GetGrain<TStore>(fullKey).GetAll());
         }
@@ -66,7 +66,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
     public async Task Remove(TupleAction<TTuple> action)
     {
         string fullKey = CreateFullKey(action.Address.StoreId);
-        if (!storeFullKeys.State.Any(x => x.Equals(fullKey)))
+        if (!storeKeys.State.Any(x => x.Equals(fullKey)))
         {
             return;
         }
@@ -74,15 +74,15 @@ internal class BaseDirector<TTuple, TStore> : Grain
         int remaning = await GrainFactory.GetGrain<TStore>(fullKey).Remove(action);
         if (remaning == 0)
         {
-            storeFullKeys.State.Remove(fullKey);
-            await (storeFullKeys.State.Count > 0 ? storeFullKeys.WriteStateAsync() : AddNewStore());
+            storeKeys.State.Remove(fullKey);
+            await (storeKeys.State.Count > 0 ? storeKeys.WriteStateAsync() : AddNewStore());
         }
     }
 
     public async Task RemoveAll(Guid agentId)
     {
         List<Task> tasks = new();
-        foreach (string fullKey in storeFullKeys.State)
+        foreach (string fullKey in storeKeys.State)
         {
             tasks.Add(GrainFactory.GetGrain<TStore>(fullKey).RemoveAll(agentId));
         }
@@ -94,10 +94,10 @@ internal class BaseDirector<TTuple, TStore> : Grain
     private async Task AddNewStore()
     {
         currentStoreId = Guid.NewGuid();
-        storeFullKeys.State = new HashSet<string> { CreateFullKey(currentStoreId) };
+        storeKeys.State = new HashSet<string> { CreateFullKey(currentStoreId) };
 
-        await storeFullKeys.WriteStateAsync();
+        await storeKeys.WriteStateAsync();
     }
 
-    private string CreateFullKey(Guid id) => $"{storeKey}-{id:N}";
+    private string CreateFullKey(Guid id) => $"{realmKey}-{id:N}";
 }

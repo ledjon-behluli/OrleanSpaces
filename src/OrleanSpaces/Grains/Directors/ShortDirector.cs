@@ -11,6 +11,6 @@ internal sealed class ShortDirector : BaseDirector<ShortTuple, IShortStore>, ISh
 {
     public ShortDirector(
         [PersistentState(Constants.RealmKey_Short, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Short, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Short, storeKeys) { }
 }

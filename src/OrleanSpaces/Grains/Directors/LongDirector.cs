@@ -11,6 +11,6 @@ internal sealed class LongDirector : BaseDirector<LongTuple, ILongStore>, ILongD
 {
     public LongDirector(
         [PersistentState(Constants.RealmKey_Long, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_Long, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_Long, storeKeys) { }
 }

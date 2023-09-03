@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class HugeProcessor : BaseProcessor<HugeTuple, HugeTemplate, IHu
         ISpaceRouter<HugeTuple, HugeTemplate> router,
         ObserverChannel<HugeTuple> observerChannel,
         CallbackChannel<HugeTuple> callbackChannel)
-        : base(IHugeStore.Key, IHugeDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_Huge, options, client, router, observerChannel, callbackChannel) { }
 }

@@ -2,25 +2,33 @@
 
 public static class Configs
 {
+    private const string ConnectionString = "UseDevelopmentStorage=true";
+
     public static Action<SiloAzureQueueStreamConfigurator> QueueConfig = configurator =>
     {
         configurator.ConfigureAzureQueue(queueOptions => queueOptions.Configure(options =>
         {
             options.QueueNames = new List<string> { OrleanSpaces.Constants.StreamName };
-            options.ConfigureQueueServiceClient("UseDevelopmentStorage=true");
+            options.ConfigureQueueServiceClient(ConnectionString);
         }));
     };
 
     public static Action<AzureTableStorageOptions> TableConfig = options =>
     {
         options.TableName = OrleanSpaces.Constants.StorageName;
-        options.ConfigureTableServiceClient("UseDevelopmentStorage=true");
+        options.ConfigureTableServiceClient(ConnectionString);
+    };
+
+    public static Action<AzureTableTransactionalStateOptions> TransactionsTableConfig = options =>
+    {
+        options.TableName = OrleanSpaces.Constants.TransactionsStorageName;
+        options.ConfigureTableServiceClient(ConnectionString);
     };
 
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
         options.ContainerName = OrleanSpaces.Constants.StorageName.ToLower(); // ToLower because of blob container naming rules
-        options.ConfigureBlobServiceClient("UseDevelopmentStorage=true");
+        options.ConfigureBlobServiceClient(ConnectionString);
     };
 
     /// <summary>

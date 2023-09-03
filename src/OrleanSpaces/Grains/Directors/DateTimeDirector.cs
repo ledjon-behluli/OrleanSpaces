@@ -11,6 +11,6 @@ internal sealed class DateTimeDirector : BaseDirector<DateTimeTuple, IDateTimeSt
 {
     public DateTimeDirector(
         [PersistentState(Constants.RealmKey_DateTime, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_DateTime, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_DateTime, storeKeys) { }
 }

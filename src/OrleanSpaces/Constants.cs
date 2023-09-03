@@ -7,6 +7,10 @@ public static class Constants
     /// </summary>
     public const string StorageName = "OrleanSpaces";
     /// <summary>
+    /// The name of the transactions storage provider.
+    /// </summary>
+    public const string TransactionsStorageName = "OrleanSpacesTransactions";
+    /// <summary>
     /// The name of the stream provider.
     /// </summary>
     public const string StreamName = "OrleanSpace";

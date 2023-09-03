@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class IntProcessor : BaseProcessor<IntTuple, IntTemplate, IIntDi
         ISpaceRouter<IntTuple, IntTemplate> router,
         ObserverChannel<IntTuple> observerChannel,
         CallbackChannel<IntTuple> callbackChannel)
-        : base(IIntStore.Key, IIntDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_Int, options, client, router, observerChannel, callbackChannel) { }
 }

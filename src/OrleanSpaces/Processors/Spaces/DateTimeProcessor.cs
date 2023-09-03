@@ -1,5 +1,4 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
 using OrleanSpaces.Grains.Directors;
 
@@ -14,5 +13,5 @@ internal sealed class DateTimeProcessor : BaseProcessor<DateTimeTuple, DateTimeT
         ISpaceRouter<DateTimeTuple, DateTimeTemplate> router,
         ObserverChannel<DateTimeTuple> observerChannel,
         CallbackChannel<DateTimeTuple> callbackChannel)
-        : base(IDateTimeGrain.Key, IDateTimeDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_DateTime, options, client, router, observerChannel, callbackChannel) { }
 }

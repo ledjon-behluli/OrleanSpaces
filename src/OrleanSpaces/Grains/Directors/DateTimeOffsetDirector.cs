@@ -11,6 +11,6 @@ internal sealed class DateTimeOffsetDirector : BaseDirector<DateTimeOffsetTuple,
 {
     public DateTimeOffsetDirector(
         [PersistentState(Constants.RealmKey_DateTimeOffset, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeFullKeys)
-        : base(Constants.RealmKey_DateTimeOffset, storeFullKeys) { }
+        IPersistentState<HashSet<string>> storeKeys)
+        : base(Constants.RealmKey_DateTimeOffset, storeKeys) { }
 }

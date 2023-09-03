@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class ShortProcessor : BaseProcessor<ShortTuple, ShortTemplate, 
         ISpaceRouter<ShortTuple, ShortTemplate> router,
         ObserverChannel<ShortTuple> observerChannel,
         CallbackChannel<ShortTuple> callbackChannel)
-        : base(IShortStore.Key, IShortDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_Short, options, client, router, observerChannel, callbackChannel) { }
 }

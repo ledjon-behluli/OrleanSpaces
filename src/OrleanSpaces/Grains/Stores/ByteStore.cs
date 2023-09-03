@@ -8,6 +8,6 @@ internal interface IByteStore : ITupleStore<ByteTuple>, IGrainWithStringKey { }
 internal sealed class ByteStore : BaseStore<ByteTuple>, IByteStore
 {
     public ByteStore(
-        [PersistentState(Constants.RealmKey_yte, Constants.StorageName)]
+        [PersistentState(Constants.RealmKey_Byte, Constants.StorageName)]
         IPersistentState<List<ByteTuple>> space) : base(Constants.RealmKey_Byte, space) { }
 }

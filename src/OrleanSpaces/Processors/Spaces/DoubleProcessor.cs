@@ -1,6 +1,5 @@
 ﻿using OrleanSpaces.Channels;
 using OrleanSpaces.Tuples.Specialized;
-using OrleanSpaces.Grains.Stores;
 using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
@@ -14,5 +13,5 @@ internal sealed class DoubleProcessor : BaseProcessor<DoubleTuple, DoubleTemplat
         ISpaceRouter<DoubleTuple, DoubleTemplate> router,
         ObserverChannel<DoubleTuple> observerChannel,
         CallbackChannel<DoubleTuple> callbackChannel)
-        : base(IDoubleStore.Key, IDoubleDirector.Key, options, client, router, observerChannel, callbackChannel) { }
+        : base(Constants.RealmKey_Double, options, client, router, observerChannel, callbackChannel) { }
 }
