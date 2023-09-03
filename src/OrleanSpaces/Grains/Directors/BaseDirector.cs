@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Grains.Directors;
 
 [GenerateSerializer]
-internal class DirectorState
+internal sealed class DirectorState
 {
     [Id(0)] public Guid CurrentStoreId { get; set; }
     [Id(1)] public HashSet<string> StoreKeys { get; set; } = new();
