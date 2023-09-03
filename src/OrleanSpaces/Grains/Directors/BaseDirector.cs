@@ -9,6 +9,14 @@ internal sealed class DirectorState
 {
     [Id(0)] public Guid CurrentStoreId { get; set; }
     [Id(1)] public HashSet<string> StoreKeys { get; set; } = new();
+    [Id(2)] public TransactionState Transaction { get; set; } = new();
+
+    [GenerateSerializer]
+    internal sealed class TransactionState
+    {
+        [Id(0)] public bool IsRunning { get; set; }
+        [Id(1)] public Guid AgentId { get; set; }
+    }
 }
 
 internal class BaseDirector<TTuple, TStore> : Grain
@@ -24,6 +32,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
         set => state.State.CurrentStoreId = value;
     }
     private HashSet<string> StoreKeys => state.State.StoreKeys;
+    private DirectorState.TransactionState Transaction => state.State.Transaction;
 
     public BaseDirector(string realmKey, IPersistentState<DirectorState> state)
     {
@@ -33,7 +42,12 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        if (state.State.StoreKeys.Count == 0)
+        if (Transaction.IsRunning)
+        {
+            await RemoveAll(Transaction.AgentId); // method is idempotant so its safe to call it again in case of partial failures.
+        }
+
+        if (StoreKeys.Count == 0)
         {
             await AddNewStore();
         }
@@ -98,7 +112,15 @@ internal class BaseDirector<TTuple, TStore> : Grain
             tasks.Add(GrainFactory.GetGrain<TStore>(storeKey).RemoveAll(agentId));
         }
 
+        Transaction.IsRunning = true;
+        await state.WriteStateAsync();
+
         await Task.WhenAll();
+
+        StoreKeys.Clear();
+        Transaction.IsRunning = false;
+        await state.WriteStateAsync();
+
         await AddNewStore();
     }
 
