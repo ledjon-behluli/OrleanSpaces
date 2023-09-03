@@ -22,7 +22,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        if (storeKeys.State is null || storeKeys.State.Count == 0)
+        if (storeKeys.State.Count == 0)
         {
             await AddNewStore();
         }
