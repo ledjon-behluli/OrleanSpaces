@@ -11,7 +11,5 @@ internal interface IStoreDirector<T>
 
     Task<Guid> Insert(TupleAction<T> action);
     Task Remove(TupleAction<T> action);
-
-   // [Transaction(TransactionOption.Create)] 
     Task RemoveAll(Guid agentId);
 }

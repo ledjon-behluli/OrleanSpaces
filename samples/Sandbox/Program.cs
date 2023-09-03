@@ -8,7 +8,6 @@ var host = new HostBuilder()
     {
         builder.AddOrleanSpaces();
         builder.UseLocalhostClustering();
-        //builder.UseTransactions();
         builder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .Build();
@@ -21,6 +20,7 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 var agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 await agent.WriteAsync(new SpaceTuple(1, 2, 3));
+await agent.ClearAsync();
 
 Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();

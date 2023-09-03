@@ -19,12 +19,6 @@ public static class Configs
         options.ConfigureTableServiceClient(ConnectionString);
     };
 
-    public static Action<AzureTableTransactionalStateOptions> TransactionsTableConfig = options =>
-    {
-        options.TableName = OrleanSpaces.Constants.TransactionsStorageName;
-        options.ConfigureTableServiceClient(ConnectionString);
-    };
-
     public static Action<AzureBlobStorageOptions> BlobConfig = options =>
     {
         options.ContainerName = OrleanSpaces.Constants.StorageName.ToLower(); // ToLower because of blob container naming rules

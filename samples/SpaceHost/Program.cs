@@ -7,7 +7,6 @@ var host = Host.CreateDefaultBuilder(args)
     {
         builder.AddOrleanSpaces(o => o.PartitionThreshold = 1);
         builder.UseLocalhostClustering();
-        //builder.UseTransactions();
         #region Streaming
 
         builder.AddMemoryStreams(Constants.PubSubProvider);
@@ -27,11 +26,6 @@ var host = Host.CreateDefaultBuilder(args)
 
         //builder.AddAdoNetGrainStorage(Constants.PubSubStore, Configs.AdoNetConfig);
         //builder.AddAdoNetGrainStorage(Constants.StorageName, Configs.AdoNetConfig);
-
-        #endregion
-        #region Transactions
-
-        //builder.AddAzureTableTransactionalStateStorage(Constants.TransactionsStorageName, Configs.TransactionsTableConfig);
 
         #endregion
     })
