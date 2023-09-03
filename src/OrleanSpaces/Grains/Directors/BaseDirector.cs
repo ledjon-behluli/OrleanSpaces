@@ -1,6 +1,8 @@
 ﻿using Orleans.Runtime;
+using Orleans.Streams;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains.Directors;
 
@@ -26,6 +28,8 @@ internal class BaseDirector<TTuple, TStore> : Grain
     private readonly string realmKey;
     private readonly IPersistentState<DirectorState> state;
 
+    [AllowNull] private IAsyncStream<TupleAction<TTuple>> stream;
+
     private Guid CurrentStoreId
     {
         get => state.State.CurrentStoreId;
@@ -42,6 +46,9 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
+        stream = this.GetStreamProvider(Constants.PubSubProvider)
+           .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, realmKey));
+
         if (Transaction.IsRunning)
         {
             await RemoveAll(Transaction.AgentId); // method is idempotant so its safe to call it again in case of partial failures.
@@ -85,6 +92,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
             await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action);
         }
 
+        await stream.OnNextAsync(action);
         return CurrentStoreId;
     }
 
@@ -102,6 +110,8 @@ internal class BaseDirector<TTuple, TStore> : Grain
             StoreKeys.Remove(storeKey);
             await (StoreKeys.Count > 0 ? state.WriteStateAsync() : AddNewStore());
         }
+
+        await stream.OnNextAsync(action);
     }
 
     public async Task RemoveAll(Guid agentId)
@@ -109,7 +119,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
         List<Task> tasks = new();
         foreach (string storeKey in StoreKeys)
         {
-            tasks.Add(GrainFactory.GetGrain<TStore>(storeKey).RemoveAll(agentId));
+            tasks.Add(GrainFactory.GetGrain<TStore>(storeKey).RemoveAll());
         }
 
         Transaction.IsRunning = true;
@@ -119,9 +129,9 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
         StoreKeys.Clear();
         Transaction.IsRunning = false;
-        await state.WriteStateAsync();
 
         await AddNewStore();
+        await stream.OnNextAsync(new(agentId, TupleAddress<TTuple>.Empty, TupleActionType.Clear));
     }
 
     private async Task AddNewStore()

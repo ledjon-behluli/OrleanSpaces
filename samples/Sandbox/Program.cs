@@ -20,6 +20,9 @@ Console.WriteLine("Connected to the tuple space.\n\n");
 var agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 await agent.WriteAsync(new SpaceTuple(1, 2, 3));
+await agent.WriteAsync(new SpaceTuple(1, 2, 3));
+await agent.WriteAsync(new SpaceTuple(1, 2, 3));
+
 await agent.ClearAsync();
 
 Console.WriteLine("\nPress any key to terminate...\n");

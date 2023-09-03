@@ -9,5 +9,5 @@ internal sealed class LongStore : BaseStore<LongTuple>, ILongStore
 {
     public LongStore(
         [PersistentState(Constants.RealmKey_Long, Constants.StorageName)]
-        IPersistentState<List<LongTuple>> state) : base(Constants.RealmKey_Long, state) { }
+        IPersistentState<List<LongTuple>> state) : base(state) { }
 }

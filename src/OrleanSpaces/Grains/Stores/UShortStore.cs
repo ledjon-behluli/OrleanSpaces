@@ -9,5 +9,5 @@ internal sealed class UShortStore : BaseStore<UShortTuple>, IUShortStore
 {
     public UShortStore(
         [PersistentState(Constants.RealmKey_UShort, Constants.StorageName)]
-        IPersistentState<List<UShortTuple>> state) : base(Constants.RealmKey_UShort, state) { }
+        IPersistentState<List<UShortTuple>> state) : base(state) { }
 }

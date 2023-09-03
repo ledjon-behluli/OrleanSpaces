@@ -9,5 +9,5 @@ internal sealed class UIntStore : BaseStore<UIntTuple>, IUIntStore
 {
     public UIntStore(
         [PersistentState(Constants.RealmKey_UInt, Constants.StorageName)]
-        IPersistentState<List<UIntTuple>> state) : base(Constants.RealmKey_UInt, state) { }
+        IPersistentState<List<UIntTuple>> state) : base(state) { }
 }

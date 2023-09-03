@@ -15,6 +15,7 @@ public static class Configs
 
     public static Action<AzureTableStorageOptions> TableConfig = options =>
     {
+        options.DeleteStateOnClear = true;
         options.TableName = OrleanSpaces.Constants.StorageName;
         options.ConfigureTableServiceClient(ConnectionString);
     };

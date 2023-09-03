@@ -9,5 +9,5 @@ internal sealed class DateTimeOffsetStore : BaseStore<DateTimeOffsetTuple>, IDat
 {
     public DateTimeOffsetStore(
         [PersistentState(Constants.RealmKey_DateTimeOffset, Constants.StorageName)]
-        IPersistentState<List<DateTimeOffsetTuple>> state) : base(Constants.RealmKey_DateTimeOffset, state) { }
+        IPersistentState<List<DateTimeOffsetTuple>> state) : base(state) { }
 }

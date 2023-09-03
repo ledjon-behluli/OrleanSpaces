@@ -9,5 +9,5 @@ internal sealed class DecimalStore : BaseStore<DecimalTuple>, IDecimalStore
 {
     public DecimalStore(
         [PersistentState(Constants.RealmKey_Decimal, Constants.StorageName)]
-        IPersistentState<List<DecimalTuple>> state) : base(Constants.RealmKey_Decimal, state) { }
+        IPersistentState<List<DecimalTuple>> state) : base(state) { }
 }

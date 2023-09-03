@@ -9,5 +9,5 @@ internal sealed class TimeSpanStore : BaseStore<TimeSpanTuple>, ITimeSpanStore
 {
     public TimeSpanStore(
         [PersistentState(Constants.RealmKey_TimeSpan, Constants.StorageName)]
-        IPersistentState<List<TimeSpanTuple>> state) : base(Constants.RealmKey_TimeSpan, state) { }
+        IPersistentState<List<TimeSpanTuple>> state) : base(state) { }
 }

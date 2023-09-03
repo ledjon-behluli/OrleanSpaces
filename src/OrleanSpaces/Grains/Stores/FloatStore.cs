@@ -9,5 +9,5 @@ internal sealed class FloatStore : BaseStore<FloatTuple>, IFloatStore
 {
     public FloatStore(
         [PersistentState(Constants.RealmKey_Float, Constants.StorageName)]
-        IPersistentState<List<FloatTuple>> state) : base(Constants.RealmKey_Float, state) { }
+        IPersistentState<List<FloatTuple>> state) : base(state) { }
 }
