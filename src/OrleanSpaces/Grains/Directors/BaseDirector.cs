@@ -104,5 +104,5 @@ internal class BaseDirector<TTuple, TStore> : Grain
     }
 
     private string CreateStoreKey(Guid id) => $"{realmKey}-{id:N}";
-    private static Guid ParseStoreKey(string storeKey) => Guid.Parse(storeKey.Split('-')[1]);
+    private static Guid ParseStoreKey(string storeKey) => Guid.ParseExact(storeKey[^32..], "N");
 }
