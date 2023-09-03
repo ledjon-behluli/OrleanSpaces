@@ -29,7 +29,8 @@ internal abstract class BaseStore<T> : Grain
         return Task.CompletedTask;
     }
 
-    public Task<ImmutableArray<T>> GetAll() => Task.FromResult(space.State.ToImmutableArray());
+    public Task<StoreContent<T>> GetAll() => 
+        Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), space.State.ToImmutableArray()));
 
     public async Task<bool> Insert(TupleAction<T> action)
     {

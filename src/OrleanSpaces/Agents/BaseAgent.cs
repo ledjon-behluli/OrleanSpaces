@@ -37,8 +37,16 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     #region ISpaceRouter
 
-    void ISpaceRouter<TTuple, TTemplate>.RouteDirector(IStoreDirector<TTuple> director)
-        => this.director = director;
+    async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteDirector(IStoreDirector<TTuple> director)
+    {
+        var addresses = await director.GetAll();
+        foreach (var address in addresses)
+        {
+            collection.Add(address);
+        }
+
+        this.director = director;
+    }
 
     async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteAction(TupleAction<TTuple> action)
     {

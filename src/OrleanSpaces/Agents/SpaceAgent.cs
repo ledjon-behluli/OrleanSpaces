@@ -34,8 +34,16 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceRouter
 
-    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteDirector(IStoreDirector<SpaceTuple> director) 
-        => this.director = director;
+    async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteDirector(IStoreDirector<SpaceTuple> director)
+    {
+        var addresses = await director.GetAll();
+        foreach (var address in addresses)
+        {
+            collection.Add(address);
+        }
+
+        this.director = director;
+    }
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
     {
