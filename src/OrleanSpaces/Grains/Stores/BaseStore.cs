@@ -16,6 +16,8 @@ internal abstract class BaseStore<T> : Grain
     private int partitionThreshold;
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
+    private List<T> Tuples => state.State;
+
     public BaseStore(string realmKey, IPersistentState<List<T>> state)
     {
         this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
@@ -32,16 +34,16 @@ internal abstract class BaseStore<T> : Grain
     }
 
     public Task<StoreContent<T>> GetAll() => 
-        Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), state.State.ToImmutableArray()));
+        Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), Tuples.ToImmutableArray()));
 
     public async Task<bool> Insert(TupleAction<T> action)
     {
-        if (state.State.Count == partitionThreshold)
+        if (Tuples.Count == partitionThreshold)
         {
             return false;
         }
 
-        state.State.Add(action.Address.Tuple);
+        Tuples.Add(action.Address.Tuple);
 
         await state.WriteStateAsync();
         await stream.OnNextAsync(action);
@@ -51,11 +53,11 @@ internal abstract class BaseStore<T> : Grain
 
     public async Task<int> Remove(TupleAction<T> action)
     {
-        var storedTuple = state.State.FirstOrDefault(x => x.Equals(action.Address.Tuple));
+        var storedTuple = Tuples.FirstOrDefault(x => x.Equals(action.Address.Tuple));
         if (!storedTuple.IsEmpty)
         {
-            state.State.Remove(storedTuple);
-            if (state.State.Count == 0)
+            Tuples.Remove(storedTuple);
+            if (Tuples.Count == 0)
             {
                 await state.ClearStateAsync();
                 DeactivateOnIdle();
@@ -67,7 +69,7 @@ internal abstract class BaseStore<T> : Grain
             await stream.OnNextAsync(action);
         }
 
-        return state.State.Count;
+        return Tuples.Count;
     }
 
     public async Task RemoveAll(Guid agentId)
