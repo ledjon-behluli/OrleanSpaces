@@ -11,6 +11,5 @@ internal sealed class HugeDirector : BaseDirector<HugeTuple, IHugeStore>, IHugeD
 {
     public HugeDirector(
         [PersistentState(Constants.RealmKey_Huge, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_Huge, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_Huge, state) {}
 }

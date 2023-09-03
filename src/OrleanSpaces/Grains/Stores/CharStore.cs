@@ -9,5 +9,5 @@ internal sealed class CharStore : BaseStore<CharTuple>, ICharStore
 {
     public CharStore(
         [PersistentState(Constants.RealmKey_Char, Constants.StorageName)]
-        IPersistentState<List<CharTuple>> space) : base(Constants.RealmKey_Char, space) { }
+        IPersistentState<List<CharTuple>> state) : base(Constants.RealmKey_Char, state) { }
 }

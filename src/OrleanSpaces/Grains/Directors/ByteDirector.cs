@@ -11,6 +11,5 @@ internal sealed class ByteDirector : BaseDirector<ByteTuple, IByteStore>, IByteD
 {
     public ByteDirector(
         [PersistentState(Constants.RealmKey_Byte, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_Byte, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_Byte, state) {}
 }

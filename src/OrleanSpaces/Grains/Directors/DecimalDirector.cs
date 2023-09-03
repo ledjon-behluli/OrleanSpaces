@@ -11,6 +11,5 @@ internal sealed class DecimalDirector : BaseDirector<DecimalTuple, IDecimalStore
 {
     public DecimalDirector(
         [PersistentState(Constants.RealmKey_Decimal, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_Decimal, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_Decimal, state) {}
 }

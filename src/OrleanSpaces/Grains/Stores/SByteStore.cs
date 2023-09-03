@@ -9,5 +9,5 @@ internal sealed class SByteStore : BaseStore<SByteTuple>, ISByteStore
 {
     public SByteStore(
         [PersistentState(Constants.RealmKey_SByte, Constants.StorageName)]
-        IPersistentState<List<SByteTuple>> space) : base(Constants.RealmKey_SByte, space) { }
+        IPersistentState<List<SByteTuple>> state) : base(Constants.RealmKey_SByte, state) { }
 }

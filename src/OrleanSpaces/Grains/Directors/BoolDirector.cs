@@ -11,6 +11,5 @@ internal sealed class BoolDirector : BaseDirector<BoolTuple, IBoolStore>, IBoolD
 {
     public BoolDirector(
         [PersistentState(Constants.RealmKey_Bool, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_Bool, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_Bool, state) {}
 }

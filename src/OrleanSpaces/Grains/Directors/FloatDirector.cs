@@ -11,6 +11,5 @@ internal sealed class FloatDirector : BaseDirector<FloatTuple, IFloatStore>, IFl
 {
     public FloatDirector(
         [PersistentState(Constants.RealmKey_Float, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_Float, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_Float, state) {}
 }

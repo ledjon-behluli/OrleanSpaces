@@ -11,15 +11,15 @@ internal abstract class BaseStore<T> : Grain
     where T : struct, ISpaceTuple, IEquatable<T>
 {
     private readonly string realmKey;
-    private readonly IPersistentState<List<T>> space;
+    private readonly IPersistentState<List<T>> state;
 
     private int partitionThreshold;
     [AllowNull] private IAsyncStream<TupleAction<T>> stream;
 
-    public BaseStore(string realmKey, IPersistentState<List<T>> space)
+    public BaseStore(string realmKey, IPersistentState<List<T>> state)
     {
         this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
-        this.space = space ?? throw new ArgumentNullException(nameof(space));
+        this.state = state ?? throw new ArgumentNullException(nameof(state));
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
@@ -32,18 +32,18 @@ internal abstract class BaseStore<T> : Grain
     }
 
     public Task<StoreContent<T>> GetAll() => 
-        Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), space.State.ToImmutableArray()));
+        Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), state.State.ToImmutableArray()));
 
     public async Task<bool> Insert(TupleAction<T> action)
     {
-        if (space.State.Count == partitionThreshold)
+        if (state.State.Count == partitionThreshold)
         {
             return false;
         }
 
-        space.State.Add(action.Address.Tuple);
+        state.State.Add(action.Address.Tuple);
 
-        await space.WriteStateAsync();
+        await state.WriteStateAsync();
         await stream.OnNextAsync(action);
 
         return true;
@@ -51,29 +51,29 @@ internal abstract class BaseStore<T> : Grain
 
     public async Task<int> Remove(TupleAction<T> action)
     {
-        var storedTuple = space.State.FirstOrDefault(x => x.Equals(action.Address.Tuple));
+        var storedTuple = state.State.FirstOrDefault(x => x.Equals(action.Address.Tuple));
         if (!storedTuple.IsEmpty)
         {
-            space.State.Remove(storedTuple);
-            if (space.State.Count == 0)
+            state.State.Remove(storedTuple);
+            if (state.State.Count == 0)
             {
-                await space.ClearStateAsync();
+                await state.ClearStateAsync();
                 DeactivateOnIdle();
 
                 return 0;
             }
 
-            await space.WriteStateAsync();
+            await state.WriteStateAsync();
             await stream.OnNextAsync(action);
         }
 
-        return space.State.Count;
+        return state.State.Count;
     }
 
     public async Task RemoveAll(Guid agentId)
     {
         await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
-        await space.ClearStateAsync();
+        await state.ClearStateAsync();
 
         DeactivateOnIdle();
     }

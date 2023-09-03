@@ -9,5 +9,5 @@ internal sealed class DateTimeStore : BaseStore<DateTimeTuple>, IDateTimeStore
 {
     public DateTimeStore(
         [PersistentState(Constants.RealmKey_DateTime, Constants.StorageName)]
-        IPersistentState<List<DateTimeTuple>> space) : base(Constants.RealmKey_DateTime, space) { }
+        IPersistentState<List<DateTimeTuple>> state) : base(Constants.RealmKey_DateTime, state) { }
 }

@@ -49,7 +49,7 @@ public static class Extensions
 
     private static void AddClientServices(this IServiceCollection services, SpaceKind spaceKind)
     {
-        if (spaceKind.HasFlag(SpaceKind.None))
+        if (spaceKind == SpaceKind.None)
         {
             return;
         }

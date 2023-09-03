@@ -9,5 +9,5 @@ internal sealed class GuidStore : BaseStore<GuidTuple>, IGuidStore
 {
     public GuidStore(
         [PersistentState(Constants.RealmKey_Guid, Constants.StorageName)]
-        IPersistentState<List<GuidTuple>> space) : base(Constants.RealmKey_Guid, space) { }
+        IPersistentState<List<GuidTuple>> state) : base(Constants.RealmKey_Guid, state) { }
 }

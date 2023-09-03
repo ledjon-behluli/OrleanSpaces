@@ -11,6 +11,5 @@ internal sealed class UHugeDirector : BaseDirector<UHugeTuple, IUHugeStore>, IUH
 {
     public UHugeDirector(
         [PersistentState(Constants.RealmKey_UHuge, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeKeys)
-        : base(Constants.RealmKey_UHuge, storeKeys) { }
+        IPersistentState<DirectorState> state) : base(Constants.RealmKey_UHuge, state) {}
 }

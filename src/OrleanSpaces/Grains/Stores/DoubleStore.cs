@@ -9,5 +9,5 @@ internal sealed class DoubleStore : BaseStore<DoubleTuple>, IDoubleStore
 {
     public DoubleStore(
         [PersistentState(Constants.RealmKey_Double, Constants.StorageName)]
-        IPersistentState<List<DoubleTuple>> space) : base(Constants.RealmKey_Double, space) { }
+        IPersistentState<List<DoubleTuple>> state) : base(Constants.RealmKey_Double, state) { }
 }

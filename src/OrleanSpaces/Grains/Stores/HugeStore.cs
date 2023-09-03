@@ -8,5 +8,5 @@ internal sealed class HugeStore : BaseStore<HugeTuple>, IHugeStore
 {
     public HugeStore(
         [PersistentState(Constants.RealmKey_Huge, Constants.StorageName)]
-        IPersistentState<List<HugeTuple>> space) : base(Constants.RealmKey_Huge, space) { }
+        IPersistentState<List<HugeTuple>> state) : base(Constants.RealmKey_Huge, state) { }
 }
