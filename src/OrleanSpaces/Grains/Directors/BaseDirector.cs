@@ -28,7 +28,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
         }
         else
         {
-            currentStoreId = Guid.Parse(storeKeys.State.Last().Split('-')[1]);
+            currentStoreId = ParseStoreKey(storeKeys.State.Last());
         }
     }
 
