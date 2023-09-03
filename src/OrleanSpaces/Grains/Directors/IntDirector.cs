@@ -4,16 +4,13 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains.Directors;
 
-internal interface IIntDirector : IStoreDirector<IntTuple>, IGrainWithStringKey
-{
-    const string Key = "IntDirector";
-}
+internal interface IIntDirector : IStoreDirector<IntTuple>, IGrainWithStringKey { }
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class IntDirector : BaseDirector<IntTuple, IIntStore>, IIntDirector
 {
     public IntDirector(
-        [PersistentState(IIntDirector.Key, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeIds)
-        : base(IIntStore.Key, storeIds) { }
+        [PersistentState(Constants.RealmKey_Int, Constants.StorageName)]
+        IPersistentState<HashSet<string>> storeFullKeys)
+        : base(Constants.RealmKey_Int, storeFullKeys) { }
 }

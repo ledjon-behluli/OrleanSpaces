@@ -4,16 +4,13 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains.Directors;
 
-internal interface IBoolDirector : IStoreDirector<BoolTuple>, IGrainWithStringKey
-{
-    const string Key = "BoolDirector";
-}
+internal interface IBoolDirector : IStoreDirector<BoolTuple>, IGrainWithStringKey { }
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class BoolDirector : BaseDirector<BoolTuple, IBoolStore>, IBoolDirector
 {
     public BoolDirector(
-        [PersistentState(IBoolDirector.Key, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeIds)
-        : base(IBoolStore.Key, storeIds) { }
+        [PersistentState(Constants.RealmKey_Bool, Constants.StorageName)]
+        IPersistentState<HashSet<string>> storeFullKeys)
+        : base(Constants.RealmKey_Bool, storeFullKeys) { }
 }

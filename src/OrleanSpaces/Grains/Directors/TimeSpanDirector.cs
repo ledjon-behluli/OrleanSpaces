@@ -4,16 +4,13 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains.Directors;
 
-internal interface ITimeSpanDirector : IStoreDirector<TimeSpanTuple>, IGrainWithStringKey
-{
-    const string Key = "TimeSpanDirector";
-}
+internal interface ITimeSpanDirector : IStoreDirector<TimeSpanTuple>, IGrainWithStringKey { }
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class TimeSpanDirector : BaseDirector<TimeSpanTuple, ITimeSpanStore>, ITimeSpanDirector
 {
     public TimeSpanDirector(
-        [PersistentState(ITimeSpanDirector.Key, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeIds)
-        : base(ITimeSpanStore.Key, storeIds) { }
+        [PersistentState(Constants.RealmKey_TimeSpan, Constants.StorageName)]
+        IPersistentState<HashSet<string>> storeFullKeys)
+        : base(Constants.RealmKey_TimeSpan, storeFullKeys) { }
 }

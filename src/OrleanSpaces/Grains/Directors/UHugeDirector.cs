@@ -4,16 +4,13 @@ using OrleanSpaces.Tuples.Specialized;
 
 namespace OrleanSpaces.Grains.Directors;
 
-internal interface IUHugeDirector : IStoreDirector<UHugeTuple>, IGrainWithStringKey
-{
-    const string Key = "UHugeDirector";
-}
+internal interface IUHugeDirector : IStoreDirector<UHugeTuple>, IGrainWithStringKey { }
 
 [ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UHugeDirector : BaseDirector<UHugeTuple, IUHugeStore>, IUHugeDirector
 {
     public UHugeDirector(
-        [PersistentState(IUHugeDirector.Key, Constants.StorageName)]
-        IPersistentState<HashSet<string>> storeIds)
-        : base(IUHugeStore.Key, storeIds) { }
+        [PersistentState(Constants.RealmKey_UHuge, Constants.StorageName)]
+        IPersistentState<HashSet<string>> storeFullKeys)
+        : base(Constants.RealmKey_UHuge, storeFullKeys) { }
 }
