@@ -4,6 +4,7 @@ using Orleans.Streams;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
+using System;
 
 namespace OrleanSpaces.Processors.Spaces;
 
@@ -37,13 +38,13 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        router.RouteDirector(client.GetGrain<TDirector>(realmKey));
+        await router.RouteDirector(client.GetGrain<TDirector>(realmKey));
 
-        var stream = client
-            .GetStreamProvider(Constants.PubSubProvider)
+        var stream = client.GetStreamProvider(Constants.PubSubProvider)
             .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, realmKey));
 
-        await stream.SubscribeOrResumeAsync(this);
+        var handles = await stream.GetAllSubscriptionHandles();
+        await (handles.Count > 0 ? handles[0].ResumeAsync(this) : stream.SubscribeAsync(this));
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)

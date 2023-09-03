@@ -6,7 +6,7 @@ using OrleanSpaces.Tuples;
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
     {
-        builder.AddOrleanSpaces();
+        builder.AddOrleanSpaces(o => o.PartitionThreshold = 1);
         builder.UseLocalhostClustering();
         //builder.UseTransactions();
         builder.AddMemoryStreams(Constants.PubSubProvider);
