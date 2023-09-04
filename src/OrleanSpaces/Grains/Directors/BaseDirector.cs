@@ -44,7 +44,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
         }
     }
 
-    public async Task<ImmutableArray<TupleAddress<TTuple>>> GetAll()
+    public async Task<ImmutableArray<StoreTuple<TTuple>>> GetAll()
     {
         List<Task<StoreContent<TTuple>>> tasks = new();
         foreach (string storeKey in StoreKeys)
@@ -53,14 +53,14 @@ internal class BaseDirector<TTuple, TStore> : Grain
         }
 
         StoreContent<TTuple>[] contents = await Task.WhenAll(tasks);
-        List<TupleAddress<TTuple>> result = new();
+        List<StoreTuple<TTuple>> result = new();
 
         foreach (var content in contents)
         {
             Guid storeId = ParseStoreKey(content.StoreKey);
             foreach (var tuple in content.Tuples)
             {
-                result.Add(new(tuple, storeId));
+                result.Add(new(storeId, tuple));
             }
         }
 
@@ -69,11 +69,11 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
     public async Task<Guid> Insert(TupleAction<TTuple> action)
     {
-        bool success = await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action);
+        bool success = await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action.StoreTuple.Tuple);
         if (!success)
         {
             await AddNewStore();
-            await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action);
+            await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action.StoreTuple.Tuple);
         }
 
         await stream.OnNextAsync(action);
@@ -82,13 +82,13 @@ internal class BaseDirector<TTuple, TStore> : Grain
 
     public async Task Remove(TupleAction<TTuple> action)
     {
-        string storeKey = CreateStoreKey(action.Address.StoreId);
+        string storeKey = CreateStoreKey(action.StoreTuple.StoreId);
         if (!StoreKeys.Any(x => x.Equals(storeKey)))
         {
             return;
         }
 
-        int remaning = await GrainFactory.GetGrain<TStore>(storeKey).Remove(action);
+        int remaning = await GrainFactory.GetGrain<TStore>(storeKey).Remove(action.StoreTuple.Tuple);
         if (remaning == 0)
         {
             StoreKeys.Remove(storeKey);
@@ -115,7 +115,7 @@ internal class BaseDirector<TTuple, TStore> : Grain
         state.State.HasTransaction = false;
 
         await AddNewStore();
-        await stream.OnNextAsync(new(agentId, TupleAddress<TTuple>.Empty, TupleActionType.Clear));
+        await stream.OnNextAsync(new(agentId, new(), TupleActionType.Clear));
     }
 
     private async Task AddNewStore()

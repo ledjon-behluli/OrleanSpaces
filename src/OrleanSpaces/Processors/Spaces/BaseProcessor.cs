@@ -62,7 +62,7 @@ internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, 
 
         if (action.Type == TupleActionType.Insert)
         {
-            await callbackChannel.Writer.WriteAsync(action.Address.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.StoreTuple.Tuple);
         }
     }
 

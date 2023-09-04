@@ -2,6 +2,7 @@
 using OrleanSpaces.Helpers;
 using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
@@ -18,7 +19,7 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ObserverRegistry<TTuple> observerRegistry;
     private readonly CallbackRegistry<T, TTuple, TTemplate> callbackRegistry;
-    private readonly TupleCollection<T, TTuple, TTemplate> collection = new();
+    private readonly ImmutableArray<StoreTuple<TTuple>> tuples = ImmutableArray<StoreTuple<TTuple>>.Empty; //  chosen for thread safety
 
     [AllowNull] private IStoreDirector<TTuple> director;
     private Channel<TTuple>? streamChannel;
@@ -39,10 +40,10 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     async ValueTask ISpaceRouter<TTuple, TTemplate>.RouteDirector(IStoreDirector<TTuple> director)
     {
-        var addresses = await director.GetAll();
-        foreach (var address in addresses)
+        var tuples = await director.GetAll();
+        foreach (var tuple in tuples)
         {
-            collection.Add(address);
+            this.tuples.Add(tuple);
         }
 
         this.director = director;
@@ -56,15 +57,15 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
             {
                 case TupleActionType.Insert:
                     {
-                        collection.Add(action.Address);
-                        await streamChannel.WriteIfNotNull(action.Address.Tuple);
+                        tuples.Add(action.StoreTuple);
+                        await streamChannel.WriteIfNotNull(action.StoreTuple.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    collection.Remove(action.Address);
+                    tuples.Remove(action.StoreTuple);
                     break;
                 case TupleActionType.Clear:
-                    collection.Clear();
+                    tuples.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -89,10 +90,10 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        Guid storeId = await director.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
+        Guid storeId = await director.Insert(new(agentId, new(Guid.Empty, tuple), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        collection.Add(new(tuple, storeId));
+        tuples.Add(new(storeId, tuple));
     }
 
     public ValueTask EvaluateAsync(Func<Task<TTuple>> evaluation)
@@ -103,56 +104,65 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public ValueTask<TTuple> PeekAsync(TTemplate template)
     {
-        var address = collection.Find(template);
-        return new(address.Tuple);
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        return new(tuple.Tuple);
     }
 
     public async ValueTask PeekAsync(TTemplate template, Func<TTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var address = collection.Find(template);
-        if (address.Tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
             return;
         }
 
-        await callback(address.Tuple);
+        await callback(tuple.Tuple);
     }
 
     public async ValueTask<TTuple> PopAsync(TTemplate template)
     {
-        var address = collection.Find(template);
-        if (!address.Tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (!tuple.Tuple.IsEmpty)
         {
-            await director.Remove(new(agentId, address, TupleActionType.Remove));
-            collection.Remove(address);
+            await director.Remove(new(agentId, tuple, TupleActionType.Remove));
+            tuples.Remove(tuple);
         }
 
-        return address.Tuple;
+        return tuple.Tuple;
     }
 
     public async ValueTask PopAsync(TTemplate template, Func<TTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var address = collection.Find(template);
-        if (address.Tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
             return;
         }
 
-        await callback(address.Tuple);
-        await director.Remove(new(agentId, address, TupleActionType.Remove));
+        await callback(tuple.Tuple);
+        await director.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        collection.Remove(address);
+        tuples.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
     {
-        var result = collection.FindAll(template);
+        List<TTuple> result = new();
+
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple.Tuple))
+            {
+                result.Add(tuple.Tuple);
+            }
+        }
+
         return new(result);
     }
 
@@ -169,9 +179,9 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
                 });
 
 
-                foreach (var tuple in collection)
+                foreach (var tuple in tuples)
                 {
-                    _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+                    _ = streamChannel.Writer.TryWrite(tuple.Tuple);  // will always be able to write to the channel
                 }
             }
         }
@@ -182,12 +192,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
     }
 
-    public ValueTask<int> CountAsync() => new(collection.Count);
+    public ValueTask<int> CountAsync() => new(tuples.Length);
 
     public async Task ClearAsync()
     {
         await director.RemoveAll(agentId);
-        collection.Clear();
+        tuples.Clear();
     }
 
     #endregion

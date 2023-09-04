@@ -62,6 +62,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTuple tuple = new([|TimeSpan.MinValue|]);")]
     [InlineData("SpaceTuple tuple = new([|Guid.Empty|]);")]
 
+    [InlineData("SpaceTuple tuple = new([|new object[]{}|])")]
     [InlineData("SpaceTuple tuple = new([|TestEnum.A|]); enum TestEnum { A }")]
     [InlineData("TestEnum e = TestEnum.A; SpaceTuple tuple = new([|e|]); enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTuple(string code) =>
@@ -106,7 +107,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [InlineData("SpaceTemplate template = new([|typeof(decimal)|]);")]
 
     [InlineData("SpaceTemplate template = new([|null|]);")]
-
+    [InlineData("SpaceTuple tuple = new([|new object?[]{}|])")]
     [InlineData("SpaceTemplate template = new([|TestEnum.A|]); enum TestEnum { A }")]
     [InlineData("TestEnum e = TestEnum.A; SpaceTemplate template = new([|e|]); enum TestEnum { A }")]
     public void Should_Not_Diagnose_SpaceTemplate(string code) =>

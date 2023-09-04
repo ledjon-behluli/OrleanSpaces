@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace OrleanSpaces.Agents;
 
@@ -15,7 +16,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
-    private readonly TupleCollection collection = new();
+    private readonly ImmutableArray<StoreTuple<SpaceTuple>> tuples = ImmutableArray<StoreTuple<SpaceTuple>>.Empty; // chosen for thread safety
 
     [AllowNull] private IStoreDirector<SpaceTuple> director;
     private Channel<SpaceTuple>? streamChannel;
@@ -36,10 +37,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteDirector(IStoreDirector<SpaceTuple> director)
     {
-        var addresses = await director.GetAll();
-        foreach (var address in addresses)
+        var tuples = await director.GetAll();
+        foreach (var tuple in tuples)
         {
-            collection.Add(address);
+            this.tuples.Add(tuple);
         }
 
         this.director = director;
@@ -53,15 +54,15 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        collection.Add(action.Address);
-                        await streamChannel.WriteIfNotNull(action.Address.Tuple);
+                        tuples.Add(action.StoreTuple);
+                        await streamChannel.WriteIfNotNull(action.StoreTuple.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    collection.Remove(action.Address);
+                    tuples.Remove(action.StoreTuple);
                     break;
                 case TupleActionType.Clear:
-                    collection.Clear();
+                    tuples.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -86,10 +87,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        Guid storeId = await director.Insert(new(agentId, new(tuple, Guid.Empty), TupleActionType.Insert));
+        Guid storeId = await director.Insert(new(agentId, new(Guid.Empty, tuple), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        collection.Add(new(tuple, storeId));
+        tuples.Add(new(storeId, tuple));
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -100,57 +101,66 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
-        var address = collection.Find(template);
-        return new(address.Tuple);
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        return new(tuple.Tuple);
     }
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var address = collection.Find(template);
-        if (address.Tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
             return;
         }
 
-        await callback(address.Tuple);
+        await callback(tuple.Tuple);
     }
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        var address = collection.Find(template);
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
 
-        if (!address.Tuple.IsEmpty)
+        if (!tuple.Tuple.IsEmpty)
         {
-            await director.Remove(new(agentId, address, TupleActionType.Remove));
-            collection.Remove(address);
+            await director.Remove(new(agentId, tuple, TupleActionType.Remove));
+            tuples.Remove(tuple);
         }
 
-        return address.Tuple;
+        return tuple.Tuple;
     }
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        var address = collection.Find(template);
-        if (address.Tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
             return;
         }
 
-        await callback(address.Tuple);
-        await director.Remove(new(agentId, address, TupleActionType.Remove));
+        await callback(tuple.Tuple);
+        await director.Remove(new(agentId, tuple, TupleActionType.Remove));
 
-        collection.Remove(address);
+        tuples.Remove(tuple);
     }
 
     public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
     {
-        var result = collection.FindAll(template);
+        List<SpaceTuple> result = new();
+
+        foreach (var tuple in tuples)
+        {
+            if (template.Matches(tuple.Tuple))
+            {
+                result.Add(tuple.Tuple);
+            }
+        }
+
         return new(result);
     }
 
@@ -167,9 +177,9 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
                 });
 
 
-                foreach (var tuple in collection)
+                foreach (var tuple in tuples)
                 {
-                    _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+                    _ = streamChannel.Writer.TryWrite(tuple.Tuple);  // will always be able to write to the channel
                 }
             }
         }
@@ -180,12 +190,12 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
     }
 
-    public ValueTask<int> CountAsync() => new(collection.Count);
+    public ValueTask<int> CountAsync() => new(tuples.Length);
 
     public async Task ClearAsync()
     {
         await director.RemoveAll(agentId);
-        collection.Clear();
+        tuples.Clear();
     }
 
     #endregion

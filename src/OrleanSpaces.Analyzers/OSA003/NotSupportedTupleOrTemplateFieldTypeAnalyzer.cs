@@ -68,7 +68,8 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
                     type.IsOfAnyType(new List<ITypeSymbol?>()
                     {
                         context.Compilation.GetTypeByMetadataName("System.Int128"),
-                        context.Compilation.GetTypeByMetadataName("System.UInt128")
+                        context.Compilation.GetTypeByMetadataName("System.UInt128"),
+                        context.Compilation.GetTypeByMetadataName("System.Object[]")
                     }))
                 {
                     continue;
@@ -90,7 +91,8 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
                     type.IsOfAnyType(new List<ITypeSymbol?>()
                     {
                         context.Compilation.GetTypeByMetadataName("System.Int128"),
-                        context.Compilation.GetTypeByMetadataName("System.UInt128")
+                        context.Compilation.GetTypeByMetadataName("System.UInt128"),
+                        context.Compilation.GetTypeByMetadataName("System.Object[]")
                     }))
                 {
                     continue;

@@ -26,23 +26,23 @@ internal abstract class BaseStore<T> : Grain
     public Task<StoreContent<T>> GetAll() => 
         Task.FromResult(new StoreContent<T>(this.GetPrimaryKeyString(), Tuples.ToImmutableArray()));
 
-    public async Task<bool> Insert(TupleAction<T> action)
+    public async Task<bool> Insert(T tuple)
     {
         if (Tuples.Count == partitionThreshold)
         {
             return false;
         }
 
-        Tuples.Add(action.Address.Tuple);
+        Tuples.Add(tuple);
 
         await state.WriteStateAsync();
         return true;
     }
 
-    public async Task<int> Remove(TupleAction<T> action)
+    public async Task<int> Remove(T tuple)
     {
-        var tuple = Tuples.FirstOrDefault(x => x.Equals(action.Address.Tuple));
-        Tuples.Remove(tuple);
+        var _tuple = Tuples.FirstOrDefault(x => x.Equals(tuple));
+        Tuples.Remove(_tuple);
 
         if (Tuples.Count == 0)
         {
