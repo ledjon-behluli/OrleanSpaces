@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface ITimeSpanDirector : IStoreDirector<TimeSpanTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class TimeSpanDirector : BaseDirector<TimeSpanTuple, ITimeSpanStore>, ITimeSpanDirector
 {
     public TimeSpanDirector(

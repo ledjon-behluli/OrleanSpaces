@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IUShortDirector : IStoreDirector<UShortTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UShortDirector : BaseDirector<UShortTuple, IUShortStore>, IUShortDirector
 {
     public UShortDirector(

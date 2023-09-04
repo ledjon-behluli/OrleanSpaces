@@ -6,21 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace OrleanSpaces.Grains.Directors;
 
-[GenerateSerializer]
-internal sealed class DirectorState
-{
-    [Id(0)] public Guid CurrentStoreId { get; set; }
-    [Id(1)] public HashSet<string> StoreKeys { get; set; } = new();
-    [Id(2)] public TransactionState Transaction { get; set; } = new();
-
-    [GenerateSerializer]
-    internal sealed class TransactionState
-    {
-        [Id(0)] public bool IsRunning { get; set; }
-        [Id(1)] public Guid AgentId { get; set; }
-    }
-}
-
 internal class BaseDirector<TTuple, TStore> : Grain
     where TTuple : ISpaceTuple
     where TStore : ITupleStore<TTuple>, IGrainWithStringKey
@@ -36,7 +21,6 @@ internal class BaseDirector<TTuple, TStore> : Grain
         set => state.State.CurrentStoreId = value;
     }
     private HashSet<string> StoreKeys => state.State.StoreKeys;
-    private DirectorState.TransactionState Transaction => state.State.Transaction;
 
     public BaseDirector(string realmKey, IPersistentState<DirectorState> state)
     {
@@ -49,9 +33,9 @@ internal class BaseDirector<TTuple, TStore> : Grain
         stream = this.GetStreamProvider(Constants.PubSubProvider)
            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, realmKey));
 
-        if (Transaction.IsRunning)
+        if (state.State.HasTransaction)
         {
-            await RemoveAll(Transaction.AgentId); // method is idempotant so its safe to call it again in case of partial failures.
+            await RemoveAll(state.State.AgentId); // method is idempotant so its safe to call it again in case of partial failures.
         }
 
         if (StoreKeys.Count == 0)
@@ -122,13 +106,13 @@ internal class BaseDirector<TTuple, TStore> : Grain
             tasks.Add(GrainFactory.GetGrain<TStore>(storeKey).RemoveAll());
         }
 
-        Transaction.IsRunning = true;
+        state.State.HasTransaction = true;
         await state.WriteStateAsync();
 
         await Task.WhenAll();
 
         StoreKeys.Clear();
-        Transaction.IsRunning = false;
+        state.State.HasTransaction = false;
 
         await AddNewStore();
         await stream.OnNextAsync(new(agentId, TupleAddress<TTuple>.Empty, TupleActionType.Clear));
@@ -138,10 +122,18 @@ internal class BaseDirector<TTuple, TStore> : Grain
     {
         CurrentStoreId = Guid.NewGuid();
         StoreKeys.Add(CreateStoreKey(CurrentStoreId));
-
         await state.WriteStateAsync();
     }
 
     private string CreateStoreKey(Guid id) => $"{realmKey}-{id:N}";
     private static Guid ParseStoreKey(string storeKey) => Guid.ParseExact(storeKey[^32..], "N");
+}
+
+[GenerateSerializer]
+internal sealed class DirectorState
+{
+    [Id(0)] public Guid CurrentStoreId { get; set; }
+    [Id(1)] public HashSet<string> StoreKeys { get; set; } = new();
+    [Id(2)] public bool HasTransaction { get; set; }
+    [Id(3)] public Guid AgentId { get; set; }
 }

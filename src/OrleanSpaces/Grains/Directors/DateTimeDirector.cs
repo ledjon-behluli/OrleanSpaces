@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IDateTimeDirector : IStoreDirector<DateTimeTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DateTimeDirector : BaseDirector<DateTimeTuple, IDateTimeStore>, IDateTimeDirector
 {
     public DateTimeDirector(

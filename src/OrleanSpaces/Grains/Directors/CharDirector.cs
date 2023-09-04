@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface ICharDirector : IStoreDirector<CharTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class CharDirector : BaseDirector<CharTuple, ICharStore>, ICharDirector
 {
     public CharDirector(

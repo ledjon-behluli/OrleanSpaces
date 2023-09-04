@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IDoubleDirector : IStoreDirector<DoubleTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DoubleDirector : BaseDirector<DoubleTuple, IDoubleStore>, IDoubleDirector
 {
     public DoubleDirector(

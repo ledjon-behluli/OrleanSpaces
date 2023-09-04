@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IFloatDirector : IStoreDirector<FloatTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class FloatDirector : BaseDirector<FloatTuple, IFloatStore>, IFloatDirector
 {
     public FloatDirector(

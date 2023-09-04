@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IDecimalDirector : IStoreDirector<DecimalTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class DecimalDirector : BaseDirector<DecimalTuple, IDecimalStore>, IDecimalDirector
 {
     public DecimalDirector(

@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IByteDirector : IStoreDirector<ByteTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class ByteDirector : BaseDirector<ByteTuple, IByteStore>, IByteDirector
 {
     public ByteDirector(

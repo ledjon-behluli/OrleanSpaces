@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IUHugeDirector : IStoreDirector<UHugeTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class UHugeDirector : BaseDirector<UHugeTuple, IUHugeStore>, IUHugeDirector
 {
     public UHugeDirector(

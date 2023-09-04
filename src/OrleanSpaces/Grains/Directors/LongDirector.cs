@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface ILongDirector : IStoreDirector<LongTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class LongDirector : BaseDirector<LongTuple, ILongStore>, ILongDirector
 {
     public LongDirector(

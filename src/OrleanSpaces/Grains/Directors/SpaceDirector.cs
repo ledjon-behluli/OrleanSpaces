@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface ISpaceDirector : IStoreDirector<SpaceTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class SpaceDirector : BaseDirector<SpaceTuple, ISpaceStore>, ISpaceDirector
 {
     public SpaceDirector(

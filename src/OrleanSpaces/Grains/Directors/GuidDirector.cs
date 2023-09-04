@@ -6,7 +6,6 @@ namespace OrleanSpaces.Grains.Directors;
 
 internal interface IGuidDirector : IStoreDirector<GuidTuple>, IGrainWithStringKey { }
 
-[ImplicitStreamSubscription(Constants.StreamName)]
 internal sealed class GuidDirector : BaseDirector<GuidTuple, IGuidStore>, IGuidDirector
 {
     public GuidDirector(
