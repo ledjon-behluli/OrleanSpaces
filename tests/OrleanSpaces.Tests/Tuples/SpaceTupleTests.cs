@@ -17,6 +17,33 @@ public class SpaceTupleTests
     }
 
     [Fact]
+    public void Should_Be_Created_On_Direct_Array_Level_1()
+    {
+        object[] array = new object[4] { 1, "a", 1.5f, TestEnum.A };
+        SpaceTuple tuple = new(array);
+
+        Assert.Equal(4, tuple.Length);
+        Assert.Equal(1, tuple[0]);
+        Assert.Equal("a", tuple[1]);
+        Assert.Equal(1.5f, tuple[2]);
+        Assert.Equal(TestEnum.A, tuple[3]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Direct_Array_Level_2()
+    {
+        object[] array_l1 = new object[4] { 1, "a", 1.5f, TestEnum.A };
+        object[] array_l2 = new object[1] { array_l1 }; 
+        SpaceTuple tuple = new(array_l2);
+
+        Assert.Equal(4, tuple.Length);
+        Assert.Equal(1, tuple[0]);
+        Assert.Equal("a", tuple[1]);
+        Assert.Equal(1.5f, tuple[2]);
+        Assert.Equal(TestEnum.A, tuple[3]);
+    }
+
+    [Fact]
     public void Should_Be_Created_On_Value_Type()
     {
         SpaceTuple tuple = new(1);
@@ -178,12 +205,40 @@ public class SpaceTemplateTests
     [Fact]
     public void Should_Be_Created_On_Array()
     {
-        SpaceTemplate template = new(1, "a", 1.5f);
+        SpaceTemplate template = new(1, "a", 1.5f, TestEnum.A);
 
-        Assert.Equal(3, template.Length);
+        Assert.Equal(4, template.Length);
         Assert.Equal(1, template[0]);
         Assert.Equal("a", template[1]);
         Assert.Equal(1.5f, template[2]);
+        Assert.Equal(TestEnum.A, template[3]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Direct_Array_Level_1()
+    {
+        object?[] array = new object?[4] { 1, "a", 1.5f, TestEnum.A };
+        SpaceTemplate template = new(array);
+
+        Assert.Equal(4, template.Length);
+        Assert.Equal(1, template[0]);
+        Assert.Equal("a", template[1]);
+        Assert.Equal(1.5f, template[2]);
+        Assert.Equal(TestEnum.A, template[3]);
+    }
+
+    [Fact]
+    public void Should_Be_Created_On_Direct_Array_Level_2()
+    {
+        object?[] array_l1 = new object?[4] { 1, "a", 1.5f, TestEnum.A };
+        object?[] array_l2 = new object?[1] { array_l1 };
+        SpaceTemplate template = new(array_l2);
+
+        Assert.Equal(4, template.Length);
+        Assert.Equal(1, template[0]);
+        Assert.Equal("a", template[1]);
+        Assert.Equal(1.5f, template[2]);
+        Assert.Equal(TestEnum.A, template[3]);
     }
 
     [Fact]
