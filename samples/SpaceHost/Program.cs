@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(builder =>
     {
-        builder.AddOrleanSpaces(o => o.PartitionThreshold = 1);
+        builder.AddOrleanSpaces();
         builder.UseLocalhostClustering();
         #region Streaming
 
@@ -15,11 +15,11 @@ var host = Host.CreateDefaultBuilder(args)
         #endregion
         #region Persistence
 
-        //builder.AddMemoryGrainStorage(Constants.PubSubStore);
-        //builder.AddMemoryGrainStorage(Constants.StorageName);
+        builder.AddMemoryGrainStorage(Constants.PubSubStore);
+        builder.AddMemoryGrainStorage(Constants.StorageName);
 
-        builder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
-        builder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
+        //builder.AddAzureTableGrainStorage(Constants.PubSubStore, Configs.TableConfig);
+        //builder.AddAzureTableGrainStorage(Constants.StorageName, Configs.TableConfig);
 
         //builder.AddAzureBlobGrainStorage(Constants.PubSubStore, Configs.BlobConfig);
         //builder.AddAzureBlobGrainStorage(Constants.StorageName, Configs.BlobConfig);

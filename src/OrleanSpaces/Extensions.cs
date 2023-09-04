@@ -15,18 +15,30 @@ public static class Extensions
     /// Configures the tuple space on the host.
     /// </summary>
     /// <param name="builder">The orleans silo builder.</param>
-    /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceServerOptions"/></param>
-    public static ISiloBuilder AddOrleanSpaces(this ISiloBuilder builder, Action<SpaceServerOptions>? configureOptions = null)
+    /// <param name="configureServerOptions">An optional delegate to configure the <see cref="SpaceServerOptions"/></param>
+    /// <param name="configureClientOptions">An optional delegate to configure the <see cref="SpaceClientOptions"/></param>
+    public static ISiloBuilder AddOrleanSpaces(
+        this ISiloBuilder builder,
+        Action<SpaceServerOptions>? configureServerOptions = null,
+        Action<SpaceClientOptions>? configureClientOptions = null)
     {
-        SpaceServerOptions options = new();
-        configureOptions?.Invoke(options);
-        if (options.PartitionThreshold < 1)
+        SpaceServerOptions serverOptions = new();
+        configureServerOptions?.Invoke(serverOptions);
+        if (serverOptions.PartitionThreshold < 1)
         {
             throw new InvalidOperationException("Partition threshold must be greater than zero.");
         }
         
-        builder.Services.AddSingleton(options);
-        builder.Services.AddClientServices(options.EnabledSpaces);
+        builder.Services.AddSingleton(serverOptions);
+
+        if (configureClientOptions != null)
+        {
+            SpaceClientOptions clientOptions = new();
+            configureClientOptions?.Invoke(clientOptions);
+            
+            builder.Services.AddSingleton(clientOptions);
+            builder.Services.AddClientServices(clientOptions.EnabledSpaces);
+        }
 
         return builder;
     }
@@ -38,7 +50,7 @@ public static class Extensions
     /// <param name="configureOptions">An optional delegate to configure the <see cref="SpaceClientOptions"/></param>
     public static IClientBuilder AddOrleanSpaces(this IClientBuilder builder, Action<SpaceClientOptions>? configureOptions = null)
     {
-        SpaceClientOptions options = new();
+        SpaceClientOptions options = new() { EnabledSpaces = SpaceKind.Generic };
         configureOptions?.Invoke(options);
 
         builder.Services.AddSingleton(options);
@@ -49,11 +61,6 @@ public static class Extensions
 
     private static void AddClientServices(this IServiceCollection services, SpaceKind spaceKind)
     {
-        if (spaceKind == SpaceKind.None)
-        {
-            return;
-        }
-
         if (spaceKind.HasFlag(SpaceKind.Generic))
         {
             services.AddSingleton<ObserverRegistry<SpaceTuple>>();

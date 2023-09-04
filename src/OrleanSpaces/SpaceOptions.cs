@@ -3,11 +3,8 @@
 /// <summary>
 /// Options to configure server functionalities.
 /// </summary>
-public sealed class SpaceServerOptions : SpaceOptions
+public sealed class SpaceServerOptions
 {
-    /// <inheritdoc/>
-    public override SpaceKind EnabledSpaces { get; set; } = SpaceKind.None;
-
     /// <summary>
     /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
     /// </summary>
@@ -17,21 +14,12 @@ public sealed class SpaceServerOptions : SpaceOptions
 /// <summary>
 /// Options to configure client functionalities.
 /// </summary>
-public sealed class SpaceClientOptions : SpaceOptions
-{
-    /// <inheritdoc/>
-    public override SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
-}
-
-/// <summary>
-/// Options to configure generic functionalities.
-/// </summary>
-public abstract class SpaceOptions
+public sealed class SpaceClientOptions
 {
     /// <summary>
     /// Determines which of the <see cref="SpaceKind"/>(s) are enabled.
     /// </summary>
-    public abstract SpaceKind EnabledSpaces { get; set; }
+    public SpaceKind EnabledSpaces { get; set; } = SpaceKind.Generic;
 
     /// <summary>
     /// If set to <see langword="true"/>, catches all exceptions that happen inside:
@@ -76,7 +64,7 @@ public abstract class SpaceOptions
 [Flags]
 public enum SpaceKind
 {
-    None = 0,
+    All = Generic | Bool | Byte | Char | DateTimeOffset | DateTime | Decimal | Double | Float | Guid | Huge | Int | Long | SByte | Short | TimeSpan | UHuge | UInt | ULong | UShort,
     Generic = 1,
     Bool = 2,
     Byte = 4,
@@ -96,6 +84,5 @@ public enum SpaceKind
     UHuge = 65536,
     UInt = 131072,
     ULong = 262144,
-    UShort = 524288,
-    All = Generic | Bool | Byte | Char | DateTimeOffset | DateTime | Decimal | Double | Float | Guid | Huge | Int | Long | SByte | Short | TimeSpan | UHuge | UInt | ULong | UShort
+    UShort = 524288
 }
