@@ -4,7 +4,7 @@ using OrleanSpaces;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 
-[ShortRunJob]
+//[ShortRunJob]
 [MemoryDiagnoser]
 [CategoriesColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -18,7 +18,7 @@ public class TupleCollectionBenchmarks
     private readonly TupleCollection tupleCollection;
     private readonly ImmutableArray<TupleAddress<SpaceTuple>> immutableArray;
 
-    [Params(10, 100, 1_000)]
+    [Params(10, 100)]//, 1_000)]
     public int NumTuples { get; set; }
 
     [Params(1, 10, 30)] 

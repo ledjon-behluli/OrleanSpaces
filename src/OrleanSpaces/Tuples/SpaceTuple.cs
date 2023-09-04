@@ -35,29 +35,52 @@ public readonly record struct SpaceTuple :
     /// <exception cref="ArgumentException"/>
     public SpaceTuple([AllowNull] params object[] fields)
     {
-        if (fields is null)
+        if (fields is null || fields.Length == 0)
         {
             this.fields = Array.Empty<object>();
             return;
         }
 
-        this.fields = new object[fields.Length];
-
-        for (int i = 0; i < fields.Length; i++)
+        if (fields.Length == 1 && fields[0] is Array array)
         {
-            object? obj = fields[i];
-            if (obj is null)
+            this.fields = new object[array.Length];
+            for (int i = 0; i < array.Length; i++)
             {
-                ThrowHelpers.NullField(i);
-            }
-            else
-            {
-                if (!obj.GetType().IsSupportedType())
+                object? obj = array.GetValue(i);
+                if (obj is null)
                 {
-                    ThrowHelpers.InvalidFieldType(i);
+                    ThrowHelpers.NullField(i);
                 }
+                else
+                {
+                    if (!obj.GetType().IsSupportedType())
+                    {
+                        ThrowHelpers.InvalidFieldType(i);
+                    }
 
-                this.fields[i] = obj;
+                    this.fields[i] = obj;
+                }
+            }
+        }
+        else
+        {
+            this.fields = new object[fields.Length];
+            for (int i = 0; i < fields.Length; i++)
+            {
+                object? obj = fields[i];
+                if (obj is null)
+                {
+                    ThrowHelpers.NullField(i);
+                }
+                else
+                {
+                    if (!obj.GetType().IsSupportedType())
+                    {
+                        ThrowHelpers.InvalidFieldType(i);
+                    }
+
+                    this.fields[i] = obj;
+                }
             }
         }
     }
@@ -147,20 +170,39 @@ public readonly record struct SpaceTemplate :
             return;
         }
 
-        this.fields = new object[fields.Length];
-
-        for (int i = 0; i < fields.Length; i++)
+        if (fields.Length == 1 && fields[0] is Array array)
         {
-            object? obj = fields[i];
-            if (obj is not null)
+            this.fields = new object[array.Length];
+            for (int i = 0; i < array.Length; i++)
             {
-                if (!obj.GetType().IsSupportedType() && obj is not Type)
+                object? obj = array.GetValue(i);
+                if (obj is not null)
                 {
-                    ThrowHelpers.InvalidFieldType(i);
+                    if (!obj.GetType().IsSupportedType() && obj is not Type)
+                    {
+                        ThrowHelpers.InvalidFieldType(i);
+                    }
                 }
-            }
 
-            this.fields[i] = obj;
+                this.fields[i] = obj;
+            }
+        }
+        else
+        {
+            this.fields = new object[fields.Length];
+            for (int i = 0; i < fields.Length; i++)
+            {
+                object? obj = fields[i];
+                if (obj is not null)
+                {
+                    if (!obj.GetType().IsSupportedType() && obj is not Type)
+                    {
+                        ThrowHelpers.InvalidFieldType(i);
+                    }
+                }
+
+                this.fields[i] = obj;
+            }
         }
     }
 
