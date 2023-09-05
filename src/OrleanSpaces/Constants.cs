@@ -9,7 +9,7 @@ public static class Constants
     /// <summary>
     /// The name of the stream provider.
     /// </summary>
-    public const string StreamName = "OrleanSpace";
+    public const string StreamName = "OrleanSpaces";
     /// <summary>
     /// The name of the pub-sub stream provider.
     /// </summary>
