@@ -371,6 +371,22 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
+    #region ReloadAsync
+
+    [Fact]
+    public async Task Should_ReloadAsync()
+    {
+        await agent.WriteAsync(new(1));
+
+        int count1 = await agent.CountAsync();
+        await agent.ReloadAsync();
+        int count2 = await agent.CountAsync();
+
+        Assert.Equal(count1, count2);
+    }
+
+    #endregion
+
     #region ClearAsync
 
     [Fact]
