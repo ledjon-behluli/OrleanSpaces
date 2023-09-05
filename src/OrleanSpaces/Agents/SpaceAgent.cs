@@ -96,10 +96,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         tuples.Add(new(storeId, tuple));
     }
 
-    public async ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
+    public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
     {
         if (evaluation == null) throw new ArgumentNullException(nameof(evaluation));
-        await evaluationChannel.Writer.WriteAsync(evaluation);
+        return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
     public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
