@@ -197,12 +197,6 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     public ValueTask<int> CountAsync() => new(tuples.Length);
 
-    public async Task ClearAsync()
-    {
-        await director.RemoveAll(agentId);
-        tuples.Clear();
-    }
-
     public async Task ReloadAsync()
     {
         var tuples = await director.GetAll();
@@ -212,6 +206,12 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         {
             this.tuples.Add(tuple);
         }
+    }
+
+    public async Task ClearAsync()
+    {
+        await director.RemoveAll(agentId);
+        tuples.Clear();
     }
 
     #endregion
