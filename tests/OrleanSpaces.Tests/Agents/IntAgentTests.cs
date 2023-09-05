@@ -31,6 +31,23 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel<IntTuple>>();
     }
 
+    #region Count
+
+    [Fact]
+    public async Task Should_Count()
+    {
+        await agent.ClearAsync();
+        Assert.Equal(0, agent.Count);
+
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(2));
+
+        Assert.Equal(3, agent.Count);
+    }
+
+    #endregion
+
     #region Subscriptions
 
     [Fact]
@@ -351,26 +368,6 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region CountAsync
-
-    [Fact]
-    public async Task Should_CountAsync()
-    {
-        await agent.ClearAsync();
-
-        int count = await agent.CountAsync();
-        Assert.Equal(0, count);
-
-        await agent.WriteAsync(new(1));
-        await agent.WriteAsync(new(1));
-        await agent.WriteAsync(new(2));
-
-        count = await agent.CountAsync();
-        Assert.Equal(3, count);
-    }
-
-    #endregion
-
     #region ReloadAsync
 
     [Fact]
@@ -378,9 +375,9 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
     {
         await agent.WriteAsync(new(1));
 
-        int count1 = await agent.CountAsync();
+        int count1 = agent.Count;
         await agent.ReloadAsync();
-        int count2 = await agent.CountAsync();
+        int count2 = agent.Count;
 
         Assert.Equal(count1, count2);
     }
@@ -393,14 +390,10 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_ClearAsync()
     {
         await agent.WriteAsync(new(1));
-
-        int count = await agent.CountAsync();
-        Assert.NotEqual(0, count);
+        Assert.NotEqual(0, agent.Count);
 
         await agent.ClearAsync();
-
-        count = await agent.CountAsync();
-        Assert.Equal(0, count);
+        Assert.Equal(0, agent.Count);
     }
 
     #endregion

@@ -83,6 +83,8 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
     #region ISpaceAgent
 
+    public int Count => tuples.Length;
+
     public Guid Subscribe(ISpaceObserver<TTuple> observer)
         => observerRegistry.Add(observer);
 
@@ -195,7 +197,6 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Length);
     public async Task ReloadAsync() => tuples = await director.GetAll();
 
     public async Task ClearAsync()

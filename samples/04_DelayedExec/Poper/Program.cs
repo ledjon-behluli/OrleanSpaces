@@ -56,7 +56,7 @@ while (!callbackExecuted)
     await Task.Delay(100);
 }
 
-Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await agent.PeekAsync(template)).IsEmpty}");
+Console.WriteLine($"WORKER: Checking if {tuple} is still in space: {!(await agent.Peek(template)).IsEmpty}");
 
 
 Console.WriteLine("\nPress any key to terminate...");

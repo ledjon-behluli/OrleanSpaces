@@ -8,6 +8,11 @@ namespace OrleanSpaces;
 public interface ISpaceAgent
 {
     /// <summary>
+    /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
+    /// </summary>
+    int Count { get; }
+
+    /// <summary>
     /// Enables the <paramref name="observer"/> to subscribe to events that happen in the tuple space.
     /// </summary>
     /// <param name="observer">Any space observer.</param>
@@ -47,7 +52,7 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <returns><see cref="SpaceTuple"/> (potentially one with zero length).</returns>
-    ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
+    ValueTask<SpaceTuple> Peek(SpaceTemplate template);
     
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -58,7 +63,7 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
+    /// <remarks><i>Same as with <see cref="Peek(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
     
     /// <summary>
@@ -93,14 +98,9 @@ public interface ISpaceAgent
     /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
+    /// <remarks><i>Same as with <see cref="Peek(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
     ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
     
-    /// <summary>
-    /// Returns the total number of <see cref="SpaceTuple"/>'s in the space. 
-    /// </summary>
-    ValueTask<int> CountAsync();
-
     /// <summary>
     /// Reloads all <see cref="SpaceTuple"/>'s from the space.
     /// </summary>
@@ -123,6 +123,11 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     where TTuple : struct, ISpaceTuple<T>
     where TTemplate : struct, ISpaceTemplate<T>
 {
+    /// <summary>
+    /// Returns the total number of <see cref="TTuple"/>'s in the space. 
+    /// </summary>
+    int Count { get; }
+
     /// <summary>
     /// Enables the <paramref name="observer"/> to subscribe to events that happen in the tuple space.
     /// </summary>
@@ -212,11 +217,6 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     /// <returns>An <see cref="IEnumerable{T}"/> containing the matched <typeparamref name="TTuple"/>'s.</returns>
     /// <remarks><i>Same as with <see cref="PeekAsync(TTemplate)"/>, the original tuples are <u>kept</u> in the space.</i></remarks>
     ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template);
-
-    /// <summary>
-    /// Returns the total number of <typeparamref name="TTuple"/>'s in the space. 
-    /// </summary>
-    ValueTask<int> CountAsync();
 
     /// <summary>
     /// Reloads all <see cref="TTuple"/>'s from the space.

@@ -31,6 +31,23 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
         evaluationChannel = fixture.Client.ServiceProvider.GetRequiredService<EvaluationChannel<SpaceTuple>>();
     }
 
+    #region Count
+
+    [Fact]
+    public async Task Should_Count()
+    {
+        await agent.ClearAsync();
+        Assert.Equal(0, agent.Count);
+
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(1));
+        await agent.WriteAsync(new(2));
+
+        Assert.Equal(3, agent.Count);
+    }
+
+    #endregion
+
     #region Subscriptions
 
     [Fact]
@@ -66,7 +83,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     {
         await router.RouteTuple(routingTuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.Peek(routingTuple.ToTemplate());
 
         Assert.Equal(routingTuple, peekedTuple);
     }
@@ -78,7 +95,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
         await router.RouteTemplate(template);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(template);
+        SpaceTuple peekedTuple = await agent.Peek(template);
 
         Assert.NotEqual(routingTuple, peekedTuple);
     }
@@ -93,7 +110,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
         SpaceTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -130,7 +147,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -140,7 +157,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
+        SpaceTuple peekedTuple = await agent.Peek(new(0));
 
         peekedTuple.AssertEmpty();
     }
@@ -192,7 +209,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+            SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
             Assert.Equal(tuple, peekedTuple);
         }
     }
@@ -351,26 +368,6 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region CountAsync
-
-    [Fact]
-    public async Task Should_CountAsync()
-    {
-        await agent.ClearAsync();
-
-        int count = await agent.CountAsync();
-        Assert.Equal(0, count);
-
-        await agent.WriteAsync(new(1));
-        await agent.WriteAsync(new(1));
-        await agent.WriteAsync(new(2));
-
-        count = await agent.CountAsync();
-        Assert.Equal(3, count);
-    }
-
-    #endregion
-
     #region ReloadAsync
 
     [Fact]
@@ -378,9 +375,9 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     {
         await agent.WriteAsync(new(1));
 
-        int count1 = await agent.CountAsync();
+        int count1 = agent.Count;
         await agent.ReloadAsync();
-        int count2 = await agent.CountAsync();
+        int count2 = agent.Count;
 
         Assert.Equal(count1, count2);
     }
@@ -393,14 +390,10 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_ClearAsync()
     {
         await agent.WriteAsync(new(1));
-
-        int count = await agent.CountAsync();
-        Assert.NotEqual(0, count);
+        Assert.NotEqual(0, agent.Count);
 
         await agent.ClearAsync();
-
-        count = await agent.CountAsync();
-        Assert.Equal(0, count);
+        Assert.Equal(0, agent.Count);
     }
 
     #endregion

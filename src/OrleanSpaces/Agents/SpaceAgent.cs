@@ -76,6 +76,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceAgent
 
+    public int Count => tuples.Length;
+
     public Guid Subscribe(ISpaceObserver<SpaceTuple> observer)
         => observerRegistry.Add(observer);
 
@@ -98,7 +100,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
+    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
     {
         var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
         return new(tuple.Tuple);
@@ -189,7 +191,6 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Length);
     public async Task ReloadAsync() => tuples = await director.GetAll();
 
     public async Task ClearAsync()
