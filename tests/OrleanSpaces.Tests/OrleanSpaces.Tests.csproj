@@ -28,4 +28,9 @@
     <ProjectReference Include="..\..\src\OrleanSpaces\OrleanSpaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Grains\Directors\" />
+    <Folder Include="Grains\Stores\" />
+  </ItemGroup>
+
 </Project>

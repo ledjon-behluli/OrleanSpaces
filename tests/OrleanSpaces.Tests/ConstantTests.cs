@@ -34,5 +34,26 @@ public class ConstantTests
         Assert.Equal(24, Constants.MaxFieldCharLength_Double);
         Assert.Equal(30, Constants.MaxFieldCharLength_Decimal);
         Assert.Equal(24, Constants.MaxFieldCharLength_Float);
+
+        Assert.Equal("space-realm", Constants.RealmKey_Space);
+        Assert.Equal("bool-realm", Constants.RealmKey_Bool);
+        Assert.Equal("char-realm", Constants.RealmKey_Char);
+        Assert.Equal("byte-realm", Constants.RealmKey_Byte);
+        Assert.Equal("sbyte-realm", Constants.RealmKey_SByte);
+        Assert.Equal("short-realm", Constants.RealmKey_Short);
+        Assert.Equal("ushort-realm", Constants.RealmKey_UShort);
+        Assert.Equal("int-realm", Constants.RealmKey_Int);
+        Assert.Equal("uint-realm", Constants.RealmKey_UInt);
+        Assert.Equal("long-realm", Constants.RealmKey_Long);
+        Assert.Equal("ulong-realm", Constants.RealmKey_ULong);
+        Assert.Equal("huge-realm", Constants.RealmKey_Huge);
+        Assert.Equal("uhuge-realm", Constants.RealmKey_UHuge);
+        Assert.Equal("datetime-realm", Constants.RealmKey_DateTime);
+        Assert.Equal("datetimeoffset-realm", Constants.RealmKey_DateTimeOffset);
+        Assert.Equal("timespan-realm", Constants.RealmKey_TimeSpan);
+        Assert.Equal("guid-realm", Constants.RealmKey_Guid);
+        Assert.Equal("double-realm", Constants.RealmKey_Double);
+        Assert.Equal("decimal-realm", Constants.RealmKey_Decimal);
+        Assert.Equal("float-realm", Constants.RealmKey_Float);
     }
 }
