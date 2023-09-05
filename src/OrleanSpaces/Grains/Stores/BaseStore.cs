@@ -19,7 +19,7 @@ internal abstract class BaseStore<T> : Grain
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        partitionThreshold = ServiceProvider.GetRequiredService<SpaceServerOptions>().PartitionThreshold;
+        partitionThreshold = ServiceProvider.GetRequiredService<SpaceServerOptions>().PartitioningThreshold;
         return Task.CompletedTask;
     }
 

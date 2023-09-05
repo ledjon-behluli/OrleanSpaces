@@ -209,6 +209,7 @@ internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
 
 internal static class Helpers
 {
+    public static int PartitioningThreshold = new SpaceServerOptions().PartitioningThreshold;
     public static StoreTuple<T> WithDefaultStore<T>(this T tuple) where T : ISpaceTuple => new(Guid.Empty, tuple);
     public static void AssertEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.Equal(0, tuple.Length);
     public static void AssertNotEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.NotEqual(0, tuple.Length);

@@ -24,7 +24,7 @@ public static class Extensions
     {
         SpaceServerOptions serverOptions = new();
         configureServerOptions?.Invoke(serverOptions);
-        if (serverOptions.PartitionThreshold < 1)
+        if (serverOptions.PartitioningThreshold < 1)
         {
             throw new InvalidOperationException("Partition threshold must be greater than zero.");
         }

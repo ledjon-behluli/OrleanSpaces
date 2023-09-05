@@ -52,4 +52,23 @@ public class SpaceDirectorTests : IAsyncLifetime, IClassFixture<ClusterFixture>
         Assert.Equal(tuple, observer.LastContractionTuple);
         Assert.True(observer.HasFlattened);
     }
+
+    [Fact]
+    public async Task Should_Create_New_Partition()
+    {
+        SpaceTuple tuple = new(1);
+        List<Task<Guid>> tasks = new();
+
+        for (int i = 0; i < Helpers.PartitioningThreshold; i++)
+        {
+            tasks.Add(director.Insert(new(agentId, tuple.WithDefaultStore(), TupleActionType.Insert)));
+        }
+
+        Guid[] storeIds = await Task.WhenAll(tasks);
+        Guid storeId1 = storeIds.First();
+        Assert.All(storeIds, id => Assert.Equal(storeId1, id));
+
+        Guid storeId2 = await director.Insert(new(agentId, tuple.WithDefaultStore(), TupleActionType.Insert));
+        Assert.NotEqual(storeId1, storeId2);
+    }
 }

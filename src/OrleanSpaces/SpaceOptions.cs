@@ -8,7 +8,7 @@ public sealed class SpaceServerOptions
     /// <summary>
     /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
     /// </summary>
-    public int PartitionThreshold { get; set; } = 1_000;
+    public int PartitioningThreshold { get; set; } = 1_000;
 }
 
 /// <summary>
