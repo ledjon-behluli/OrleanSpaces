@@ -56,6 +56,16 @@ public sealed class SpaceClientOptions
     /// than the <see cref="ISpaceObserver{T}"/> will receive only notifications that have been written by an agent in a different process.
     /// </summary>
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
+
+    /// <summary>
+    /// If set to <see langword="true"/>, the agent loads the space contents (<i>i.e. the tuples</i>) upon its startup.
+    /// </summary>
+    /// <remarks><i>
+    /// It is useful in cases where the agent is used to perform only writes, or the application needs fast startup times.
+    /// Space contents can always be reloaded via <see cref="ISpaceAgent.ReloadAsync"/> or 
+    /// <see cref="ISpaceAgent{T, TTuple, TTemplate}.ReloadAsync"/>, depending on the agent type.
+    /// </i></remarks>
+    public bool LoadSpaceContentsUponStartup { get; set; } = true;
 }
 
 /// <summary>

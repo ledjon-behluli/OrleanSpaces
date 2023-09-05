@@ -105,6 +105,11 @@ public interface ISpaceAgent
     /// Removes all <see cref="SpaceTuple"/>'s in the space.
     /// </summary>
     Task ClearAsync();
+
+    /// <summary>
+    /// Reloads all <see cref="SpaceTuple"/>'s from the space.
+    /// </summary>
+    Task ReloadAsync();
 }
 
 /// <summary>
@@ -217,4 +222,9 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     /// Removes all <typeparamref name="TTuple"/>'s in the space.
     /// </summary>
     Task ClearAsync();
+
+    /// <summary>
+    /// Reloads all <see cref="TTuple"/>'s from the space.
+    /// </summary>
+    Task ReloadAsync();
 }
