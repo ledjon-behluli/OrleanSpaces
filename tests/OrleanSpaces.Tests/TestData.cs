@@ -99,13 +99,17 @@ internal class TestSpaceRouter<TTuple, TTemplate> : ISpaceRouter<TTuple, TTempla
     where TTuple : struct, ISpaceTuple
     where TTemplate : struct, ISpaceTemplate
 {
-    public ITupleStore<TTuple>? Store { get; private set; }
+    public IStoreDirector<TTuple>? Director { get; private set; }
     public TTuple Tuple { get; set; } = new();
     public TTemplate Template { get; set; } = new();
     public TupleAction<TTuple> Action { get; private set; }
 
 
-    public void RouteStore(ITupleStore<TTuple> store) => Store = store;
+    public ValueTask RouteDirector(IStoreDirector<TTuple> director)
+    {
+        Director = director;
+        return ValueTask.CompletedTask;
+    }
 
     public Task RouteTuple(TTuple tuple)
     {
@@ -177,11 +181,11 @@ internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
 
         if (action.Type == TupleActionType.Insert)
         {
-            LastExpansionTuple = action.Tuple;
+            LastExpansionTuple = action.StoreTuple.Tuple;
         }
         else if (action.Type == TupleActionType.Remove)
         {
-            LastContractionTuple = action.Tuple;
+            LastContractionTuple = action.StoreTuple.Tuple;
         }
         else if (action.Type == TupleActionType.Clear)
         {
@@ -203,8 +207,9 @@ internal class TestStreamObserver<T> : IAsyncObserver<TupleAction<T>>
     }
 }
 
-public static class AssertHelpers
+internal static class Helpers
 {
+    public static StoreTuple<T> WithDefaultStore<T>(this T tuple) where T : ISpaceTuple => new(Guid.Empty, tuple);
     public static void AssertEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.Equal(0, tuple.Length);
     public static void AssertNotEmpty<T>(this T tuple) where T : ISpaceTuple => Assert.NotEqual(0, tuple.Length);
 }

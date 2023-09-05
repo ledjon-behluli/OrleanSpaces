@@ -90,6 +90,6 @@ public class ExtensionTests
     static IHost CreateSiloHost(SpaceKind kind)
         => new HostBuilder()
             .UseOrleans(builder => 
-                builder.AddOrleanSpaces(options => options.EnabledSpaces = kind))
+                builder.AddOrleanSpaces(configureClientOptions: options => options.EnabledSpaces = kind))
             .Build();
 }
