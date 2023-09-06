@@ -51,7 +51,7 @@ while (!evalExecuted)
     await Task.Delay(500);
 }
 
-Console.WriteLine($"WORKER: Result from evaluation: {await agent.Peek(new(EXCHANGE_KEY, typeof(double)))}");
+Console.WriteLine($"WORKER: Result from evaluation: {await agent.PeekAsync(new(EXCHANGE_KEY, typeof(double)))}");
 
 Console.WriteLine("\nPress any key to terminate...");
 Console.ReadKey();

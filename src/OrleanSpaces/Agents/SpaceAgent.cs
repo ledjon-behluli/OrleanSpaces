@@ -100,7 +100,7 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public ValueTask<SpaceTuple> Peek(SpaceTemplate template)
+    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
     {
         var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
         return new(tuple.Tuple);

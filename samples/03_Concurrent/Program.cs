@@ -33,7 +33,7 @@ Console.WriteLine("----------------------");
 
 await Task.WhenAll(CreateTasks(100, async index =>
 {
-    SpaceTuple tuple = await agent.Peek(new(EXCHANGE_KEY, index));
+    SpaceTuple tuple = await agent.PeekAsync(new(EXCHANGE_KEY, index));
     Console.WriteLine($"READER {index}: {tuple}");
 }));
 

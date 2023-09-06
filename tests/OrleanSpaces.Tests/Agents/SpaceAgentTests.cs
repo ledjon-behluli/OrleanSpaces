@@ -83,7 +83,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     {
         await router.RouteTuple(routingTuple);
 
-        SpaceTuple peekedTuple = await agent.Peek(routingTuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
 
         Assert.Equal(routingTuple, peekedTuple);
     }
@@ -95,7 +95,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
         await router.RouteTemplate(template);
 
-        SpaceTuple peekedTuple = await agent.Peek(template);
+        SpaceTuple peekedTuple = await agent.PeekAsync(template);
 
         Assert.NotEqual(routingTuple, peekedTuple);
     }
@@ -110,7 +110,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
         SpaceTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -147,7 +147,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
+        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -157,7 +157,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.Peek(new(0));
+        SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
 
         peekedTuple.AssertEmpty();
     }
@@ -209,7 +209,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
         for (int i = 0; i < 3; i++)
         {
-            SpaceTuple peekedTuple = await agent.Peek(tuple.ToTemplate());
+            SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
             Assert.Equal(tuple, peekedTuple);
         }
     }
