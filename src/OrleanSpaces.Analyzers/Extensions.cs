@@ -1,9 +1,10 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
+using System.Text;
 
 namespace OrleanSpaces.Analyzers;
 
-internal static class TypeSymbolExtensions
+internal static class SymbolExtensions
 {
     /// <summary>
     /// Determines if <paramref name="symbol"/> is of type <paramref name="candidateSymbol"/>.
@@ -64,6 +65,42 @@ internal static class TypeSymbolExtensions
 
             return symbol.OriginalDefinition.Equals(clrTypeSymbol, SymbolEqualityComparer.Default);
         });
+    }
+
+    public static string GetFullName(this ISymbol symbol)
+    {
+        if (symbol == null || IsRootNamespace(symbol))
+        {
+            return string.Empty;
+        }
+
+        StringBuilder builder = new(symbol.MetadataName);
+        ISymbol lastSymbol = symbol;
+
+        symbol = symbol.ContainingSymbol;
+
+        while (!IsRootNamespace(symbol))
+        {
+            if (symbol is ITypeSymbol && lastSymbol is ITypeSymbol)
+            {
+                builder.Insert(0, '+');
+            }
+            else
+            {
+                builder.Insert(0, '.');
+            }
+
+            builder.Insert(0, symbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
+            symbol = symbol.ContainingSymbol;
+        }
+
+        return builder.ToString();
+
+        static bool IsRootNamespace(ISymbol symbol)
+        {
+            INamespaceSymbol? namespaceSymbol;
+            return ((namespaceSymbol = symbol as INamespaceSymbol) != null) && namespaceSymbol.IsGlobalNamespace;
+        }
     }
 }
 

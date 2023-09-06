@@ -52,4 +52,24 @@ internal static class FullyQualifiedNames
     public const string UIntTemplate = "OrleanSpaces.Tuples.Specialized.UIntTemplate";
     public const string ULongTemplate = "OrleanSpaces.Tuples.Specialized.ULongTemplate";
     public const string UShortTemplate = "OrleanSpaces.Tuples.Specialized.UShortTemplate";
+
+    public const string System_Boolean = "System.Boolean";
+    public const string System_Byte = "System.Byte";
+    public const string System_SByte = "System.SByte";
+    public const string System_Char = "System.Char";
+    public const string System_Double = "System.Double";
+    public const string System_Single = "System.Single";
+    public const string System_Int16 = "System.Int16";
+    public const string System_UInt16 = "System.UInt16";
+    public const string System_Int32 = "System.Int32";
+    public const string System_UInt32 = "System.UInt32";
+    public const string System_Int64 = "System.Int64";
+    public const string System_UInt64 = "System.UInt64";
+    public const string System_Int128 = "System.Int128";
+    public const string System_UInt128 = "System.UInt128";
+    public const string System_Decimal = "System.Decimal";
+    public const string System_DateTime = "System.DateTime";
+    public const string System_DateTimeOffset = "System.DateTimeOffset";
+    public const string System_TimeSpan = "System.TimeSpan";
+    public const string System_Guid = "System.Guid";
 }
