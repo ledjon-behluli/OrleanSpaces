@@ -332,8 +332,11 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<IntTuple> result = agent.Enumerate(new(enumerate, 1, 2, 3, null));
-        Assert.Equal(3, result.Count());
+        IEnumerable<IntTuple> resultAll = agent.Enumerate();
+        IEnumerable<IntTuple> resultFiltered = agent.Enumerate(new(enumerate, 1, 2, 3, null));
+
+        Assert.Equal(7, resultAll.Count());
+        Assert.Equal(3, resultFiltered.Count());
     }
 
     [Fact]
@@ -344,18 +347,34 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
             new(consume, 0),
             new(consume, 1),
             new(consume, 2),
-            new(consume, 3),
+            new(consume, 2),
             new(consume, 4)
         };
 
         _ = Task.Run(async () =>
         {
             int i = 1;
+
             await foreach (IntTuple tuple in agent.EnumerateAsync())
             {
                 Assert.Equal(tuples[i], tuple);
                 i++;
             }
+
+            Assert.Equal(5, i);
+        });
+
+        _ = Task.Run(async () =>
+        {
+            int i = 1;
+
+            await foreach (IntTuple tuple in agent.EnumerateAsync(new(consume, 2)))
+            {
+                Assert.Equal(tuples[i], tuple);
+                i++;
+            }
+
+            Assert.Equal(2, i);
         });
 
         int i = 0;

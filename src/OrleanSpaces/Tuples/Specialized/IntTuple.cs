@@ -72,7 +72,7 @@ public readonly record struct IntTuple :
 /// </summary>
 public readonly record struct IntTemplate : 
     IEquatable<IntTemplate>,
-    //IEqualityOperators<IntTemplate, IntTemplate, bool>,
+    IEqualityOperators<IntTemplate, IntTemplate, bool>,
     ISpaceTemplate<int>, 
     ISpaceMatchable<int, IntTuple>
 {
