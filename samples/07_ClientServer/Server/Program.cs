@@ -10,7 +10,7 @@ var host = Host.CreateDefaultBuilder(args)
         siloBuilder.UseLocalhostClustering();
         siloBuilder.AddOrleanSpaces(configureClientOptions: options =>
         {
-            // enabling spaces in the silo means we can use the agents in the silo in addition to the client
+            // enabling spaces in the silo means we can use the agents in the silo too
             options.EnabledSpaces = SpaceKind.Generic;
         });
         siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
