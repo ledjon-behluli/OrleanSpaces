@@ -4,6 +4,7 @@ using OrleanSpaces.Registries;
 using OrleanSpaces.Tuples;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Threading.Channels;
 
 namespace OrleanSpaces.Agents;
@@ -11,7 +12,7 @@ namespace OrleanSpaces.Agents;
 internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplate>, ISpaceRouter<TTuple, TTemplate>
     where T : unmanaged
     where TTuple : struct, ISpaceTuple<T>
-    where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
+    where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>, IEqualityOperators<TTemplate, TTemplate, bool>
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
@@ -157,14 +158,14 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
     {
         foreach (var tuple in tuples)
         {
-            if (template.Matches(tuple.Tuple))
+            if (template == default || template.Matches(tuple.Tuple))
             {
                 yield return tuple.Tuple;
             }
         }
     }
 
-    public async IAsyncEnumerable<TTuple> EnumerateAsync()
+    public async IAsyncEnumerable<TTuple> EnumerateAsync(TTemplate template)
     {
         lock (lockObj)
         {
@@ -186,7 +187,10 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
 
         await foreach (TTuple tuple in streamChannel.Reader.ReadAllAsync())
         {
-            yield return tuple;
+            if (template == default || template.Matches(tuple))
+            {
+                yield return tuple;
+            }
         }
     }
 

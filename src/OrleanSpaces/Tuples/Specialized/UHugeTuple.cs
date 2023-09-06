@@ -12,6 +12,7 @@ namespace OrleanSpaces.Tuples.Specialized;
 [GenerateSerializer, Immutable]
 public readonly record struct UHugeTuple :
     IEquatable<UHugeTuple>,
+    IEqualityOperators<UHugeTuple, UHugeTuple, bool>,
     INumericTuple<UInt128>, 
     ISpaceFactory<UInt128, UHugeTuple>,
     ISpaceConvertible<UInt128, UHugeTemplate>
@@ -119,6 +120,7 @@ public readonly record struct UHugeTuple :
 /// </summary>
 public readonly record struct UHugeTemplate : 
     IEquatable<UHugeTemplate>,
+    IEqualityOperators<UHugeTemplate, UHugeTemplate, bool>,
     ISpaceTemplate<UInt128>, 
     ISpaceMatchable<UInt128, UHugeTuple>
 {

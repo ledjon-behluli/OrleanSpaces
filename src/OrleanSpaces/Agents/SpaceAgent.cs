@@ -151,14 +151,14 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         foreach (var tuple in tuples)
         {
-            if (template.Matches(tuple.Tuple))
+            if (template == default || template.Matches(tuple.Tuple))
             {
                 yield return tuple.Tuple;
             }
         }
     }
 
-    public async IAsyncEnumerable<SpaceTuple> EnumerateAsync()
+    public async IAsyncEnumerable<SpaceTuple> EnumerateAsync(SpaceTemplate template)
     {
         lock (lockObj)
         {
@@ -180,7 +180,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
         await foreach (SpaceTuple tuple in streamChannel.Reader.ReadAllAsync())
         {
-            yield return tuple;
+            if (template == default || template.Matches(tuple))
+            {
+                yield return tuple;
+            }
         }
     }
 

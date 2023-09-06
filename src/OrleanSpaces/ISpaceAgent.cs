@@ -90,16 +90,18 @@ public interface ISpaceAgent
     ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
 
     /// <summary>
-    /// Enumerates over multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
+    /// Enumerates over <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/> in the space.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
-    /// <remarks><i>Same as with <see cref="Peek(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
-    IEnumerable<SpaceTuple> Enumerate(SpaceTemplate template);
+    /// <remarks><i>If <paramref name="template"/> is <see cref="default"/>, all tuples will be enumerated.</i></remarks>
+    IEnumerable<SpaceTuple> Enumerate(SpaceTemplate template = default);
 
     /// <summary>
-    /// Enumerates over a stream of <see cref="SpaceTuple"/>'s as they are written in the tuple space.
+    /// Enumerates over a stream of <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/> as they get written in the space.
     /// </summary>
-    IAsyncEnumerable<SpaceTuple> EnumerateAsync();
+    /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
+    /// <remarks><i>If <paramref name="template"/> is <see cref="default"/>, all tuples will be enumerated.</i></remarks>
+    IAsyncEnumerable<SpaceTuple> EnumerateAsync(SpaceTemplate template = default);
 
     /// <summary>
     /// Reloads all <see cref="SpaceTuple"/>'s from the space.
@@ -206,17 +208,18 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     ValueTask PopAsync(TTemplate template, Func<TTuple, Task> callback);
 
     /// <summary>
-    /// Enumerates over multiple <typeparamref name="TTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
+    /// Enumerates over <typeparamref name="TTuple"/>'s that are potentially matched by the given <paramref name="template"/> in the space.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <typeparamref name="TTuple"/>'s.</param>
-    /// <returns>An <see cref="IEnumerable{T}"/> containing the matched <typeparamref name="TTuple"/>'s.</returns>
-    /// <remarks><i>Same as with <see cref="Peek(TTemplate)"/>, the original tuples are <u>kept</u> in the space.</i></remarks>
-    IEnumerable<TTuple> Enumerate(TTemplate template);
+    /// <remarks><i>If <paramref name="template"/> is <see cref="default"/>, all tuples will be enumerated.</i></remarks>
+    IEnumerable<TTuple> Enumerate(TTemplate template = default);
 
     /// <summary>
-    /// Enumerates over a stream of <typeparamref name="TTuple"/>'s as they are written in the tuple space.
+    /// Enumerates over a stream of <typeparamref name="TTuple"/>'s that are potentially matched by the given <paramref name="template"/> as they get written in the space.
     /// </summary>
-    IAsyncEnumerable<TTuple> EnumerateAsync();
+    /// <param name="template">A template that potentially matches multiple <typeparamref name="TTuple"/>'s.</param>
+    /// <remarks><i>If <paramref name="template"/> is <see cref="default"/>, all tuples will be enumerated.</i></remarks>
+    IAsyncEnumerable<TTuple> EnumerateAsync(TTemplate template = default);
 
     /// <summary>
     /// Reloads all <see cref="TTuple"/>'s from the space.

@@ -1,6 +1,8 @@
 ﻿using OrleanSpaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples.Specialized;
 
 var host = new HostBuilder()
     .UseOrleansClient(builder =>
@@ -17,6 +19,7 @@ await host.StartAsync();
 Console.WriteLine("Connected to the tuple space.\n\n");
 
 var agent = host.Services.GetService<ISpaceAgent>();
+
 
 // test anything here...
 
