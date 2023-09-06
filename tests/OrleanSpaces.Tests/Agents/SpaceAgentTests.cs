@@ -11,7 +11,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     const string routingKey = "routing";
     const string peek = "peek";
     const string pop = "pop";
-    const string scan = "scan";
+    const string enumerate = "enumerate";
     const string consume = "consume";
     const string peekNotAvailable = "peek-not-available";
     const string popNotAvailable = "pop-not-available";
@@ -48,7 +48,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region Subscriptions
+    #region Subscribe
 
     [Fact]
     public void Should_Handle_Observer_Subscriptions()
@@ -83,7 +83,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     {
         await router.RouteTuple(routingTuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
+        SpaceTuple peekedTuple = agent.Peek(routingTuple.ToTemplate());
 
         Assert.Equal(routingTuple, peekedTuple);
     }
@@ -95,14 +95,14 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
         await router.RouteTemplate(template);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(template);
+        SpaceTuple peekedTuple = agent.Peek(template);
 
         Assert.NotEqual(routingTuple, peekedTuple);
     }
 
     #endregion
 
-    #region WriteAsync
+    #region Write
 
     [Fact]
     public async Task Should_WriteAsync()
@@ -110,7 +110,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
         SpaceTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        SpaceTuple peekedTuple = agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -121,7 +121,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region EvaluateAsync
+    #region Evaluate
 
     [Fact]
     public async Task Should_EvaluateAsync()
@@ -140,26 +140,40 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region PeekAsync
+    #region Peek
 
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
-    public async Task Should_PeekAsync(SpaceTuple tuple)
+    public async Task Should_Peek(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        SpaceTuple peekedTuple = agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
 
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
-    public async Task Should_Return_Empty_Tuple_On_PeekAsync(SpaceTuple tuple)
+    public async Task Should_Return_Empty_Tuple_On_Peek(SpaceTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        SpaceTuple peekedTuple = await agent.PeekAsync(new(0));
+        SpaceTuple peekedTuple = agent.Peek(new(0));
 
         peekedTuple.AssertEmpty();
+    }
+
+    [Fact]
+    public async Task Should_Keep_Tuple_In_Space_On_Peek()
+    {
+        SpaceTuple tuple = new(peek);
+
+        await agent.WriteAsync(tuple);
+
+        for (int i = 0; i < 3; i++)
+        {
+            SpaceTuple peekedTuple = agent.Peek(tuple.ToTemplate());
+            Assert.Equal(tuple, peekedTuple);
+        }
     }
 
     [Theory]
@@ -201,56 +215,12 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Keep_Tuple_In_Space_On_PeekAsync()
-    {
-        SpaceTuple tuple = new(peek);
-
-        await agent.WriteAsync(tuple);
-
-        for (int i = 0; i < 3; i++)
-        {
-            SpaceTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
-            Assert.Equal(tuple, peekedTuple);
-        }
-    }
-
-    [Fact]
-    public async Task Should_EnumerateAsync()
-    {
-        SpaceTuple[] tuples = new SpaceTuple[5]
-        {
-            new(consume, 0),
-            new(consume, 1),
-            new(consume, 2),
-            new(consume, 3),
-            new(consume, 4)
-        };
-
-        _ = Task.Run(async () =>
-        {
-            int i = 1;
-            await foreach (SpaceTuple tuple in agent.PeekAsync())
-            {
-                Assert.Equal(tuples[i], tuple);
-                i++;
-            }
-        });
-
-        int i = 0;
-        while (i < 5)
-        {
-            await agent.WriteAsync(tuples[i]);
-            i++;
-        }
-    }
-
-    [Fact]
     public Task Should_Throw_On_PeekAsync_If_Null_Callback()
         => Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null!));
 
     #endregion
 
-    #region PopAsync
+    #region Pop
 
     [Theory]
     [ClassData(typeof(SpaceTupleGenerator))]
@@ -341,34 +311,64 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region ScanAsync
+    #region Enumerate
 
     [Fact]
-    public async Task Should_ScanAsync()
+    public async Task Should_Enumerate()
     {
-        foreach (var tuple in ScanData())
+        List<SpaceTuple> tuples = new()
+        {
+            new(enumerate, 1, "a", 1.0f, 1.0m),
+            new(enumerate, 1, "b", 1.2f, "d"),
+            new(enumerate, 1, "c", 1.5f, 'e'),
+            new(enumerate, 1, 1.5f, "c", 'e'),
+            new(enumerate, 1, "f", 1.7f, 'g', "f"),
+            new(enumerate, 2, "f", 1.7f, 'g'),
+            new(enumerate, 2, "f", 1.7f, 'g', "f")
+        };
+
+        foreach (var tuple in tuples)
         {
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(new(scan, 1, typeof(string), typeof(float), null));
-        Assert.Equal(3, tuples.Count());
+        IEnumerable<SpaceTuple> result = agent.Enumerate(new(enumerate, 1, typeof(string), typeof(float), null));
+        Assert.Equal(3, result.Count());
     }
 
-    private static IEnumerable<SpaceTuple> ScanData()
+    [Fact]
+    public async Task Should_EnumerateAsync()
     {
-        yield return new(scan, 1, "a", 1.0f, 1.0m);
-        yield return new(scan, 1, "b", 1.2f, "d");
-        yield return new(scan, 1, "c", 1.5f, 'e');
-        yield return new(scan, 1, 1.5f, "c", 'e');
-        yield return new(scan, 1, "f", 1.7f, 'g', "f");
-        yield return new(scan, 2, "f", 1.7f, 'g');
-        yield return new(scan, 2, "f", 1.7f, 'g', "f");
+        SpaceTuple[] tuples = new SpaceTuple[5]
+        {
+            new(consume, 0),
+            new(consume, 1),
+            new(consume, 2),
+            new(consume, 3),
+            new(consume, 4)
+        };
+
+        _ = Task.Run(async () =>
+        {
+            int i = 1;
+            await foreach (SpaceTuple tuple in agent.EnumerateAsync())
+            {
+                Assert.Equal(tuples[i], tuple);
+                i++;
+            }
+        });
+
+        int i = 0;
+        while (i < 5)
+        {
+            await agent.WriteAsync(tuples[i]);
+            i++;
+        }
     }
 
     #endregion
 
-    #region ReloadAsync
+    #region Reload
 
     [Fact]
     public async Task Should_ReloadAsync()
@@ -384,7 +384,7 @@ public class SpaceAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region ClearAsync
+    #region Clear
 
     [Fact]
     public async Task Should_ClearAsync()

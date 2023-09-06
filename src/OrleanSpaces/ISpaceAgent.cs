@@ -52,7 +52,7 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <returns><see cref="SpaceTuple"/> (potentially one with zero length).</returns>
-    ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template);
+    SpaceTuple Peek(SpaceTemplate template);
     
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -63,13 +63,8 @@ public interface ISpaceAgent
     /// </summary>
     /// <param name="template">A template that potentially matches a <see cref="SpaceTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
+    /// <remarks><i>Same as with <see cref="Peek(SpaceTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
-    
-    /// <summary>
-    /// Reads a stream of <see cref="SpaceTuple"/>'s as they are written in the tuple space.
-    /// </summary>
-    IAsyncEnumerable<SpaceTuple> PeekAsync();
     
     /// <summary>
     /// Reads a <see cref="SpaceTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -93,14 +88,19 @@ public interface ISpaceAgent
     /// <param name="callback">A callback function that will be executed, with the <see cref="SpaceTuple"/> as the argument.</param>
     /// <remarks><i>Same as with <see cref="PopAsync(SpaceTemplate)"/>, the original tuple is <u>removed</u> from the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback);
-    
+
     /// <summary>
-    /// Reads multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
+    /// Enumerates over multiple <see cref="SpaceTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <see cref="SpaceTuple"/>'s.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
-    ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template);
-    
+    /// <remarks><i>Same as with <see cref="Peek(SpaceTemplate)"/>, the original tuple's are <u>kept</u> in the space.</i></remarks>
+    IEnumerable<SpaceTuple> Enumerate(SpaceTemplate template);
+
+    /// <summary>
+    /// Enumerates over a stream of <see cref="SpaceTuple"/>'s as they are written in the tuple space.
+    /// </summary>
+    IAsyncEnumerable<SpaceTuple> EnumerateAsync();
+
     /// <summary>
     /// Reloads all <see cref="SpaceTuple"/>'s from the space.
     /// </summary>
@@ -168,7 +168,7 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     /// </summary>
     /// <param name="template">A template that potentially matches a <typeparamref name="TTuple"/>.</param>
     /// <returns><typeparamref name="TTuple"/> (potentially one with zero length).</returns>
-    ValueTask<TTuple> PeekAsync(TTemplate template);
+    TTuple Peek(TTemplate template);
 
     /// <summary>
     /// Reads a <typeparamref name="TTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -179,13 +179,8 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     /// </summary>
     /// <param name="template">A template that potentially matches a <typeparamref name="TTuple"/>.</param>
     /// <param name="callback">A callback function that will be executed, with the <typeparamref name="TTuple"/> as the argument.</param>
-    /// <remarks><i>Same as with <see cref="PeekAsync(TTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
+    /// <remarks><i>Same as with <see cref="Peek(TTemplate)"/>, the original tuple is <u>kept</u> in the space once <paramref name="callback"/> gets invoked.</i></remarks>
     ValueTask PeekAsync(TTemplate template, Func<TTuple, Task> callback);
-
-    /// <summary>
-    /// Reads a stream of <typeparamref name="TTuple"/>'s as they are written in the tuple space.
-    /// </summary>
-    IAsyncEnumerable<TTuple> PeekAsync();
 
     /// <summary>
     /// Reads a <typeparamref name="TTuple"/> that is potentially matched by the given <paramref name="template"/>.
@@ -211,12 +206,17 @@ public interface ISpaceAgent<T, TTuple, TTemplate>
     ValueTask PopAsync(TTemplate template, Func<TTuple, Task> callback);
 
     /// <summary>
-    /// Reads multiple <typeparamref name="TTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
+    /// Enumerates over multiple <typeparamref name="TTuple"/>'s that are potentially matched by the given <paramref name="template"/>.
     /// </summary>
     /// <param name="template">A template that potentially matches multiple <typeparamref name="TTuple"/>'s.</param>
     /// <returns>An <see cref="IEnumerable{T}"/> containing the matched <typeparamref name="TTuple"/>'s.</returns>
-    /// <remarks><i>Same as with <see cref="PeekAsync(TTemplate)"/>, the original tuples are <u>kept</u> in the space.</i></remarks>
-    ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template);
+    /// <remarks><i>Same as with <see cref="Peek(TTemplate)"/>, the original tuples are <u>kept</u> in the space.</i></remarks>
+    IEnumerable<TTuple> Enumerate(TTemplate template);
+
+    /// <summary>
+    /// Enumerates over a stream of <typeparamref name="TTuple"/>'s as they are written in the tuple space.
+    /// </summary>
+    IAsyncEnumerable<TTuple> EnumerateAsync();
 
     /// <summary>
     /// Reloads all <see cref="TTuple"/>'s from the space.

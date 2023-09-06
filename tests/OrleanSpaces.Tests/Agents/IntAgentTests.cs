@@ -11,7 +11,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
     const int routingKey = 100;
     const int peek = 101;
     const int pop = 102;
-    const int scan = 103;
+    const int enumerate = 103;
     const int consume = 104;
     const int peekNotAvailable = 105;
     const int popNotAvailable = 106;
@@ -48,7 +48,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region Subscriptions
+    #region Subscribe
 
     [Fact]
     public void Should_Handle_Observer_Subscriptions()
@@ -83,7 +83,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
     {
         await router.RouteTuple(routingTuple);
 
-        IntTuple peekedTuple = await agent.PeekAsync(routingTuple.ToTemplate());
+        IntTuple peekedTuple = agent.Peek(routingTuple.ToTemplate());
 
         Assert.Equal(routingTuple, peekedTuple);
     }
@@ -95,14 +95,14 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
         await router.RouteTemplate(template);
 
-        IntTuple peekedTuple = await agent.PeekAsync(template);
+        IntTuple peekedTuple = agent.Peek(template);
 
         Assert.NotEqual(routingTuple, peekedTuple);
     }
 
     #endregion
 
-    #region WriteAsync
+    #region Write
 
     [Fact]
     public async Task Should_WriteAsync()
@@ -110,7 +110,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
         IntTuple tuple = new(1);
         await agent.WriteAsync(tuple);
 
-        IntTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        IntTuple peekedTuple = agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
@@ -121,7 +121,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region EvaluateAsync
+    #region Evaluate
 
     [Fact]
     public async Task Should_EvaluateAsync()
@@ -140,26 +140,40 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region PeekAsync
+    #region Peek
 
     [Theory]
     [ClassData(typeof(IntTupleGenerator))]
-    public async Task Should_PeekAsync(IntTuple tuple)
+    public async Task Should_Peek(IntTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        IntTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
+        IntTuple peekedTuple = agent.Peek(tuple.ToTemplate());
 
         Assert.Equal(tuple, peekedTuple);
     }
 
     [Theory]
     [ClassData(typeof(IntTupleGenerator))]
-    public async Task Should_Return_Empty_Tuple_On_PeekAsync(IntTuple tuple)
+    public async Task Should_Return_Empty_Tuple_On_Peek(IntTuple tuple)
     {
         await agent.WriteAsync(tuple);
-        IntTuple peekedTuple = await agent.PeekAsync(new(0));
+        IntTuple peekedTuple = agent.Peek(new(0));
 
         peekedTuple.AssertEmpty();
+    }
+
+    [Fact]
+    public async Task Should_Keep_Tuple_In_Space_On_Peek()
+    {
+        IntTuple tuple = new(peek);
+
+        await agent.WriteAsync(tuple);
+
+        for (int i = 0; i < 3; i++)
+        {
+            IntTuple peekedTuple = agent.Peek(tuple.ToTemplate());
+            Assert.Equal(tuple, peekedTuple);
+        }
     }
 
     [Theory]
@@ -201,56 +215,12 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
     }
 
     [Fact]
-    public async Task Should_Keep_Tuple_In_Space_On_PeekAsync()
-    {
-        IntTuple tuple = new(peek);
-
-        await agent.WriteAsync(tuple);
-
-        for (int i = 0; i < 3; i++)
-        {
-            IntTuple peekedTuple = await agent.PeekAsync(tuple.ToTemplate());
-            Assert.Equal(tuple, peekedTuple);
-        }
-    }
-
-    [Fact]
-    public async Task Should_EnumerateAsync()
-    {
-        IntTuple[] tuples = new IntTuple[5]
-        {
-            new(consume, 0),
-            new(consume, 1),
-            new(consume, 2),
-            new(consume, 3),
-            new(consume, 4)
-        };
-
-        _ = Task.Run(async () =>
-        {
-            int i = 1;
-            await foreach (IntTuple tuple in agent.PeekAsync())
-            {
-                Assert.Equal(tuples[i], tuple);
-                i++;
-            }
-        });
-
-        int i = 0;
-        while (i < 5)
-        {
-            await agent.WriteAsync(tuples[i]);
-            i++;
-        }
-    }
-
-    [Fact]
     public Task Should_Throw_On_PeekAsync_If_Null_Callback()
         => Assert.ThrowsAsync<ArgumentNullException>(async () => await agent.PeekAsync(new(0), null!));
 
     #endregion
 
-    #region PopAsync
+    #region Pop
 
     [Theory]
     [ClassData(typeof(IntTupleGenerator))]
@@ -341,34 +311,64 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region ScanAsync
+    #region Enumerate
 
     [Fact]
-    public async Task Should_ScanAsync()
+    public async Task Should_Enumerate()
     {
-        foreach (var tuple in ScanData())
+        List<IntTuple> tuples = new()
+        {
+            new(enumerate, 1, 2, 3, 4),
+            new(enumerate, 1, 2, 4, 5),
+            new(enumerate, 1, 2, 3, 6),
+            new(enumerate, 1, 2, 4, 5),
+            new(enumerate, 1, 3, 4, 7),
+            new(enumerate, 1, 1, 6, 5),
+            new(enumerate, 1, 2, 3, 9)
+        };
+
+        foreach (var tuple in tuples)
         {
             await agent.WriteAsync(tuple);
         }
 
-        IEnumerable<IntTuple> tuples = await agent.ScanAsync(new(scan, 1, 2, 3, null));
-        Assert.Equal(3, tuples.Count());
+        IEnumerable<IntTuple> result = agent.Enumerate(new(enumerate, 1, 2, 3, null));
+        Assert.Equal(3, result.Count());
     }
 
-    private static IEnumerable<IntTuple> ScanData()
+    [Fact]
+    public async Task Should_EnumerateAsync()
     {
-        yield return new(scan, 1, 2, 3, 4);
-        yield return new(scan, 1, 2, 4, 5);
-        yield return new(scan, 1, 2, 3, 6);
-        yield return new(scan, 1, 2, 4, 5);
-        yield return new(scan, 1, 3, 4, 7);
-        yield return new(scan, 1, 1, 6, 5);
-        yield return new(scan, 1, 2, 3, 9);
+        IntTuple[] tuples = new IntTuple[5]
+        {
+            new(consume, 0),
+            new(consume, 1),
+            new(consume, 2),
+            new(consume, 3),
+            new(consume, 4)
+        };
+
+        _ = Task.Run(async () =>
+        {
+            int i = 1;
+            await foreach (IntTuple tuple in agent.EnumerateAsync())
+            {
+                Assert.Equal(tuples[i], tuple);
+                i++;
+            }
+        });
+
+        int i = 0;
+        while (i < 5)
+        {
+            await agent.WriteAsync(tuples[i]);
+            i++;
+        }
     }
 
     #endregion
 
-    #region ReloadAsync
+    #region Reload
 
     [Fact]
     public async Task Should_ReloadAsync()
@@ -384,7 +384,7 @@ public class IntAgentTests : IClassFixture<ClusterFixture>
 
     #endregion
 
-    #region ClearAsync
+    #region Clear
 
     [Fact]
     public async Task Should_ClearAsync()

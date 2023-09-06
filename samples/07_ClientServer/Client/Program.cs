@@ -36,7 +36,7 @@ while (!cts.IsCancellationRequested)
     await agent.WriteAsync(clientTuple);
     Console.WriteLine($"WRITE: {clientTuple}");
 
-    SpaceTuple serverTuple = await agent.PeekAsync(new("SERVER"));
+    SpaceTuple serverTuple = agent.Peek(new("SERVER"));
     if (!serverTuple.IsEmpty)
     {
         Console.WriteLine($"READ: {serverTuple}");

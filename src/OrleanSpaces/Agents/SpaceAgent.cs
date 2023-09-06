@@ -100,11 +100,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-    {
-        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
-        return new(tuple.Tuple);
-    }
+    public SpaceTuple Peek(SpaceTemplate template) =>
+        tuples.FirstOrDefault(x => template.Matches(x.Tuple)).Tuple;
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
@@ -150,22 +147,18 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         tuples = tuples.Remove(tuple);
     }
 
-    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
+    public IEnumerable<SpaceTuple> Enumerate(SpaceTemplate template)
     {
-        List<SpaceTuple> result = new();
-
         foreach (var tuple in tuples)
         {
             if (template.Matches(tuple.Tuple))
             {
-                result.Add(tuple.Tuple);
+                yield return tuple.Tuple;
             }
         }
-
-        return new(result);
     }
 
-    public async IAsyncEnumerable<SpaceTuple> PeekAsync()
+    public async IAsyncEnumerable<SpaceTuple> EnumerateAsync()
     {
         lock (lockObj)
         {

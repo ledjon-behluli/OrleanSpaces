@@ -27,14 +27,14 @@ await Task.WhenAll(CreateTasks(100, async index =>
     Console.WriteLine($"WRITER {index}: {tuple}");
 }));
 
-
 Console.WriteLine("----------------------");
 
-
-await Task.WhenAll(CreateTasks(100, async index =>
+await Task.WhenAll(CreateTasks(100, index =>
 {
-    SpaceTuple tuple = await agent.PeekAsync(new(EXCHANGE_KEY, index));
+    SpaceTuple tuple = agent.Peek(new(EXCHANGE_KEY, index));
     Console.WriteLine($"READER {index}: {tuple}");
+
+    return Task.CompletedTask;
 }));
 
 

@@ -107,11 +107,8 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public ValueTask<TTuple> PeekAsync(TTemplate template)
-    {
-        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
-        return new(tuple.Tuple);
-    }
+    public TTuple Peek(TTemplate template) => 
+        tuples.FirstOrDefault(x => template.Matches(x.Tuple)).Tuple;
 
     public async ValueTask PeekAsync(TTemplate template, Func<TTuple, Task> callback)
     {
@@ -156,22 +153,18 @@ internal class BaseAgent<T, TTuple, TTemplate> : ISpaceAgent<T, TTuple, TTemplat
         tuples = tuples.Remove(tuple);
     }
 
-    public ValueTask<IEnumerable<TTuple>> ScanAsync(TTemplate template)
+    public IEnumerable<TTuple> Enumerate(TTemplate template)
     {
-        List<TTuple> result = new();
-
         foreach (var tuple in tuples)
         {
             if (template.Matches(tuple.Tuple))
             {
-                result.Add(tuple.Tuple);
+                yield return tuple.Tuple;
             }
         }
-
-        return new(result);
     }
 
-    public async IAsyncEnumerable<TTuple> PeekAsync()
+    public async IAsyncEnumerable<TTuple> EnumerateAsync()
     {
         lock (lockObj)
         {

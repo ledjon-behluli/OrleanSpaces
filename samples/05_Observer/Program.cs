@@ -68,7 +68,7 @@ Console.WriteLine("Total tuples in space:\n");
 
 SpaceTemplate template = new(null, null);
 
-foreach (var tuple in await agent.ScanAsync(template))
+foreach (var tuple in agent.Enumerate(template))
 {
     Console.WriteLine(tuple);
 }

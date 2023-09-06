@@ -44,8 +44,8 @@ public sealed class SpaceClientOptions
     /// <summary>
     /// If set to <see langword="true"/>, allows multiple consumers (client code) to read from the stream of tuples provided by:
     /// <list type="bullet">
-    /// <item><description><see cref="ISpaceAgent.PeekAsync()"/></description></item>
-    /// <item><description><see cref="ISpaceAgent{T, TTuple, TTemplate}.PeekAsync()"/></description></item>
+    /// <item><description><see cref="ISpaceAgent.EnumerateAsync()"/></description></item>
+    /// <item><description><see cref="ISpaceAgent{T, TTuple, TTemplate}.EnumerateAsync()"/></description></item>
     /// </list>
     /// </summary>
     public bool AllowMultipleAgentStreamConsumers { get; set; } = true;
