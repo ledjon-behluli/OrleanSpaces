@@ -2,11 +2,11 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA003;
 
-public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
+public class NotSupportedTypeAnalyzerTests : AnalyzerFixture
 {
-    public NotSupportedTupleOrTemplateFieldTypeAnalyzerTests() : base(
-        new NotSupportedTupleOrTemplateFieldTypeAnalyzer(),
-        NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id)
+    public NotSupportedTypeAnalyzerTests() : base(
+        new NotSupportedFieldTypeAnalyzer(),
+        NotSupportedFieldTypeAnalyzer.Diagnostic.Id)
     {
 
     }
@@ -14,7 +14,7 @@ public class NotSupportedTupleOrTemplateFieldTypeAnalyzerTests : AnalyzerFixture
     [Fact]
     public void Should_Equal()
     {
-        var diagnostic = NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic;
+        var diagnostic = NotSupportedFieldTypeAnalyzer.Diagnostic;
 
         Assert.Equal("OSA003", diagnostic.Id);
         Assert.Equal(Categories.Usage, diagnostic.Category);

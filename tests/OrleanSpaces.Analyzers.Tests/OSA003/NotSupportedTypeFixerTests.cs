@@ -2,12 +2,12 @@
 
 namespace OrleanSpaces.Analyzers.Tests.OSA003;
 
-public class NotSupportedTupleOrTemplateFieldTypeFixerTests : FixerFixture
+public class NotSupportedTypeFixerTests : FixerFixture
 {
-    public NotSupportedTupleOrTemplateFieldTypeFixerTests() : base(
-        new NotSupportedTupleOrTemplateFieldTypeAnalyzer(),
-        new NotSupportedTupleOrTemplateFieldTypeFixer(),
-        NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id)
+    public NotSupportedTypeFixerTests() : base(
+        new NotSupportedFieldTypeAnalyzer(),
+        new NotSupportedFieldTypeFixer(),
+        NotSupportedFieldTypeAnalyzer.Diagnostic.Id)
     {
 
     }

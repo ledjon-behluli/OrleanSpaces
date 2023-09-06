@@ -6,12 +6,12 @@ using System.Composition;
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Code fix provider for <see cref="NotSupportedTupleOrTemplateFieldTypeAnalyzer"/>.
+/// Code fix provider for <see cref="NotSupportedFieldTypeAnalyzer"/>.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NotSupportedTupleOrTemplateFieldTypeFixer)), Shared]
-internal sealed class NotSupportedTupleOrTemplateFieldTypeFixer : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NotSupportedFieldTypeFixer)), Shared]
+internal sealed class NotSupportedFieldTypeFixer : CodeFixProvider
 {
-    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id);
+    public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(NotSupportedFieldTypeAnalyzer.Diagnostic.Id);
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -30,7 +30,7 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeFixer : CodeFixProvide
 
         CodeAction action = CodeAction.Create(
             title: "Remove unsupported argument",
-            equivalenceKey: NotSupportedTupleOrTemplateFieldTypeAnalyzer.Diagnostic.Id,
+            equivalenceKey: NotSupportedFieldTypeAnalyzer.Diagnostic.Id,
             createChangedDocument: _ =>
             {
                 var newRoot = root.RemoveNode(node, SyntaxRemoveOptions.KeepTrailingTrivia);

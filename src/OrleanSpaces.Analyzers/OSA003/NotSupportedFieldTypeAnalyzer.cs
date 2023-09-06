@@ -1,15 +1,14 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
 namespace OrleanSpaces.Analyzers.OSA003;
 
 /// <summary>
-/// Warns when arguments passed to a 'SpaceTuple' or 'SpaceTemplate', are not supported field types.
+/// Reports when arguments passed to a 'SpaceTuple' or 'SpaceTemplate', are not supported field types.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticAnalyzer
+internal sealed class NotSupportedFieldTypeAnalyzer : DiagnosticAnalyzer
 {
     public static readonly DiagnosticDescriptor Diagnostic = new(
         id: "OSA003",
@@ -60,50 +59,35 @@ internal sealed class NotSupportedTupleOrTemplateFieldTypeAnalyzer : DiagnosticA
 
         if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
-            foreach (var argument in creationOperation.GetArguments())
-            {
-                var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
-
-                if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
-                    type.IsOfAnyType(new List<ITypeSymbol?>()
-                    {
-                        context.Compilation.GetTypeByMetadataName("System.Int128"),
-                        context.Compilation.GetTypeByMetadataName("System.UInt128"),
-                        context.Compilation.GetTypeByMetadataName("System.Object[]")
-                    }))
-                {
-                    continue;
-                }
-
-                ReportDiagnosticFor(in context, argument, "SpaceTuple");
-            }
+            TryReportDiagnosticFor(in context, creationOperation, "SpaceTuple");
+            return;
         }
 
         if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
-            foreach (var argument in creationOperation.GetArguments())
-            {
-                var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
-
-                if (type is null || type.SpecialType == SpecialType.System_Nullable_T ||
-                    type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
-                    type.IsOfClrType(typeof(Type), context.Compilation) ||
-                    type.IsOfAnyType(new List<ITypeSymbol?>()
-                    {
-                        context.Compilation.GetTypeByMetadataName("System.Int128"),
-                        context.Compilation.GetTypeByMetadataName("System.UInt128"),
-                        context.Compilation.GetTypeByMetadataName("System.Object[]")
-                    }))
-                {
-                    continue;
-                }
-
-                ReportDiagnosticFor(in context, argument, "SpaceTemplate");
-            }
+            TryReportDiagnosticFor(in context, creationOperation, "SpaceTemplate");
+            return;
         }
+    }
 
-        static void ReportDiagnosticFor(in OperationAnalysisContext context, ArgumentSyntax argument, string targetTypeName)
+    private static void TryReportDiagnosticFor(
+        in OperationAnalysisContext context, IObjectCreationOperation creationOperation, string targetTypeName)
+    {
+        foreach (var argument in creationOperation.GetArguments())
         {
+            var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
+
+            if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
+                type.IsOfAnyType(new List<ITypeSymbol?>()
+                {
+                    context.Compilation.GetTypeByMetadataName("System.Int128"),
+                    context.Compilation.GetTypeByMetadataName("System.UInt128"),
+                    context.Compilation.GetTypeByMetadataName("System.Object[]")
+                }))
+            {
+                continue;
+            }
+
             context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
                 descriptor: Diagnostic,
                 location: argument.GetLocation(),
