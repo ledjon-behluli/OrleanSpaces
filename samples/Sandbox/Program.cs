@@ -18,7 +18,6 @@ await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
 
-var agent = host.Services.GetService<ISpaceAgent>();
 
 // test anything here...
 

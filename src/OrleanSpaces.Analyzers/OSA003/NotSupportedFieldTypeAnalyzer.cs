@@ -10,14 +10,8 @@ namespace OrleanSpaces.Analyzers.OSA003;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class NotSupportedFieldTypeAnalyzer : DiagnosticAnalyzer
 {
-    public static readonly DiagnosticDescriptor Diagnostic = new(
-        id: "OSA003",
-        category: Categories.Usage,
-        defaultSeverity: DiagnosticSeverity.Error,
-        isEnabledByDefault: true,
-        title: "The supplied argument type is not supported.",
-        messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
-        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA003.md");
+    private const string spaceTupleName = "SpaceTuple";
+    private const string spaceTemplateName = "SpaceTemplate";
 
     // Int128 & UInt128 are not available in netstandard2.0, so they are not part of the list of types
     private static readonly List<Type> simpleTypes = new()
@@ -43,6 +37,15 @@ internal sealed class NotSupportedFieldTypeAnalyzer : DiagnosticAnalyzer
         typeof(Guid)
     };
 
+    public static readonly DiagnosticDescriptor Diagnostic = new(
+        id: "OSA003",
+        category: Categories.Usage,
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        title: "The supplied argument type is not supported.",
+        messageFormat: "The supplied argument '{0}' is not a supported '{1}' type.",
+        helpLinkUri: "https://github.com/ledjon-behluli/OrleanSpaces/blob/master/docs/OrleanSpaces.Analyzers/Rules/OSA003.md");
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Diagnostic);
 
     public override void Initialize(AnalysisContext context)
@@ -59,13 +62,13 @@ internal sealed class NotSupportedFieldTypeAnalyzer : DiagnosticAnalyzer
 
         if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTuple)))
         {
-            TryReportDiagnosticFor(in context, creationOperation, "SpaceTuple");
+            TryReportDiagnosticFor(in context, creationOperation, spaceTupleName);
             return;
         }
 
         if (creationOperation.Type.IsOfType(context.Compilation.GetTypeByMetadataName(FullyQualifiedNames.SpaceTemplate)))
         {
-            TryReportDiagnosticFor(in context, creationOperation, "SpaceTemplate");
+            TryReportDiagnosticFor(in context, creationOperation, spaceTemplateName);
             return;
         }
     }
@@ -76,6 +79,14 @@ internal sealed class NotSupportedFieldTypeAnalyzer : DiagnosticAnalyzer
         foreach (var argument in creationOperation.GetArguments())
         {
             var type = creationOperation.SemanticModel?.GetTypeInfo(argument.Expression, context.CancellationToken).Type;
+
+            if (targetTypeName == spaceTemplateName)
+            {
+                if (type is null || type.SpecialType == SpecialType.System_Nullable_T)
+                {
+                    continue;
+                }
+            }
 
             if (type.IsOfAnyClrType(simpleTypes, context.Compilation) ||
                 type.IsOfAnyType(new List<ITypeSymbol?>()
