@@ -16,6 +16,10 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
     public void Should_Equal() =>
       Assert.Equal("OSA004", provider.FixableDiagnosticIds.Single());
 
+    #region SpaceTuple
+
+    #region ObjInit
+
     [Theory]
     [InlineData("[|SpaceTuple tuple = new SpaceTuple(true);|]", "Bool")]
     [InlineData("[|SpaceTuple tuple = new SpaceTuple((byte)1);|]", "Byte")]
@@ -36,11 +40,39 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
     [InlineData("[|SpaceTuple tuple = new SpaceTuple(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
     [InlineData("[|SpaceTuple tuple = new SpaceTuple(TimeSpan.MinValue);|]", "TimeSpan")]
     [InlineData("[|SpaceTuple tuple = new SpaceTuple(Guid.Empty);|]", "Guid")]
-    public void Should_Fix_ObjInited_SpaceTuple(string code, string specializedTypePrefix)
+    public void Should_Fix_GlobalStatement_ObjInit_SpaceTuple(string code, string specializedTypePrefix)
     {
         string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
         TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
     }
+
+    [Fact]
+    public void Should_Fix_LocalStatement_ObjInit_SpaceTuple()
+    {
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|SpaceTuple tuple = new SpaceTuple(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        IntTuple tuple = new IntTuple(1);
+    }
+}";
+
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    #endregion
+
+    #region SimplifiedObjInit
 
     [Theory]
     [InlineData("[|SpaceTuple tuple = new(true);|]", "Bool")]
@@ -62,11 +94,40 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
     [InlineData("[|SpaceTuple tuple = new(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
     [InlineData("[|SpaceTuple tuple = new(TimeSpan.MinValue);|]", "TimeSpan")]
     [InlineData("[|SpaceTuple tuple = new(Guid.Empty);|]", "Guid")]
-    public void Should_Fix_SimplifiedObjInited_SpaceTuple(string code, string specializedTypePrefix)
+    public void Should_Fix_GlobalStatement_SimplifiedObjInit_SpaceTuple(string code, string specializedTypePrefix)
     {
         string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
         TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
     }
+
+
+    [Fact]
+    public void Should_Fix_LocalStatement_SimplifiedObjInit_SpaceTuple()
+    {
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|SpaceTuple tuple = new(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        IntTuple tuple = new(1);
+    }
+}";
+
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    #endregion
+
+    #region VarObjInit
 
     [Theory]
     [InlineData("[|var tuple = new SpaceTuple(true);|]", "Bool")]
@@ -88,25 +149,204 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
     [InlineData("[|var tuple = new SpaceTuple(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
     [InlineData("[|var tuple = new SpaceTuple(TimeSpan.MinValue);|]", "TimeSpan")]
     [InlineData("[|var tuple = new SpaceTuple(Guid.Empty);|]", "Guid")]
-    public void Should_Fix_VarInited_SpaceTuple(string code, string specializedTypePrefix)
+    public void Should_Fix_GlobalStatement_VarObjInit_SpaceTuple(string code, string specializedTypePrefix)
     {
         string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
         TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
     }
 
-//    [Theory]
-//    [InlineData(
-//@"class C
-//{
-//    public C()
-//    {
-//        [|SpaceTuple tuple = new(1);|]
-//    }
-//}"
-//, "Int")]
-    public void Should_Fix_SpaceTuple_1(string code, string specializedTypePrefix)
+    [Fact]
+    public void Should_Fix_LocalStatement_VarObjInit_SpaceTuple()
     {
-        string fix = code.Replace("Space", specializedTypePrefix);
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|var tuple = new SpaceTuple(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        var tuple = new IntTuple(1);
+    }
+}";
+
         TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
     }
+
+    #endregion
+
+    #endregion
+
+    #region SpaceTemplate
+
+    #region ObjInit
+
+    [Theory]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(true);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((byte)1);|]", "Byte")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((sbyte)1);|]", "SByte")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate('a');|]", "Char")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((double)1);|]", "Double")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((float)1);|]", "Float")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((short)1);|]", "Short")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((ushort)1);|]", "UShort")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(1);|]", "Int")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((uint)1);|]", "UInt")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((long)1);|]", "Long")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((ulong)1);|]", "ULong")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((Int128)1);|]", "Huge")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((UInt128)1);|]", "UHuge")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate((decimal)1);|]", "Decimal")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(DateTime.MinValue);|]", "DateTime")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(TimeSpan.MinValue);|]", "TimeSpan")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(Guid.Empty);|]", "Guid")]
+    public void Should_Fix_GlobalStatement_ObjInit_SpaceTemplate(string code, string specializedTypePrefix)
+    {
+        string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    [Fact]
+    public void Should_Fix_LocalStatement_ObjInit_SpaceTemplate()
+    {
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|SpaceTemplate template = new SpaceTemplate(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        IntTemplate template = new IntTemplate(1);
+    }
+}";
+
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    #endregion
+
+    #region SimplifiedObjInit
+
+    [Theory]
+    [InlineData("[|SpaceTemplate template = new(true);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new((byte)1);|]", "Byte")]
+    [InlineData("[|SpaceTemplate template = new((sbyte)1);|]", "SByte")]
+    [InlineData("[|SpaceTemplate template = new('a');|]", "Char")]
+    [InlineData("[|SpaceTemplate template = new((double)1);|]", "Double")]
+    [InlineData("[|SpaceTemplate template = new((float)1);|]", "Float")]
+    [InlineData("[|SpaceTemplate template = new((short)1);|]", "Short")]
+    [InlineData("[|SpaceTemplate template = new((ushort)1);|]", "UShort")]
+    [InlineData("[|SpaceTemplate template = new(1);|]", "Int")]
+    [InlineData("[|SpaceTemplate template = new((uint)1);|]", "UInt")]
+    [InlineData("[|SpaceTemplate template = new((long)1);|]", "Long")]
+    [InlineData("[|SpaceTemplate template = new((ulong)1);|]", "ULong")]
+    [InlineData("[|SpaceTemplate template = new((Int128)1);|]", "Huge")]
+    [InlineData("[|SpaceTemplate template = new((UInt128)1);|]", "UHuge")]
+    [InlineData("[|SpaceTemplate template = new((decimal)1);|]", "Decimal")]
+    [InlineData("[|SpaceTemplate template = new(DateTime.MinValue);|]", "DateTime")]
+    [InlineData("[|SpaceTemplate template = new(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
+    [InlineData("[|SpaceTemplate template = new(TimeSpan.MinValue);|]", "TimeSpan")]
+    [InlineData("[|SpaceTemplate template = new(Guid.Empty);|]", "Guid")]
+    public void Should_Fix_GlobalStatement_SimplifiedObjInit_SpaceTemplate(string code, string specializedTypePrefix)
+    {
+        string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+
+    [Fact]
+    public void Should_Fix_LocalStatement_SimplifiedObjInit_SpaceTemplate()
+    {
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|SpaceTemplate template = new(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        IntTemplate template = new(1);
+    }
+}";
+
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    #endregion
+
+    #region VarObjInit
+
+    [Theory]
+    [InlineData("[|var template = new SpaceTemplate(true);|]", "Bool")]
+    [InlineData("[|var template = new SpaceTemplate((byte)1);|]", "Byte")]
+    [InlineData("[|var template = new SpaceTemplate((sbyte)1);|]", "SByte")]
+    [InlineData("[|var template = new SpaceTemplate('a');|]", "Char")]
+    [InlineData("[|var template = new SpaceTemplate((double)1);|]", "Double")]
+    [InlineData("[|var template = new SpaceTemplate((float)1);|]", "Float")]
+    [InlineData("[|var template = new SpaceTemplate((short)1);|]", "Short")]
+    [InlineData("[|var template = new SpaceTemplate((ushort)1);|]", "UShort")]
+    [InlineData("[|var template = new SpaceTemplate(1);|]", "Int")]
+    [InlineData("[|var template = new SpaceTemplate((uint)1);|]", "UInt")]
+    [InlineData("[|var template = new SpaceTemplate((long)1);|]", "Long")]
+    [InlineData("[|var template = new SpaceTemplate((ulong)1);|]", "ULong")]
+    [InlineData("[|var template = new SpaceTemplate((Int128)1);|]", "Huge")]
+    [InlineData("[|var template = new SpaceTemplate((UInt128)1);|]", "UHuge")]
+    [InlineData("[|var template = new SpaceTemplate((decimal)1);|]", "Decimal")]
+    [InlineData("[|var template = new SpaceTemplate(DateTime.MinValue);|]", "DateTime")]
+    [InlineData("[|var template = new SpaceTemplate(DateTimeOffset.MinValue);|]", "DateTimeOffset")]
+    [InlineData("[|var template = new SpaceTemplate(TimeSpan.MinValue);|]", "TimeSpan")]
+    [InlineData("[|var template = new SpaceTemplate(Guid.Empty);|]", "Guid")]
+    public void Should_Fix_GlobalStatement_VarObjInit_SpaceTemplate(string code, string specializedTypePrefix)
+    {
+        string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    [Fact]
+    public void Should_Fix_LocalStatement_VarObjInit_SpaceTemplate()
+    {
+        string code =
+@"class C
+{
+    public C()
+    {
+        [|var template = new SpaceTemplate(1);|]
+    }
+}";
+
+        string fix =
+@"class C
+{
+    public C()
+    {
+        var template = new IntTemplate(1);
+    }
+}";
+
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    #endregion
+
+    #endregion
 }
