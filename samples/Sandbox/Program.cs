@@ -17,7 +17,10 @@ var client = host.Services.GetRequiredService<IClusterClient>();
 await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
-IntTuple tuple = new(1, 1, 1);
+
+SpaceTuple tuple1 = new(1, 1, 1);
+SpaceTuple tuple2 = new SpaceTuple(2, 2, 2);
+var tuple3 = new SpaceTuple(3, 3, 3);
 
 // test anything here...
 
@@ -30,6 +33,8 @@ class T
 {
     public T()
     {
-IntTuple t = new(1, 1, 1);
+        SpaceTuple tuple1 = new(1, 1, 1);
+        SpaceTuple tuple2 = new SpaceTuple(2, 2, 2);
+        var tuple3 = new SpaceTuple(3, 3, 3);
     }
 }

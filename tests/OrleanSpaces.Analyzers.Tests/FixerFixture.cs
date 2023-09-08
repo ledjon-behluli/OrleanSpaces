@@ -41,32 +41,27 @@ public class FixerFixture : CodeFixTestFixture
 
     private void TestCodeFix(string code, string fixedCode, Namespace[] namespaces, ICodeActionSelector selector)
     {
-        string newCode = code;
-        string newFixedCode = fixedCode;
+        StringBuilder builder = new();
 
-        if (namespaces.Length > 0)
+        builder.AppendLine($"using System;");
+        foreach (var @namespace in namespaces)
         {
-            StringBuilder builder = new();
-
-            foreach (var @namespace in namespaces)
-            {
-                builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
-            }
-
-            builder.AppendLine();
-
-            StringBuilder codeBuilder = new();
-            StringBuilder fixedCodeBuilder = new();
-
-            codeBuilder.Append(builder);
-            codeBuilder.Append(code);
-
-            fixedCodeBuilder.Append(builder);
-            fixedCodeBuilder.Append(fixedCode);
-
-            newCode = codeBuilder.ToString();
-            newFixedCode = fixedCodeBuilder.ToString();
+            builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");
         }
+
+        builder.AppendLine();
+
+        StringBuilder codeBuilder = new();
+        StringBuilder fixedCodeBuilder = new();
+
+        codeBuilder.Append(builder);
+        codeBuilder.Append(code);
+
+        fixedCodeBuilder.Append(builder);
+        fixedCodeBuilder.Append(fixedCode);
+
+        string newCode = codeBuilder.ToString();
+        string newFixedCode = fixedCodeBuilder.ToString();
 
         TestCodeFix(newCode, newFixedCode, diagnosticId, selector);
     }
