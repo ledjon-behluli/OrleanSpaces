@@ -116,11 +116,11 @@ internal static class Extensions
         }
     }
 
-    public static T? TryGetNode<T>(this SyntaxNode? node) where T : class
+    public static T? TryGetParentNode<T>(this SyntaxNode? node) where T : class
     {
         if (node is GlobalStatementSyntax globalStatement)
         {
-            var targetNode = node.ChildNodes().FirstOrDefault(x => x is T localDeclarationStatement);
+            var targetNode = node.ChildNodes().FirstOrDefault(x => x is T);
             return targetNode is null ? null : targetNode as T;
         }
         else
@@ -132,6 +132,12 @@ internal static class Extensions
 
             return node is null ? null : node as T;
         }
+    }
+
+    public static T? TryGetChildNode<T>(this SyntaxNode? node) where T : class
+    {
+        var targetNode = node?.ChildNodes().FirstOrDefault(x => x is T);
+        return targetNode is null ? null : targetNode as T;
     }
 
     public static SyntaxNode? TryGetNamespaceNode(this SyntaxNode? node)

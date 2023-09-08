@@ -132,7 +132,7 @@ internal sealed class PreferSpecializedOverGenericAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var localDeclaration = creationOperation.Syntax.TryGetNode<LocalDeclarationStatementSyntax>();
+        var localDeclaration = creationOperation.Syntax.TryGetParentNode<LocalDeclarationStatementSyntax>();
         if (localDeclaration is null)
         {
             return;
