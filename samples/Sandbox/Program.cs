@@ -17,7 +17,7 @@ var client = host.Services.GetRequiredService<IClusterClient>();
 await host.StartAsync();
 
 Console.WriteLine("Connected to the tuple space.\n\n");
-
+IntTuple tuple = new(1, 1, 1);
 
 // test anything here...
 
@@ -25,3 +25,11 @@ Console.WriteLine("\nPress any key to terminate...\n");
 Console.ReadKey();
 
 await host.StopAsync();
+
+class T
+{
+    public T()
+    {
+IntTuple t = new(1, 1, 1);
+    }
+}

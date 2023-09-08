@@ -82,4 +82,12 @@ public class FixerFixture : CodeFixTestFixture
     /// <para>AFTER: Test t = new Test();</para></i>
     /// </summary>
     protected static string RemoveTextWithinDiagnosticSpan(string code) => regex.Replace(code, "");
+
+    /// <summary>
+    /// Removes the strings: '[|' and '|]' from the text
+    /// <i>
+    /// <para>BEFORE: Test t = new Test([|1|]);</para>
+    /// <para>AFTER: Test t = new Test(1);</para></i>
+    /// </summary>
+    protected static string RemoveDiagnosticSpanFromText(string code) => regex.Replace(code, "$1");
 }

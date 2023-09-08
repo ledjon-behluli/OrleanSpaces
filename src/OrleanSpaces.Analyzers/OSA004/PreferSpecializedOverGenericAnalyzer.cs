@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
@@ -131,12 +132,20 @@ internal sealed class PreferSpecializedOverGenericAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        string argumentValues = string.Join(",", arguments.Select(arg => arg.ToFullString()));
+        var localDeclaration = creationOperation.Syntax.TryGetNode<LocalDeclarationStatementSyntax>();
+        if (localDeclaration is null)
+        {
+            return;
+        }
+
+        var builder = ImmutableDictionary.CreateBuilder<string, string?>();
+        builder.Add("SpecializedTypeName", specializedTypeName);
 
         context.ReportDiagnostic(Microsoft.CodeAnalysis.Diagnostic.Create(
             descriptor: Diagnostic,
-            location: creationOperation.Syntax.GetLocation(),
-            messageArgs: new[] { specializedTypeName, genericTypeName, argumentValues }));
+            location: localDeclaration.GetLocation(),
+            messageArgs: new[] { specializedTypeName, genericTypeName },
+            properties: builder.ToImmutable()));
     }
 
     private static string? GetTupleShortName(ReadOnlySpan<char> fullName)

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OrleanSpaces.Analyzers;
 
-internal static class SymbolExtensions
+internal static class Extensions
 {
     /// <summary>
     /// Determines if <paramref name="symbol"/> is of type <paramref name="candidateSymbol"/>.
@@ -102,13 +102,7 @@ internal static class SymbolExtensions
             return ((namespaceSymbol = symbol as INamespaceSymbol) != null) && namespaceSymbol.IsGlobalNamespace;
         }
     }
-}
 
-internal static class OperationExtensions
-{
-    /// <summary>
-    /// Returns all <see cref="ArgumentSyntax"/> found in <paramref name="operation"/>
-    /// </summary>
     public static IEnumerable<ArgumentSyntax> GetArguments(this IObjectCreationOperation operation)
     {
         var argumentOperation = operation.Arguments.SingleOrDefault();
@@ -121,10 +115,25 @@ internal static class OperationExtensions
             }
         }
     }
-}
 
-internal static class SyntaxExtensions
-{
+    public static T? TryGetNode<T>(this SyntaxNode? node) where T : class
+    {
+        if (node is GlobalStatementSyntax globalStatement)
+        {
+            var targetNode = node.ChildNodes().FirstOrDefault(x => x is T localDeclarationStatement);
+            return targetNode is null ? null : targetNode as T;
+        }
+        else
+        {
+            while (node is not null && node is not T)
+            {
+                node = node.Parent;
+            }
+
+            return node is null ? null : node as T;
+        }
+    }
+
     public static SyntaxNode? TryGetNamespaceNode(this SyntaxNode? node)
     {
         string @namespace = string.Empty;
@@ -157,29 +166,29 @@ internal static class SyntaxExtensions
         }
 
         return namespaceNode;
-    }
 
-    private static void TrySetNode(SyntaxNode? potentialNamespaceNode, ref SyntaxNode? namespaceNode)
-    {
-        if (potentialNamespaceNode is GlobalStatementSyntax globalStatement)
+        static void TrySetNode(SyntaxNode? potentialNamespaceNode, ref SyntaxNode? namespaceNode)
         {
-            namespaceNode = globalStatement;
-            return;
-        }
-
-        if (potentialNamespaceNode is BaseNamespaceDeclarationSyntax namespaceParent)
-        {
-            namespaceNode = namespaceParent;
-
-            while (true)
+            if (potentialNamespaceNode is GlobalStatementSyntax globalStatement)
             {
-                if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
-                {
-                    break;
-                }
+                namespaceNode = globalStatement;
+                return;
+            }
 
-                namespaceParent = parent;
-                namespaceNode = parent;
+            if (potentialNamespaceNode is BaseNamespaceDeclarationSyntax namespaceParent)
+            {
+                namespaceNode = namespaceParent;
+
+                while (true)
+                {
+                    if (namespaceParent.Parent is not NamespaceDeclarationSyntax parent)
+                    {
+                        break;
+                    }
+
+                    namespaceParent = parent;
+                    namespaceNode = parent;
+                }
             }
         }
     }
