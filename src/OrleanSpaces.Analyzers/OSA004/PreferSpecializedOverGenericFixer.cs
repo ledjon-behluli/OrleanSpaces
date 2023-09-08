@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using System.Collections.Immutable;
 using System.Composition;
 
@@ -36,25 +35,91 @@ internal sealed class PreferSpecializedOverGenericFixer : CodeFixProvider
             return;
         }
 
+        var localDeclaration = node.TryGetNode<LocalDeclarationStatementSyntax>();
+        if (localDeclaration is null)
+        {
+            return;
+        }
+
+        VariableDeclarationSyntax newVariableDeclaration;
+
+        var variableDeclaration = localDeclaration.Declaration;
+        var variable = variableDeclaration.Variables[0];
+
+        if (variable.Initializer?.Value is ObjectCreationExpressionSyntax { } objectCreation)
+        {
+            var arguments = objectCreation.ArgumentList?.Arguments ?? new();
+
+            if (variableDeclaration.Type.IsVar)
+            {
+                // example: var tuple = new SpaceTuple(1);
+                newVariableDeclaration =
+                    VariableDeclaration(
+                       IdentifierName(
+                           Identifier(
+                               TriviaList(),
+                               SyntaxKind.VarKeyword,
+                               "var",
+                               "var",
+                               TriviaList())))
+                       .WithVariables(
+                           SingletonSeparatedList(
+                               variable.WithInitializer(
+                                   EqualsValueClause(
+                                       ObjectCreationExpression(
+                                           IdentifierName(typeName))
+                                       .WithArgumentList(
+                                           ArgumentList(arguments))))))
+                       .NormalizeWhitespace();
+            }
+            else
+            {
+                // example: SpaceTuple tuple = new SpaceTuple(1);
+                newVariableDeclaration =
+                     VariableDeclaration(
+                             IdentifierName(typeName))
+                             .WithVariables(
+                                 SingletonSeparatedList(
+                                     variable.WithInitializer(
+                                         EqualsValueClause(
+                                             ObjectCreationExpression(
+                                                 IdentifierName(typeName))
+                                             .WithArgumentList(
+                                                 ArgumentList(arguments))))));
+
+                newVariableDeclaration = newVariableDeclaration
+                     .WithType(ParseTypeName(typeName))
+                     .NormalizeWhitespace();
+            }
+        }
+        else
+        {
+            var implicitobjectCreation = variable.Initializer?.Value as ImplicitObjectCreationExpressionSyntax;
+            var arguments = implicitobjectCreation?.ArgumentList?.Arguments ?? new();
+
+            // example: SpaceTuple tuple = new(1);
+            newVariableDeclaration =
+                VariableDeclaration(
+                    IdentifierName(typeName))
+                    .WithVariables(
+                        SingletonSeparatedList(
+                            variable.WithInitializer(
+                                EqualsValueClause(
+                                    ImplicitObjectCreationExpression()
+                                    .WithArgumentList(
+                                        ArgumentList(arguments))))));
+
+            newVariableDeclaration = newVariableDeclaration
+                 .WithType(ParseTypeName(typeName))
+                 .NormalizeWhitespace();
+        }
+
+        var newRoot = root.ReplaceNode(variableDeclaration, newVariableDeclaration).NormalizeWhitespace();
+
         CodeAction action = CodeAction.Create(
            title: $"Use '{typeName}'",
            equivalenceKey: PreferSpecializedOverGenericAnalyzer.Diagnostic.Id,
-           createChangedDocument: _ =>
-           {
-               var localDeclaration = node.TryGetNode<LocalDeclarationStatementSyntax>();
-               if (localDeclaration is null)
-               {
-                   return Task.FromResult(context.Document.WithSyntaxRoot(root));
-               }
-
-               var variableDeclaration = localDeclaration.Declaration;
-               var newVariableDeclaration = variableDeclaration.WithType(ParseTypeName($"{typeName} "));
-               var newRoot = root.ReplaceNode(variableDeclaration, newVariableDeclaration).NormalizeWhitespace();
-
-               var c = newRoot.ToFullString();
-
-               return Task.FromResult(context.Document.WithSyntaxRoot(newRoot));
-           });
+           createChangedDocument: _ => Task.FromResult(context.Document.WithSyntaxRoot(newRoot)));
 
         context.RegisterCodeFix(action, context.Diagnostics);
     }

@@ -17,6 +17,16 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
       Assert.Equal("OSA004", provider.FixableDiagnosticIds.Single());
 
     [Theory]
+    [InlineData("[|var tuple = new SpaceTuple(1);|]", "Int")]
+    [InlineData("[|SpaceTuple tuple = new SpaceTuple(1);|]", "Int")]
+    [InlineData("[|SpaceTuple tuple = new(1);|]", "Int")]
+    public void AAAA(string code, string specializedTypePrefix)
+    {
+        string fix = RemoveDiagnosticSpanFromText(code.Replace("Space", specializedTypePrefix));
+        TestCodeFix(code, fix, Namespace.OrleanSpaces_Tuples, Namespace.OrleanSpaces_Tuples_Specialized);
+    }
+
+    [Theory]
     [InlineData("[|SpaceTuple tuple = new SpaceTuple(1);|]", "Int")]
     public void Should_Fix_ObjInit_SpaceTuple(string code, string specializedTypePrefix)
     {
