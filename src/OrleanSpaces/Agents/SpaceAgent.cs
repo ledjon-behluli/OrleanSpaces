@@ -1,4 +1,4 @@
-﻿using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples;
 using OrleanSpaces.Helpers;
 using System.Threading.Channels;
 using OrleanSpaces.Channels;
