@@ -72,15 +72,14 @@ The `AddOrleanSpaces` extension method accepts two optional parameters.
 
 ```cs
 siloBuilder.AddOrleanSpaces(
-	configureServerOptions: serverOptions =>
-	{
-	    ...
-	},
-	configureClientOptions: clientOptions =>
-	{
-	    // the generic agent is now accessible to the silo too
-	    clientOptions.EnabledSpaces = SpaceKind.Generic;
-	});
+   configureServerOptions: serverOptions =>
+   {
+       ...
+   },
+   configureClientOptions: clientOptions =>
+   {   
+       clientOptions.EnabledSpaces = SpaceKind.Generic; // the generic agent is now accessible to the silo too
+   });
 ```
 Whether you should configure the *client options* or not, depends how you want to make use of the tuple space(s). Below are some rule of thumbs:
 
