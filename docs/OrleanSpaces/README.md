@@ -25,7 +25,7 @@ Configuration of the **Tuple Space Client** is done by configuring the **Orleans
 await new HostBuilder()
     .UseOrleansClient(clientBuilder =>
     {
-	    clientBuilder.AddOrleanSpaces();
+        clientBuilder.AddOrleanSpaces();
         clientBuilder.UseLocalhostClustering();
         clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
     })
@@ -55,9 +55,9 @@ Configuration of the **Tuple Space Server** is done by configuring the **Orleans
 await Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
-	    siloBuilder.AddOrleanSpaces();
-		siloBuilder.UseLocalhostClustering();
-		siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
+	siloBuilder.AddOrleanSpaces();
+	siloBuilder.UseLocalhostClustering();
+	siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
         siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
     })
@@ -158,7 +158,7 @@ SpaceTemplate template = new (1, null, 1.5f);
 await agent.WriteAsync(tuple);
 
 SpaceTuple peekedTuple = agent.Peek(template);
-SpaceTuple popedTuple = await agent.Peek(template);
+SpaceTuple popedTuple = await agent.PopAsync(template);
 
 int count = agent.Count;
 
