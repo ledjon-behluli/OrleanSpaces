@@ -1,3 +1,4 @@
+
 # Installation
 
 Installation is performed via [NuGet](https://www.nuget.org/packages/OrleanSpaces/)
@@ -17,47 +18,24 @@ Paket:
 # Configuration
 
 ## Client
-Configuration of the **Tuple Space Client** is done by configuring the **Orleans Client** and calling the `AddOrleanSpaces()` extension method.
+
+Configuration of the **Tuple Space Client** is done by configuring the **Orleans Client** and calling the `AddOrleanSpaces()` extension method. Below we can see a typical configuration with *localhost clustering* and *memory streams*.
 
 ```cs
 await new HostBuilder()
     .UseOrleansClient(clientBuilder =>
     {
+	    clientBuilder.AddOrleanSpaces();
         clientBuilder.UseLocalhostClustering();
-        clientBuilder.AddOrleanSpaces();
         clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .Build()
     .StartAsync();
 ```
 
-## Server
-Configuration of the **Tuple Space Server** is done by configuring the **Orleans Silo** and calling the `AddOrleanSpaces()` extension method. Below we can see a typical configuration with *localhost clustering*, *in-memory persistence* and *memory streams*.
+The `AddOrleanSpaces` extension method accepts an optional `Action<SpaceClientOptions>` parameter that is can be used to configure the `SpaceClientOptions`.
 
-```cs
-await Host.CreateDefaultBuilder(args)
-    .UseOrleans(siloBuilder =>
-    {
-	siloBuilder.UseLocalhostClustering();
-	siloBuilder.AddOrleanSpaces(); // optional
-	siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
-        siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-        siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
-    })
-    .Build()
-    .StartAsync();
-```
-Calling `AddOrleanSpaces()` on the `ISiloBuilder` is **optional**.
-
-* DO call it, when you are hosting the silo in the [same process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=If%20the%20client%20code%20is%20hosted%20in%20the%20same%20process%20as%20the%20grain%20code) as the client.
-* DO call it, when you are hosting the silo in a [different process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=Client%20code%20can%20run%20outside%20of%20the%20Orleans%20cluster%20where%20grain%20code%20is%20hosted.) than the client, and you DO want to interact with the tuple space from the silo.
-* DO NOT call it, when you are hosting the silo in a [different process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=Client%20code%20can%20run%20outside%20of%20the%20Orleans%20cluster%20where%20grain%20code%20is%20hosted.) than the client, and you DO NOT want to interact with the tuple space from the silo.
-
-## Space Options
-
-The `AddOrleanSpaces` extension method accepts an optional `Action<SpaceOptions>` parameter that is can be used to configure the `SpaceOptions`.
-
-Detailed explanations on what each of the options mean is provided via XML documentation of the `SpaceOptions` class itself. But here I want to point out, that by default only the generic agent is configured to run. If you need multiple agents, you can configure them via bitwise OR operation, like this:
+Detailed explanations on what each of the options mean is provided via XML documentation of the `SpaceClientOptions` class itself. But here I want to point out, that <u>by default only the generic agent is configured to run</u>. If you need multiple agents, you can configure them via bitwise OR operation, like this:
 
 ```cs
 AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.Generic | SpaceKind.Int | SpaceKind.Bool);
@@ -69,6 +47,51 @@ Or if you want to run all agents you can use the `All` enum value.
 AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All);
 ```
 
+## Server
+
+Configuration of the **Tuple Space Server** is done by configuring the **Orleans Silo** and calling the `AddOrleanSpaces()` extension method. Below we can see a typical configuration with *localhost clustering*, *in-memory persistence* and *memory streams*.
+
+```cs
+await Host.CreateDefaultBuilder(args)
+    .UseOrleans(siloBuilder =>
+    {
+	    siloBuilder.AddOrleanSpaces();
+		siloBuilder.UseLocalhostClustering();
+		siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
+        siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
+        siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
+    })
+    .Build()
+    .StartAsync();
+```
+
+The `AddOrleanSpaces` extension method accepts two optional parameters.
+
+* `Action<SpaceServerOptions>` is used to configure the `SpaceServerOptions` which are specific to the spaces.
+* `Action<SpaceClientOptions>` is used to configure the `SpaceClientOptions` which are specific to the agents. This allows for code hosted on the silo to be able to interact with the spaces, if needed.
+
+```cs
+siloBuilder.AddOrleanSpaces(
+	configureServerOptions: serverOptions =>
+	{
+	    ...
+	},
+	configureClientOptions: clientOptions =>
+	{
+	 // choose wether the generic agent should be
+	 // accessible from the silo too!
+	 
+	    clientOptions.EnabledSpaces = SpaceKind.Generic;
+	});
+```
+Whether you should configure the *client options* or not, depends how you want to make use of the tuple space(s). Below are some rule of thumbs:
+
+* DO NOT call it, when you are hosting the silo in the [same process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=If%20the%20client%20code%20is%20hosted%20in%20the%20same%20process%20as%20the%20grain%20code) as the client.
+* DO call it, when you are hosting the silo in a [different process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=Client%20code%20can%20run%20outside%20of%20the%20Orleans%20cluster%20where%20grain%20code%20is%20hosted.) than the client, and you DO want to interact with the tuple space from the silo.
+* DO NOT call it, when you are hosting the silo in a [different process](https://learn.microsoft.com/en-us/dotnet/orleans/host/client?pivots=orleans-7-0#co-hosted-clients:~:text=Client%20code%20can%20run%20outside%20of%20the%20Orleans%20cluster%20where%20grain%20code%20is%20hosted.) than the client, and you DO NOT want to interact with the tuple space from the silo.
+
+Here I want to point out, that <u>by default no agent is configured to run</u>. If you need to have access to the agents, you can configure them via the `configureClientOptions` in the same way as we did for the client.
+
 ## ⚠️ Orleans Serialization Configuration ⚠️
 
 An important note on the users of this library!!!
@@ -78,6 +101,12 @@ By default Orleans use `Newtonsoft.Json` as the serializer, but it also gives th
 This is unavoidable until Orleans adds full support for `DataMemberAttribute`.
 
 Read more on: [Orleans Serialization Configuration](https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/serialization-configuration?pivots=orleans-7-0).
+
+# Partitioning
+
+Each space kind automatically partitions the data (*i.e. stored tuples*). This avoids performance impacts due to frequent updates to a large list of stored tuples, because each update would involve serializing and persisting the entire dataset.
+
+Partitioning is configurable on the server via the `SpaceServerOptions.PartitioningThreshold` which defines the maximum number of tuples that should be stored within a partition per type of space.
 
 # Usage
 
@@ -101,6 +130,14 @@ var intAgent = host.Services.GetRequiredService<ISpaceAgent<int, IntTuple, IntTe
 ```
 >⚠️ All agents are isolated between each other, therefor the tuple spaces are also isolated. An action performed on say the `int` agent, has not effect whatsoever on say the `bool` agent, generic agent and so on.  
 
+## Startup Behavior
+
+By default once the agent(s) are started they automatically load the respective tuple space contents (*i.e. the tuples*) into memory, and than perform various operations to keep it in-sync with the actual tuple space.
+
+In certain cases, like where the agent is used to perform only writes, or the application needs fast startup times, the default behavior may not be suitable. This loading behavior is configurable via the `SpaceClientOptions.LoadSpaceContentsUponStartup` flag. The client can continue to operate without the loaded space if its intent is to only write to the space, or subscribe to space events.
+
+It should be noted that it is always possible to load the space via the `ReloadAsync` method, found on every agent type. As the name suggests, the method can be called (*for whatever reason*) even if the space was loaded upon startup.
+
 ## Communication Models
 
 At the core of this library, programing is done in tuples, but the library empowers the user to work with via different communication models. OrleanSpaces does implement the following models:
@@ -120,14 +157,16 @@ SpaceTemplate template = new (1, null, 1.5f);
 
 await agent.WriteAsync(tuple);
 
-var tuple1 = agent.PeekAsync(template);
-var tuple2 = agent.PeekAsync(template);
+SpaceTuple tuple1 = agent.Peek(template);
+SpaceTuple tuple2 = agent.Peek(template);
 
-var tuples = await agent.ScanAsync(template);
+int count = agent.Count;
 
-int count = await agent.CountAsync();
+IEnumerable<SpaceTuple> allTuples = agent.Enumerate();
+IEnumerable<SpaceTuple> someTuples = agent.Enumerate(template);
 
 await agent.ClearAsync();
+await agent.ReloadAsync();
 ```
 
 #### Asynchronous Request-Reply
@@ -159,12 +198,12 @@ await agent.PopAsync(template, tuple =>
 
 #### Streaming
 
-There is an overload of `PeekAsync` that accepts no arguments and returns an `IAsyncEnumerable` of tuples. The agent will stream all tuples that get written to the respective tuple space type.
+The `EnumerateAsync` method accepts a `SpaceTemplate` or `default`, and returns an `IAsyncEnumerable` of tuples. The agent will stream all (*or the once that match the template, provided it is not `default`*) tuples that get written to the respective tuple space type.
 
 ```cs
 _ = Task.Run(async () =>
 {
-    await foreach (var tuple in agent.PeekAsync())
+    await foreach (var tuple in agent.EnumerateAsync())
     {
         Console.WriteLine(tuple);
     }
