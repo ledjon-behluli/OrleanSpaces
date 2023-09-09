@@ -23,11 +23,11 @@ Configuration of the **Tuple Space Client** is done by configuring the **Orleans
 
 ```cs
 await new HostBuilder()
-    .UseOrleansClient(clientBuilder =>
+    .UseOrleansClient(builder =>
     {
-        clientBuilder.AddOrleanSpaces();
-        clientBuilder.UseLocalhostClustering();
-        clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
+        builder.AddOrleanSpaces();
+        builder.UseLocalhostClustering();
+        builder.AddMemoryStreams(Constants.PubSubProvider);
     })
     .Build()
     .StartAsync();
@@ -53,13 +53,13 @@ Configuration of the **Tuple Space Server** is done by configuring the **Orleans
 
 ```cs
 await Host.CreateDefaultBuilder(args)
-    .UseOrleans(siloBuilder =>
+    .UseOrleans(builder =>
     {
-	siloBuilder.AddOrleanSpaces();
-	siloBuilder.UseLocalhostClustering();
-	siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
-        siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-        siloBuilder.AddMemoryGrainStorage(Constants.StorageName); 
+	builder.AddOrleanSpaces();
+	builder.UseLocalhostClustering();
+	builder.AddMemoryStreams(Constants.PubSubProvider);
+        builder.AddMemoryGrainStorage(Constants.PubSubStore);
+        builder.AddMemoryGrainStorage(Constants.StorageName); 
     })
     .Build()
     .StartAsync();
