@@ -78,9 +78,7 @@ siloBuilder.AddOrleanSpaces(
 	},
 	configureClientOptions: clientOptions =>
 	{
-	 // choose wether the generic agent should be
-	 // accessible from the silo too!
-	 
+	    // choose wether the generic agent should be accessible from the silo too!
 	    clientOptions.EnabledSpaces = SpaceKind.Generic;
 	});
 ```
