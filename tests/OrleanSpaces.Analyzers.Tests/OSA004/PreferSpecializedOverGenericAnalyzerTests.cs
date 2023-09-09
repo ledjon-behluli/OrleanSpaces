@@ -18,7 +18,7 @@ public class PreferSpecializedOverGenericAnalyzerTests : AnalyzerFixture
 
         Assert.Equal("OSA004", diagnostic.Id);
         Assert.Equal(Categories.Performance, diagnostic.Category);
-        Assert.Equal(DiagnosticSeverity.Warning, diagnostic.DefaultSeverity);
+        Assert.Equal(DiagnosticSeverity.Info, diagnostic.DefaultSeverity);
         Assert.Equal("Prefer using specialized over generic type.", diagnostic.Title);
         Assert.Equal("Prefer using specialized '{0}' over generic '{1}' type.", diagnostic.MessageFormat);
         Assert.True(diagnostic.IsEnabledByDefault);
@@ -111,7 +111,9 @@ public class PreferSpecializedOverGenericAnalyzerTests : AnalyzerFixture
     [InlineData("[|SpaceTemplate template = new(DateTimeOffset.MinValue);|]")]
     [InlineData("[|SpaceTemplate template = new(TimeSpan.MinValue);|]")]
     [InlineData("[|SpaceTemplate template = new(Guid.Empty);|]")]
-                 
+
+    [InlineData("[|SpaceTemplate template = new(1, null);|]")]
+    [InlineData("[|SpaceTemplate template = new(null, 1);|]")]
     [InlineData("[|SpaceTemplate template = new('a', 'b');|]")]
     [InlineData("[|SpaceTemplate template = new(true, false);|]")]
     [InlineData("[|SpaceTemplate template = new(false, true);|]")]
@@ -138,7 +140,6 @@ public class PreferSpecializedOverGenericAnalyzerTests : AnalyzerFixture
     [Theory]
     [InlineData("[|SpaceTemplate template = new();|]")]
     [InlineData("[|SpaceTemplate template = new(null);|]")]
-    [InlineData("[|SpaceTemplate template = new(1, null);|]")]
     [InlineData("[|SpaceTemplate template = new(1, 'a');|]")]
     [InlineData("[|SpaceTemplate template = new(1, DateTime.MinValue);|]")]
     [InlineData("[|SpaceTemplate template = new(1, DateTimeOffset.MinValue);|]")]

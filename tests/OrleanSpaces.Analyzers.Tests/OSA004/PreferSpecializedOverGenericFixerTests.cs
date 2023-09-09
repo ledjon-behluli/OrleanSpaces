@@ -189,6 +189,8 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
 
     [Theory]
     [InlineData("[|SpaceTemplate template = new SpaceTemplate(true);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(true, null);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new SpaceTemplate(null, true);|]", "Bool")]
     [InlineData("[|SpaceTemplate template = new SpaceTemplate((byte)1);|]", "Byte")]
     [InlineData("[|SpaceTemplate template = new SpaceTemplate((sbyte)1);|]", "SByte")]
     [InlineData("[|SpaceTemplate template = new SpaceTemplate('a');|]", "Char")]
@@ -243,6 +245,8 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
 
     [Theory]
     [InlineData("[|SpaceTemplate template = new(true);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new(true, null);|]", "Bool")]
+    [InlineData("[|SpaceTemplate template = new(null, true);|]", "Bool")]
     [InlineData("[|SpaceTemplate template = new((byte)1);|]", "Byte")]
     [InlineData("[|SpaceTemplate template = new((sbyte)1);|]", "SByte")]
     [InlineData("[|SpaceTemplate template = new('a');|]", "Char")]
@@ -298,6 +302,8 @@ public class PreferSpecializedOverGenericFixerTests : FixerFixture
 
     [Theory]
     [InlineData("[|var template = new SpaceTemplate(true);|]", "Bool")]
+    [InlineData("[|var template = new SpaceTemplate(true, null);|]", "Bool")]
+    [InlineData("[|var template = new SpaceTemplate(null, true);|]", "Bool")]
     [InlineData("[|var template = new SpaceTemplate((byte)1);|]", "Byte")]
     [InlineData("[|var template = new SpaceTemplate((sbyte)1);|]", "SByte")]
     [InlineData("[|var template = new SpaceTemplate('a');|]", "Char")]

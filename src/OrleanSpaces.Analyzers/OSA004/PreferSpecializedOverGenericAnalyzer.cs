@@ -17,7 +17,7 @@ internal sealed class PreferSpecializedOverGenericAnalyzer : DiagnosticAnalyzer
     public static readonly DiagnosticDescriptor Diagnostic = new(
       id: "OSA004",
       category: Categories.Performance,
-      defaultSeverity: DiagnosticSeverity.Warning,
+      defaultSeverity: DiagnosticSeverity.Info,
       isEnabledByDefault: true,
       title: "Prefer using specialized over generic type.",
       messageFormat: "Prefer using specialized '{0}' over generic '{1}' type.",
@@ -59,12 +59,14 @@ internal sealed class PreferSpecializedOverGenericAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var argumentTypeSymbols = arguments.Select(arg => creationOperation.SemanticModel?.GetTypeInfo(arg.Expression).Type);
+        var argumentTypeSymbols = arguments
+            .Select(arg => creationOperation.SemanticModel?.GetTypeInfo(arg.Expression).Type)
+            .Where(arg => arg?.TypeKind != null);
+
         if (argumentTypeSymbols == null)
         {
             return;
         }
-
 
         int sameTypeArgumentsCount = argumentTypeSymbols.Distinct(SymbolEqualityComparer.Default).Count();
         if (sameTypeArgumentsCount > 1)
