@@ -157,8 +157,8 @@ SpaceTemplate template = new (1, null, 1.5f);
 
 await agent.WriteAsync(tuple);
 
-SpaceTuple tuple1 = agent.Peek(template);
-SpaceTuple tuple2 = agent.Peek(template);
+SpaceTuple peekedTuple = agent.Peek(template);
+SpaceTuple popedTuple = await agent.Peek(template);
 
 int count = agent.Count;
 
