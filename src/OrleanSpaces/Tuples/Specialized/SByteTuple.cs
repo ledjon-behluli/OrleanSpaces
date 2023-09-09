@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
@@ -10,6 +11,7 @@ namespace OrleanSpaces.Tuples.Specialized;
 [GenerateSerializer, Immutable]
 public readonly record struct SByteTuple :
     IEquatable<SByteTuple>,
+    IEqualityOperators<SByteTuple, SByteTuple, bool>,
     INumericTuple<sbyte>, 
     ISpaceFactory<sbyte, SByteTuple>,
     ISpaceConvertible<sbyte, SByteTemplate>
@@ -70,6 +72,7 @@ public readonly record struct SByteTuple :
 /// </summary>
 public readonly record struct SByteTemplate : 
     IEquatable<SByteTemplate>,
+    IEqualityOperators<SByteTemplate, SByteTemplate, bool>,
     ISpaceTemplate<sbyte>, 
     ISpaceMatchable<sbyte, SByteTuple>
 {

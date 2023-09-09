@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
@@ -10,6 +11,7 @@ namespace OrleanSpaces.Tuples.Specialized;
 [GenerateSerializer, Immutable]
 public readonly record struct DateTimeOffsetTuple :
     IEquatable<DateTimeOffsetTuple>,
+    IEqualityOperators<DateTimeOffsetTuple, DateTimeOffsetTuple, bool>,
     ISpaceTuple<DateTimeOffset>, 
     ISpaceFactory<DateTimeOffset, DateTimeOffsetTuple>,
     ISpaceConvertible<DateTimeOffset, DateTimeOffsetTemplate>
@@ -71,6 +73,7 @@ public readonly record struct DateTimeOffsetTuple :
 /// </summary>
 public readonly record struct DateTimeOffsetTemplate : 
     IEquatable<DateTimeOffsetTemplate>,
+    IEqualityOperators<DateTimeOffsetTemplate, DateTimeOffsetTemplate, bool>,
     ISpaceTemplate<DateTimeOffset>, 
     ISpaceMatchable<DateTimeOffset, DateTimeOffsetTuple>
 {

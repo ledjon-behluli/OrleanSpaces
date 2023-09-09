@@ -9,13 +9,13 @@ public class ObserverTests
     private static readonly SpaceTuple flatteningTuple = new(3);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Expansion =>
-        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), expansionTuple, TupleActionType.Insert), default);
+        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), expansionTuple.WithDefaultStore(), TupleActionType.Insert), default);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Contraction =>
-        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), contractionTuple, TupleActionType.Remove), default);
+        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), contractionTuple.WithDefaultStore(), TupleActionType.Remove), default);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Flattening =>
-        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), flatteningTuple, TupleActionType.Clear), default);
+        async (observer) => await observer.NotifyAsync(new(Guid.NewGuid(), flatteningTuple.WithDefaultStore(), TupleActionType.Clear), default);
 
     private static Func<SpaceObserver<SpaceTuple>, Task> Everything =>
         async (observer) =>

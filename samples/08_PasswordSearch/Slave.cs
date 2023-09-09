@@ -18,7 +18,7 @@ public class Slave
 
     public async Task RunAsync()
     {
-        IEnumerable<SpaceTuple> tuples = await agent.ScanAsync(template);
+        IEnumerable<SpaceTuple> tuples = agent.Enumerate(template);
         foreach (var tuple in tuples)
         {
             string hash = (string)tuple[1];

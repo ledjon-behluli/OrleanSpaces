@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA001;
 
 /// <summary>
-/// Informs to the client that interfaces marked with this attribute are intended for internal use only.
+/// Reports to the client that interfaces marked with this attribute are intended for internal use only.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal class InternalUseOnlyAttributeAnalyzer : DiagnosticAnalyzer

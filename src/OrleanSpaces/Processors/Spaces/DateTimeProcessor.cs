@@ -1,18 +1,17 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class DateTimeProcessor : BaseProcessor<DateTimeTuple, DateTimeTemplate>
+internal sealed class DateTimeProcessor : BaseProcessor<DateTimeTuple, DateTimeTemplate, IDateTimeDirector>
 {
     public DateTimeProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<DateTimeTuple, DateTimeTemplate> router,
         ObserverChannel<DateTimeTuple> observerChannel,
         CallbackChannel<DateTimeTuple> callbackChannel)
-        : base(IDateTimeGrain.Key, options, client, router, observerChannel, callbackChannel,
-            () => client.GetGrain<IDateTimeGrain>(IDateTimeGrain.Key)) { }
+        : base(Constants.RealmKey_DateTime, options, client, router, observerChannel, callbackChannel) { }
 }

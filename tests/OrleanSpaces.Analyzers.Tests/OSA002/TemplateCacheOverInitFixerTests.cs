@@ -17,7 +17,7 @@ public class TemplateCacheOverInitFixerTests : FixerFixture
         Assert.Equal("OSA002", provider.FixableDiagnosticIds.Single());
 
     // Some of the tests below are commented (for IntTemplate) because for some reason the diagnostic doesn't get picked up
-    // yet the analyzer & fixer are working properlly when tested on actual code. The tests work only for SpaceTemplate!!!
+    // yet the analyzer & fixer are working properly when tested on actual code. The tests work only for SpaceTemplate!
 
     #region Non-Existing {X}TemplateCache 
 

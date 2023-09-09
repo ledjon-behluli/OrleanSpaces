@@ -1,18 +1,17 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate>
+internal sealed class LongProcessor : BaseProcessor<LongTuple, LongTemplate, ILongDirector>
 {
     public LongProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<LongTuple, LongTemplate> router,
         ObserverChannel<LongTuple> observerChannel,
         CallbackChannel<LongTuple> callbackChannel)
-        : base(ILongGrain.Key, options, client, router, observerChannel, callbackChannel, 
-            () => client.GetGrain<ILongGrain>(ILongGrain.Key)) { }
+        : base(Constants.RealmKey_Long, options, client, router, observerChannel, callbackChannel) { }
 }

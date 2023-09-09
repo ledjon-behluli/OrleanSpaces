@@ -29,7 +29,7 @@ public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorT
         SpaceTuple tuple = new(1);
 
         // Expand
-        TupleAction<SpaceTuple> insertAction = new(Guid.NewGuid(), tuple, TupleActionType.Insert);
+        TupleAction<SpaceTuple> insertAction = new(Guid.NewGuid(), tuple.WithDefaultStore(), TupleActionType.Insert);
         await channel.Writer.WriteAsync(insertAction);
 
         while (scope.TotalInvoked(observer => !observer.LastExpansionTuple.IsEmpty) < 3)
@@ -38,7 +38,7 @@ public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorT
         }
 
         // Contract
-        TupleAction<SpaceTuple> contractAction = new(Guid.NewGuid(), tuple, TupleActionType.Remove);
+        TupleAction<SpaceTuple> contractAction = new(Guid.NewGuid(), tuple.WithDefaultStore(), TupleActionType.Remove);
         await channel.Writer.WriteAsync(contractAction);
 
         while (scope.TotalInvoked(observer => !observer.LastContractionTuple.IsEmpty) < 3)
@@ -62,7 +62,7 @@ public class ObserverSpaceProcessorTests : IClassFixture<ObserverSpaceProcessorT
         scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
         scope.AddObserver(new TestSpaceObserver<SpaceTuple>());
 
-        TupleAction<SpaceTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clear);
+        TupleAction<SpaceTuple> cleanAction = new(Guid.NewGuid(), new SpaceTuple(1).WithDefaultStore(), TupleActionType.Clear);
         await channel.Writer.WriteAsync(cleanAction);
 
         while (scope.TotalInvoked(observer => observer.HasFlattened) < 3)
@@ -118,7 +118,7 @@ public class ObserverIntProcessorTests : IClassFixture<ObserverIntProcessorTests
         IntTuple tuple = new(1);
 
         // Expand
-        TupleAction<IntTuple> insertAction = new(Guid.NewGuid(), tuple, TupleActionType.Insert);
+        TupleAction<IntTuple> insertAction = new(Guid.NewGuid(), tuple.WithDefaultStore(), TupleActionType.Insert);
         await channel.Writer.WriteAsync(insertAction);
 
         while (scope.TotalInvoked(observer => observer.LastExpansionTuple.Length > 0) < 3)
@@ -127,7 +127,7 @@ public class ObserverIntProcessorTests : IClassFixture<ObserverIntProcessorTests
         }
 
         // Contract
-        TupleAction<IntTuple> contractAction = new(Guid.NewGuid(), tuple, TupleActionType.Remove);
+        TupleAction<IntTuple> contractAction = new(Guid.NewGuid(), tuple.WithDefaultStore(), TupleActionType.Remove);
         await channel.Writer.WriteAsync(contractAction);
 
         while (scope.TotalInvoked(observer => !observer.LastContractionTuple.IsEmpty) < 3)
@@ -151,7 +151,7 @@ public class ObserverIntProcessorTests : IClassFixture<ObserverIntProcessorTests
         scope.AddObserver(new TestSpaceObserver<IntTuple>());
         scope.AddObserver(new TestSpaceObserver<IntTuple>());
 
-        TupleAction<IntTuple> cleanAction = new(Guid.NewGuid(), new(1), TupleActionType.Clear);
+        TupleAction<IntTuple> cleanAction = new(Guid.NewGuid(), new IntTuple(1).WithDefaultStore(), TupleActionType.Clear);
         await channel.Writer.WriteAsync(cleanAction);
 
         while (scope.TotalInvoked(observer => observer.HasFlattened) < 3)

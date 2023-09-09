@@ -8,12 +8,12 @@ internal sealed class EvaluationProcessor<TTuple, TTemplate> : BackgroundService
     where TTuple : ISpaceTuple
     where TTemplate : ISpaceTemplate
 {
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<TTuple> evaluationChannel;
     private readonly ContinuationChannel<TTuple, TTemplate> continuationChannel;
 
     public EvaluationProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<TTuple> evaluationChannel,
         ContinuationChannel<TTuple, TTemplate> continuationChannel)
     {

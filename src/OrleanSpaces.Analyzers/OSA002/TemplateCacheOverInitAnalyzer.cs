@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 namespace OrleanSpaces.Analyzers.OSA002;
 
 /// <summary>
-/// Informs to create or use a '{X}TemplateCache' over initialization via 'new(...)', when all arguments are null's.
+/// Reports to create or use a '{X}TemplateCache' over initialization via 'new(...)', when all arguments are null's.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class TemplateCacheOverInitAnalyzer : DiagnosticAnalyzer

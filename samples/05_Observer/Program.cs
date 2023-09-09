@@ -68,7 +68,7 @@ Console.WriteLine("Total tuples in space:\n");
 
 SpaceTemplate template = new(null, null);
 
-foreach (var tuple in await agent.ScanAsync(template))
+foreach (var tuple in agent.Enumerate(template))
 {
     Console.WriteLine(tuple);
 }
@@ -76,8 +76,7 @@ foreach (var tuple in await agent.ScanAsync(template))
 Console.WriteLine("----------------------\n");
 Console.WriteLine("Removing all tuples from space to see observation...\n");
 
-int count = await agent.CountAsync();
-for (int i = 0; i < count; i++)
+for (int i = 0; i < agent.Count; i++)
 {
     await agent.PopAsync(template);
 }

@@ -8,7 +8,11 @@ var host = Host.CreateDefaultBuilder(args)
     .UseOrleans(siloBuilder =>
     {
         siloBuilder.UseLocalhostClustering();
-        siloBuilder.AddOrleanSpaces();  // adding space services in the silo(s), means we can use the agents in the silo(s) too!
+        siloBuilder.AddOrleanSpaces(configureClientOptions: options =>
+        {
+            // enabling spaces in the silo means we can use the agents in the silo too
+            options.EnabledSpaces = SpaceKind.Generic;
+        });
         siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
         siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
         siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
@@ -31,7 +35,7 @@ while (!cts.IsCancellationRequested)
     await agent.WriteAsync(serverTuple);
     Console.WriteLine($"WRITE: {serverTuple}");
 
-    SpaceTuple clientTuple = await agent.PeekAsync(new("CLIENT"));
+    SpaceTuple clientTuple = agent.Peek(new("CLIENT"));
     if (!clientTuple.IsEmpty)
     {
         Console.WriteLine($"READ: {clientTuple}");

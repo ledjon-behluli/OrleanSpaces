@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OrleanSpaces.Helpers;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace OrleanSpaces.Tuples.Specialized;
 
@@ -10,6 +11,7 @@ namespace OrleanSpaces.Tuples.Specialized;
 [GenerateSerializer, Immutable]
 public readonly record struct BoolTuple :
     IEquatable<BoolTuple>,
+    IEqualityOperators<BoolTuple, BoolTuple, bool>,
     ISpaceTuple<bool>,
     ISpaceFactory<bool, BoolTuple>,
     ISpaceConvertible<bool, BoolTemplate>
@@ -102,7 +104,8 @@ public readonly record struct BoolTuple :
 /// Represents a template which has <see cref="bool"/> field types only.
 /// </summary>
 public readonly record struct BoolTemplate : 
-    IEquatable<BoolTemplate>, 
+    IEquatable<BoolTemplate>,
+    IEqualityOperators<BoolTemplate, BoolTemplate, bool>,
     ISpaceTemplate<bool>,
     ISpaceMatchable<bool, BoolTuple>
 {

@@ -20,13 +20,13 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-        if (root == null)
+        if (root is null)
         {
             return;
         }
 
         var node = root.FindNode(context.Span);
-        if (node == null)
+        if (node is null)
         {
             return;
         }
@@ -57,7 +57,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
         var cacheNode = cacheNodeResult.Node;
 
         // {X}TemplateCache does not exist - Create & Add appropriate member
-        if (cacheNode == null)
+        if (cacheNode is null)
         {
             var fixInFileAction = CodeAction.Create(
                 title: $"Cache value as a '{numOfNulls}-template' static readonly reference in this file",
@@ -238,7 +238,7 @@ internal sealed class TemplateCacheOverInitFixer : CodeFixProvider
             }
 
             var root = await _document.GetSyntaxRootAsync(cancellationToken);
-            if (root == null)
+            if (root is null)
             {
                 continue;
             }

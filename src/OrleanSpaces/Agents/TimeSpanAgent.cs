@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class TimeSpanAgent : BaseAgent<TimeSpan, TimeSpanTuple, TimeSpanTemplate>
 {
     public TimeSpanAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<TimeSpanTuple> evaluationChannel,
         ObserverRegistry<TimeSpanTuple> observerRegistry,
         CallbackRegistry<TimeSpan, TimeSpanTuple, TimeSpanTemplate> callbackRegistry)

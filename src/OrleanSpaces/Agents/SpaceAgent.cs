@@ -1,10 +1,10 @@
-﻿using OrleanSpaces.Tuples;
+using OrleanSpaces.Tuples;
 using OrleanSpaces.Helpers;
 using System.Threading.Channels;
-using System.Collections.Immutable;
 using OrleanSpaces.Channels;
 using OrleanSpaces.Registries;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace OrleanSpaces.Agents;
 
@@ -12,17 +12,17 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 {
     private readonly static object lockObj = new();
     private readonly Guid agentId = Guid.NewGuid();
-    private readonly SpaceOptions options;
+    private readonly SpaceClientOptions options;
     private readonly EvaluationChannel<SpaceTuple> evaluationChannel;
     private readonly ObserverRegistry<SpaceTuple> observerRegistry;
     private readonly CallbackRegistry callbackRegistry;
-
-    [AllowNull] private ITupleStore<SpaceTuple> tupleStore;
+   
+    [AllowNull] private IStoreDirector<SpaceTuple> director;
     private Channel<SpaceTuple>? streamChannel;
-    private ImmutableArray<SpaceTuple> tuples = ImmutableArray<SpaceTuple>.Empty; // chosen for thread safety reasons
+    private ImmutableArray<StoreTuple<SpaceTuple>> tuples = ImmutableArray<StoreTuple<SpaceTuple>>.Empty; // chosen for thread safety
 
     public SpaceAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<SpaceTuple> evaluationChannel,
         ObserverRegistry<SpaceTuple> observerRegistry,
         CallbackRegistry callbackRegistry)
@@ -35,8 +35,15 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceRouter
 
-    void ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteStore(ITupleStore<SpaceTuple> tupleStore) 
-        => this.tupleStore = tupleStore;
+    async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteDirector(IStoreDirector<SpaceTuple> director)
+    {
+        if (options.LoadSpaceContentsUponStartup)
+        {
+            tuples = await director.GetAll();
+        }
+
+        this.director = director;
+    }
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
     {
@@ -46,15 +53,15 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
             {
                 case TupleActionType.Insert:
                     {
-                        tuples = tuples.Add(action.Tuple);
-                        await streamChannel.WriteIfNotNull(action.Tuple);
+                        tuples = tuples.Add(action.StoreTuple);
+                        await streamChannel.WriteIfNotNull(action.StoreTuple.Tuple);
                     }
                     break;
                 case TupleActionType.Remove:
-                    tuples = tuples.Remove(action.Tuple);
+                    tuples = tuples.Remove(action.StoreTuple);
                     break;
                 case TupleActionType.Clear:
-                    tuples = ImmutableArray<SpaceTuple>.Empty;
+                    tuples = tuples.Clear();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -69,6 +76,8 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     #region ISpaceAgent
 
+    public int Count => tuples.Length;
+
     public Guid Subscribe(ISpaceObserver<SpaceTuple> observer)
         => observerRegistry.Add(observer);
 
@@ -79,10 +88,10 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
     {
         ThrowHelpers.EmptyTuple(tuple);
 
-        await tupleStore.Insert(new(agentId, tuple, TupleActionType.Insert));
+        Guid storeId = await director.Insert(new(agentId, new(Guid.Empty, tuple), TupleActionType.Insert));
         await streamChannel.WriteIfNotNull(tuple);
 
-        tuples = tuples.Add(tuple);
+        tuples = tuples.Add(new(storeId, tuple));
     }
 
     public ValueTask EvaluateAsync(Func<Task<SpaceTuple>> evaluation)
@@ -91,74 +100,65 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         return evaluationChannel.Writer.WriteAsync(evaluation);
     }
 
-    public ValueTask<SpaceTuple> PeekAsync(SpaceTemplate template)
-    {
-        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
-        return new(tuple);
-    }
+    public SpaceTuple Peek(SpaceTemplate template) =>
+        tuples.FirstOrDefault(x => template.Matches(x.Tuple)).Tuple;
 
     public async ValueTask PeekAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
-
-        if (tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, false));
             return;
         }
 
-        await callback(tuple);
+        await callback(tuple.Tuple);
     }
 
     public async ValueTask<SpaceTuple> PopAsync(SpaceTemplate template)
     {
-        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
 
-        if (!tuple.IsEmpty)
+        if (!tuple.Tuple.IsEmpty)
         {
-            await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
+            await director.Remove(new(agentId, tuple, TupleActionType.Remove));
             tuples = tuples.Remove(tuple);
         }
 
-        return tuple;
+        return tuple.Tuple;
     }
 
     public async ValueTask PopAsync(SpaceTemplate template, Func<SpaceTuple, Task> callback)
     {
         if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-        SpaceTuple tuple = tuples.FirstOrDefault(template.Matches);
-
-        if (tuple.IsEmpty)
+        var tuple = tuples.FirstOrDefault(x => template.Matches(x.Tuple));
+        if (tuple.Tuple.IsEmpty)
         {
             callbackRegistry.Add(template, new(callback, true));
             return;
         }
 
-        await callback(tuple);
-        await tupleStore.Remove(new(agentId, tuple, TupleActionType.Remove));
+        await callback(tuple.Tuple);
+        await director.Remove(new(agentId, tuple, TupleActionType.Remove));
 
         tuples = tuples.Remove(tuple);
     }
 
-    public ValueTask<IEnumerable<SpaceTuple>> ScanAsync(SpaceTemplate template)
+    public IEnumerable<SpaceTuple> Enumerate(SpaceTemplate template)
     {
-        List<SpaceTuple> result = new();
-
         foreach (var tuple in tuples)
         {
-            if (template.Matches(tuple))
+            if (template == default || template.Matches(tuple.Tuple))
             {
-                result.Add(tuple);
+                yield return tuple.Tuple;
             }
         }
-
-        return new(result);
     }
 
-    public async IAsyncEnumerable<SpaceTuple> PeekAsync()
+    public async IAsyncEnumerable<SpaceTuple> EnumerateAsync(SpaceTemplate template)
     {
         lock (lockObj)
         {
@@ -173,23 +173,26 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
                 foreach (var tuple in tuples)
                 {
-                    _ = streamChannel.Writer.TryWrite(tuple);  // will always be able to write to the channel
+                    _ = streamChannel.Writer.TryWrite(tuple.Tuple);  // will always be able to write to the channel
                 }
             }
         }
 
         await foreach (SpaceTuple tuple in streamChannel.Reader.ReadAllAsync())
         {
-            yield return tuple;
+            if (template == default || template.Matches(tuple))
+            {
+                yield return tuple;
+            }
         }
     }
 
-    public ValueTask<int> CountAsync() => new(tuples.Length);
+    public async Task ReloadAsync() => tuples = await director.GetAll();
 
     public async Task ClearAsync()
     {
-        await tupleStore.RemoveAll(agentId);
-        tuples = ImmutableArray<SpaceTuple>.Empty;
+        await director.RemoveAll(agentId);
+        tuples = tuples.Clear();
     }
 
     #endregion

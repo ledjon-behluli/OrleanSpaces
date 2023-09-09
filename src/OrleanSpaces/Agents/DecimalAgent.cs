@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class DecimalAgent : BaseAgent<decimal, DecimalTuple, DecimalTemplate>
 {
     public DecimalAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<DecimalTuple> evaluationChannel,
         ObserverRegistry<DecimalTuple> observerRegistry,
         CallbackRegistry<decimal, DecimalTuple, DecimalTemplate> callbackRegistry)

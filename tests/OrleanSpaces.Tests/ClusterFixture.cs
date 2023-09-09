@@ -28,22 +28,17 @@ public class ClusterFixture : IDisposable
 
     private class TestSiloConfigurator : ISiloConfigurator
     {
-        public void Configure(ISiloBuilder siloBuilder)
-        {
-            // we dont register (though we could) the space services in the silo, since we are using the client to test.
-
-            siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
-            siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
-            siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
-        }
+        public void Configure(ISiloBuilder builder) =>
+            builder.AddOrleanSpaces()
+                .AddMemoryStreams(Constants.PubSubProvider)
+                .AddMemoryGrainStorage(Constants.PubSubStore)
+                .AddMemoryGrainStorage(Constants.StorageName);
     }
 
     private class TestClientConfigurator : IClientBuilderConfigurator
     {
-        public void Configure(IConfiguration configuration, IClientBuilder clientBuilder)
-        {
-            clientBuilder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All);
-            clientBuilder.AddMemoryStreams(Constants.PubSubProvider);
-        }
+        public void Configure(IConfiguration configuration, IClientBuilder builder) =>
+            builder.AddOrleanSpaces(options => options.EnabledSpaces = SpaceKind.All)
+                   .AddMemoryStreams(Constants.PubSubProvider);
     }
 }

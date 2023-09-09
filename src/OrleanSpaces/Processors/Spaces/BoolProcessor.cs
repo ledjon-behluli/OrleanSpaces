@@ -1,18 +1,17 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class BoolProcessor : BaseProcessor<BoolTuple, BoolTemplate>
+internal sealed class BoolProcessor : BaseProcessor<BoolTuple, BoolTemplate, IBoolDirector>
 {
     public BoolProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<BoolTuple, BoolTemplate> router,
         ObserverChannel<BoolTuple> observerChannel,
         CallbackChannel<BoolTuple> callbackChannel)
-        : base(IBoolGrain.Key, options, client, router, observerChannel, callbackChannel, 
-            () => client.GetGrain<IBoolGrain>(IBoolGrain.Key)) { }
+        : base(Constants.RealmKey_Bool, options, client, router, observerChannel, callbackChannel) { }
 }

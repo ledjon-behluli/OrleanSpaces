@@ -2,45 +2,47 @@
 using Orleans.Runtime;
 using Orleans.Streams;
 using OrleanSpaces.Channels;
-using OrleanSpaces.Helpers;
 using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces.Processors.Spaces;
 
-internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
+internal class BaseProcessor<TTuple, TTemplate, TDirector> : BackgroundService, IAsyncObserver<TupleAction<TTuple>>
     where TTuple : ISpaceTuple
     where TTemplate : ISpaceTemplate
+    where TDirector : IStoreDirector<TTuple>, IGrainWithStringKey
 {
-    private readonly string key;
-    private readonly SpaceOptions options;
+    private readonly string realmKey;
+    private readonly SpaceClientOptions options;
     private readonly IClusterClient client;
     private readonly ISpaceRouter<TTuple, TTemplate> router;
     private readonly ObserverChannel<TTuple> observerChannel;
     private readonly CallbackChannel<TTuple> callbackChannel;
-    private readonly Func<ITupleStore<TTuple>> storeFactory;
 
     public BaseProcessor(
-        string key,
-        SpaceOptions options,
+        string realmKey,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<TTuple, TTemplate> router,
         ObserverChannel<TTuple> observerChannel,
-        CallbackChannel<TTuple> callbackChannel,
-        Func<ITupleStore<TTuple>> storeFactory)
+        CallbackChannel<TTuple> callbackChannel)
     {
-        this.key = key ?? throw new ArgumentNullException(nameof(key));
+        this.realmKey = realmKey ?? throw new ArgumentNullException(nameof(realmKey));
         this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.router = router ?? throw new ArgumentNullException(nameof(router));
         this.observerChannel = observerChannel ?? throw new ArgumentNullException(nameof(observerChannel));
         this.callbackChannel = callbackChannel ?? throw new ArgumentNullException(nameof(callbackChannel));
-        this.storeFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        router.RouteStore(storeFactory());
-        await client.SubscribeAsync(this, StreamId.Create(Constants.StreamName, key));
+        await router.RouteDirector(client.GetGrain<TDirector>(realmKey));
+
+        var stream = client.GetStreamProvider(Constants.PubSubProvider)
+            .GetStream<TupleAction<TTuple>>(StreamId.Create(Constants.StreamName, realmKey));
+
+        var handles = await stream.GetAllSubscriptionHandles();
+        await (handles.Count > 0 ? handles[0].ResumeAsync(this) : stream.SubscribeAsync(this));
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -60,7 +62,7 @@ internal class BaseProcessor<TTuple, TTemplate> : BackgroundService, IAsyncObser
 
         if (action.Type == TupleActionType.Insert)
         {
-            await callbackChannel.Writer.WriteAsync(action.Tuple);
+            await callbackChannel.Writer.WriteAsync(action.StoreTuple.Tuple);
         }
     }
 

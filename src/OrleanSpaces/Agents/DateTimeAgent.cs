@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class DateTimeAgent : BaseAgent<DateTime, DateTimeTuple, DateTimeTemplate>
 {
     public DateTimeAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<DateTimeTuple> evaluationChannel,
         ObserverRegistry<DateTimeTuple> observerRegistry,
         CallbackRegistry<DateTime, DateTimeTuple, DateTimeTemplate> callbackRegistry)

@@ -8,7 +8,7 @@ namespace OrleanSpaces.Agents;
 internal sealed class FloatAgent : BaseAgent<float, FloatTuple, FloatTemplate>
 {
     public FloatAgent(
-        SpaceOptions options,
+        SpaceClientOptions options,
         EvaluationChannel<FloatTuple> evaluationChannel,
         ObserverRegistry<FloatTuple> observerRegistry,
         CallbackRegistry<float, FloatTuple, FloatTemplate> callbackRegistry)

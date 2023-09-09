@@ -1,9 +1,20 @@
 ﻿namespace OrleanSpaces;
 
 /// <summary>
-/// Options to configure various functionalities
+/// Options to configure server functionalities.
 /// </summary>
-public sealed class SpaceOptions
+public sealed class SpaceServerOptions
+{
+    /// <summary>
+    /// Defines the maximum number of tuples that should be stored within a partition per <see cref="SpaceKind"/>.
+    /// </summary>
+    public int PartitioningThreshold { get; set; } = 1_000;
+}
+
+/// <summary>
+/// Options to configure client functionalities.
+/// </summary>
+public sealed class SpaceClientOptions
 {
     /// <summary>
     /// Determines which of the <see cref="SpaceKind"/>(s) are enabled.
@@ -33,8 +44,8 @@ public sealed class SpaceOptions
     /// <summary>
     /// If set to <see langword="true"/>, allows multiple consumers (client code) to read from the stream of tuples provided by:
     /// <list type="bullet">
-    /// <item><description><see cref="ISpaceAgent.PeekAsync()"/></description></item>
-    /// <item><description><see cref="ISpaceAgent{T, TTuple, TTemplate}.PeekAsync()"/></description></item>
+    /// <item><description><see cref="ISpaceAgent.EnumerateAsync()"/></description></item>
+    /// <item><description><see cref="ISpaceAgent{T, TTuple, TTemplate}.EnumerateAsync()"/></description></item>
     /// </list>
     /// </summary>
     public bool AllowMultipleAgentStreamConsumers { get; set; } = true;
@@ -45,6 +56,16 @@ public sealed class SpaceOptions
     /// than the <see cref="ISpaceObserver{T}"/> will receive only notifications that have been written by an agent in a different process.
     /// </summary>
     public bool SubscribeToSelfGeneratedTuples { get; set; } = true;
+
+    /// <summary>
+    /// If set to <see langword="true"/>, the agent loads the space contents (<i>i.e. the tuples</i>) upon its startup.
+    /// </summary>
+    /// <remarks><i>
+    /// It is useful in cases where the agent is used to perform only writes, or the application needs fast startup times.
+    /// Space contents can always be reloaded via <see cref="ISpaceAgent.ReloadAsync"/> or 
+    /// <see cref="ISpaceAgent{T, TTuple, TTemplate}.ReloadAsync"/>, depending on the agent type.
+    /// </i></remarks>
+    public bool LoadSpaceContentsUponStartup { get; set; } = true;
 }
 
 /// <summary>

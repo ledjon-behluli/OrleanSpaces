@@ -13,7 +13,7 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Forward_On_Insert_Action()
     {
-        TupleAction<IntTuple> action = new(Guid.NewGuid(), new(1), TupleActionType.Insert);
+        TupleAction<IntTuple> action = new(Guid.NewGuid(), new IntTuple(1).WithDefaultStore(), TupleActionType.Insert);
 
         await fixture.Processor.OnNextAsync(action);
 
@@ -21,23 +21,23 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
         Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.StoreTuple.Tuple, fixture.Bridge.Action.StoreTuple.Tuple);
         Assert.Equal(action.Type, fixture.Bridge.Action.Type);
-        Assert.Equal(callbackResult, action.Tuple);
+        Assert.Equal(callbackResult, action.StoreTuple.Tuple);
         Assert.Equal(observerResult, action);
     }
 
     [Fact]
     public async Task Should_Forward_On_Remove_Action()
     {
-        TupleAction<IntTuple> action = new(Guid.NewGuid(), new(1), TupleActionType.Remove);
+        TupleAction<IntTuple> action = new(Guid.NewGuid(), new IntTuple(1).WithDefaultStore(), TupleActionType.Remove);
 
         await fixture.Processor.OnNextAsync(action);
 
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
         Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.StoreTuple.Tuple, fixture.Bridge.Action.StoreTuple.Tuple);
         Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }
@@ -45,14 +45,14 @@ public class IntProcessorTests : IClassFixture<ClusterFixture>
     [Fact]
     public async Task Should_Forward_On_Clear_Action()
     {
-        TupleAction<IntTuple> action = new(Guid.NewGuid(), new(1), TupleActionType.Clear);
+        TupleAction<IntTuple> action = new(Guid.NewGuid(), new IntTuple(1).WithDefaultStore(), TupleActionType.Clear);
 
         await fixture.Processor.OnNextAsync(action);
 
         TupleAction<IntTuple> observerResult = await fixture.ObserverChannel.Reader.ReadAsync(default);
 
         Assert.Equal(action.AgentId, fixture.Bridge.Action.AgentId);
-        Assert.Equal(action.Tuple, fixture.Bridge.Action.Tuple);
+        Assert.Equal(action.StoreTuple.Tuple, fixture.Bridge.Action.StoreTuple.Tuple);
         Assert.Equal(action.Type, fixture.Bridge.Action.Type);
         Assert.Equal(observerResult, action);
     }

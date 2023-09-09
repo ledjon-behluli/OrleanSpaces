@@ -17,7 +17,7 @@ public class ExtensionTests
 
         static void TestServices(IHost host)
         {
-            Assert.NotNull(host.Services.GetService<SpaceOptions>());
+            Assert.NotNull(host.Services.GetService<SpaceClientOptions>());
 
             Assert.NotNull(host.Services.GetService<CallbackRegistry>());
             Assert.NotNull(host.Services.GetService<ObserverRegistry<SpaceTuple>>());
@@ -62,12 +62,22 @@ public class ExtensionTests
         }
     }
 
+    [Fact]
+    public void Should_Throw_On_Wrong_Partitioning_Threshold()
+        => Assert.Throws<InvalidOperationException>(() =>
+        {
+            new HostBuilder()
+            .UseOrleans(builder => builder.AddOrleanSpaces(configureServerOptions:
+                options => options.PartitioningThreshold = 0))
+            .Build();
+        });
+
     static void EnsureAdded<T, TTuple, TTemplate>(IHost host)
         where T : unmanaged
         where TTuple : struct, ISpaceTuple<T>, ISpaceConvertible<T, TTemplate>
         where TTemplate : struct, ISpaceTemplate<T>, ISpaceMatchable<T, TTuple>
     {
-        Assert.NotNull(host.Services.GetService<SpaceOptions>());
+        Assert.NotNull(host.Services.GetService<SpaceClientOptions>());
 
         Assert.NotNull(host.Services.GetService<CallbackRegistry<T, TTuple, TTemplate>>());
         Assert.NotNull(host.Services.GetService<ObserverRegistry<TTuple>>());
@@ -83,13 +93,13 @@ public class ExtensionTests
 
     static IHost CreateClientHost(SpaceKind kind)
         => new HostBuilder()
-            .UseOrleansClient(builder => 
-                builder.AddOrleanSpaces(options => options.EnabledSpaces = kind))
+            .UseOrleansClient(builder => builder.AddOrleanSpaces(
+                options => options.EnabledSpaces = kind))
             .Build();
 
     static IHost CreateSiloHost(SpaceKind kind)
         => new HostBuilder()
-            .UseOrleans(builder => 
-                builder.AddOrleanSpaces(options => options.EnabledSpaces = kind))
+            .UseOrleans(builder => builder.AddOrleanSpaces(configureClientOptions: 
+                options => options.EnabledSpaces = kind))
             .Build();
 }

@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using OrleanSpaces.Helpers;
@@ -49,7 +49,7 @@ internal static class Helpers
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static async Task WriteIfNotNull<T>(this Channel<T>? channel, T tuple)
+    public static async Task WriteIfNotNull<T>(this Channel<T>? channel, T tuple) 
         where T : ISpaceTuple
     {
         if (channel is not null)

@@ -1,18 +1,17 @@
 ﻿using OrleanSpaces.Channels;
-using OrleanSpaces.Grains;
 using OrleanSpaces.Tuples.Specialized;
+using OrleanSpaces.Grains.Directors;
 
 namespace OrleanSpaces.Processors.Spaces;
 
 [ImplicitStreamSubscription(Constants.StreamName)]
-internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate>
+internal sealed class SByteProcessor : BaseProcessor<SByteTuple, SByteTemplate, ISByteDirector>
 {
     public SByteProcessor(
-        SpaceOptions options,
+        SpaceClientOptions options,
         IClusterClient client,
         ISpaceRouter<SByteTuple, SByteTemplate> router,
         ObserverChannel<SByteTuple> observerChannel,
         CallbackChannel<SByteTuple> callbackChannel)
-        : base(ISByteGrain.Key, options, client, router, observerChannel, callbackChannel,
-            () => client.GetGrain<ISByteGrain>(ISByteGrain.Key)) { }
+        : base(Constants.RealmKey_SByte, options, client, router, observerChannel, callbackChannel) { }
 }

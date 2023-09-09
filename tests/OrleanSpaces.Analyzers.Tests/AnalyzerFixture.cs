@@ -41,13 +41,9 @@ public class AnalyzerFixture : AnalyzerTestFixture
 
     private static string BuildCode(string code, params Namespace[] namespaces)
     {
-        if (namespaces.Length == 0)
-        {
-            return code;
-        }
-
         StringBuilder builder = new();
 
+        builder.AppendLine($"using System;");
         foreach (var @namespace in namespaces)
         {
             builder.AppendLine($"using {@namespace.ToString().Replace('_', '.')};");

@@ -10,7 +10,7 @@ public class ObserverChannelTests
     [Fact]
     public async Task Should_Read_What_Was_Writen()
     {
-        TupleAction<SpaceTuple> action = new(Guid.NewGuid(), new(1), TupleActionType.Insert);
+        TupleAction<SpaceTuple> action = new(Guid.NewGuid(), new SpaceTuple(1).WithDefaultStore(), TupleActionType.Insert);
 
         await channel.Writer.WriteAsync(action);
         TupleAction<SpaceTuple> result = await channel.Reader.ReadAsync();

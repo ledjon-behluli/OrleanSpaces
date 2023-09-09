@@ -1,12 +1,12 @@
-﻿using OrleanSpaces.Tuples;
-using System.Collections.Immutable;
+﻿using Orleans.Concurrency;
+using OrleanSpaces.Tuples;
 
 namespace OrleanSpaces;
 
 internal interface ITupleStore<T> where T : ISpaceTuple
 {
-    ValueTask<ImmutableArray<T>> GetAll();
-    Task Insert(TupleAction<T> action);
-    Task Remove(TupleAction<T> action);
-    Task RemoveAll(Guid agentId);
+    [ReadOnly] Task<StoreContent<T>> GetAll();
+    Task<bool> Insert(T tuple);
+    Task<int> Remove(T tuple);
+    Task RemoveAll();
 }

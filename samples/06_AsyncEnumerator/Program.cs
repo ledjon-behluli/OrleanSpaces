@@ -29,7 +29,7 @@ ISpaceAgent agent = host.Services.GetRequiredService<ISpaceAgent>();
 
 _ = Task.Run(async () =>
 {
-    await foreach (var tuple in agent.PeekAsync())
+    await foreach (var tuple in agent.EnumerateAsync())
     {
         Console.WriteLine(tuple);
     }
