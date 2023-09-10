@@ -129,11 +129,24 @@ var intAgent = host.Services.GetRequiredService<ISpaceAgent<int, IntTuple, IntTe
 
 ## Startup Behavior
 
+### Loading Upon Startup
+
 By default once the agent(s) are started they automatically load the respective tuple space contents (*i.e. the tuples*) into memory, and than perform various operations to keep it in-sync with the actual tuple space.
 
 In certain cases, like where the agent is used to perform only writes, or the application needs fast startup times, the default behavior may not be suitable. This loading behavior is configurable via the `SpaceClientOptions.LoadSpaceContentsUponStartup` flag. The client can continue to operate without the loaded space if its intent is to only write to the space, or subscribe to space events.
 
 It should be noted that it is always possible to load the space via the `ReloadAsync` method, found on every agent type. As the name suggests, the method can be called (*for whatever reason*) even if the space was loaded upon startup.
+
+### Loading Strategy
+
+By default once the agent(s) are started they load all space partitions in parallel. This is the more efficient way, since it involves a total of **n + 1** calls, were **n** is the number of partitions (*i.e. tuple stores*), and **1** is a call from the agent to the store director. But it might result in contention for threads, and may lead to `ThreadPool` starvation.
+
+The alternative way to load the partitions is a sequential approach, were the director loads the data in batches, were a **batch** is defined to be the contents of a single partition. This does result in a slower loading of the whole tuple space, as there are **2*n** calls (*1 call to the director + 1 call to a partition, for n-number of partitions*), but ultimately this avoids potential `ThreadPool` starvation.
+
+`SpaceClientOptions.LoadingStrategy` is an enum with two options: **Sequential** and **Parallel**.
+
+* Use **Sequential** loading, if fast loading time is not important, and the space is heavily partitioned.
+* Use **Parallel** loading, if fast loading time is important, and the space is not heavily partitioned.
 
 ## Communication Models
 
