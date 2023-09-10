@@ -44,7 +44,19 @@ internal class BaseDirector<TTuple, TStore> : Grain
         }
     }
 
-    public async Task<ImmutableArray<StoreTuple<TTuple>>> GetAll()
+    public async IAsyncEnumerable<ImmutableArray<StoreTuple<TTuple>>> GetBatch()
+    {
+        foreach (string storeKey in StoreKeys)
+        {
+            Guid storeId = ParseStoreKey(storeKey);
+            var content = await GrainFactory.GetGrain<TStore>(storeKey).GetAll();
+            var result = content.Tuples.Select(tuple => new StoreTuple<TTuple>(storeId, tuple)).ToImmutableArray();
+
+            yield return result;
+        }
+    }
+
+    public async Task<ImmutableArray<StoreTuple<TTuple>>> GetAllBatches()
     {
         List<Task<StoreContent<TTuple>>> tasks = new();
         foreach (string storeKey in StoreKeys)

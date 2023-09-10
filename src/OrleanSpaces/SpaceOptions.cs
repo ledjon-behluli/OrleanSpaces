@@ -66,6 +66,11 @@ public sealed class SpaceClientOptions
     /// <see cref="ISpaceAgent{T, TTuple, TTemplate}.ReloadAsync"/>, depending on the agent type.
     /// </i></remarks>
     public bool LoadSpaceContentsUponStartup { get; set; } = true;
+
+    /// <summary>
+    /// Defines the way how the space contents (<i>i.e. the tuples</i>) are loaded by the agent.
+    /// </summary>
+    public SpaceLoadingStrategy LoadingStrategy { get; set; } = SpaceLoadingStrategy.Parallel;
 }
 
 /// <summary>
@@ -95,4 +100,23 @@ public enum SpaceKind
     UInt = 131072,
     ULong = 262144,
     UShort = 524288
+}
+
+/// <summary>
+/// Strategies for space loading.
+/// </summary>
+public enum SpaceLoadingStrategy
+{
+    /// <summary>
+    /// <para>Content from all partitions are loaded sequentially.</para>
+    /// <para>Results in a longer time to load the space. But ultimately results in less resource contention, and avoids potential <see cref="ThreadPool"/> starvation.</para>
+    /// </summary>
+    /// <remarks><i>Use if fast loading time is not important, and the space is heavily partitioned.</i></remarks>
+    Sequential,
+    /// <summary>
+    /// <para>Content from all partitions are loaded in parallel.</para>
+    /// <para>Results in less resource contention, and avoids potential <see cref="ThreadPool"/> starvation. But ultimately results in a longer time to load the space.</para>
+    /// </summary>
+    /// <remarks><i>Use if fast loading time is important, and the space is not heavily partitioned.</i></remarks>
+    Parallel
 }
