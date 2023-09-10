@@ -7,7 +7,9 @@ namespace OrleanSpaces;
 internal interface IStoreDirector<T>
      where T : ISpaceTuple
 {
-    [ReadOnly] Task<ImmutableArray<StoreTuple<T>>> GetAll();
+    [ReadOnly] IAsyncEnumerable<ImmutableArray<StoreTuple<T>>> GetBatch();
+    [ReadOnly] Task<ImmutableArray<StoreTuple<T>>> GetAllBatches();
+
     Task<Guid> Insert(TupleAction<T> action);
     Task Remove(TupleAction<T> action);
     Task RemoveAll(Guid agentId);

@@ -37,12 +37,11 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteDirector(IStoreDirector<SpaceTuple> director)
     {
+        this.director = director;
         if (options.LoadSpaceContentsUponStartup)
         {
-            tuples = await director.GetAll();
+            await ReloadAsync();
         }
-
-        this.director = director;
     }
 
     async ValueTask ISpaceRouter<SpaceTuple, SpaceTemplate>.RouteAction(TupleAction<SpaceTuple> action)
@@ -187,7 +186,21 @@ internal sealed class SpaceAgent : ISpaceAgent, ISpaceRouter<SpaceTuple, SpaceTe
         }
     }
 
-    public async Task ReloadAsync() => tuples = await director.GetAll();
+    public async Task ReloadAsync()
+    {
+        if (options.LoadingStrategy == SpaceLoadingStrategy.Sequential)
+        {
+            tuples = tuples.Clear();
+            await foreach (var items in director.GetBatch())
+            {
+                tuples = tuples.AddRange(items);
+            }
+        }
+        else
+        {
+            tuples = await director.GetAllBatches();
+        }
+    }
 
     public async Task ClearAsync()
     {
