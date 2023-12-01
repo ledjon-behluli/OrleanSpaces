@@ -61,6 +61,12 @@
         "PasswordSearch": {}
       }
     },
+    "CacheReplication": {
+      "Projects": {
+        "Silo1": {},
+        "Silo2": {}
+      }
+    },
     "Sandbox": {
       "Projects": {
         "SpaceHost": {},
