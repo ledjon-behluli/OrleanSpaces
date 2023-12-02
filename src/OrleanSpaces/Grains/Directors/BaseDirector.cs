@@ -88,7 +88,9 @@ internal class BaseDirector<TTuple, TStore> : Grain
             await GrainFactory.GetGrain<TStore>(CreateStoreKey(CurrentStoreId)).Insert(action.StoreTuple.Tuple);
         }
 
-        await stream.OnNextAsync(action);
+        TupleAction<TTuple> newAction = new(action.AgentId, new(CurrentStoreId, action.StoreTuple.Tuple), action.Type);
+        await stream.OnNextAsync(newAction);
+
         return CurrentStoreId;
     }
 
