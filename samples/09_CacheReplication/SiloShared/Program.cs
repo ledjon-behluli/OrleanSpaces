@@ -19,8 +19,10 @@ public static class Program
                    siloPort: EndpointOptions.DEFAULT_SILO_PORT + siloNum,
                    gatewayPort: EndpointOptions.DEFAULT_GATEWAY_PORT + siloNum,
                    primarySiloEndpoint: new IPEndPoint(IPAddress.Loopback, EndpointOptions.DEFAULT_SILO_PORT));
-               
-               siloBuilder.AddOrleanSpaces(configureClientOptions: o => o.EnabledSpaces = SpaceKind.Generic);
+
+               siloBuilder.AddOrleanSpaces(configureClientOptions:
+                   o => o.EnabledSpaces = SpaceKind.Generic);
+
                siloBuilder.AddMemoryStreams(Constants.PubSubProvider);
                siloBuilder.AddMemoryGrainStorage(Constants.PubSubStore);
                siloBuilder.AddMemoryGrainStorage(Constants.StorageName);
@@ -31,7 +33,7 @@ public static class Program
 
         Console.WriteLine($"Silo {silo} started.\n\n");
 
-        var grain = host.Services.GetRequiredService<IGrainFactory>().GetGrain<ILocalCacheGrain>(0);
+        var cacheGrain = host.Services.GetRequiredService<IGrainFactory>().GetGrain<ILocalCacheGrain>(0);
 
         while (true)
         {
@@ -58,11 +60,19 @@ public static class Program
 
             if (op == 0)
             {
-                object? result = await grain.GetValue(key);
-                Console.WriteLine(result is null ? "No value found" : $"Found value: {result}");
+                object? result = await cacheGrain.GetValue(key);
+                if (result is null)
+                {
+                    Console.WriteLine("No value found");
+                }
+                else
+                {
+                    Console.WriteLine($"Found value: {result}");
+                }
+               
                 continue;
             }
-            
+
             if (op == 1)
             {
                 Console.WriteLine("Enter value:");
@@ -73,14 +83,14 @@ public static class Program
                     continue;
                 }
 
-                await grain.Add(key, value);
+                await cacheGrain.Add(key, value);
                 Console.WriteLine($"Added: [Key: {key} - Value: {value}]");
                 continue;
             }
 
             if (op == 2)
             {
-                object? result = await grain.RemoveEntry(key);
+                object? result = await cacheGrain.RemoveEntry(key);
                 Console.WriteLine(result is null ? $"Entry for key [{key}] does not exist" : $"Removed value: {result}");
                 continue;
             }
