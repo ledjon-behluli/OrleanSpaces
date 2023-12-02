@@ -3,12 +3,6 @@ name: Publish
 on:
   workflow_dispatch:
     inputs:
-      project_name:
-        type: choice
-        description: Project name
-        options:
-        - 'OrleanSpaces'
-        - 'OrleanSpaces.Analyzers'
       nuget_version:
         type: string
         description: NuGet version
@@ -32,10 +26,19 @@ jobs:
       run: dotnet build --configuration Release
     
     - name: Pack
-      working-directory: src/${{ inputs.project_name }}
+      working-directory: src/OrleanSpaces
       run: dotnet pack --configuration Release --no-build -p:Version=${{ inputs.nuget_version }}
       
     - name: Push
-      working-directory: src/${{ inputs.project_name }}/bin/Release
+      working-directory: src/OrleanSpaces/bin/Release
       run: |
-        dotnet nuget push ${{ inputs.project_name }}.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet nuget push OrleanSpaces.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+
+    - name: Pack
+      working-directory: src/OrleanSpaces.Analyzers
+      run: dotnet pack --configuration Release --no-build -p:Version=${{ inputs.nuget_version }}
+      
+    - name: Push
+      working-directory: src/OrleanSpaces.Analyzers/bin/Release
+      run: |
+        dotnet nuget push OrleanSpaces.Analyzers.*.nupkg --skip-duplicate -k ${{ secrets.ORLEANSPACES_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
